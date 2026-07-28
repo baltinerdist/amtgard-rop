@@ -23,7 +23,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** White strip
 
-**Effect:** Bearer becomes Immune to one of the following Schools:     Death, Flame, Subdual, Command, Sorcery. School is chosen at the time of casting.
+**Effect:** Bearer becomes Immune to one of the following Schools: Death, Flame, Subdual, Command, Sorcery. School is chosen at the time of casting.
 
 ---
 *Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 62 (printed p. 59). Verbatim.*

@@ -21,11 +21,11 @@ source: Amtgard Rules of Play Version 8
 
 **Incantation:** "I am filled with the power of magic"
 
-**Effect:** Caster may use Magic Balls they are currently carrying by stating the name of the Magic Ball immediately prior to     throwing the ball in place of the incantation.
+**Effect:** Caster may use Magic Balls they are currently carrying by stating the name of the Magic Ball immediately prior to throwing the ball in place of the incantation.
 
 **Limitations:** This magic ends if the caster picks up any additional Magic Balls or begins casting any new Magical abilities.
 
-**Note:** The effect is not an incantation, and so is not stopped by being Suppressed, and may be used while moving, etc.     th of Marching  ve of these things? I command the very power of the kill you, or send your body to the Aether. I have no  - Lotus Brighthawk, Archmage
+**Note:** The effect is not an incantation, and so is not stopped by being Suppressed, and may be used while moving, etc.
 
 ---
 *Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 65 (printed p. 62). Verbatim.*

@@ -19,7 +19,7 @@ source: Amtgard Rules of Play Version 8
 
 **Range:** 50'
 
-**Incantation:** "I call upon the element of flame to destroy thy belongings"     x3
+**Incantation:** "I call upon the element of flame to destroy thy belongings" x3
 
 **Effect:** All shields and weapons carried by the target player are destroyed.
 
