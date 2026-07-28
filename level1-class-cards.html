@@ -1,259 +1,106 @@
 <style>
-@page { size: letter portrait; margin: 0.45in; }
+@page{size:letter portrait;margin:0.32in}
 *{box-sizing:border-box}
-body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#1a1614;font-size:9.4pt;line-height:1.32;margin:0}
-.cardpage{page-break-after:always;padding:0}
-.cardpage:last-child{page-break-after:auto}
-.chead{border-bottom:2.5px solid #6b1f2a;padding-bottom:4px;margin-bottom:7px}
-.ctitle{display:flex;align-items:baseline;gap:10px}
-h1{font-family:Georgia,'Times New Roman',serif;font-size:23pt;margin:0;color:#6b1f2a;letter-spacing:.3px}
-.badge{font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;background:#6b1f2a;padding:2px 7px;border-radius:9px}
-.magic .chead{border-color:#28407a}.magic h1{color:#28407a}.magic .badge{background:#28407a}
-.role{margin:3px 0 0;font-style:italic;color:#4a4340}
-.stats{display:flex;flex-wrap:wrap;gap:0;border:1px solid #d9cfc7;border-radius:5px;overflow:hidden;margin-bottom:6px}
-.stats>div{flex:1 1 30%;min-width:120px;padding:4px 8px;border-right:1px solid #ece5df;border-bottom:1px solid #ece5df}
-.stats>div.wide{flex:1 1 46%}
-.stats span{display:block;font-size:6.8pt;text-transform:uppercase;letter-spacing:.6px;color:#8a7f77;font-weight:700}
-.reqbar{margin:0 0 6px}.req{font-size:8.4pt;font-weight:700;color:#8a5a00;background:#fbf1dd;border:1px solid #e6d3a8;padding:2px 8px;border-radius:4px}
-h2{font-family:Georgia,serif;font-size:11pt;color:#3a322e;margin:9px 0 4px;padding-bottom:2px;border-bottom:1px solid #d9cfc7}
-.kitnote{margin:2px 0 5px;font-size:8.8pt;color:#4a4340}
-ul.kit{margin:2px 0 0;padding-left:16px}
-ul.kit li{margin-bottom:1.5px}
-ul.kit li.sub{list-style:none;margin-left:6px}
-ul.kit li.choice{list-style:none;font-weight:700;margin-top:3px}
-.tt{font-size:6.6pt;font-weight:700;color:#6b1f2a;background:#f3e6e2;padding:0 4px;border-radius:3px;vertical-align:1px}
-table.spt{width:100%;border-collapse:collapse;font-size:8.5pt;margin-top:2px}
-table.spt th{background:#eef1f7;text-align:left;padding:2.5px 5px;border:1px solid #d3d9e6;font-size:7.4pt;text-transform:uppercase;letter-spacing:.4px}
-table.spt td{padding:2.5px 5px;border:1px solid #e2e6ef}
-table.spt tr:nth-child(even) td{background:#f7f8fb}
-.refs{column-count:2;column-gap:14px;margin-top:2px}
-.ab{break-inside:avoid;margin-bottom:5px;padding-left:6px;border-left:2px solid #d9cfc7}
-.magic .ab{border-color:#c3cde3}
-.abn{font-weight:700;font-size:9.2pt;color:#2a2320}
-.abmeta{font-weight:400;font-size:7.2pt;color:#8a7f77;margin-left:5px;text-transform:uppercase;letter-spacing:.3px}
-.inc{font-style:italic;color:#6b1f2a;margin:1px 0}
-.magic .inc{color:#28407a}
-.abe{margin:1px 0}
-.mat{font-size:7.8pt;color:#6a615b}
-.lim{font-size:8pt;color:#4a4340}
-.legend{page-break-after:always;padding:4px}
-.legend h1{font-size:16pt;color:#3a322e}
-.legend dt{font-weight:700;margin-top:4px}
+html,body{margin:0}
+body{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#1a1614;font-size:8.6pt;line-height:1.3}
+.sheet{height:10.3in;display:flex;flex-direction:column;gap:0.12in;page-break-after:always}
+.sheet:last-child{page-break-after:auto}
+.card{flex:1 1 0;min-height:0;border:0.8pt solid #cfc6bd;border-radius:6px;padding:7px 9px;overflow:hidden;position:relative}
+.card.magic{--ac:#28407a}.card.martial,.card.legend{--ac:#6b1f2a}
+.hd{border-bottom:1.8pt solid var(--ac);padding-bottom:2px;margin-bottom:3px;line-height:1.1}
+.cn{font-family:Georgia,serif;font-size:15pt;font-weight:700;color:var(--ac);vertical-align:middle}
+.bd{font-size:6.6pt;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#fff;background:var(--ac);padding:1.5px 6px;border-radius:8px;margin-left:6px;vertical-align:middle}
+.ro{font-style:italic;color:#5a524d;margin-left:8px;font-size:8pt}
+.req{float:right;font-size:6.8pt;font-weight:700;color:#8a5a00;background:#fbf1dd;border:0.6pt solid #e6d3a8;padding:0 6px;border-radius:4px;margin-top:2px}
+.strip{font-size:7.7pt;color:#3a332e;margin-bottom:3px;line-height:1.35}
+.strip b{color:#8a7f77;text-transform:uppercase;font-size:6.7pt;letter-spacing:.4px}
+.sum{font-size:8pt;color:#2a2320;background:#f6f2ee;border-left:2.5px solid var(--ac);padding:2px 6px;margin-bottom:4px;border-radius:0 3px 3px 0}
+.sum b{color:var(--ac)}
+.body{column-count:3;column-gap:12px;font-size:8.2pt}
+.legend .body{column-count:2}
+.e{break-inside:avoid;margin-bottom:4px;line-height:1.28}
+.en{font-weight:700;color:#2a2320}
+.em{font-size:6.7pt;color:#8a7f77;text-transform:uppercase;letter-spacing:.2px}
+.ei{color:var(--ac)}
+.el{color:#6a615b;font-size:7.4pt}
+.cut{height:0;border-top:0.5pt dashed #c4bab0}
 </style>
-<section class="legend"><h1>Amtgard Level 1 — How to Read These Cards</h1><p>One card per class (front &amp; back). Everything you need to play that class at level 1: equipment, your starting abilities, and full ability/spell definitions. Notation:</p><dl><dt>1/Life</dt><dd>Uses per life; refills each time you respawn.</dd><dt>1/Refresh</dt><dd>Uses per Refresh; refilled only when a Reeve calls a Refresh.</dd><dt>Charge xN</dt><dd>Reusable, but must be re-Charged after the initial N uses are spent.</dd><dt>Unlimited</dt><dd>May be used any number of times.</dd><dt>(T) Trait</dt><dd>Always on; cannot be removed; needs no incantation.</dd><dt>(ex) Extraordinary</dt><dd>Non-magical ability.</dd><dt>(m) Magical</dt><dd>Magical ability; Enchantments count toward your limit.</dd><dt>(Ambulant)</dt><dd>May be incanted while moving.</dd><dt>(A) Archetype</dt><dd>A level-6 build-defining choice (shown for context; not a level-1 option).</dd><dt>Incantation</dt><dd>The “quoted” phrase you must say (×N = repeat that many times) to activate the ability.</dd><dt>Death</dt><dd>Any two wounds, or one wound to the torso, kills you.</dd></dl></section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Anti-Paladin</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Aggressive front-line combat — offense and disrupting enemies.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>4 pts</div>
-    <div><span>Shields</span>Large</div>
-    <div class="wide"><span>Weapons</span>All Melee, Javelins</div>
-    <div class="wide"><span>Garb</span>Metallic silver sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Terror 1/Life (m)</div>
-  </div>
-  <div class="reqbar"><span class="req">⚑ Requirement: Must be 6th level in at least one class.</span></div>
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Immune to Command <span class="tt">Trait (T)</span></li><li>Immune to Flame <span class="tt">Trait (T)</span></li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Immune to Command<span class=abmeta>Command · Trait (T)</span></div><div class="abe">Always on: you are unaffected by abilities from the Command School. As a Trait it cannot be removed and needs no incantation.</div></div><div class="ab"><div class="abn">Immune to Flame<span class=abmeta>Flame · Trait (T)</span></div><div class="abe">Always on: you are unaffected by abilities from the Flame School. As a Trait it cannot be removed and needs no incantation.</div></div><div class="ab"><div class="abn">Terror<span class=abmeta>Death · 20'</span></div><div class="inc">“Death makes thee terrified" x3”</div><div class="abe">Target may not attack or cast Magical abilities at the caster or their carried equipment. Target must remain at least 50' away from the caster unless forced there by another Forced Movement effect. Lasts 30 seconds.</div><div class="lim"><b>Note:</b> If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated. This is a Forced Movement effect.</div></div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Archer</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Ranged combat — strategic use of enhanced arrows.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>2 pts</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>Dagger, Short, Bow</div>
-    <div class="wide"><span>Garb</span>Orange sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Pick one arrow: Destruction / Poison / Pinning — 1 Arrow / Unlimited (ex)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Reload 1/Refresh Charge x3 (ex)</li><li class="choice">Pick two of three (1 Arrow / Unlimited, ex):</li><li class="sub">• Destruction Arrow</li><li class="sub">• Pinning Arrow</li><li class="sub">• Poison Arrow</li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Reload 1/Refresh Charge x3<span class=abmeta>Sorcery · Self</span></div><div class="inc">“I nocked my arrows to my bow, I let them fly, my quiver is low. Now I pause to go reload." x3”</div><div class="abe">Player becomes Invulnerable and may move about the field retrieving their arrows. The player may remove their Invulnerable State in the location they started or at base by stating, "I return with a full quiver" x3.</div><div class="lim"><b>Limits:</b> Must stay at least 10' away from other players at all times. A player may not exit Reload at an alternate base location, such as Heart of the Swarm, in this way.</div><div class="lim"><b>Note:</b> May ask reeve for assistance in retrieving arrows that are within 10' of other players.</div></div><div class="ab"><div class="abn">Destruction Arrow<span class=abmeta>Sorcery</span></div><div class="inc">“Destruction Arrow”</div><div class="abe">This arrow is Armor Destroying and Shield Destroying. Armor Destroying and Shield Destroying are applied after the normal effect of being hit with an arrow is applied.</div><span class="mat">Materials: Arrow with red head cover labeled 'Destruction'.</span> </div><div class="ab"><div class="abn">Pinning Arrow<span class=abmeta>Sorcery</span></div><div class="inc">“Pinning Arrow”</div><div class="abe">A player struck by this arrow is Stopped for 30 seconds. Engulfing.</div><span class="mat">Materials: Arrow with yellow head cover labeled 'Pinning'.</span> </div><div class="ab"><div class="abn">Poison Arrow<span class=abmeta>Death</span></div><div class="inc">“Poison Arrow”</div><div class="abe">This arrow is Wounds Kill.</div><span class="mat">Materials: Arrow with green head cover labeled 'Poison'.</span> </div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Assassin</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">High-mobility, stealth-based play — precision and hit-and-run.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>2 pts</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>Dagger, Short, Long, Light Thrown, Heavy Thrown, Bow</div>
-    <div class="wide"><span>Garb</span>Black sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Pick one: Poison (Self) 1/Life Charge x3 (ex)  OR  Poison Arrow 1 Arrow/Unlimited (ex)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Trickery <span class="tt">Trait (T)</span></li><li>Assassinate Unlimited (ex) (Ambulant)</li><li>Shadow Step 2/Life (ex)</li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Trickery<span class=abmeta>Sorcery · Self</span></div><div class="abe">Bearer may cast Blink, Shadow Step, and Teleport on themselves while they are already Insubstantial, provided that they were the cause of the initial Insubstantial State and entered it voluntarily. Doing so removes the original Insubstantial effect.</div></div><div class="ab"><div class="abn">Assassinate Unlimited<span class=abmeta>Death · 50'</span></div><div class="inc">“Assassinate”</div><div class="abe">The target is Cursed.</div><div class="lim"><b>Limits:</b> May only be used immediately upon killing an enemy.</div><div class="lim"><b>Note:</b> Assassinate targets the killed enemy and does not require verbal targeting.</div></div><div class="ab"><div class="abn">Shadow Step 2/Life<span class=abmeta>Sorcery · Self</span></div><div class="inc">“I step into the shadows”</div><div class="abe">Player becomes Insubstantial. Shadow Step may be cast while moving.</div><div class="lim"><b>Note:</b> Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.</div></div><div class="ab"><div class="abn">Poison<span class=abmeta>Death · Self</span></div><div class="inc">“I coat these weapons with a deadly poison" x2”</div><div class="abe">The next wound dealt by the bearer with a wielded melee weapon is Wounds Kill.</div><span class="mat">Materials: Red strip</span> <div class="lim"><b>Note:</b> If the target does not actually receive a wound, e.g. by a Resistance, Poison is not expended.</div></div><div class="ab"><div class="abn">Poison Arrow<span class=abmeta>Death</span></div><div class="inc">“Poison Arrow”</div><div class="abe">This arrow is Wounds Kill.</div><span class="mat">Materials: Arrow with green head cover labeled 'Poison'.</span> </div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Barbarian</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Aggressive front-line fighting — melee and endurance.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>3 pts</div>
-    <div><span>Shields</span>Medium</div>
-    <div class="wide"><span>Weapons</span>All Melee, Javelins, Rocks</div>
-    <div class="wide"><span>Garb</span>White sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Rage 1/Refresh Charge x10 (ex) (Ambulant)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Berserk <span class="tt">Trait (T)</span></li><li>Immune to Command <span class="tt">Trait (T)</span></li><li>Immune to Subdual <span class="tt">Trait (T)</span></li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Berserk<span class=abmeta>Sorcery · Self</span></div><div class="abe">Bearer's wielded melee weapons are Armor Breaking.</div><span class="mat">Materials: Red strip</span> </div><div class="ab"><div class="abn">Immune to Command<span class=abmeta>Command · Trait (T)</span></div><div class="abe">Always on: you are unaffected by abilities from the Command School. As a Trait it cannot be removed and needs no incantation.</div></div><div class="ab"><div class="abn">Immune to Subdual<span class=abmeta>Subdual · Trait (T)</span></div><div class="abe">Always on: you are unaffected by abilities from the Subdual School. As a Trait it cannot be removed and needs no incantation.</div></div><div class="ab"><div class="abn">Rage<span class=abmeta>Sorcery · Self</span></div><div class="inc">“I am filled with rage!”</div><div class="abe">Caster is unaffected by Verbal abilities and their wielded melee weapons are Shield Crushing and Armor Breaking for seven seconds. Caster must count this time out loud, audible to 50'; failure to count ends the effect.</div></div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Monk</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Support and skirmishing — melee combat and supporting allies.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>1 pt</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>All Melee, Heavy Thrown</div>
-    <div class="wide"><span>Garb</span>Gray sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Heal 1/Life (ex)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Enlightened Soul <span class="tt">Trait (T)</span></li><li>Missile Block <span class="tt">Trait (T)</span></li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Enlightened Soul<span class=abmeta>Protection · Other</span></div><div class="inc">“A distant magic has no hold upon thy now enlightened soul" x3”</div><div class="abe">Player is unaffected by Verbal Magical abilities used at a Range greater than Touch.</div><span class="mat">Materials: White strip</span> <div class="lim"><b>Limits:</b> Affects beneficial as well as harmful Magical abilities.</div><div class="lim"><b>Note:</b> Does not affect (ex) abilities, abilities with a Range of Touch, nor abilities whose Range is greater than Touch but are used at a Range of Touch anyway.</div></div><div class="ab"><div class="abn">Missile Block<span class=abmeta>Protection · Self</span></div><div class="abe">Player may block arrows, projectile weapons, and Magic Balls with their hands and wielded melee or thrown weapons. Any arrow, projectile weapon or magic ball blocked is nullified.</div></div><div class="ab"><div class="abn">Heal<span class=abmeta>Spirit · Touch</span></div><div class="inc">“The white light of healing hath healed thee." x5”</div><div class="abe">Target player heals a wound.</div></div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Paladin</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Support and tank — defense and healing.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>4 pts</div>
-    <div><span>Shields</span>Large</div>
-    <div class="wide"><span>Weapons</span>All Melee, Javelins</div>
-    <div class="wide"><span>Garb</span>Metallic gold sash (Knights: white belt + white phoenix symbol)</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Awe 1/Life (m)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Immune to Command <span class="tt">Trait (T)</span></li><li>Immune to Death <span class="tt">Trait (T)</span></li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Immune to Command<span class=abmeta>Command · Trait (T)</span></div><div class="abe">Always on: you are unaffected by abilities from the Command School. As a Trait it cannot be removed and needs no incantation.</div></div><div class="ab"><div class="abn">Immune to Death<span class=abmeta>Death · Trait (T)</span></div><div class="abe">Always on: you are unaffected by abilities from the Death School. As a Trait it cannot be removed and needs no incantation.</div></div><div class="ab"><div class="abn">Awe<span class=abmeta>Command · 20'</span></div><div class="inc">“I command thee awed" x3”</div><div class="abe">Target may not attack or cast Magical abilities at the caster or their carried equipment. Target must remain at least 20' away from the caster unless forced there by another Forced Movement effect. Lasts 30 seconds.</div><div class="lim"><b>Note:</b> If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated. This is a Forced Movement effect.</div></div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Scout</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Versatile support and control — mobility and disruption.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>3 pts</div>
-    <div><span>Shields</span>Small</div>
-    <div class="wide"><span>Weapons</span>Dagger, Short, Long, Heavy Thrown, Bow</div>
-    <div class="wide"><span>Garb</span>Green sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Heal 1/Life (ex)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Tracking 2/Life Charge x3 (ex) (Ambulant)</li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Tracking 2/Life Charge x3<span class=abmeta>Sorcery · 20'</span></div><div class="inc">“Tracking" x3”</div><div class="abe">Target Insubstantial player immediately has their Insubstantial effect ended.</div></div><div class="ab"><div class="abn">Heal<span class=abmeta>Spirit · Touch</span></div><div class="inc">“The white light of healing hath healed thee." x5”</div><div class="abe">Target player heals a wound.</div></div></div>
-</section>
-<section class="cardpage martial">
-  <header class="chead">
-    <div class="ctitle"><h1>Warrior</h1><span class="badge">Martial · Level 1</span></div>
-    <p class="role">Frontline combat and resilience — durability and disruption.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>6 pts</div>
-    <div><span>Shields</span>Large</div>
-    <div class="wide"><span>Weapons</span>All Melee, Javelins</div>
-    <div class="wide"><span>Garb</span>Purple sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>Insult 1/Life (m) (Ambulant)</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <ul class="kit"><li>Harden (Self) 1/Life (ex)</li></ul>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Harden<span class=abmeta>Protection · Other</span></div><div class="inc">“I enchant thee with Harden" x3”</div><div class="abe">Bearer's wielded weapons or shield may only be destroyed or damaged by Magic Balls/Verbals which destroy objects e.g. Fireball or Pyrotechnics.</div><span class="mat">Materials: White strip</span> <div class="lim"><b>Limits:</b> Will only affect either the weapons or the shield of the bearer, not both.</div></div><div class="ab"><div class="abn">Insult<span class=abmeta>Command · 20'</span></div><div class="inc">“I command thy attention" x3”</div><div class="abe">Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies. If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the     offending party as well.</div><div class="lim"><b>Note:</b> The target may still charge and throw Magic Balls at the caster.</div></div></div>
-</section>
-<section class="cardpage magic">
-  <header class="chead">
-    <div class="ctitle"><h1>Bard</h1><span class="badge">Magic User · Level 1</span></div>
-    <p class="role">Battlefield control — enhancing itself and allies while hindering enemies.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>None</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>Dagger, Magic Staff</div>
-    <div class="wide"><span>Garb</span>Light blue sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>+1 magic point at your highest level</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <p class="kitnote">You have <b>5 magic points</b>. Buy from the 1st-level list below (Cost = points; Max = how many you may own; Frequency = uses). Unused points can roll down from higher levels.</p><table class="spt"><tr><th>Spell</th><th>Cost</th><th>Max</th><th>Frequency</th><th>School</th><th>Range</th></tr><tr><td>Confidence</td><td>1</td><td>-</td><td>1/Refresh Charge x5</td><td>Sorcery</td><td>Other</td></tr><tr><td>Equipment: Weapon, Short</td><td>2</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Experienced</td><td>2</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Insult</td><td>1</td><td>-</td><td>1/Life</td><td>Command</td><td>20'</td></tr><tr><td>Release</td><td>1</td><td>-</td><td>1/Life</td><td>Sorcery</td><td>Touch</td></tr><tr><td>Shove</td><td>1</td><td>-</td><td>1/Life</td><td>Sorcery</td><td>20'</td></tr><tr><td>Song of Determination</td><td>1</td><td>1</td><td>Unlimited</td><td>Protection</td><td>Self</td></tr></table>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Confidence<span class=abmeta>Sorcery · Other</span></div><div class="inc">“My power grants thee confidence”</div><div class="abe">Target player may instantly Charge a single ability.</div><div class="lim"><b>Limits:</b> May not be used within 20' of a living enemy.</div></div><div class="ab"><div class="abn">Equipment: Weapon, Short</div><div class="abe">May wield one Short weapon at a time for each instance purchased (but may carry extras).</div></div><div class="ab"><div class="abn">Experienced<span class=abmeta>Neutral</span></div><div class="abe">A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed.</div><div class="lim"><b>Limits:</b> Verbal must be 4th level or lower.</div></div><div class="ab"><div class="abn">Insult<span class=abmeta>Command · 20'</span></div><div class="inc">“I command thy attention" x3”</div><div class="abe">Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies. If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the     offending party as well.</div><div class="lim"><b>Note:</b> The target may still charge and throw Magic Balls at the caster.</div></div><div class="ab"><div class="abn">Release<span class=abmeta>Sorcery · Touch</span></div><div class="inc">“From thy bindings thou art released" x5”</div><div class="abe">A single Ongoing Effect or State is removed from the target. Casters choice.</div><div class="lim"><b>Limits:</b> Cannot remove Cursed. When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended.</div></div><div class="ab"><div class="abn">Shove<span class=abmeta>Sorcery · 20'</span></div><div class="inc">“My power shoves thee" x3”</div><div class="abe">Target player is moved back 20' in a straight line away from the caster. Works on Stopped players. If the caster is the target, the caster may choose the direction they move.</div><div class="lim"><b>Note:</b> This is a Forced Movement effect.</div></div><div class="ab"><div class="abn">Song of Determination<span class=abmeta>Protection · Self</span></div><div class="inc">“I sing of my unwavering determination”</div><div class="abe">Bearer is Immune to Command. Bearer must Chant "Song of Determination" or sing a song regarding their determination. Singing in place of the normal Chant is still a Chant and must follow all Chant rules.</div></div></div>
-</section>
-<section class="cardpage magic">
-  <header class="chead">
-    <div class="ctitle"><h1>Druid</h1><span class="badge">Magic User · Level 1</span></div>
-    <p class="role">Versatile support and fighting — empowering allies and hindering enemies.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>None</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>Dagger, Magic Staff</div>
-    <div class="wide"><span>Garb</span>Brown sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>+1 magic point at your highest level</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <p class="kitnote">You have <b>5 magic points</b>. Buy from the 1st-level list below (Cost = points; Max = how many you may own; Frequency = uses). Unused points can roll down from higher levels.</p><table class="spt"><tr><th>Spell</th><th>Cost</th><th>Max</th><th>Frequency</th><th>School</th><th>Range</th></tr><tr><td>Barkskin</td><td>1</td><td>2</td><td>1/Refresh Charge x10</td><td>Protection</td><td>Other</td></tr><tr><td>Entangle</td><td>1</td><td>2</td><td>2 Balls / Unlimited</td><td>Subdual</td><td>-</td></tr><tr><td>Equipment: Weapon, Short</td><td>2</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Experienced</td><td>2</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Heat Weapon</td><td>1</td><td>-</td><td>1/Life Charge x3</td><td>Flame</td><td>20'</td></tr><tr><td>Imbue Armor</td><td>1</td><td>-</td><td>1/Life</td><td>Protection</td><td>Other</td></tr><tr><td>Mend</td><td>1</td><td>-</td><td>1/Life</td><td>Sorcery</td><td>Touch</td></tr></table>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Barkskin<span class=abmeta>Protection · Other</span></div><div class="inc">“I enchant thee with barkskin" x3”</div><div class="abe">Bearer gains one point of Magic Armor.</div><span class="mat">Materials: White strip</span> </div><div class="ab"><div class="abn">Entangle<span class=abmeta>Subdual</span></div><div class="inc">“The strength of earth is mine to evoke" x3”</div><div class="abe">Target is Stopped for 60 seconds. Engulfing.</div><span class="mat">Materials: Brown Magic Ball</span> </div><div class="ab"><div class="abn">Equipment: Weapon, Short</div><div class="abe">May wield one Short weapon at a time for each instance purchased (but may carry extras).</div></div><div class="ab"><div class="abn">Experienced<span class=abmeta>Neutral</span></div><div class="abe">A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed.</div><div class="lim"><b>Limits:</b> Verbal must be 4th level or lower.</div></div><div class="ab"><div class="abn">Heat Weapon<span class=abmeta>Flame · 20'</span></div><div class="inc">“I call upon flame to heat that [type of weapon]" x3”</div><div class="abe">Target weapon may not be wielded for 30 seconds. Players who are Immune to Flame may continue to wield the weapon.</div><div class="lim"><b>Note:</b> The equipment, not the person, is the target of Heat Weapon. The equipment is the only thing required to be within range and visible for this ability to affect it.</div></div><div class="ab"><div class="abn">Imbue Armor<span class=abmeta>Protection · Other</span></div><div class="inc">“I enchant thee with Imbued Armor" x3”</div><div class="abe">Armor worn by the bearer gains 1 Armor Point to its current and maximum rating in each location, up to the bearer's class maximum.</div><span class="mat">Materials: White strip</span> <div class="lim"><b>Limits:</b> Does not apply to Magic Armor. A player may only benefit from one instance of Imbue Armor.</div><div class="lim"><b>Note:</b> When this enchantment is removed, the bearer loses 1 current and maximum Armor Point in each location.</div></div><div class="ab"><div class="abn">Mend<span class=abmeta>Sorcery · Touch</span></div><div class="inc">“I make this item whole again" x5”</div><div class="abe">Destroyed or damaged item is repaired, or one point of armor in one location is repaired.</div></div></div>
-</section>
-<section class="cardpage magic">
-  <header class="chead">
-    <div class="ctitle"><h1>Healer</h1><span class="badge">Magic User · Level 1</span></div>
-    <p class="role">Support and protection — restoring and fortifying allies.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>None</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>Dagger, Magic Staff</div>
-    <div class="wide"><span>Garb</span>Red sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>+1 magic point at your highest level</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <p class="kitnote">You have <b>5 magic points</b>. Buy from the 1st-level list below (Cost = points; Max = how many you may own; Frequency = uses). Unused points can roll down from higher levels.</p><table class="spt"><tr><th>Spell</th><th>Cost</th><th>Max</th><th>Frequency</th><th>School</th><th>Range</th></tr><tr><td>Banish</td><td>1</td><td>-</td><td>1/Life</td><td>Spirit</td><td>20'</td></tr><tr><td>Blessing Against Wounds</td><td>1</td><td>-</td><td>1/Life</td><td>Protection</td><td>Other</td></tr><tr><td>Equipment: Shield, Small</td><td>2</td><td>1</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Equipment: Weapon, Short</td><td>3</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Experienced</td><td>2</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Harden</td><td>1</td><td>-</td><td>1/Refresh</td><td>Protection</td><td>Other</td></tr><tr><td>Heal</td><td>1</td><td>1</td><td>Unlimited</td><td>Spirit</td><td>Touch</td></tr><tr><td>Release</td><td>1</td><td>-</td><td>2/Life Charge x3</td><td>Sorcery</td><td>Touch</td></tr></table>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Banish<span class=abmeta>Spirit · 20'</span></div><div class="inc">“The spirits banish thee from this place" x3”</div><div class="abe">Target Insubstantial player must return to their base where their Insubstantial State immediately ends.</div><div class="lim"><b>Note:</b> The target's Insubstantial State is replaced with a new Insubstantial State from Banish. If the Insubstantial State is ended before reaching the base, the rest of the effect is ended as well. If Banish is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial. This is a Forced Movement effect.</div></div><div class="ab"><div class="abn">Blessing Against Wounds<span class=abmeta>Protection · Other</span></div><div class="inc">“I enchant thee against wounds" x3”</div><div class="abe">Resistant to wounds. Does not count towards a players Enchantment limit.</div><span class="mat">Materials: White strip</span> <div class="lim"><b>Limits:</b> May not be worn with any other Enchantments from the Protection School unless the other Enchantment is (ex).</div></div><div class="ab"><div class="abn">Equipment: Shield, Small</div><div class="abe">May wield a Small shield (but may carry extras).</div></div><div class="ab"><div class="abn">Equipment: Weapon, Short</div><div class="abe">May wield one Short weapon at a time for each instance purchased (but may carry extras).</div></div><div class="ab"><div class="abn">Experienced<span class=abmeta>Neutral</span></div><div class="abe">A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed.</div><div class="lim"><b>Limits:</b> Verbal must be 4th level or lower.</div></div><div class="ab"><div class="abn">Harden<span class=abmeta>Protection · Other</span></div><div class="inc">“I enchant thee with Harden" x3”</div><div class="abe">Bearer's wielded weapons or shield may only be destroyed or damaged by Magic Balls/Verbals which destroy objects e.g. Fireball or Pyrotechnics.</div><span class="mat">Materials: White strip</span> <div class="lim"><b>Limits:</b> Will only affect either the weapons or the shield of the bearer, not both.</div></div><div class="ab"><div class="abn">Heal<span class=abmeta>Spirit · Touch</span></div><div class="inc">“The white light of healing hath healed thee." x5”</div><div class="abe">Target player heals a wound.</div></div><div class="ab"><div class="abn">Release<span class=abmeta>Sorcery · Touch</span></div><div class="inc">“From thy bindings thou art released" x5”</div><div class="abe">A single Ongoing Effect or State is removed from the target. Casters choice.</div><div class="lim"><b>Limits:</b> Cannot remove Cursed. When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended.</div></div></div>
-</section>
-<section class="cardpage magic">
-  <header class="chead">
-    <div class="ctitle"><h1>Wizard</h1><span class="badge">Magic User · Level 1</span></div>
-    <p class="role">Powerful ranged offense and battlefield control — damaging and disrupting enemies.</p>
-  </header>
-  <div class="stats">
-    <div><span>Armor</span>None</div>
-    <div><span>Shields</span>None</div>
-    <div class="wide"><span>Weapons</span>Dagger, Magic Staff</div>
-    <div class="wide"><span>Garb</span>Yellow sash</div>
-    <div class="wide"><span>Look The Part (lvl 1 bonus)</span>+1 magic point at your highest level</div>
-  </div>
-  
-  <h2>Your Level 1 Kit</h2>
-  <p class="kitnote">You have <b>5 magic points</b>. Buy from the 1st-level list below (Cost = points; Max = how many you may own; Frequency = uses). Unused points can roll down from higher levels.</p><table class="spt"><tr><th>Spell</th><th>Cost</th><th>Max</th><th>Frequency</th><th>School</th><th>Range</th></tr><tr><td>Banish</td><td>1</td><td>-</td><td>1/Life</td><td>Spirit</td><td>20'</td></tr><tr><td>Equipment: Weapon, Short</td><td>2</td><td>1</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Experienced</td><td>2</td><td>2</td><td>-</td><td>Neutral</td><td>-</td></tr><tr><td>Force Barrier</td><td>1</td><td>-</td><td>1/Life</td><td>Sorcery</td><td>Self</td></tr><tr><td>Force Bolt</td><td>1</td><td>8</td><td>3 Balls / Unlimited</td><td>Sorcery</td><td>-</td></tr><tr><td>Heat Weapon</td><td>1</td><td>-</td><td>1/Life</td><td>Flame</td><td>20'</td></tr><tr><td>Mend</td><td>1</td><td>-</td><td>1/Life</td><td>Sorcery</td><td>Touch</td></tr><tr><td>Shove</td><td>1</td><td>-</td><td>1/Life Charge x3</td><td>Sorcery</td><td>20'</td></tr></table>
-  <h2>Ability &amp; Magic Reference</h2>
-  <div class="refs"><div class="ab"><div class="abn">Banish<span class=abmeta>Spirit · 20'</span></div><div class="inc">“The spirits banish thee from this place" x3”</div><div class="abe">Target Insubstantial player must return to their base where their Insubstantial State immediately ends.</div><div class="lim"><b>Note:</b> The target's Insubstantial State is replaced with a new Insubstantial State from Banish. If the Insubstantial State is ended before reaching the base, the rest of the effect is ended as well. If Banish is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial. This is a Forced Movement effect.</div></div><div class="ab"><div class="abn">Equipment: Weapon, Short</div><div class="abe">May wield one Short weapon at a time for each instance purchased (but may carry extras).</div></div><div class="ab"><div class="abn">Experienced<span class=abmeta>Neutral</span></div><div class="abe">A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed.</div><div class="lim"><b>Limits:</b> Verbal must be 4th level or lower.</div></div><div class="ab"><div class="abn">Force Barrier<span class=abmeta>Sorcery · Self</span></div><div class="inc">“I shall not be harmed”</div><div class="abe">Player is Frozen for 10 seconds.</div></div><div class="ab"><div class="abn">Force Bolt<span class=abmeta>Sorcery</span></div><div class="inc">“Forcebolt" x3”</div><div class="abe">Force Bolt will have one of the following effects on the object first struck: 1. A weapon hit is destroyed 2. Armor hit with Armor Points remaining is subject to Armor Breaking. 3. A player hit receives a wound to that hit location.</div><span class="mat">Materials: Blue Magic Ball</span> </div><div class="ab"><div class="abn">Heat Weapon<span class=abmeta>Flame · 20'</span></div><div class="inc">“I call upon flame to heat that [type of weapon]" x3”</div><div class="abe">Target weapon may not be wielded for 30 seconds. Players who are Immune to Flame may continue to wield the weapon.</div><div class="lim"><b>Note:</b> The equipment, not the person, is the target of Heat Weapon. The equipment is the only thing required to be within range and visible for this ability to affect it.</div></div><div class="ab"><div class="abn">Mend<span class=abmeta>Sorcery · Touch</span></div><div class="inc">“I make this item whole again" x5”</div><div class="abe">Destroyed or damaged item is repaired, or one point of armor in one location is repaired.</div></div><div class="ab"><div class="abn">Shove<span class=abmeta>Sorcery · 20'</span></div><div class="inc">“My power shoves thee" x3”</div><div class="abe">Target player is moved back 20' in a straight line away from the caster. Works on Stopped players. If the caster is the target, the caster may choose the direction they move.</div><div class="lim"><b>Note:</b> This is a Forced Movement effect.</div></div></div>
-</section>
+<div class="sheet"><div class="card legend"><div class="hd"><span class="cn">Level&nbsp;1 Cards</span><span class="bd">How to read</span><span class="ro">One half-card per class — equipment, your level-1 kit, and full ability defs.</span></div><div class="sum">Notation:</div><div class="body"><div class="e"><span class="en">1/Life</span> per life; refills on respawn</div><div class="e"><span class="en">1/Refresh</span> per Refresh; refilled on reeve's Refresh</div><div class="e"><span class="en">Charge&nbsp;xN</span> reusable after re-Charging the initial N uses</div><div class="e"><span class="en">Unlimited</span> any number of times</div><div class="e"><span class="en">(T)&nbsp;Trait</span> always on; no incantation; can't be removed</div><div class="e"><span class="en">(ex)</span> non-magical</div><div class="e"><span class="en">(m)</span> magical (Enchantments count to your limit)</div><div class="e"><span class="en">Ambulant</span> may incant while moving</div><div class="e"><span class="en">“…”&nbsp;×N</span> incantation you must say N times to activate</div><div class="e"><span class="en">Death</span> two wounds, or one to the torso, kills you</div></div></div><div class="card martial">
+  <div class="hd"><span class="cn">Anti-Paladin</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Aggressive front-line offense &amp; disruption.</span><span class="req">⚑ Must be 6th level in another class</span></div>
+  <div class="strip"><b>Armor</b> 4 pts &nbsp;·&nbsp; <b>Shields</b> Large &nbsp;·&nbsp; <b>Weapons</b> All Melee, Javelins &nbsp;·&nbsp; <b>Garb</b> Metallic silver sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Terror 1/Life (m)</div>
+  <div class="sum"><b>Traits:</b> Immune to Command, Immune to Flame. <b>Look&nbsp;The&nbsp;Part:</b> Terror.</div>
+  <div class="body"><div class="e"><span class="en">Immune to Command</span> <span class="em">Trait · Command</span><br>Always on: unaffected by abilities from the Command School. Cannot be removed; needs no incantation.</div><div class="e"><span class="en">Immune to Flame</span> <span class="em">Trait · Flame</span><br>Always on: unaffected by abilities from the Flame School. Cannot be removed; needs no incantation.</div><div class="e"><span class="en">Terror</span> <span class="em">LTP · 1/Life · (m) · Death · 20'</span><br><i class="ei">“Death makes thee terrified" x3”</i> Target may not attack or cast Magical abilities at the caster or their carried equipment. Target must remain at least 50' away from the caster unless forced there by another Forced Movement effect. Lasts 30 seconds. <span class="el">Note: If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated. This is a Forced Movement effect.</span></div></div>
+</div></div>
+<div class="sheet"><div class="card martial">
+  <div class="hd"><span class="cn">Archer</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Ranged combat with enhanced arrows.</span></div>
+  <div class="strip"><b>Armor</b> 2 pts &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> Dagger, Short, Bow &nbsp;·&nbsp; <b>Garb</b> Orange sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Pick one arrow (1 Arrow/Unlim, ex)</div>
+  <div class="sum"><b>Get:</b> Reload + <b>pick two</b> of three arrows. <b>Look&nbsp;The&nbsp;Part:</b> pick one arrow.</div>
+  <div class="body"><div class="e"><span class="en">Reload</span> <span class="em">1/Refresh Charge x3 · (ex) · Sorcery · Self</span><br><i class="ei">“I nocked my arrows to my bow, I let them fly, my quiver is low. Now I pause to go reload." x3”</i> Player becomes Invulnerable and may move about the field retrieving their arrows. The player may remove their Invulnerable State in the location they started or at base by stating, "I return with a full quiver" x3. <span class="el">Limits: Must stay at least 10' away from other players at all times. A player may not exit Reload at an alternate base location, such as Heart of the Swarm, in this way.</span> <span class="el">Note: May ask reeve for assistance in retrieving arrows that are within 10' of other players.</span></div><div class="e"><span class="en">Destruction Arrow</span> <span class="em">1 Arrow/Unlim · (ex) · Sorcery</span><br><i class="ei">“Destruction Arrow”</i> This arrow is Armor Destroying and Shield Destroying. Armor Destroying and Shield Destroying are applied after the normal effect of being hit with an arrow is applied.</div><div class="e"><span class="en">Pinning Arrow</span> <span class="em">1 Arrow/Unlim · (ex) · Sorcery</span><br><i class="ei">“Pinning Arrow”</i> A player struck by this arrow is Stopped for 30 seconds. Engulfing.</div><div class="e"><span class="en">Poison Arrow</span> <span class="em">1 Arrow/Unlim · (ex) · Death</span><br><i class="ei">“Poison Arrow”</i> This arrow is Wounds Kill.</div></div>
+</div><div class="card martial">
+  <div class="hd"><span class="cn">Assassin</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">High-mobility stealth; precision hit-and-run.</span></div>
+  <div class="strip"><b>Armor</b> 2 pts &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> Dagger, Short, Long, Light/Heavy Thrown, Bow &nbsp;·&nbsp; <b>Garb</b> Black sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Pick one: Poison or Poison Arrow</div>
+  <div class="sum"><b>Trait:</b> Trickery. <b>Get:</b> Assassinate, Shadow Step. <b>Look&nbsp;The&nbsp;Part:</b> pick one below.</div>
+  <div class="body"><div class="e"><span class="en">Trickery</span> <span class="em">Trait · Sorcery · Self</span><br>Bearer may cast Blink, Shadow Step, and Teleport on themselves while they are already Insubstantial, provided that they were the cause of the initial Insubstantial State and entered it voluntarily. Doing so removes the original Insubstantial effect.</div><div class="e"><span class="en">Assassinate</span> <span class="em">Unlimited · (ex) · Ambulant · Death · 50'</span><br><i class="ei">“Assassinate”</i> The target is Cursed. <span class="el">Limits: May only be used immediately upon killing an enemy.</span> <span class="el">Note: Assassinate targets the killed enemy and does not require verbal targeting.</span></div><div class="e"><span class="en">Shadow Step</span> <span class="em">2/Life · (ex) · Sorcery · Self</span><br><i class="ei">“I step into the shadows”</i> Player becomes Insubstantial. Shadow Step may be cast while moving. <span class="el">Note: Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.</span></div><div class="e"><span class="en">Poison</span> <span class="em">LTP option · 1/Life Charge x3 · (ex) · Death · Self</span><br><i class="ei">“I coat these weapons with a deadly poison" x2”</i> The next wound dealt by the bearer with a wielded melee weapon is Wounds Kill. <span class="el">Note: If the target does not actually receive a wound, e.g. by a Resistance, Poison is not expended.</span></div><div class="e"><span class="en">Poison Arrow</span> <span class="em">LTP option · 1 Arrow/Unlim · (ex) · Death</span><br><i class="ei">“Poison Arrow”</i> This arrow is Wounds Kill.</div></div>
+</div></div>
+<div class="sheet"><div class="card martial">
+  <div class="hd"><span class="cn">Barbarian</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Aggressive melee bruiser; endurance.</span></div>
+  <div class="strip"><b>Armor</b> 3 pts &nbsp;·&nbsp; <b>Shields</b> Medium &nbsp;·&nbsp; <b>Weapons</b> All Melee, Javelins, Rocks &nbsp;·&nbsp; <b>Garb</b> White sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Rage 1/Refresh Charge x10 (ex)</div>
+  <div class="sum"><b>Traits:</b> Berserk, Immune to Command, Immune to Subdual. <b>Look&nbsp;The&nbsp;Part:</b> Rage.</div>
+  <div class="body"><div class="e"><span class="en">Berserk</span> <span class="em">Trait · Sorcery · Self</span><br>Bearer's wielded melee weapons are Armor Breaking.</div><div class="e"><span class="en">Immune to Command</span> <span class="em">Trait · Command</span><br>Always on: unaffected by abilities from the Command School. Cannot be removed; needs no incantation.</div><div class="e"><span class="en">Immune to Subdual</span> <span class="em">Trait · Subdual</span><br>Always on: unaffected by abilities from the Subdual School. Cannot be removed; needs no incantation.</div><div class="e"><span class="en">Rage</span> <span class="em">LTP · 1/Refresh Charge x10 · (ex) · Ambulant · Sorcery · Self</span><br><i class="ei">“I am filled with rage!”</i> Caster is unaffected by Verbal abilities and their wielded melee weapons are Shield Crushing and Armor Breaking for seven seconds. Caster must count this time out loud, audible to 50'; failure to count ends the effect.</div></div>
+</div><div class="card martial">
+  <div class="hd"><span class="cn">Monk</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Support skirmisher; melee &amp; ally support.</span></div>
+  <div class="strip"><b>Armor</b> 1 pt &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> All Melee, Heavy Thrown &nbsp;·&nbsp; <b>Garb</b> Gray sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Heal 1/Life (ex)</div>
+  <div class="sum"><b>Traits:</b> Enlightened Soul, Missile Block. <b>Look&nbsp;The&nbsp;Part:</b> Heal.</div>
+  <div class="body"><div class="e"><span class="en">Enlightened Soul</span> <span class="em">Trait · Protection · Other</span><br><i class="ei">“A distant magic has no hold upon thy now enlightened soul" x3”</i> Player is unaffected by Verbal Magical abilities used at a Range greater than Touch. <span class="el">Limits: Affects beneficial as well as harmful Magical abilities.</span> <span class="el">Note: Does not affect (ex) abilities, abilities with a Range of Touch, nor abilities whose Range is greater than Touch but are used at a Range of Touch anyway.</span></div><div class="e"><span class="en">Missile Block</span> <span class="em">Trait · Protection · Self</span><br>Player may block arrows, projectile weapons, and Magic Balls with their hands and wielded melee or thrown weapons. Any arrow, projectile weapon or magic ball blocked is nullified.</div><div class="e"><span class="en">Heal</span> <span class="em">LTP · 1/Life · (ex) · Spirit · Touch</span><br><i class="ei">“The white light of healing hath healed thee." x5”</i> Target player heals a wound.</div></div>
+</div></div>
+<div class="sheet"><div class="card martial">
+  <div class="hd"><span class="cn">Paladin</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Support tank; defense &amp; healing.</span></div>
+  <div class="strip"><b>Armor</b> 4 pts &nbsp;·&nbsp; <b>Shields</b> Large &nbsp;·&nbsp; <b>Weapons</b> All Melee, Javelins &nbsp;·&nbsp; <b>Garb</b> Metallic gold sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Awe 1/Life (m)</div>
+  <div class="sum"><b>Traits:</b> Immune to Command, Immune to Death. <b>Look&nbsp;The&nbsp;Part:</b> Awe.</div>
+  <div class="body"><div class="e"><span class="en">Immune to Command</span> <span class="em">Trait · Command</span><br>Always on: unaffected by abilities from the Command School. Cannot be removed; needs no incantation.</div><div class="e"><span class="en">Immune to Death</span> <span class="em">Trait · Death</span><br>Always on: unaffected by abilities from the Death School. Cannot be removed; needs no incantation.</div><div class="e"><span class="en">Awe</span> <span class="em">LTP · 1/Life · (m) · Command · 20'</span><br><i class="ei">“I command thee awed" x3”</i> Target may not attack or cast Magical abilities at the caster or their carried equipment. Target must remain at least 20' away from the caster unless forced there by another Forced Movement effect. Lasts 30 seconds. <span class="el">Note: If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated. This is a Forced Movement effect.</span></div></div>
+</div><div class="card martial">
+  <div class="hd"><span class="cn">Scout</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Versatile support &amp; control; mobility.</span></div>
+  <div class="strip"><b>Armor</b> 3 pts &nbsp;·&nbsp; <b>Shields</b> Small &nbsp;·&nbsp; <b>Weapons</b> Dagger, Short, Long, Heavy Thrown, Bow &nbsp;·&nbsp; <b>Garb</b> Green sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Heal 1/Life (ex)</div>
+  <div class="sum"><b>Get:</b> Tracking. <b>Look&nbsp;The&nbsp;Part:</b> Heal.</div>
+  <div class="body"><div class="e"><span class="en">Tracking</span> <span class="em">2/Life Charge x3 · (ex) · Ambulant · Sorcery · 20'</span><br><i class="ei">“Tracking" x3”</i> Target Insubstantial player immediately has their Insubstantial effect ended.</div><div class="e"><span class="en">Heal</span> <span class="em">LTP · 1/Life · (ex) · Spirit · Touch</span><br><i class="ei">“The white light of healing hath healed thee." x5”</i> Target player heals a wound.</div></div>
+</div></div>
+<div class="sheet"><div class="card martial">
+  <div class="hd"><span class="cn">Warrior</span><span class="bd">Martial · Lvl 1</span>
+    <span class="ro">Durable frontline; resilience &amp; disruption.</span></div>
+  <div class="strip"><b>Armor</b> 6 pts &nbsp;·&nbsp; <b>Shields</b> Large &nbsp;·&nbsp; <b>Weapons</b> All Melee, Javelins &nbsp;·&nbsp; <b>Garb</b> Purple sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> Insult 1/Life (m)</div>
+  <div class="sum"><b>Get:</b> Harden. <b>Look&nbsp;The&nbsp;Part:</b> Insult.</div>
+  <div class="body"><div class="e"><span class="en">Harden</span> <span class="em">1/Life · (ex) · Protection · Other</span><br><i class="ei">“I enchant thee with Harden" x3”</i> Bearer's wielded weapons or shield may only be destroyed or damaged by Magic Balls/Verbals which destroy objects e.g. Fireball or Pyrotechnics. <span class="el">Limits: Will only affect either the weapons or the shield of the bearer, not both.</span></div><div class="e"><span class="en">Insult</span> <span class="em">LTP · 1/Life · (m) · Ambulant · Command · 20'</span><br><i class="ei">“I command thy attention" x3”</i> Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies. If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the     offending party as well. <span class="el">Note: The target may still charge and throw Magic Balls at the caster.</span></div></div>
+</div><div class="card magic">
+  <div class="hd"><span class="cn">Bard</span><span class="bd">Magic User · Lvl 1</span>
+    <span class="ro">Battlefield control; buff allies, hinder foes.</span></div>
+  <div class="strip"><b>Armor</b> None &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> Dagger, Magic Staff &nbsp;·&nbsp; <b>Garb</b> Light blue sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> +1 magic point at highest level</div>
+  <div class="sum">You have <b>5 magic points</b> — buy any 1st-level abilities below (cost in pts). <b>Look&nbsp;The&nbsp;Part:</b> +1 point at highest level.</div>
+  <div class="body"><div class="e"><span class="en">Confidence</span> <span class="em">1pt · 1/Refresh Charge x5 · Sorcery · Other</span><br><i class="ei">“My power grants thee confidence”</i> Target player may instantly Charge a single ability. <span class="el">Limits: May not be used within 20' of a living enemy.</span></div><div class="e"><span class="en">Equipment: Weapon, Short</span> <span class="em">2pt · -</span><br>May wield one Short weapon at a time for each instance purchased (but may carry extras).</div><div class="e"><span class="en">Experienced</span> <span class="em">2pt · - · Neutral</span><br>A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed. <span class="el">Limits: Verbal must be 4th level or lower.</span></div><div class="e"><span class="en">Insult</span> <span class="em">1pt · 1/Life · Command · 20'</span><br><i class="ei">“I command thy attention" x3”</i> Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies. If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the     offending party as well. <span class="el">Note: The target may still charge and throw Magic Balls at the caster.</span></div><div class="e"><span class="en">Release</span> <span class="em">1pt · 1/Life · Sorcery · Touch</span><br><i class="ei">“From thy bindings thou art released" x5”</i> A single Ongoing Effect or State is removed from the target. Casters choice. <span class="el">Limits: Cannot remove Cursed. When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended.</span></div><div class="e"><span class="en">Shove</span> <span class="em">1pt · 1/Life · Sorcery · 20'</span><br><i class="ei">“My power shoves thee" x3”</i> Target player is moved back 20' in a straight line away from the caster. Works on Stopped players. If the caster is the target, the caster may choose the direction they move. <span class="el">Note: This is a Forced Movement effect.</span></div><div class="e"><span class="en">Song of Determination</span> <span class="em">1pt · Unlimited · Protection · Self</span><br><i class="ei">“I sing of my unwavering determination”</i> Bearer is Immune to Command. Bearer must Chant "Song of Determination" or sing a song regarding their determination. Singing in place of the normal Chant is still a Chant and must follow all Chant rules.</div></div>
+</div></div>
+<div class="sheet"><div class="card magic">
+  <div class="hd"><span class="cn">Druid</span><span class="bd">Magic User · Lvl 1</span>
+    <span class="ro">Versatile support &amp; fighting; empower/hinder.</span></div>
+  <div class="strip"><b>Armor</b> None &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> Dagger, Magic Staff &nbsp;·&nbsp; <b>Garb</b> Brown sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> +1 magic point at highest level</div>
+  <div class="sum">You have <b>5 magic points</b> — buy any 1st-level abilities below (cost in pts). <b>Look&nbsp;The&nbsp;Part:</b> +1 point at highest level.</div>
+  <div class="body"><div class="e"><span class="en">Barkskin</span> <span class="em">1pt · 1/Refresh Charge x10 · Protection · Other</span><br><i class="ei">“I enchant thee with barkskin" x3”</i> Bearer gains one point of Magic Armor.</div><div class="e"><span class="en">Entangle</span> <span class="em">1pt · 2 Balls / Unlimited · Subdual</span><br><i class="ei">“The strength of earth is mine to evoke" x3”</i> Target is Stopped for 60 seconds. Engulfing.</div><div class="e"><span class="en">Equipment: Weapon, Short</span> <span class="em">2pt · -</span><br>May wield one Short weapon at a time for each instance purchased (but may carry extras).</div><div class="e"><span class="en">Experienced</span> <span class="em">2pt · - · Neutral</span><br>A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed. <span class="el">Limits: Verbal must be 4th level or lower.</span></div><div class="e"><span class="en">Heat Weapon</span> <span class="em">1pt · 1/Life Charge x3 · Flame · 20'</span><br><i class="ei">“I call upon flame to heat that [type of weapon]" x3”</i> Target weapon may not be wielded for 30 seconds. Players who are Immune to Flame may continue to wield the weapon. <span class="el">Note: The equipment, not the person, is the target of Heat Weapon. The equipment is the only thing required to be within range and visible for this ability to affect it.</span></div><div class="e"><span class="en">Imbue Armor</span> <span class="em">1pt · 1/Life · Protection · Other</span><br><i class="ei">“I enchant thee with Imbued Armor" x3”</i> Armor worn by the bearer gains 1 Armor Point to its current and maximum rating in each location, up to the bearer's class maximum. <span class="el">Limits: Does not apply to Magic Armor. A player may only benefit from one instance of Imbue Armor.</span> <span class="el">Note: When this enchantment is removed, the bearer loses 1 current and maximum Armor Point in each location.</span></div><div class="e"><span class="en">Mend</span> <span class="em">1pt · 1/Life · Sorcery · Touch</span><br><i class="ei">“I make this item whole again" x5”</i> Destroyed or damaged item is repaired, or one point of armor in one location is repaired.</div></div>
+</div><div class="card magic">
+  <div class="hd"><span class="cn">Healer</span><span class="bd">Magic User · Lvl 1</span>
+    <span class="ro">Support &amp; protection; restore/fortify allies.</span></div>
+  <div class="strip"><b>Armor</b> None &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> Dagger, Magic Staff &nbsp;·&nbsp; <b>Garb</b> Red sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> +1 magic point at highest level</div>
+  <div class="sum">You have <b>5 magic points</b> — buy any 1st-level abilities below (cost in pts). <b>Look&nbsp;The&nbsp;Part:</b> +1 point at highest level.</div>
+  <div class="body"><div class="e"><span class="en">Banish</span> <span class="em">1pt · 1/Life · Spirit · 20'</span><br><i class="ei">“The spirits banish thee from this place" x3”</i> Target Insubstantial player must return to their base where their Insubstantial State immediately ends. <span class="el">Note: The target's Insubstantial State is replaced with a new Insubstantial State from Banish. If the Insubstantial State is ended before reaching the base, the rest of the effect is ended as well. If Banish is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial. This is a Forced Movement effect.</span></div><div class="e"><span class="en">Blessing Against Wounds</span> <span class="em">1pt · 1/Life · Protection · Other</span><br><i class="ei">“I enchant thee against wounds" x3”</i> Resistant to wounds. Does not count towards a players Enchantment limit. <span class="el">Limits: May not be worn with any other Enchantments from the Protection School unless the other Enchantment is (ex).</span></div><div class="e"><span class="en">Equipment: Shield, Small</span> <span class="em">2pt · -</span><br>May wield a Small shield (but may carry extras).</div><div class="e"><span class="en">Equipment: Weapon, Short</span> <span class="em">3pt · -</span><br>May wield one Short weapon at a time for each instance purchased (but may carry extras).</div><div class="e"><span class="en">Experienced</span> <span class="em">2pt · - · Neutral</span><br>A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed. <span class="el">Limits: Verbal must be 4th level or lower.</span></div><div class="e"><span class="en">Harden</span> <span class="em">1pt · 1/Refresh · Protection · Other</span><br><i class="ei">“I enchant thee with Harden" x3”</i> Bearer's wielded weapons or shield may only be destroyed or damaged by Magic Balls/Verbals which destroy objects e.g. Fireball or Pyrotechnics. <span class="el">Limits: Will only affect either the weapons or the shield of the bearer, not both.</span></div><div class="e"><span class="en">Heal</span> <span class="em">1pt · Unlimited · Spirit · Touch</span><br><i class="ei">“The white light of healing hath healed thee." x5”</i> Target player heals a wound.</div><div class="e"><span class="en">Release</span> <span class="em">1pt · 2/Life Charge x3 · Sorcery · Touch</span><br><i class="ei">“From thy bindings thou art released" x5”</i> A single Ongoing Effect or State is removed from the target. Casters choice. <span class="el">Limits: Cannot remove Cursed. When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended.</span></div></div>
+</div></div>
+<div class="sheet"><div class="card magic">
+  <div class="hd"><span class="cn">Wizard</span><span class="bd">Magic User · Lvl 1</span>
+    <span class="ro">Ranged offense &amp; battlefield control.</span></div>
+  <div class="strip"><b>Armor</b> None &nbsp;·&nbsp; <b>Shields</b> None &nbsp;·&nbsp; <b>Weapons</b> Dagger, Magic Staff &nbsp;·&nbsp; <b>Garb</b> Yellow sash &nbsp;·&nbsp; <b>Look&nbsp;The&nbsp;Part</b> +1 magic point at highest level</div>
+  <div class="sum">You have <b>5 magic points</b> — buy any 1st-level abilities below (cost in pts). <b>Look&nbsp;The&nbsp;Part:</b> +1 point at highest level.</div>
+  <div class="body"><div class="e"><span class="en">Banish</span> <span class="em">1pt · 1/Life · Spirit · 20'</span><br><i class="ei">“The spirits banish thee from this place" x3”</i> Target Insubstantial player must return to their base where their Insubstantial State immediately ends. <span class="el">Note: The target's Insubstantial State is replaced with a new Insubstantial State from Banish. If the Insubstantial State is ended before reaching the base, the rest of the effect is ended as well. If Banish is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial. This is a Forced Movement effect.</span></div><div class="e"><span class="en">Equipment: Weapon, Short</span> <span class="em">2pt · -</span><br>May wield one Short weapon at a time for each instance purchased (but may carry extras).</div><div class="e"><span class="en">Experienced</span> <span class="em">2pt · - · Neutral</span><br>A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency. This Verbal must be determined before the game begins and cannot be changed. <span class="el">Limits: Verbal must be 4th level or lower.</span></div><div class="e"><span class="en">Force Barrier</span> <span class="em">1pt · 1/Life · Sorcery · Self</span><br><i class="ei">“I shall not be harmed”</i> Player is Frozen for 10 seconds.</div><div class="e"><span class="en">Force Bolt</span> <span class="em">1pt · 3 Balls / Unlimited · Sorcery</span><br><i class="ei">“Forcebolt" x3”</i> Force Bolt will have one of the following effects on the object first struck: 1. A weapon hit is destroyed 2. Armor hit with Armor Points remaining is subject to Armor Breaking. 3. A player hit receives a wound to that hit location.</div><div class="e"><span class="en">Heat Weapon</span> <span class="em">1pt · 1/Life · Flame · 20'</span><br><i class="ei">“I call upon flame to heat that [type of weapon]" x3”</i> Target weapon may not be wielded for 30 seconds. Players who are Immune to Flame may continue to wield the weapon. <span class="el">Note: The equipment, not the person, is the target of Heat Weapon. The equipment is the only thing required to be within range and visible for this ability to affect it.</span></div><div class="e"><span class="en">Mend</span> <span class="em">1pt · 1/Life · Sorcery · Touch</span><br><i class="ei">“I make this item whole again" x5”</i> Destroyed or damaged item is repaired, or one point of armor in one location is repaired.</div><div class="e"><span class="en">Shove</span> <span class="em">1pt · 1/Life Charge x3 · Sorcery · 20'</span><br><i class="ei">“My power shoves thee" x3”</i> Target player is moved back 20' in a straight line away from the caster. Works on Stopped players. If the caster is the target, the caster may choose the direction they move. <span class="el">Note: This is a Forced Movement effect.</span></div></div>
+</div></div>
