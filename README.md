@@ -58,6 +58,12 @@ Actionable markdown conversion of the **Amtgard Rules of Play, Version 8** (V8.7
 
 > The book's Index (printed p. 84) is intentionally omitted — it is a page-number index of the print edition, superseded by this file and the ability index.
 
+## Copyright & Attribution
+
+Copyright © 2014–2025 **Amtgard International**. All rights reserved. "Amtgard" and "Amtgard Rules of Play" are trademarks of Amtgard International ([amtgard.com](https://www.amtgard.com)).
+
+This repository restructures the Amtgard Rules of Play (V8.7 "Soupy") into markdown. It was prepared by Avery W. Krouse as an Amtgard International volunteer under a Copyright Work for Hire and Transfer Agreement; all rights in the work product belong to Amtgard International. See [`LICENSE`](LICENSE) for reproduction terms. In any conflict, the official rulebook at [amtgard.com](https://www.amtgard.com) is authoritative.
+
 ## Regenerating
 
 - `scripts/gen_abilities.py --write` — regenerate the 180 ability files from the PDF.
