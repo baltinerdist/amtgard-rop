@@ -141,6 +141,10 @@ def readme():
              "Copyright Work for Hire and Transfer Agreement; all rights in the work product belong "
              "to Amtgard International. See [`LICENSE`](LICENSE) for reproduction terms. In any "
              "conflict, the official rulebook at [amtgard.com](https://www.amtgard.com) is authoritative.\n")
+    o.append("## Interactive Viewer\n")
+    o.append("- [`viewer/amtgard-rules-viewer.html`](viewer/amtgard-rules-viewer.html) \u2014 the whole "
+             "rulebook as a single offline, cross-linked page: 250 pages, 3,087 inline links, "
+             "search, deep links and both themes. See [`viewer/README.md`](viewer/README.md).\n")
     o.append("## Regenerating\n")
     o.append("- `scripts/gen_abilities.py --write` — regenerate the 180 ability files from the PDF.\n"
              "- `scripts/gen_indexes.py` — regenerate this README and the ability index.\n"
@@ -148,7 +152,9 @@ def readme():
              "(body text, class availability, spell-table completeness, counts).\n"
              "- `scripts/verify_prose.py` — token-multiset check of the prose and class files.\n"
              "- `scripts/lint_corpus.py` — structural lint: frontmatter, titles, page offsets, "
-             "source notes, links, page coverage.\n")
+             "source notes, links, page coverage.\n"
+             "- `scripts/build_viewer_data.py` then `scripts/build_viewer.py` — rebuild the "
+             "interactive viewer from the markdown.\n")
     return "\n".join(o) + "\n"
 
 with open(os.path.join(ROOT, "README.md"), "w") as f:

@@ -65,6 +65,10 @@ Copyright © 2014–2025 **Amtgard International**. All rights reserved. "Amtgar
 
 This repository restructures the Amtgard Rules of Play (V8.7 "Soupy") into markdown. It was prepared by Avery W. Krouse as an Amtgard International volunteer under a Copyright Work for Hire and Transfer Agreement; all rights in the work product belong to Amtgard International. See [`LICENSE`](LICENSE) for reproduction terms. In any conflict, the official rulebook at [amtgard.com](https://www.amtgard.com) is authoritative.
 
+## Interactive Viewer
+
+- [`viewer/amtgard-rules-viewer.html`](viewer/amtgard-rules-viewer.html) — the whole rulebook as a single offline, cross-linked page: 250 pages, 3,087 inline links, search, deep links and both themes. See [`viewer/README.md`](viewer/README.md).
+
 ## Regenerating
 
 - `scripts/gen_abilities.py --write` — regenerate the 180 ability files from the PDF.
@@ -72,4 +76,5 @@ This repository restructures the Amtgard Rules of Play (V8.7 "Soupy") into markd
 - `scripts/verify_abilities.py` — check the ability files against the PDF (body text, class availability, spell-table completeness, counts).
 - `scripts/verify_prose.py` — token-multiset check of the prose and class files.
 - `scripts/lint_corpus.py` — structural lint: frontmatter, titles, page offsets, source notes, links, page coverage.
+- `scripts/build_viewer_data.py` then `scripts/build_viewer.py` — rebuild the interactive viewer from the markdown.
 

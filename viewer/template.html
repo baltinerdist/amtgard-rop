@@ -1,0 +1,1361 @@
+<title>Amtgard Rules of Play V8.7 &mdash; cross-linked viewer</title>
+
+<style>
+/* Every text token clears 4.5:1 on all three grounds (paper / surface / sunk) and every
+   non-text indicator clears 3:1, in both themes - see scratchpad/validate_palette.py.
+   --line stays a soft decorative divider; --edge is the >=3:1 boundary for controls that
+   have nothing but a 1px border to identify them (search field, buttons, pills, popup). */
+:root{
+  --paper:#E7ECEC; --surface:#FBFCFC; --sunk:#DCE4E3;
+  --ink:#16211F; --muted:#46514F; --faint:#5A6765;
+  --line:#C9D5D3; --line-soft:#DBE4E2; --edge:#718280;
+  --accent:#2C7A6B; --accent-ink:#1B564A; --accent-wash:#C9E2DB;
+  --flame:#AE4028; --sorcery:#376A9B; --death:#7A3B4E; --subdual:#476F87;
+  --protection:#37765C; --command:#845C1D; --spirit:#63619B; --neutral:#6B7876;
+  /* Class sash colours, verbatim from each class's **Garb:** line in the rulebook.
+     Metallics (Anti-Paladin silver, Paladin gold) carry -hi/-lo for a sheen gradient;
+     achromatics (Barbarian white, Assassin black, Wizard yellow) carry a -ring so they
+     stay visible against this theme's ground. */
+  --class-anti-paladin:#8E979E; --class-anti-paladin-hi:#C6CDD2; --class-anti-paladin-lo:#6C757B;
+  --class-archer:#C2600F; --class-assassin:#17171A; --class-barbarian:#FFFFFF;
+  --class-barbarian-ring:rgba(0,0,0,.34); --class-wizard-ring:rgba(0,0,0,.22);
+  --class-bard:#3E92C8; --class-druid:#7A5230; --class-healer:#BF2E28; --class-monk:#79838A;
+  --class-paladin:#AE8410; --class-paladin-hi:#DCC169; --class-paladin-lo:#7E5F08;
+  --class-scout:#2E7D32; --class-warrior:#6A3D9A; --class-wizard:#E5BC10;
+  --display:"Iowan Old Style","Charter","Palatino Linotype",Palatino,Georgia,serif;
+  --body:ui-sans-serif,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --r:4px;
+  /* measured height of the sticky topbar, republished by a ResizeObserver. The bar wraps to
+     two or three rows on a phone (~135px at 400px wide), so every offset that has to clear it
+     - drawer inset, sticky rails, scroll-margin - reads this instead of a 53px guess. */
+  --topbar-h:53px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0E1517; --surface:#151F21; --sunk:#0A1012;
+    --ink:#DCE6E4; --muted:#93A4A1; --faint:#7C8E8B;
+    --line:#243230; --line-soft:#1C2827; --edge:#5E6F6B;
+    --accent:#54B4A0; --accent-ink:#8AD5C5; --accent-wash:#1A3B34;
+    --flame:#D9705A; --sorcery:#6FA3D2; --death:#C1798D; --subdual:#7FAEC4;
+    --protection:#5FAE8B; --command:#CFA054; --spirit:#9A97D6; --neutral:#8B9997;
+    /* same sashes, re-pitched for the dark ground; black gets the ring here instead of white */
+    --class-anti-paladin:#BAC2C8; --class-anti-paladin-hi:#E6EBEE; --class-anti-paladin-lo:#8C949A;
+    --class-archer:#E5791F; --class-assassin:#26262C; --class-barbarian:#F5F5F1;
+    --class-assassin-ring:rgba(255,255,255,.42); --class-barbarian-ring:rgba(0,0,0,.28);
+    --class-bard:#7FC3EA; --class-druid:#A4744B; --class-healer:#E35046; --class-monk:#98A2A8;
+    --class-paladin:#DDB63D; --class-paladin-hi:#F6E4A4; --class-paladin-lo:#A5831E;
+    --class-scout:#4BA750; --class-warrior:#9E6ED4; --class-wizard:#F2CE2E;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1517; --surface:#151F21; --sunk:#0A1012;
+  --ink:#DCE6E4; --muted:#93A4A1; --faint:#7C8E8B;
+  --line:#243230; --line-soft:#1C2827; --edge:#5E6F6B;
+  --accent:#54B4A0; --accent-ink:#8AD5C5; --accent-wash:#1A3B34;
+  --flame:#D9705A; --sorcery:#6FA3D2; --death:#C1798D; --subdual:#7FAEC4;
+  --protection:#5FAE8B; --command:#CFA054; --spirit:#9A97D6; --neutral:#8B9997;
+  /* same sashes, re-pitched for the dark ground; black gets the ring here instead of white */
+  --class-anti-paladin:#BAC2C8; --class-anti-paladin-hi:#E6EBEE; --class-anti-paladin-lo:#8C949A;
+  --class-archer:#E5791F; --class-assassin:#26262C; --class-barbarian:#F5F5F1;
+  --class-assassin-ring:rgba(255,255,255,.42); --class-barbarian-ring:rgba(0,0,0,.28);
+  --class-bard:#7FC3EA; --class-druid:#A4744B; --class-healer:#E35046; --class-monk:#98A2A8;
+  --class-paladin:#DDB63D; --class-paladin-hi:#F6E4A4; --class-paladin-lo:#A5831E;
+  --class-scout:#4BA750; --class-warrior:#9E6ED4; --class-wizard:#F2CE2E;
+}
+:root[data-theme="light"]{
+  --paper:#E7ECEC; --surface:#FBFCFC; --sunk:#DCE4E3;
+  --ink:#16211F; --muted:#46514F; --faint:#5A6765;
+  --line:#C9D5D3; --line-soft:#DBE4E2; --edge:#718280;
+  --accent:#2C7A6B; --accent-ink:#1B564A; --accent-wash:#C9E2DB;
+  --flame:#AE4028; --sorcery:#376A9B; --death:#7A3B4E; --subdual:#476F87;
+  --protection:#37765C; --command:#845C1D; --spirit:#63619B; --neutral:#6B7876;
+  /* Class sash colours, verbatim from each class's **Garb:** line in the rulebook.
+     Metallics (Anti-Paladin silver, Paladin gold) carry -hi/-lo for a sheen gradient;
+     achromatics (Barbarian white, Assassin black, Wizard yellow) carry a -ring so they
+     stay visible against this theme's ground. */
+  --class-anti-paladin:#8E979E; --class-anti-paladin-hi:#C6CDD2; --class-anti-paladin-lo:#6C757B;
+  --class-archer:#C2600F; --class-assassin:#17171A; --class-barbarian:#FFFFFF;
+  --class-barbarian-ring:rgba(0,0,0,.34); --class-wizard-ring:rgba(0,0,0,.22);
+  --class-bard:#3E92C8; --class-druid:#7A5230; --class-healer:#BF2E28; --class-monk:#79838A;
+  --class-paladin:#AE8410; --class-paladin-hi:#DCC169; --class-paladin-lo:#7E5F08;
+  --class-scout:#2E7D32; --class-warrior:#6A3D9A; --class-wizard:#E5BC10;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+     font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+/* available to assistive tech, invisible on screen */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.skip{position:fixed;left:8px;top:-70px;z-index:60;background:var(--surface);color:var(--ink);
+      border:1px solid var(--accent);border-radius:var(--r);padding:9px 15px;text-decoration:none;
+      font-size:13.5px;transition:top .12s}
+.skip:focus{top:8px}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:264px minmax(0,1fr) 244px;
+     grid-template-rows:auto 1fr;min-height:100vh;
+     grid-template-areas:"top top top" "rail doc meta"}
+.topbar{grid-area:top;position:sticky;top:0;z-index:20;background:var(--surface);
+        border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;
+        padding:10px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:9px;font-family:var(--display);
+       font-size:17px;letter-spacing:.01em;white-space:nowrap}
+.brand b{font-weight:600}
+.brand .v{font-family:var(--mono);font-size:10px;letter-spacing:.09em;
+          text-transform:uppercase;color:var(--faint)}
+
+/* ---------- trail ---------- */
+.trail{display:flex;align-items:center;gap:5px;flex:1 1 320px;min-width:0;overflow-x:auto;
+       scrollbar-width:none;padding:2px 0}
+.trail::-webkit-scrollbar{display:none}
+.trail-lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--faint);white-space:nowrap;padding-right:2px}
+.tstep{font-family:var(--mono);font-size:11px;background:transparent;border:1px solid var(--edge);
+       color:var(--muted);padding:3px 8px;border-radius:99px;white-space:nowrap;cursor:pointer;
+       display:inline-block;text-decoration:none;
+       transition:color .12s,border-color .12s}
+.tstep:hover{color:var(--ink);border-color:var(--accent)}
+.tstep[aria-current="page"]{background:var(--accent-wash);border-color:var(--accent);color:var(--accent-ink)}
+.tsep{color:var(--faint);font-size:10px;flex:none}
+.tclear{border-color:transparent;color:var(--faint);padding:3px 7px;margin-left:2px;line-height:1}
+.tclear:hover{color:var(--ink);border-color:var(--edge)}
+
+.tools{display:flex;align-items:center;gap:8px;margin-left:auto}
+.search{position:relative}
+#q{font-family:var(--mono);font-size:12.5px;background:var(--paper);color:var(--ink);
+   border:1px solid var(--edge);border-radius:var(--r);padding:6px 10px;width:210px}
+#q::placeholder{color:var(--faint)}
+.iconbtn{background:transparent;border:1px solid var(--edge);color:var(--muted);cursor:pointer;
+         border-radius:var(--r);padding:5px 9px;font-family:var(--mono);font-size:11px}
+.iconbtn:hover{color:var(--ink);border-color:var(--accent)}
+#railtoggle{display:none}
+
+.results{position:absolute;top:calc(100% + 6px);right:0;width:330px;max-height:60vh;overflow:auto;
+         background:var(--surface);border:1px solid var(--edge);border-radius:var(--r);
+         box-shadow:0 12px 32px rgba(0,0,0,.16);z-index:40}
+.results:empty{display:none}
+.res{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:2px 8px;
+     padding:7px 11px;cursor:pointer;border:0;
+     background:transparent;width:100%;text-align:left;color:var(--ink);font-size:14px;font-family:var(--body)}
+/* why this page matched: the sentence it matched in, with the term marked. Without it a
+   body hit is an unexplained title - "neck" returning Armor / Combat Rules / Magic Items. */
+.sn{grid-column:1/-1;font-size:12px;line-height:1.35;color:var(--muted);
+    overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sn mark{background:transparent;color:var(--accent-ink);font-weight:600;
+         text-decoration:underline;text-underline-offset:2px}
+.res:hover .sn,.res[aria-selected="true"] .sn{color:var(--ink)}
+.rempty,.rmore{padding:9px 11px;font-size:13px;color:var(--muted);line-height:1.4}
+.rempty b{color:var(--ink);font-weight:600}
+.rmore{border-top:1px solid var(--line-soft);font-family:var(--mono);font-size:10.5px;
+       letter-spacing:.06em;color:var(--faint)}
+/* Which row the arrow keys are on cannot rest on a 1.2:1 tint: the wash is backed by a 3px
+   --accent bar (4.98:1 light / 6.73:1 dark against the popup) so the selected row is
+   identifiable at any contrast setting. Hover keeps the tint alone - it is a pointer
+   affordance, not the keyboard selection. */
+.res:hover{background:var(--accent-wash)}
+.res[aria-selected="true"]{background:var(--accent-wash);
+        box-shadow:inset 3px 0 0 var(--accent);padding-left:14px}
+.res .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+        color:var(--faint);margin-left:auto;white-space:nowrap}
+/* --faint is tuned for the three page grounds, not for the wash - the eyebrow on a
+   highlighted row moves up to --muted (6.03:1 light / 4.69:1 dark on the wash). */
+.res:hover .k,.res[aria-selected="true"] .k{color:var(--muted)}
+
+/* ---------- rail ---------- */
+.rail{grid-area:rail;border-right:1px solid var(--line);background:var(--surface);
+      padding:16px 6px 40px 16px;overflow-y:auto;max-height:calc(100vh - var(--topbar-h));
+      position:sticky;top:var(--topbar-h)}
+/* dismiss surface behind the mobile drawer - nothing else closed it */
+.scrim{display:none}
+.grp{margin-bottom:18px}
+.nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.nav a{display:block;text-decoration:none;color:var(--muted);font-size:13.5px;padding:2.5px 8px;
+       border-left:2px solid transparent;border-radius:0 var(--r) var(--r) 0;line-height:1.4}
+.nav a:hover{color:var(--ink);background:var(--sunk)}
+.nav a[aria-current="page"]{color:var(--accent-ink);border-left-color:var(--accent);
+                            background:var(--accent-wash);font-weight:500}
+.nav a.seed{font-family:var(--display);font-size:15.5px}
+/* class colour: one token per class, resolved once into --cls and then consumed wherever a
+   class identifies itself - the rail entry, the page sash and the "Available to" dot. Ten of
+   the twelve used to fall back to generic accent because only Archer and Wizard had tokens. */
+[data-c="anti-paladin"]{--cls:var(--class-anti-paladin)}
+[data-c="archer"]{--cls:var(--class-archer)}
+[data-c="assassin"]{--cls:var(--class-assassin)}
+[data-c="barbarian"]{--cls:var(--class-barbarian)}
+[data-c="bard"]{--cls:var(--class-bard)}
+[data-c="druid"]{--cls:var(--class-druid)}
+[data-c="healer"]{--cls:var(--class-healer)}
+[data-c="monk"]{--cls:var(--class-monk)}
+[data-c="paladin"]{--cls:var(--class-paladin)}
+[data-c="scout"]{--cls:var(--class-scout)}
+[data-c="warrior"]{--cls:var(--class-warrior)}
+[data-c="wizard"]{--cls:var(--class-wizard)}
+/* (0,3,1) beats .nav a[aria-current="page"], so a class keeps its own colour on the rail
+   even while it is the current page - the wash and weight already carry "you are here". */
+/* The rail stripe IS the class's sash, so it is drawn as a bar rather than a hairline
+   border: thick enough to read as a colour, ringed where the sash is white/black/yellow
+   (which would otherwise vanish into one ground or the other), and given a vertical
+   sheen where the book calls the sash "metallic". */
+.nav a.seed[data-c]{border-left-color:transparent;position:relative}
+.nav a.seed[data-c]::before{
+  content:"";position:absolute;left:-2px;top:2px;bottom:2px;width:7px;border-radius:4px;
+  background:var(--cls,transparent);
+  box-shadow:inset 0 0 0 1px var(--ring,transparent)}
+.nav a.seed[data-c="anti-paladin"]::before,
+.nav a.seed[data-c="paladin"]::before,
+.sash[data-c="anti-paladin"],.sash[data-c="paladin"]{
+  background-image:linear-gradient(160deg,var(--hi) 0%,var(--cls) 46%,var(--lo) 100%)}
+[data-c="anti-paladin"]{--hi:var(--class-anti-paladin-hi);--lo:var(--class-anti-paladin-lo)}
+[data-c="paladin"]{--hi:var(--class-paladin-hi);--lo:var(--class-paladin-lo)}
+[data-c="barbarian"]{--ring:var(--class-barbarian-ring)}
+[data-c="assassin"]{--ring:var(--class-assassin-ring)}
+[data-c="wizard"]{--ring:var(--class-wizard-ring)}
+
+/* ---------- doc ---------- */
+.doc{grid-area:doc;padding:34px 40px 96px;min-width:0}
+article{max-width:66ch;margin-inline:auto}
+.eyebrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}
+.kind{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+      color:var(--faint)}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(30px,4.4vw,42px);line-height:1.1;
+   margin:0 0 10px;text-wrap:balance;letter-spacing:-.012em}
+.sash{width:44px;height:6px;border-radius:3px;background:var(--accent);margin:0 0 22px}
+.sash[data-c]{background:var(--cls,var(--accent));
+              box-shadow:inset 0 0 0 1px var(--ring,transparent)}
+.lede{color:var(--muted);font-size:15px;margin:-2px 0 22px}
+
+article h2,article h3,article h4,article h5{font-family:var(--display);font-weight:600;
+     line-height:1.25;text-wrap:balance;margin:30px 0 10px;
+     scroll-margin-top:calc(var(--topbar-h) + 14px)}
+article h2{font-size:23px} article h3{font-size:19px} article h4{font-size:16.5px}
+article p{margin:0 0 13px}
+article ul,article ol{margin:0 0 13px;padding-left:22px}
+article li{margin:3px 0}
+article li>ul,article li>ol{margin:4px 0 2px}
+article blockquote{margin:16px 0;padding:11px 15px;background:var(--sunk);
+                   border-left:2px solid var(--accent);border-radius:0 var(--r) var(--r) 0;
+                   color:var(--muted);font-size:14.5px}
+article code{font-family:var(--mono);font-size:.87em;background:var(--sunk);
+             padding:1px 4px;border-radius:3px}
+.tw{overflow-x:auto;margin:0 0 18px;border:1px solid var(--line-soft);border-radius:var(--r)}
+/* A seven-column spell list has no business inside the 66ch prose measure: it laid out in
+   586px inside an 807px column, so "Equipment: Weapon, Short" wrapped while Cost and Max
+   held one character each. The table stays centred on the prose column and widens into the
+   whole doc column, capped at 92ch. Container units, so the cap is the column and not the
+   viewport - the two rails are not the table's to use. */
+@supports (width:1cqw){
+  .doc{container-type:inline-size}
+  article>.tw{--twmax:min(100cqw,92ch);width:var(--twmax);
+              margin-inline:calc((100% - var(--twmax))/2)}
+}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 11px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+/* tabular-nums only pays off when the quantity columns actually line up */
+th.num,td.num{text-align:right}
+th.mid,td.mid{text-align:center}
+th{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+   color:var(--faint);font-weight:500;background:var(--sunk);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--accent-wash)}
+
+/* inline cross-links - the core affordance */
+a.xl{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;
+     text-decoration-thickness:1px;
+     text-decoration-color:color-mix(in srgb,var(--accent) 28%,transparent);
+     transition:background .12s,text-decoration-color .12s}
+a.xl:hover{background:var(--accent-wash);text-decoration-color:var(--accent)}
+/* the clause you deep-linked to: a persistent accent rule, not a 1.6s wash that times out
+   before a screen reader or a slow reader has arrived. Cleared on the next navigation. */
+article .anchored{border-left:3px solid var(--accent);padding-left:11px;margin-left:-14px}
+@media (max-width:760px){article .anchored{margin-left:0}}
+/* Made Easy callouts */
+blockquote.made{border-left-color:var(--command)}
+.mlabel{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+        text-transform:uppercase;color:var(--command);margin-bottom:6px}
+/* rail groups - the summary carries an h2 so the nav can be walked group to group */
+.grp>summary{list-style:none;cursor:pointer;color:var(--faint);
+             margin:0 0 7px;display:flex;gap:6px;align-items:center;padding:2px 0}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary:hover{color:var(--ink)}
+.grp>summary h2{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+                text-transform:uppercase;color:inherit;font-weight:500;margin:0;
+                display:flex;gap:6px;align-items:center;flex:1 1 auto;min-width:0}
+/* the count is the only thing that says Abilities holds 181 pages - it was painted in the
+   border token at 1.26:1. A --sunk pill, like .hub b, reads as a quantity. */
+.grp>summary .n{color:var(--faint);font-size:10px;margin-left:auto;margin-right:8px;
+                background:var(--sunk);border-radius:99px;padding:0 6px;
+                font-variant-numeric:tabular-nums}
+.grp>summary::before{content:"+";font-size:11px;width:9px;color:var(--faint)}
+.grp[open]>summary::before{content:"\2212"}
+h2.secmark,h3.secmark,h4.secmark{scroll-margin-top:calc(var(--topbar-h) + 14px)}
+
+/* ability stat block */
+/* One label system for the whole ability card. dl.stat used to be a boxed table with filled
+   --sunk label cells on an auto column; .field is an unfilled 96px column. That put the two
+   halves of the same card on two different vertical rules 46px apart. Both now share the
+   96px mono label column and the same hairline rows, so the eye runs straight down from
+   TYPE to NOTE. */
+dl.stat{display:grid;grid-template-columns:96px 1fr;margin:0}
+dl.stat dt,dl.stat dd{margin:0;border-top:1px solid var(--line-soft)}
+dl.stat dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--faint);padding:15px 14px 11px 0}
+dl.stat dd{font-size:14px;padding:11px 0 11px 14px}
+/* the stat labels are links (Type / School / Range reach their definitions); keep the label
+   shape and give the underline enough weight to be visible at 9.5px */
+dl.stat dt a.xl{text-decoration-color:color-mix(in srgb,var(--accent) 60%,transparent)}
+.field{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:11px 0;
+       border-top:1px solid var(--line-soft)}
+.flabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+        color:var(--faint);padding-top:4px}
+.fval>p:last-child,.fval>ul:last-child,.fval>ol:last-child{margin-bottom:0}
+
+/* prev / next within a rail group */
+.pnav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:34px 0 0;
+      border-top:1px solid var(--line-soft);padding-top:14px}
+.pn{text-decoration:none;color:var(--muted);border:1px solid var(--edge);border-radius:var(--r);
+    padding:8px 11px;display:flex;flex-direction:column;gap:2px;min-width:0;
+    transition:border-color .12s,color .12s}
+.pn:empty{border:0}
+a.pn:hover{color:var(--ink);border-color:var(--accent)}
+.pn:last-child{text-align:right}
+.pl{font-family:var(--mono);font-size:9px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--faint)}
+.pt{font-size:13.5px;line-height:1.3}
+
+/* ---------- meta rail ---------- */
+.meta{grid-area:meta;border-left:1px solid var(--line);padding:34px 18px 60px;
+      overflow-y:auto;max-height:calc(100vh - var(--topbar-h));position:sticky;
+      top:var(--topbar-h);font-size:13px}
+.mblock{margin-bottom:22px}
+/* the block heading needs to outrank the fold-group labels below it, which share its type */
+.mblock h3{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+           color:var(--faint);margin:0 0 8px;font-weight:500;
+           border-bottom:1px solid var(--line-soft);padding-bottom:5px}
+.mlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.mlist a{color:var(--muted);text-decoration:none;font-size:13px;line-height:1.35;
+         display:block;padding:1px 0}
+.mlist a:hover{color:var(--accent-ink)}
+/* A backlink wall is a finding aid, not a paragraph: group it by what the entries are, put a
+   count on each group, and keep a group of sixty folded until it is asked for. */
+.bgrp{margin:0 0 2px}
+.bgrp>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;
+              font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+              color:var(--faint);padding:4px 0}
+.bgrp>summary::-webkit-details-marker{display:none}
+.bgrp>summary::before{content:"+";font-size:11px;width:9px;flex:none}
+.bgrp[open]>summary::before{content:"\2212"}
+.bgrp>summary:hover{color:var(--ink)}
+.bgrp>summary .n{margin-left:auto;background:var(--sunk);border-radius:99px;padding:0 6px;
+                 font-size:10px;font-variant-numeric:tabular-nums}
+.bgrp .mlist{padding:2px 0 8px 15px}   /* line up entries under the group label, not its marker */
+/* "nothing points here" is a fact about the graph - it must not look like a missing feature */
+.mnote{margin:0;color:var(--faint);font-size:12px;line-height:1.45}
+.src{font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.65}
+.src b{color:var(--muted);font-weight:400}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;
+      border:1px solid var(--edge);border-radius:99px;padding:2px 8px;color:var(--muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--neutral);flex:none}
+.dot[data-c]{background:var(--cls,var(--neutral))}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+/* school chip: the same dot the meta rail uses, inside the School cell of every class spell
+   list, so a sixty-row table can be scanned for a school by colour instead of read line by
+   line. The name is always spelled out - colour is never the only carrier. */
+.schip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.schip .dot[data-school="flame"]{background:var(--flame)}
+.schip .dot[data-school="sorcery"]{background:var(--sorcery)}
+.schip .dot[data-school="death"]{background:var(--death)}
+.schip .dot[data-school="subdual"]{background:var(--subdual)}
+.schip .dot[data-school="protection"]{background:var(--protection)}
+.schip .dot[data-school="command"]{background:var(--command)}
+.schip .dot[data-school="spirit"]{background:var(--spirit)}
+.schip .dot[data-school="neutral"]{background:var(--neutral)}
+.av{display:flex;flex-wrap:wrap;gap:5px}
+.av a{text-decoration:none}
+/* cost / max / frequency, one row per class that can buy the ability */
+.buys{display:flex;flex-direction:column;gap:9px}
+.buy{border-left:2px solid var(--line);padding-left:9px}
+.bcls{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;
+      letter-spacing:.05em;color:var(--muted);text-decoration:none}
+a.bcls:hover{color:var(--accent-ink)}
+.bnum{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:3px;font-family:var(--mono);
+      font-size:12px;color:var(--ink);font-variant-numeric:tabular-nums}
+.bfreq{margin-top:2px;font-size:12px;line-height:1.4;color:var(--muted)}
+
+/* ---------- faceted ability index (abilities overview) ---------- */
+.facet{margin:0 0 26px}
+.fgrp{margin:0 0 16px}
+.fgrp h3{margin:0 0 6px}
+.flist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+/* max-content, not a fixed width: the same rule serves "1st" and "Specialty Arrow", and grid
+   sizing is per-list so every row inside one facet still lines up */
+.flist li{margin:0;font-size:14px;line-height:1.5;display:grid;
+          grid-template-columns:max-content max-content minmax(0,1fr);gap:8px;align-items:baseline}
+.flist li>b{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+            font-weight:400;color:var(--faint);white-space:nowrap}
+.ixn{font-family:var(--mono);font-size:10px;color:var(--faint);text-align:right;
+     font-variant-numeric:tabular-nums}
+@media (max-width:560px){
+  .flist li{grid-template-columns:1fr;gap:1px}
+  .ixn{text-align:left}
+}
+
+/* ---------- home ---------- */
+.missing{max-width:70ch;margin:0 0 26px;padding:12px 15px;background:var(--sunk);
+         border-left:2px solid var(--flame);border-radius:0 var(--r) var(--r) 0;
+         font-size:13.5px;color:var(--muted)}
+.missing b{display:block;color:var(--ink);font-weight:600;margin-bottom:3px}
+.missing code{font-family:var(--mono);font-size:.9em;background:var(--surface);
+              padding:1px 4px;border-radius:3px}
+.hero{max-width:70ch}
+.hero p.big{font-size:17px;color:var(--muted);margin:0 0 26px}
+.seeds{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:0 0 30px}
+.seedcard{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+          padding:16px 17px;color:inherit;display:block;position:relative;
+          border-top:3px solid var(--accent);transition:border-color .14s,transform .14s}
+.seedcard:hover{transform:translateY(-2px)}
+.seedcard h3{font-family:var(--display);font-size:22px;margin:0 0 4px;font-weight:600}
+.seedcard h3 a{text-decoration:none}
+/* the heading link owns the accessible name; the whole card stays clickable */
+.seedcard h3 a::after{content:"";position:absolute;inset:0;border-radius:var(--r)}
+.seedcard p{margin:0 0 10px;font-size:13.5px;color:var(--muted)}
+.count{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+       color:var(--faint)}
+.statrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
+         background:var(--line-soft);border:1px solid var(--line-soft);border-radius:var(--r);
+         overflow:hidden;margin:0 0 28px}
+.stat1{background:var(--surface);padding:12px 14px}
+.stat1 .n{font-family:var(--display);font-size:26px;line-height:1;display:block;
+          font-variant-numeric:tabular-nums}
+.stat1 .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+          color:var(--faint);margin-top:5px;display:block}
+.hubs{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 8px}
+.hub{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-size:13.5px;
+     border:1px solid var(--edge);border-radius:99px;padding:4px 6px 4px 12px;color:var(--muted);
+     transition:border-color .12s,color .12s}
+.hub:hover{color:var(--ink);border-color:var(--accent)}
+.hub b{font-family:var(--mono);font-size:10.5px;font-weight:400;background:var(--sunk);
+       color:var(--faint);border-radius:99px;padding:2px 7px;font-variant-numeric:tabular-nums}
+kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--edge);border-bottom-width:2px;
+    border-radius:3px;padding:1px 5px;background:var(--surface)}
+.note{font-size:13.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:13px;
+      margin:26px 0 0;max-width:62ch}
+
+@media (max-width:1080px){
+  .app{grid-template-columns:230px minmax(0,1fr);
+       grid-template-areas:"top top" "rail doc" "rail meta"}
+  .meta{border-left:0;border-top:1px solid var(--line);position:static;max-height:none;
+        padding-top:20px}
+  .meta .mblock{max-width:66ch}
+  /* Below 1080px the meta rail is a full-width row under the article, so a 102-name backlink
+     list became 2,200px of one-per-line scrolling after the rule it belongs to. Flow the link
+     lists into as many ~200px columns as fit (one column on a phone, three on a tablet). */
+  .meta .mlist.cols{display:block;columns:200px 3;column-gap:26px}
+  .meta .mlist.cols li{break-inside:avoid}
+  /* 66ch is the measure for prose; a column of five-word titles is not prose, and capping it
+     there costs a whole column */
+  .meta .mblock.wide{max-width:none}
+}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "doc" "meta"}
+  /* visibility (not just transform) so the closed drawer leaves the tab order and the
+     accessibility tree - 250 links must not be focusable off the left edge of the screen */
+  .rail{position:fixed;inset:var(--topbar-h) auto 0 0;width:270px;z-index:30;
+        transform:translateX(-100%);
+        visibility:hidden;transition:transform .2s,visibility .2s;max-height:none;
+        height:calc(100vh - var(--topbar-h));box-shadow:0 0 40px rgba(0,0,0,.22)}
+  /* visible immediately on open (so focus can land inside), hidden only after the slide out */
+  .rail.open{transform:none;visibility:visible;transition:transform .2s,visibility 0s}
+  .scrim{display:block;position:fixed;inset:var(--topbar-h) 0 0 0;z-index:25;
+         background:rgba(6,12,13,.46);opacity:0;pointer-events:none;transition:opacity .2s}
+  .scrim.on{opacity:1;pointer-events:auto}
+  #railtoggle{display:block}
+  .doc{padding:24px 18px 70px}
+  .meta{padding:20px 18px 50px}
+  .results{width:min(330px,calc(100vw - 36px))}
+  .trail{order:3;flex-basis:100%}
+  .pnav{grid-template-columns:1fr}
+  .pn:last-child{text-align:left}
+  /* the bar wraps to three rows here, and the 18px flex gap was paying twice for it; the
+     40px controls below then cost nothing net in bar height */
+  .topbar{row-gap:6px;padding:8px 14px}
+  /* touch targets: a rulebook read one-handed at a park. 26.7px rail rows stacked 26px apart
+     put every ability one mis-tap from its neighbour. */
+  .nav a{padding:11px 10px}
+  .nav a.seed{padding:10px 10px}
+  .iconbtn{padding:8px 13px;min-height:40px}
+  #q{width:150px;min-height:40px;padding:9px 11px;font-size:13px}
+  .tstep{padding:6px 10px}
+  .grp>summary{padding:8px 0}
+  .bgrp>summary{padding:9px 0}
+  .mlist a{padding:6px 0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <a class="skip" id="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="brand"><b>Rules of Play</b><span class="v">V8.7 &middot; viewer</span></div>
+    <nav class="trail" id="trail" aria-label="Path followed, most recent nine pages"></nav>
+    <div class="tools">
+      <button class="iconbtn" id="railtoggle" aria-expanded="false" aria-controls="rail">Index</button>
+      <div class="search">
+        <input id="q" type="search" placeholder="Search  /" autocomplete="off"
+               aria-label="Search rules" role="combobox" aria-expanded="false" aria-controls="results"
+               aria-autocomplete="list" aria-haspopup="listbox" aria-keyshortcuts="/">
+        <div class="results" id="results" role="listbox" aria-label="Search results"></div>
+      </div>
+      <button class="iconbtn" id="theme">Theme</button>
+    </div>
+    <div class="vh" id="srstatus" role="status" aria-live="polite"></div>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Index"></nav>
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <main class="doc" id="main" tabindex="-1"><article id="doc"></article></main>
+  <aside class="meta" id="meta" aria-label="Page details"></aside>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(function(){
+"use strict";
+const DATA  = JSON.parse(document.getElementById("data").textContent);
+const PAGES = DATA.pages;
+const BY    = Object.fromEntries(PAGES.map(p => [p.id, p]));
+const HOME  = "home";
+
+const SCHOOL = {Flame:"flame",Sorcery:"sorcery",Death:"death",Subdual:"subdual",
+                Protection:"protection",Command:"command",Spirit:"spirit",Neutral:"neutral"};
+
+const el = (t,c,x) => { const n=document.createElement(t); if(c)n.className=c;
+                        if(x!==undefined)n.textContent=x; return n; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+
+/* ---------------- index rail ---------------- */
+// Groups the reader collapsed by hand stay collapsed - navigation must not re-inflate a
+// 181-item list they just closed.
+const userClosed = new Set();
+let railProgrammatic = false;
+function buildRail(){
+  const rail = document.getElementById("rail");
+  rail.innerHTML = "";
+  const home = el("div","grp grp-home");
+  const ha = el("a",null,"Overview"); ha.href="#"+HOME; ha.dataset.id=HOME; ha.className="seed";
+  const hl = el("ul","nav"), hli = el("li"); hli.appendChild(ha); hl.appendChild(hli);
+  home.appendChild(hl); rail.appendChild(home);
+
+  DATA.groupOrder.forEach(g => {
+    const items = PAGES.filter(p => p.group===g);
+    if(!items.length) return;
+    const box = el("details","grp"); box.dataset.group = g;
+    if(items.length <= 30) box.open = true;
+    box.addEventListener("toggle",()=>{
+      if(railProgrammatic) return;
+      if(box.open) userClosed.delete(g); else userClosed.add(g);
+    });
+    // heading semantics inside the nav landmark, so a reader can jump group to group
+    // instead of arrowing through 250 links; the bare count gets a spoken unit.
+    const sum = el("summary"), gh = el("h2");
+    gh.appendChild(el("span",null,g));
+    const cnt = el("span","n",String(items.length));
+    cnt.appendChild(el("span","vh", items.length===1 ? " page" : " pages"));
+    gh.appendChild(cnt);
+    sum.appendChild(gh);
+    box.appendChild(sum);
+    const ul = el("ul","nav");
+    items.forEach(p => {
+      const li = el("li"), a = el("a",null,p.title);
+      a.href = "#"+p.id; a.dataset.id = p.id;
+      if(p.kind==="class") a.className="seed";   // all twelve, not the two prototype ids
+      // every class carries its own colour on the rail entry, not just the two that had tokens
+      if(p.kind==="class") a.dataset.c = p.title.toLowerCase();
+      li.appendChild(a); ul.appendChild(li);
+    });
+    box.appendChild(ul); rail.appendChild(box);
+  });
+}
+
+/* ---------------- trail ---------------- */
+let trail = [HOME], currentId = null;   // Overview is the root of every path
+const stepLabel = id => id===HOME ? "Overview" : (BY[id] ? BY[id].title : id);
+function pushTrail(id){
+  currentId = id;
+  // Overview is a normal step, and the root of every path: arriving there truncates the
+  // trail back to it, which doubles as "clear the path".
+  const at = trail.indexOf(id);
+  if(at>=0) trail = trail.slice(0,at+1); else trail.push(id);
+  if(trail.length>9) trail = trail.slice(-9);
+  renderTrail();
+}
+function renderTrail(){
+  const t = document.getElementById("trail");
+  t.innerHTML = "";
+  // Never show a path that does not contain where the reader actually is, and do not
+  // announce a one-step "path" - there is nothing to retrace.
+  if(trail.length<2 || trail.indexOf(currentId)<0){ syncTopbarH(); return; }
+  t.appendChild(el("span","trail-lab","Path"));
+  trail.forEach((id,i) => {
+    if(i) t.appendChild(el("span","tsep","\u203a"));
+    // real links: they belong in the links list, open in a new tab, and reuse the one
+    // delegated navigation handler instead of a second per-element one.
+    const b = el("a","tstep",stepLabel(id));
+    b.href = "#"+id; b.dataset.id = id;
+    if(id===currentId) b.setAttribute("aria-current","page");
+    t.appendChild(b);
+  });
+  const clr = el("button","tstep tclear","\u00d7");
+  clr.type="button";
+  clr.title="Clear the path"; clr.setAttribute("aria-label","Clear the path");
+  clr.addEventListener("click",()=>{ trail = currentId ? [currentId] : []; renderTrail(); });
+  t.appendChild(clr);
+  t.scrollLeft = t.scrollWidth;
+  // the trail is what wraps the topbar onto a third row on a phone - republish the height
+  // synchronously rather than waiting for the observer's next delivery
+  syncTopbarH();
+}
+
+/* ---------------- meta rail ---------------- */
+function linkList(ids){
+  const ul = el("ul","mlist cols");
+  ids.forEach(id => {
+    const p = BY[id]; if(!p) return;
+    const li = el("li"), a = el("a",null,p.title);
+    a.href = "#"+id; a.dataset.id = id;
+    li.appendChild(a); ul.appendChild(li);
+  });
+  return ul;
+}
+function metaBlock(title,node,cls){
+  const b = el("div","mblock"+(cls?" "+cls:""));
+  b.appendChild(el("h3",null,title)); b.appendChild(node); return b;
+}
+// A folding sub-group inside a meta block: label, count, list. Long groups start closed so a
+// 102-entry backlink wall cannot push everything below it off the bottom of the rail.
+function foldGroup(label,ids,open){
+  const d = el("details","bgrp"), s = el("summary");
+  s.appendChild(el("span",null,label));
+  const n = el("span","n",String(ids.length));
+  n.appendChild(el("span","vh", ids.length===1 ? " entry" : " entries"));
+  s.appendChild(n);
+  d.appendChild(s);
+  d.open = !!open;
+  d.appendChild(linkList(ids));
+  return d;
+}
+// "Finger of Death" (an ability) and "Introduction" (a prose page) rendered identically in one
+// alphabetical column. Bucket by what the entries are, in a fixed order so the rail's shape is
+// stable page to page.
+const KINDLAB = [["ability","Abilities"],["class","Classes"],["term","Terms"],["page","Rules"]];
+function groupedLinks(ids){
+  const wrap = el("div");
+  const seen = new Set();
+  KINDLAB.forEach(([kind,label]) => {
+    const part = ids.filter(id => BY[id] && BY[id].kind===kind);
+    part.forEach(id => seen.add(id));
+    if(!part.length) return;
+    wrap.appendChild(foldGroup(label,part,part.length<=12));
+  });
+  const rest = ids.filter(id => BY[id] && !seen.has(id));
+  if(rest.length) wrap.appendChild(foldGroup("Other",rest,rest.length<=12));
+  return wrap;
+}
+// An empty block is information: twelve pages genuinely have nothing pointing at them, and a
+// vanished heading is indistinguishable from a feature that did not render.
+function metaListBlock(title,ids,empty){
+  return ids.length ? metaBlock(title+" ("+ids.length+")", groupedLinks(ids), "wide")
+                    : metaBlock(title, el("p","mnote",empty));
+}
+// A class page already presents its spells in six level-organised tables with cost, frequency,
+// type, school and range. Re-listing all sixty alphabetically in the rail adds nothing; the
+// level grouping at least makes it a jump list.
+function classAbilityBlocks(p){
+  const wrap = document.createDocumentFragment();
+  const cls = p.title.toLowerCase(), byLevel = new Map(), other = [];
+  p.links.forEach(id => {
+    const t = BY[id];
+    if(!t || t.kind!=="ability"){ other.push(id); return; }
+    let lvl = null;
+    (t.purchase||[]).forEach(r => {
+      if(r && String(r.cls||"").toLowerCase()===cls && r.level!=null) lvl = Number(r.level);
+    });
+    if(lvl===null) (t.avail||[]).forEach(v => {
+      const m = String(v).match(/^(.*?)\s+(\d+)$/);
+      if(m && m[1].toLowerCase()===cls) lvl = Number(m[2]);
+    });
+    if(lvl===null || !isFinite(lvl)){ other.push(id); return; }
+    if(!byLevel.has(lvl)) byLevel.set(lvl,[]);
+    byLevel.get(lvl).push(id);
+  });
+  const levels = [...byLevel.keys()].sort((a,b)=>a-b);
+  const total = levels.reduce((s,l)=>s+byLevel.get(l).length,0);
+  if(total){
+    const box = el("div");
+    levels.forEach(l => box.appendChild(foldGroup(ord(l)+" level", byLevel.get(l), false)));
+    wrap.appendChild(metaBlock("Abilities by level ("+total+")", box, "wide"));
+  }
+  wrap.appendChild(metaListBlock("Also references", other,
+    "This page links out only to its own abilities."));
+  return wrap;
+}
+function ord(n){
+  const s = ["th","st","nd","rd"], v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+// "How much does Fireball cost a Wizard, how many may they carry, how often may they throw it"
+// is the single most-asked question at a reeve's table, and it was readable only by opening the
+// class page and finding the row. cost/max are often null (archetype and trait grants are not
+// purchased) and frequency is not always bare notation - "Infernal: 2 Balls / Unlimited (m)" -
+// so every part is rendered only when the builder actually supplied it.
+function purchaseBlock(rows){
+  const wrap = el("div","buys");
+  let shown = 0;
+  rows.forEach(r => {
+    if(!r) return;
+    const cost = r.cost==null ? "" : String(r.cost),
+          max  = r.max==null  ? "" : String(r.max),
+          freq = r.frequency==null ? "" : String(r.frequency);
+    if(!cost && !max && !freq) return;          // nothing beyond what "Available to" already says
+    shown++;
+    const row = el("div","buy");
+    const cls = String(r.cls||""), target = "class:"+cls.toLowerCase();
+    const head = BY[target] ? el("a","bcls") : el("span","bcls");
+    if(BY[target]){ head.href="#"+target; head.dataset.id=target; }
+    const d = el("span","dot"); d.dataset.c = cls.toLowerCase();
+    head.appendChild(d);
+    head.appendChild(el("span",null,cls+(r.level!=null?" "+ord(Number(r.level))+" level":"")));
+    row.appendChild(head);
+    if(cost || max){
+      const n = el("div","bnum");
+      if(cost) n.appendChild(el("span",null,"Cost "+cost));
+      if(max)  n.appendChild(el("span",null,"Max "+max));
+      row.appendChild(n);
+    }
+    if(freq) row.appendChild(el("div","bfreq",freq));
+    wrap.appendChild(row);
+  });
+  return shown ? metaBlock("Cost and frequency ("+shown+")",wrap) : document.createDocumentFragment();
+}
+function renderMeta(p){
+  const m = document.getElementById("meta");
+  m.innerHTML = "";
+  if(!p){
+    m.appendChild(metaBlock("About", el("p","src",
+      "The complete Amtgard Rules of Play V8.7, one page per rule, class, ability and defined "+
+      "term. Cross-links are applied to every occurrence, so you can enter anywhere and follow "+
+      "the rules outward.")));
+    m.appendChild(metaBlock("Keys", el("p","src",
+      "/ search \u00b7 arrow keys pick a result \u00b7 Esc closes \u00b7 browser back retraces your path")));
+    return; }
+
+  if(p.kind==="ability" && p.avail.length){
+    const wrap = el("div","av");
+    p.avail.forEach(a => {
+      const cls = a.replace(/\s+\d+$/,""), lvl = a.match(/\d+$/);
+      const target = "class:"+cls.toLowerCase();
+      const node = BY[target] ? el("a","chip") : el("span","chip");
+      const d = el("span","dot");
+      d.dataset.c = cls.toLowerCase();   // CSS resolves --cls; unknown names fall back to --neutral
+      node.appendChild(d);
+      node.appendChild(el("span",null,cls+" "+(lvl?lvl[0]:"")));
+      if(BY[target]){ node.href="#"+target; node.dataset.id=target; }
+      wrap.appendChild(node);
+    });
+    m.appendChild(metaBlock("Available to",wrap));
+  }
+  if(p.school || p.atype){
+    const wrap = el("div","chips");
+    if(p.atype){ const c=el("span","chip"); c.appendChild(el("span",null,p.atype)); wrap.appendChild(c); }
+    if(p.school){
+      const c=el("span","chip"), d=el("span","dot");
+      d.style.background = "var(--"+(SCHOOL[p.school]||"neutral")+")";
+      c.appendChild(d); c.appendChild(el("span",null,p.school)); wrap.appendChild(c);
+    }
+    m.appendChild(metaBlock("Classification",wrap));
+  }
+  // Provenance is what makes this viewer checkable against the printed book, and it used to
+  // sit last - under a 102-name backlink column, 3,000px down a rail in an 895px viewport.
+  // It is now always on screen with the eyebrow.
+  // The builder ships a preformatted citation ("printed pp. 9-11 \u00b7 PDF pp. 12-14",
+  // "printed page unnumbered \u00b7 PDF p. 2", "~" where the page was interpolated). Building the
+  // string here instead is what produced "printed p. 9-11" and "printed p. unnumbered"; older
+  // builds without the field fall back to the raw numbers.
+  const src = el("p","src");
+  const prov = p.prov || [p.printed?"printed p. "+p.printed:"", p.pdf?"PDF p. "+p.pdf:""]
+                          .filter(Boolean).join(" \u00b7 ");
+  src.innerHTML = "<b>Source</b><br>"+esc(p.file)+(prov?"<br>"+esc(prov):"");
+  m.appendChild(metaBlock("Provenance",src));
+
+  // Ability economics: what it costs, how many you may hold, how often it fires. These are the
+  // numbers reeves are actually asked about, and they lived only in the class tables.
+  if(p.purchase && p.purchase.length) m.appendChild(purchaseBlock(p.purchase));
+
+  if(p.headings && p.headings.length>2){
+    const ul = el("ul","mlist");
+    // level 4 headings carry working anchors too - dropping them hid 24 sections
+    p.headings.filter(h=>h.level<=4).forEach(h => {
+      const li=el("li"), a=el("a",null,h.text);
+      a.href="#"+p.id+"$"+h.slug; a.dataset.id=p.id+"$"+h.slug;
+      if(h.level>2) a.style.paddingLeft = ((h.level-2)*10)+"px";
+      li.appendChild(a); ul.appendChild(li);
+    });
+    m.appendChild(metaBlock("On this page",ul));
+  }
+  if(p.children && p.children.length) m.appendChild(metaBlock("Defines",linkList(p.children)));
+  if(p.parent) m.appendChild(metaBlock("Defined in",linkList([p.parent])));
+
+  if(p.kind==="class") m.appendChild(classAbilityBlocks(p));
+  else m.appendChild(metaListBlock("Links to", p.links,
+         "This page does not link out to another rule."));
+
+  // The builder separates "an ability that inflicts this state" from "a page that mentions
+  // it"; those are different questions and were one undifferentiated list.
+  const inf = p.inflictedBy || [];
+  const men = p.mentionedBy || p.backlinks;
+  if(inf.length) m.appendChild(metaBlock("Inflicted by ("+inf.length+")",groupedLinks(inf),"wide"));
+  m.appendChild(metaListBlock("Referenced by", men,
+    "No other page links here yet."));
+}
+
+/* ---------------- pages ---------------- */
+function renderHome(missing){
+  const doc = document.getElementById("doc");
+  const n = g => PAGES.filter(p=>p.group===g).length;
+  const totalLinks = PAGES.reduce((s,p)=>s+(p.nlinks||0),0);
+
+  const entry = [
+    ["page:introduction","Introduction","What Amtgard is, and how to start playing."],
+    ["page:combat-rules","Combat Rules","Hit locations, wounds, death \u2014 the core loop."],
+    ["page:classes-overview","Classes","How the twelve classes work, and levels."],
+    ["page:abilities-overview","Magic & Abilities","The stat-block format every ability uses."],
+    ["page:change-log","What changed in V8.7","Every rules change in this release, by area."]
+  ].filter(e=>BY[e[0]]).map(([id,label,blurb]) =>
+    // heading outside the link: the h3s sit under the "Start here" h2 and the link's
+    // accessible name is the label alone, not label + blurb
+    '<div class="seedcard"><h3><a href="#'+id+'" data-id="'+id+'">'+esc(label)+
+    '</a></h3><p>'+esc(blurb)+'</p></div>').join("");
+
+  // the terms the rest of the book leans on, by how many pages point at them
+  const hubs = PAGES.filter(p=>p.kind==="term"||p.kind==="page")
+    .slice().sort((a,b)=>b.backlinks.length-a.backlinks.length).slice(0,10)
+    .map(p=>'<a class="hub" href="#'+p.id+'" data-id="'+p.id+'"><span>'+esc(p.title)+
+            '</span><b>'+p.backlinks.length+'<span class="vh"> '+
+            (p.backlinks.length===1?"page references":"pages reference")+
+            ' this</span></b></a>').join("");
+
+  const miss = missing
+    ? '<div class="missing" role="status"><b>No page for <code>'+esc(missing)+'</code></b>'+
+      'That address matches no page in this build &mdash; the id may have changed, or the link '+
+      'may come from an earlier version. Search below, or start from the overview.</div>'
+    : '';
+  doc.innerHTML = miss +
+    '<div class="hero"><div class="eyebrow"><span class="kind">Amtgard Rules of Play &middot; V8.7 "Soupy"</span></div>'+
+    '<h1 tabindex="-1">The whole rulebook, cross-linked</h1><div class="sash"></div>'+
+    '<p class="big">Every rule term is a link, everywhere it appears &mdash; not just the first time. '+
+    'Follow a thread from a class to an ability to the state it inflicts to the rule that defines '+
+    'that state, and the path you took stays visible along the top.</p>'+
+    '<h2>Start here</h2>'+
+    '<div class="seeds">'+entry+'</div>'+
+    '<div class="statrow">'+
+      '<div class="stat1"><span class="n">'+PAGES.length+'</span><span class="l">pages</span></div>'+
+      '<div class="stat1"><span class="n">'+n("Abilities")+'</span><span class="l">abilities</span></div>'+
+      '<div class="stat1"><span class="n">'+PAGES.filter(p=>p.kind==="term").length+
+        '</span><span class="l">defined terms</span></div>'+
+      '<div class="stat1"><span class="n">'+totalLinks.toLocaleString()+'</span><span class="l">inline links</span></div>'+
+    '</div>'+
+    '<h2>What the book leans on</h2>'+
+    '<p class="note" style="border:0;padding:0;margin-top:-4px">Ranked by how many other pages '+
+    'reference them. These are the load-bearing rules &mdash; change one and the blast radius is wide.</p>'+
+    '<div class="hubs">'+hubs+'</div>'+
+    '<p class="note">Text is verbatim from the rulebook; flavour text is omitted by design. '+
+    'Every page carries its source file and printed page number, so anything here can be checked '+
+    'against the printed book. Press <kbd>/</kbd> to search.</p></div>';
+  document.title = "Amtgard Rules of Play V8.7 \u2014 cross-linked viewer";
+  renderMeta(null);
+}
+
+// The 181-item Abilities group is unusable as a scroll list; give every page its two
+// neighbours in reading order so a group can be walked without the rail at all.
+function siblingNav(p){
+  const sibs = PAGES.filter(x => x.group===p.group);
+  const i = sibs.findIndex(x => x.id===p.id);
+  if(i<0 || sibs.length<2) return "";
+  const cell = (s,lab) => s
+    ? '<a class="pn" href="#'+esc(s.id)+'" data-id="'+esc(s.id)+'"><span class="pl">'+lab+
+      '</span><span class="pt">'+esc(s.title)+'</span></a>'
+    : '<span class="pn"></span>';
+  return '<nav class="pnav" aria-label="'+esc(p.group)+' navigation">'+
+         cell(i>0?sibs[i-1]:null,"Previous")+cell(i<sibs.length-1?sibs[i+1]:null,"Next")+'</nav>';
+}
+// Quantity columns are left-aligned by default, so a column of "1", "2", "-" never forms a
+// column at all. Tag them by header name after the HTML lands; everything else is left alone.
+const NUMCOL = /^(cost|max|level|credits|maximum points|tier)$/i;
+const MIDCOL = /^(range)$/i;
+function alignNumericColumns(root){
+  root.querySelectorAll("table").forEach(t => {
+    const ths = [...t.querySelectorAll("thead th")], cols = [];
+    ths.forEach((th,i) => {
+      const name = th.textContent.trim();
+      const cls = NUMCOL.test(name) ? "num" : MIDCOL.test(name) ? "mid" : null;
+      if(cls){ th.classList.add(cls); cols.push([i,cls]); }
+    });
+    if(!cols.length) return;
+    t.querySelectorAll("tbody tr").forEach(tr => {
+      cols.forEach(([i,cls]) => { const c = tr.children[i]; if(c) c.classList.add(cls); });
+    });
+  });
+}
+function renderPage(p){
+  const doc = document.getElementById("doc");
+  const kindLabel = p.kind==="class" ? "Class"
+                  : p.kind==="ability" ? "Ability"
+                  : p.kind==="term" ? (p.subkind||"Term") : (p.group||"Rules");
+  const c = p.kind==="class" ? p.title.toLowerCase() : "";
+  let lede = "";
+  if(p.kind==="ability" && p.avail.length)
+    // "Wizard 4 . Anti-Paladin 6" is a fragment without its label when it is spoken
+    lede = '<p class="lede"><span class="vh">Available to: </span>'+
+           esc(p.avail.join(" \u00b7 "))+'</p>';
+  doc.innerHTML = '<div class="eyebrow"><span class="kind">'+esc(kindLabel)+'</span></div>'+
+                  '<h1 tabindex="-1">'+esc(p.title)+'</h1>'+
+                  '<div class="sash"'+(c?' data-c="'+c+'"':'')+'></div>'+lede+p.html+siblingNav(p);
+  alignNumericColumns(doc);
+  document.title = p.title + " \u2014 Rules of Play";
+  renderMeta(p);
+}
+
+/* ---------------- routing ---------------- */
+// Reading position, per route, for this session. Back must return you to the sentence you
+// were on, not to the top of a 5,600px page.
+const scrollMem = new Map();
+let curRoute = null, scrollTick = 0, anchorRun = 0, anchored = null, firstRender = true;
+function saveScroll(){
+  if(curRoute!==null) scrollMem.set(curRoute, window.scrollY||window.pageYOffset||0);
+}
+window.addEventListener("scroll",()=>{
+  if(scrollTick) return;
+  scrollTick = requestAnimationFrame(()=>{ scrollTick=0; saveScroll(); });
+},{passive:true});
+
+function topbarH(){
+  const t = document.querySelector(".topbar");
+  return t ? t.getBoundingClientRect().height : 0;
+}
+// The topbar is one row at 1440px and three (~135px) at 400px, where the trail wraps onto its
+// own line. Everything that has to clear it - the drawer's top inset and height, the two
+// sticky rails, scroll-margin on every heading - reads --topbar-h, republished whenever the
+// bar changes size, instead of the 53px constant that was 82px short on a phone.
+function syncTopbarH(){
+  const h = Math.round(topbarH());
+  if(h) document.documentElement.style.setProperty("--topbar-h", h+"px");
+}
+(function(){
+  const t = document.querySelector(".topbar");
+  if(!t) return;
+  if(window.ResizeObserver) new ResizeObserver(syncTopbarH).observe(t);
+  else window.addEventListener("resize",syncTopbarH);
+  syncTopbarH();
+})();
+// Put a deep-linked heading clear of the sticky topbar, whatever height it currently is
+// (it wraps to ~135px on a phone). Re-assert a few times, because smooth scrolling is
+// silently dropped in some embedded webviews, rAF can be throttled, and a hash that
+// matches no element makes some browsers scroll to the top once after our handler runs.
+// Abandon the moment the reader scrolls themselves, or navigates again.
+function placeAnchor(target){
+  const run = ++anchorRun;
+  let tries = 0, stopped = false;
+  const evs = ["wheel","touchmove","keydown"];
+  const detach = () => evs.forEach(t => window.removeEventListener(t,cancel));
+  function cancel(){ stopped = true; detach(); }
+  evs.forEach(t => window.addEventListener(t,cancel,{passive:true}));
+  const put = () => {
+    if(stopped || run!==anchorRun){ detach(); return; }
+    const pad = topbarH() + 10;
+    const off = target.getBoundingClientRect().top - pad;
+    window.scrollTo(0, Math.max(0,(window.scrollY||window.pageYOffset||0) + off));
+    if(++tries < 8 && Math.abs(target.getBoundingClientRect().top - pad) > 4) setTimeout(put,90);
+    else detach();
+  };
+  put();
+}
+// Keep the rail's "you are here" entry visible without moving the document: the rail is its
+// own scroll container, so adjust its scrollTop rather than calling scrollIntoView.
+function revealInRail(a){
+  const rail = document.getElementById("rail");
+  if(!rail || !a) return;
+  const rr = rail.getBoundingClientRect(), ar = a.getBoundingClientRect();
+  if(!ar.height) return;
+  if(ar.top >= rr.top+6 && ar.bottom <= rr.bottom-6) return;
+  const top = (ar.top - rr.top) + rail.scrollTop;
+  rail.scrollTop = Math.max(0, top - rail.clientHeight/2 + ar.height/2);
+}
+
+/* ---------------- mobile index drawer ---------------- */
+// Below 760px the rail is an overlay: closed it is visibility:hidden (so its 250 links are
+// out of the tab order), open it takes focus, traps Tab and closes on Escape.
+const railIsDrawer = () => matchMedia("(max-width:760px)").matches;
+function railFocusables(r){
+  return [...r.querySelectorAll("a[href],summary,button")]
+         .filter(n => n.getClientRects().length);
+}
+function scrim(on){
+  const s = document.getElementById("scrim");
+  if(s) s.classList.toggle("on",!!on);
+}
+function openRail(){
+  const r = document.getElementById("rail");
+  r.classList.add("open");
+  scrim(true);
+  document.getElementById("railtoggle").setAttribute("aria-expanded","true");
+  if(railIsDrawer()){ const f = railFocusables(r)[0]; if(f) f.focus(); }
+}
+function closeRail(returnFocus){
+  const r = document.getElementById("rail"), t = document.getElementById("railtoggle");
+  const was = r.classList.contains("open");
+  r.classList.remove("open");
+  scrim(false);
+  t.setAttribute("aria-expanded","false");
+  // only the toggle and Escape hand focus back; navigation hands it to the new heading
+  if(was && returnFocus && railIsDrawer()) t.focus();
+}
+
+function go(id){
+  saveScroll();
+  if(location.hash.slice(1) === id) render(id);
+  else location.hash = id;
+}
+function render(route){
+  route = String(route);
+  const [id,anchor] = route.split("$");
+  const p = BY[id];
+  anchorRun++;                       // abandon any anchor loop still running for the old page
+  // A hash that resolves to nothing is a broken citation, not a request for the front
+  // matter: say so, and leave the address in the URL bar so it can be reported.
+  const missing = (!p && route && route!==HOME) ? route : null;
+  if(!p){
+    if(missing){
+      console.warn("Amtgard viewer: no page for "+route);
+      currentId = null; renderHome(missing); renderTrail();
+    } else {
+      renderHome(null); pushTrail(HOME);   // Overview is a step like any other
+    }
+  } else { renderPage(p); pushTrail(id); }
+  document.querySelectorAll(".rail a").forEach(a =>
+    (a.dataset.id||"").split("$")[0]===id
+      ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
+  // open the rail group holding this page - unless the reader collapsed it themselves
+  if(p && !userClosed.has(p.group)){
+    const box = document.querySelector('.grp[data-group="'+CSS.escape(p.group)+'"]');
+    if(box && !box.open){ railProgrammatic = true; box.open = true; railProgrammatic = false; }
+  }
+  revealInRail(document.querySelector('.rail a[aria-current="page"]'));
+  curRoute = route;
+  const target = anchor ? document.getElementById("sec-"+anchor) : null;
+  if(anchored){ anchored.classList.remove("anchored"); anchored = null; }
+  if(target){
+    // A persistent accent rule marks the clause until the next navigation, instead of a
+    // 1.6s ~1.2:1 wash nobody can see.
+    target.classList.add("anchored"); anchored = target;
+    placeAnchor(target);
+  } else {
+    // A route seen before this session returns to where the reader left it; a new one starts
+    // at the top. scrollRestoration stays "manual" so this stays under our control.
+    window.scrollTo(0, scrollMem.get(route) || 0);
+  }
+  closeRail(false);
+  // Focus follows the reader to the destination: without this every navigation drops focus
+  // on <body>, so a screen reader stays parked in the old page and a keyboard user restarts
+  // at tab stop zero. preventScroll keeps it clear of the scroll logic just above.
+  // On the very first render we only take focus for a deep link to a clause - otherwise the
+  // page is left as loaded, so the skip link stays the first tab stop.
+  const initial = firstRender; firstRender = false;
+  if(missing){ const qb=document.getElementById("q"); if(qb) qb.focus(); }
+  else if(!initial || target)
+    focusTarget(target || document.querySelector("#doc h1") || document.getElementById("main"));
+}
+// Move the virtual cursor and the tab position to the destination. tabIndex=-1 makes an
+// arbitrary heading focusable without adding a tab stop.
+function focusTarget(n){
+  if(!n) return;
+  if(!n.hasAttribute("tabindex")) n.tabIndex = -1;
+  try{ n.focus({preventScroll:true}); }catch(err){ n.focus(); }
+}
+window.addEventListener("hashchange",()=>render(location.hash.slice(1)||HOME));
+
+document.addEventListener("click",e=>{
+  const a = e.target.closest("a[data-id]");
+  if(!a) return;
+  // Never swallow a modified click: every one of these anchors carries a real href="#id",
+  // so Ctrl/Cmd/Shift/Alt-click and non-primary buttons must fall through to the browser
+  // and open the rule in a new tab or window.
+  if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  go(a.dataset.id);
+});
+
+/* ---------------- search ---------------- */
+const q = document.getElementById("q"), results = document.getElementById("results");
+let hits = [], cur = -1;
+const MAXHITS = 12;      // rows shown; the count of everything found is reported above them
+const BODYMIN = 3;       // below this a full-text pass matches half the book
+
+// Matching haystack: the builder ships a pre-lowered plain-text field per page. Without it we
+// strip the page's HTML once and cache it, rather than re-lowercasing 740KB per keystroke.
+const lowCache = new Map(), plainCache = new Map();
+// Same rule the builder uses for p.text: a block boundary is a word boundary, an inline tag is
+// not. textContent alone welds the blocks together, so a snippet ending at a heading read
+// "...at the caster.HardenType Enchantment" as if the rulebook said it.
+const BLOCKTAG = /<\/?(?:p|div|br|hr|li|ul|ol|dl|dt|dd|h[1-6]|table|thead|tbody|tfoot|tr|td|th|caption|blockquote|section|nav|figure|figcaption)\b[^>]*>/gi;
+function plainText(p){
+  let s = plainCache.get(p.id);
+  if(s===undefined){
+    const d = document.createElement("div");
+    d.innerHTML = String(p.html || "").replace(BLOCKTAG," ");
+    s = (d.textContent||"").replace(/\s+/g," ").trim();
+    plainCache.set(p.id,s);
+  }
+  return s;
+}
+function bodyText(p){
+  if(typeof p.text === "string") return p.text;
+  let s = lowCache.get(p.id);
+  if(s===undefined){ s = plainText(p).toLowerCase(); lowCache.set(p.id,s); }
+  return s;
+}
+// How well a body hit matches: how often, and how early. Every body hit used to score 3 and
+// tie-break on title, so "wounds" ranked Ability order first and Combat Rules last.
+function bodyStats(hay,t){
+  const first = hay.indexOf(t);
+  if(first<0) return null;
+  let n = 0, i = first;
+  while(i>=0 && n<400){ n++; i = hay.indexOf(t, i+t.length); }
+  return {n:n, first:first};
+}
+// The sentence the page matched in, with the term marked. Built from cased text and only for
+// the rows actually shown, so the cost is bounded by MAXHITS.
+function snippet(p,t){
+  const s = plainText(p);
+  if(!s) return null;
+  const i = s.toLowerCase().indexOf(t);
+  if(i<0) return null;
+  const a = Math.max(0, i-32), b = Math.min(s.length, i+t.length+68);
+  const sn = el("span","sn");
+  if(a>0) sn.appendChild(document.createTextNode("\u2026"));
+  sn.appendChild(document.createTextNode(s.slice(a,i)));
+  sn.appendChild(el("mark",null,s.slice(i,i+t.length)));
+  sn.appendChild(document.createTextNode(s.slice(i+t.length,b)));
+  if(b<s.length) sn.appendChild(document.createTextNode("\u2026"));
+  return sn;
+}
+function search(term){
+  const t = term.trim().toLowerCase();
+  results.innerHTML = ""; hits = []; cur = -1;
+  q.removeAttribute("aria-activedescendant");
+  if(!t){ collapse(); say(""); return; }
+  const scored = PAGES.map(p => {
+      const title = p.title.toLowerCase();
+      const score = title === t ? 0 : title.startsWith(t) ? 1 : title.includes(t) ? 2 : -1;
+      if(score >= 0) return {p:p, score:score, n:0, first:0, body:false};
+      // A clause heading is the reason most body pages match at all: "wounds" belongs to
+      // Combat Rules > Inflicting Wounds, and that section is where the reader should land.
+      const hs = (p.headings||[]).filter(h => String(h.text).toLowerCase().includes(t));
+      if(hs.length){
+        const best = hs.slice().sort((a,b)=>
+          a.text.toLowerCase().indexOf(t) - b.text.toLowerCase().indexOf(t) ||
+          a.text.length - b.text.length)[0];
+        return {p:p, score:2.5, n:hs.length, first:best.text.toLowerCase().indexOf(t),
+                head:best, route:p.id+"$"+best.slug, body:false};
+      }
+      // 1-2 character queries never run the full-text pass
+      if(t.length < BODYMIN) return null;
+      const st = bodyStats(bodyText(p), t);
+      return st ? {p:p, score:3, n:st.n, first:st.first, body:true} : null;
+    }).filter(Boolean)
+    .sort((a,b) => a.score - b.score || b.n - a.n || a.first - b.first ||
+                   a.p.title.localeCompare(b.p.title));
+  const total = scored.length;
+  const shown = scored.slice(0,MAXHITS);
+  hits = shown.map(x => ({p:x.p, route:x.route || x.p.id}));
+
+  // role=option children, not <button>s: a listbox whose children are buttons is reported
+  // as empty, so arrow-key selection was silent. Activation is handled from the input.
+  shown.forEach((h,i) => {
+    const p = h.p;
+    const b = el("div","res");
+    b.id = "res-"+i;
+    b.setAttribute("role","option");
+    b.setAttribute("aria-selected","false");
+    b.tabIndex = -1;
+    b.appendChild(el("span",null, h.head ? h.head.text : p.title));
+    b.appendChild(el("span","k", p.kind==="class" ? "Class"
+                               : p.kind==="ability" ? "Ability"
+                               : p.kind==="term" ? (p.subkind||"Term") : (p.group||"Rules")));
+    // why this row is here: the section's page, or the sentence the words appear in
+    if(h.head) b.appendChild(el("span","sn","in "+p.title));
+    else if(h.body){ const sn = snippet(p,t); if(sn) b.appendChild(sn); }
+    b.addEventListener("click",()=>choose(i));
+    b.addEventListener("mousemove",()=>mark(i));
+    results.appendChild(b);
+  });
+  // A query that matches nothing used to empty the popup, which .results:empty hides - so a
+  // mistyped ability name looked exactly like the panel closing on its own.
+  if(!total){
+    const e = el("div","rempty");
+    e.setAttribute("role","presentation");   // a listbox holds options; the count is said by #srstatus
+    e.appendChild(el("b",null,"No match"));
+    e.appendChild(document.createTextNode(
+      " for \u201c"+term.trim()+"\u201d \u2014 no rule, class, ability or term contains it."));
+    results.appendChild(e);
+  } else if(total > shown.length){
+    // truncation is now visible instead of silent
+    const more = el("div","rmore",
+      "+"+(total-shown.length)+" more \u2014 keep typing to narrow");
+    more.setAttribute("role","presentation");
+    results.appendChild(more);
+  }
+  // The popup only exists when there is something in it (.results:empty is display:none),
+  // so aria-expanded follows the hits, not the query string.
+  q.setAttribute("aria-expanded", hits.length ? "true" : "false");
+  say(total ? total+" result"+(total===1?"":"s")+" for "+term.trim()+
+              (total>hits.length ? ", first "+hits.length+" shown" : "")
+            : "No results for "+term.trim());
+  if(hits.length) mark(0);   // Enter has always taken the first hit - now it is also the marked one
+}
+function say(msg){
+  const s = document.getElementById("srstatus");
+  if(s) s.textContent = msg;
+}
+function collapse(){
+  results.innerHTML = "";
+  q.setAttribute("aria-expanded","false");
+  q.removeAttribute("aria-activedescendant");
+  hits = []; cur = -1;
+}
+function mark(i){
+  cur = i;
+  // only the option rows: the popup can also hold the empty-state and "+N more" notices
+  const opts = [...results.querySelectorAll('[role="option"]')];
+  opts.forEach((n,j)=>n.setAttribute("aria-selected", j===i ? "true" : "false"));
+  const n = opts[i];
+  if(!n) return;
+  q.setAttribute("aria-activedescendant", n.id);
+  // keep the marked row inside the popup's own scroller without moving the document
+  const pr = results.getBoundingClientRect(), nr = n.getBoundingClientRect();
+  if(nr.top < pr.top) results.scrollTop -= (pr.top - nr.top);
+  else if(nr.bottom > pr.bottom) results.scrollTop += (nr.bottom - pr.bottom);
+}
+function choose(i){
+  const h = hits[i];
+  if(!h) return;
+  q.value = ""; collapse(); say("");   // focus lands on the destination heading in render()
+  go(h.route);                         // a heading hit routes straight to its clause
+}
+// Escape dismisses the popup and keeps the caret in the field - it must never strand
+// focus on <body>.
+function clearSearch(){ clearTimeout(searchTimer); q.value=""; collapse(); say(""); }
+
+// One full-corpus pass per burst of typing, not one per character. Clearing the field is
+// immediate - waiting 120ms to make a popup disappear reads as lag.
+let searchTimer = 0;
+q.addEventListener("input",()=>{
+  clearTimeout(searchTimer);
+  const v = q.value;
+  if(!v.trim()){ search(v); return; }
+  searchTimer = setTimeout(()=>search(v),120);
+});
+// A key that acts on the list must never act on a stale list: run the pending pass first.
+function flushSearch(){
+  if(!searchTimer) return;
+  clearTimeout(searchTimer); searchTimer = 0; search(q.value);
+}
+q.addEventListener("keydown",e=>{
+  if(/^(ArrowDown|ArrowUp|Enter)$/.test(e.key)) flushSearch();
+  if(e.key==="ArrowDown"){ e.preventDefault(); if(hits.length) mark((cur+1)%hits.length); }
+  else if(e.key==="ArrowUp"){ e.preventDefault(); if(hits.length) mark((cur-1+hits.length)%hits.length); }
+  else if(e.key==="Enter"){ if(hits.length){ e.preventDefault(); choose(cur<0?0:cur); } }
+  else if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); clearSearch(); q.focus(); }
+});
+document.addEventListener("keydown",e=>{
+  // Do not eat Ctrl+/ or Alt+/, and never steal a slash typed into a field - Firefox's
+  // Quick Find is itself a keyboard aid.
+  if(e.key!=="/" || e.ctrlKey || e.metaKey || e.altKey) return;
+  const el0 = e.target;
+  if(el0===q || (el0 && (el0.isContentEditable ||
+     /^(INPUT|TEXTAREA|SELECT)$/.test(el0.tagName||"")))) return;
+  e.preventDefault(); q.focus(); q.select();
+});
+// Keep the caret in the field when a result is clicked: if the input blurred first, the
+// focusout handler below would empty the list before the click could land on it.
+results.addEventListener("mousedown",e=>e.preventDefault());
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".search")) collapse();
+});
+// Tabbing out of the search leaves no phantom popup behind
+document.querySelector(".search").addEventListener("focusout",e=>{
+  if(!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest(".search")) collapse();
+});
+
+/* ---------------- chrome ---------------- */
+document.getElementById("railtoggle").addEventListener("click",function(){
+  if(document.getElementById("rail").classList.contains("open")) closeRail(true);
+  else openRail();
+});
+// Tapping the page outside the drawer closes it - the drawer covers 270 of 400px, including
+// the Index button that opened it, and nothing else dismissed it.
+document.getElementById("scrim").addEventListener("click",()=>closeRail(true));
+// Escape closes the drawer and hands focus back; Tab cycles inside it while it is an overlay.
+document.addEventListener("keydown",e=>{
+  const r = document.getElementById("rail");
+  if(!r.classList.contains("open") || !railIsDrawer()) return;
+  if(e.key==="Escape"){ if(e.target===q) return; e.preventDefault(); closeRail(true); return; }
+  if(e.key!=="Tab") return;
+  const f = railFocusables(r);
+  if(!f.length) return;
+  const first = f[0], last = f[f.length-1], a = document.activeElement;
+  if(!r.contains(a)){ e.preventDefault(); (e.shiftKey?last:first).focus(); }
+  else if(e.shiftKey && a===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && a===last){ e.preventDefault(); first.focus(); }
+});
+// Skip link: the destination is in this document already, so move focus rather than let a
+// bare #main land in the router as an unknown page.
+document.getElementById("skip").addEventListener("click",e=>{
+  e.preventDefault();
+  focusTarget(document.getElementById("main"));
+  window.scrollTo(0,0);
+});
+
+/* theme: system -> dark -> light -> system, remembered across loads */
+const THEMES = ["system","dark","light"];
+const store = {
+  get(){ try{ return localStorage.getItem("ropTheme"); }catch(err){ return null; } },
+  set(v){ try{ v ? localStorage.setItem("ropTheme",v) : localStorage.removeItem("ropTheme"); }
+          catch(err){} }
+};
+function applyTheme(mode){
+  const root = document.documentElement, btn = document.getElementById("theme");
+  if(mode==="system") delete root.dataset.theme; else root.dataset.theme = mode;
+  const label = mode==="system" ? "Auto" : mode==="dark" ? "Dark" : "Light";
+  const next  = THEMES[(THEMES.indexOf(mode)+1) % THEMES.length];
+  btn.textContent = label;
+  btn.setAttribute("aria-label","Colour theme: "+label.toLowerCase()+
+                   ". Activate for "+(next==="system"?"the system setting":next)+".");
+}
+let theme = THEMES.indexOf(store.get())>=0 ? store.get() : "system";
+document.getElementById("theme").addEventListener("click",()=>{
+  theme = THEMES[(THEMES.indexOf(theme)+1) % THEMES.length];
+  store.set(theme==="system" ? null : theme);
+  applyTheme(theme);
+});
+
+if("scrollRestoration" in history) history.scrollRestoration="manual";
+document.documentElement.lang = document.documentElement.lang || "en";
+applyTheme(theme);
+buildRail();
+render(location.hash.slice(1) || HOME);
+syncTopbarH();   // the first render is what puts the trail (and its row) in the bar
+})();
+</script>
