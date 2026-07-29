@@ -1,3 +1,9 @@
 .DS_Store
 __pycache__/
 *.pyc
+
+# Source rulebook: copyrighted, not redistributed here (see LICENSE).
+# Put your own copy at the repo root to re-run the scripts.
+Amtgard Rules of Play.pdf
+# stray page-image extracts
+Amtgard Rules of Play-*.png

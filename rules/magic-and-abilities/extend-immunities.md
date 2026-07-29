@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Type of ability must be chosen at the time of casting and may not be changed. The caster may only have one instance of Extend Immunities at a time.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 67 (printed p. 64). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 64 (PDF p. 67). Flavor text omitted.*

@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** A player struck by this arrow is Stopped for 30 seconds. Engulfing.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 71 (printed p. 68). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*

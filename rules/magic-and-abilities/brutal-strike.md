@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Brutal Strike targets the wounded or dead player and does not require verbal targeting.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 64 (printed p. 61). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 61 (PDF p. 64). Flavor text omitted.*

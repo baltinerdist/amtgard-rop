@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Will always remove Enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects, or Enchantments (except Sleight of Mind).
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 65 (printed p. 62). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 62 (PDF p. 65). Flavor text omitted.*

@@ -151,7 +151,7 @@ Look the Part becomes a fourth Pinning Arrow.
 **Type:** Verbal
 **School:** Sorcery
 **Range:** Touch
-**Incantation:** "Return this <object name> to its former glory" x5
+**Incantation:** "Return this `<object name>` to its former glory" x5
 **Effect:** Will restore all armor points in one location or repair a damaged or broken item.
 
 ---

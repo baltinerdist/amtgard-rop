@@ -1,13 +1,22 @@
+---
+title: "Magic and Abilities — Index"
+section: Magic and Abilities
+printed_pages: 59-75
+pdf_pages: 62-78
+rulebook_version: V8.7 "Soupy"
+rulebook_date: 2025-07-26
+source: Amtgard Rules of Play Version 8
+---
+
 # Magic and Abilities — Index
 
-All 181 abilities from the *Magic and Abilities* section, one file each.
+All 180 abilities from the *Magic and Abilities* section, one file each.
 See [`_overview.md`](_overview.md) for the section intro and format key.
 
 ## All Abilities (alphabetical)
 
 | Ability | Available To | File |
 | --- | --- | --- |
-|  | — | [INDEX.md](INDEX.md) |
 | Abeyance | Healer 5 | [abeyance.md](abeyance.md) |
 | Adaptive Blessing | Healer 2 | [adaptive-blessing.md](adaptive-blessing.md) |
 | Adaptive Protection | Healer 3, Scout 6 | [adaptive-protection.md](adaptive-protection.md) |
@@ -122,9 +131,9 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Phoenix Tears | Warrior 6, Healer 6 | [phoenix-tears.md](phoenix-tears.md) |
 | Pinning Arrow | Archer 1, Scout 5 | [pinning-arrow.md](pinning-arrow.md) |
 | Planar Grounding | Wizard 2 | [planar-grounding.md](planar-grounding.md) |
+| Poison | Anti-Paladin 2, Assassin 1, Druid 2 | [poison.md](poison.md) |
 | Poison Arrow | Archer 1, Assassin 2 | [poison-arrow.md](poison-arrow.md) |
 | Poison Glands | Druid 5 | [poison-glands.md](poison-glands.md) |
-| Poison | Anti-Paladin 2, Assassin 1, Druid 2 | [poison.md](poison.md) |
 | Priest | Healer 6 | [priest.md](priest.md) |
 | Protection from Magic | Healer 6, Paladin 6, Wizard 6 | [protection-from-magic.md](protection-from-magic.md) |
 | Protection from Projectiles | Healer 4 | [protection-from-projectiles.md](protection-from-projectiles.md) |
@@ -146,8 +155,8 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Sever Spirit | Monk 6, Healer 2 | [sever-spirit.md](sever-spirit.md) |
 | Shadow Step | Assassin 1, Scout 3 | [shadow-step.md](shadow-step.md) |
 | Shake It Off | Warrior 5 | [shake-it-off.md](shake-it-off.md) |
-| Shatter Weapon | Wizard 3 | [shatter-weapon.md](shatter-weapon.md) |
 | Shatter | Wizard 4 | [shatter.md](shatter.md) |
+| Shatter Weapon | Wizard 3 | [shatter-weapon.md](shatter-weapon.md) |
 | Shove | Bard 1, Healer 2, Wizard 1 | [shove.md](shove.md) |
 | Silver Tongue | Bard 6 | [silver-tongue.md](silver-tongue.md) |
 | Sleight of Mind | Bard 4 | [sleight-of-mind.md](sleight-of-mind.md) |
@@ -533,3 +542,5 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 6 | Warlock | [warlock.md](warlock.md) |
 | 6 | Word of Mending | [word-of-mending.md](word-of-mending.md) |
 
+---
+*Source: Amtgard Rules of Play V8.7, printed pp. 59–75 (PDF pp. 62–78). Flavor text omitted.*

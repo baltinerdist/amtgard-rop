@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Players cannot respawn at the bearer if there are living enemy players or a game objective within 20' of the bearer.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 68 (printed p. 65). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 65 (PDF p. 68). Flavor text omitted.*

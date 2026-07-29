@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer's wielded weapons are affected as per Harden. Bearer's wielded melee weapons and any special effects delivered by them ignore magic armor and resistances that prevent wounds.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 73 (printed p. 70). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 70 (PDF p. 73). Flavor text omitted.*

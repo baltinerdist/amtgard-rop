@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Enchantments worn by the bearer, other than Sleight of Mind, are not removed by Dispel Magic or similar abilities. Does not count towards the bearer's Enchantment Limit.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 74 (printed p. 71). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 71 (PDF p. 74). Flavor text omitted.*

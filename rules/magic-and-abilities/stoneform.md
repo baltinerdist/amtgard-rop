@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Caster is Frozen. May end this State at any time by saying "The earth release me" x2.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 76 (printed p. 73). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 73 (PDF p. 76). Flavor text omitted.*

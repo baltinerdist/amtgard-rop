@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** May not be cast within 20' of a living enemy.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 78 (printed p. 75). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 75 (PDF p. 78). Flavor text omitted.*

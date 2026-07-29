@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Does not use up any purchased instances of Extension.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 62 (printed p. 59). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). Flavor text omitted.*

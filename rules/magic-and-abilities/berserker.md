@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** May not wear Armor, and lose all instances of Blood and Thunder.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 63 (printed p. 60). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*

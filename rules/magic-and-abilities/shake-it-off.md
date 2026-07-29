@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** 10 seconds after casting Shake It Off the player may remove from themselves any number of States or Ongoing Effects of their choice. Shake It Off may be cast at any time the player is alive, even while the player would otherwise be prevented from casting abilities by Stunned, Suppressed, or similar.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 74 (printed p. 71). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 71 (PDF p. 74). Flavor text omitted.*

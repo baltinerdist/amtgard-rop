@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer may cast Blink, Shadow Step, and Teleport on themselves while they are already Insubstantial, provided that they were the cause of the initial Insubstantial State and entered it voluntarily. Doing so removes the original Insubstantial effect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 77 (printed p. 74). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 74 (PDF p. 77). Flavor text omitted.*

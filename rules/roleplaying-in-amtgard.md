@@ -43,4 +43,4 @@ Just as with the other aspects of Amtgard, role-play in Amtgard is limited only 
 > Likewise, selecting someone to play a monster who is not interested in role-playing can give false hope to the role-players involved and be counter-productive. Get people who are willing to role-play to play non-player characters and Monsters in quests.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 5–5 (PDF pp. 8–8). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.7, printed p. 5 (PDF p. 8). Flavor text omitted.*

@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Cannot remove Cursed. When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 73 (printed p. 70). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 70 (PDF p. 73). Flavor text omitted.*

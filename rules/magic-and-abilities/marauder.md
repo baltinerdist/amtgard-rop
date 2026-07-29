@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Maximum Armor becomes 4pts. May not wield Large shields. Ancestral Armor is no longer chargeable.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 70 (printed p. 67). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 67 (PDF p. 70). Flavor text omitted.*

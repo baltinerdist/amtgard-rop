@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Players can only benefit from one instance of Song of Power at a time.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 75 (printed p. 72). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 72 (PDF p. 75). Flavor text omitted.*

@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Will only affect either the weapons or the shield of the bearer, not both.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 68 (printed p. 65). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 65 (PDF p. 68). Flavor text omitted.*

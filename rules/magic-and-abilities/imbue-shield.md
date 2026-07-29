@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Shield wielded by the player cannot be destroyed nor damaged. Engulfing effects hitting the wielded shield are ignored.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 69 (printed p. 66). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 66 (PDF p. 69). Flavor text omitted.*

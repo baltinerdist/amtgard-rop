@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer gains Heat Weapon 1/Refresh Charge x3 (m) and is Immune to Flame.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 67 (printed p. 64). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 64 (PDF p. 67). Flavor text omitted.*

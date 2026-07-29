@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** If cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 63 (printed p. 60). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*

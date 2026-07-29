@@ -23,7 +23,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Three yellow strips
 
-**Effect:** Bearer may cast Heal (m) by incanting "<Player> thou art made whole" and removing an enchantment strip. Enchantment is removed when the last strip is removed.
+**Effect:** Bearer may cast Heal (m) by incanting "`<Player>` thou art made whole" and removing an enchantment strip. Enchantment is removed when the last strip is removed.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 63 (printed p. 60). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*

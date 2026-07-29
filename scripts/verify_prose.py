@@ -11,8 +11,8 @@ Usage: verify_prose.py [file.md ...]  (defaults to all non-ability converted fil
 """
 import re, sys, os, glob, subprocess
 from collections import Counter
-ROOT="/Users/averykrouse/GitHub/amtgard-rop"
-PDF="/Users/averykrouse/Downloads/Amtgard Rules of Play.pdf"
+ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PDF=os.path.join(ROOT,"Amtgard Rules of Play.pdf")
 FURN=re.compile(r'^\s*(Amtgard 8\b.*|07-26-2025|\d{1,3})\s*$')
 TOK=re.compile(r"[a-z0-9][a-z0-9/.'%\"-]*")
 # words we deliberately add as structure/boilerplate (won't be in source) -> ignore as EXTRA

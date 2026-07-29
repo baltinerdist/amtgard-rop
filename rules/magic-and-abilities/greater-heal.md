@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** All wounds are healed. Ignores the Cursed State.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 68 (printed p. 65). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 65 (PDF p. 68). Flavor text omitted.*

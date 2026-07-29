@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Does not protect the bearer against Magic Balls.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 75 (printed p. 72). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 72 (PDF p. 75). Flavor text omitted.*

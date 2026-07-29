@@ -32,15 +32,12 @@ The Paladin class is designed for support and tank roles on a team, with a focus
 
 | Level | Abilities |
 |-------|-----------|
-| 1st | Immune to Command (T) |
-| 1st | Immune to Death (T) |
+| 1st | Immune to Command (T)<br>Immune to Death (T) |
 | 2nd | Greater Heal 1/Life Charge x3 (m) |
 | 3rd | Extend Immunities 1/Refresh Charge x5 (ex) |
 | 4th | Greater Resurrect 1/Life (m) |
 | 5th | Awe 1/Life (m) |
-| 6th | Protection from Magic (Touch) 2/Refresh (m) |
-| 6th | Optional – Pick one: Guardian (A) |
-| 6th | Optional – Pick one: Inquisitor (A) |
+| 6th | Protection from Magic (Touch) 2/Refresh (m)<br>Optional – Pick one:<br>Guardian (A)<br>Inquisitor (A) |
 
 ## Abilities
 

@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Target Insubstantial player immediately has their Insubstantial effect ended.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 77 (printed p. 74). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 74 (PDF p. 77). Flavor text omitted.*

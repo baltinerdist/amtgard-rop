@@ -20,4 +20,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Equipment costs are doubled. Each Verbal purchased gives double the uses. Example: 1/Life Charge x3 becomes 2/Life Charge x3, 2/Life becomes 4/Life, 1/Refresh becomes 2/Refresh.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 65 (printed p. 62). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 62 (PDF p. 65). Flavor text omitted.*

@@ -74,6 +74,7 @@ Heavy Helms must meet the requirements of at least a Tier 4 armor type. The tors
 | 4 | 5 | Light Scale, Chainmail |
 | 5 | 6 | Heavy Scale, Butted Plate (Splint, Kikko, etc) |
 | 6 | 7 | Lamellar, Laminar, Brigandine, Plate |
+| Special |  | Ambiguous Armor |
 
 ## Construction Requirements
 

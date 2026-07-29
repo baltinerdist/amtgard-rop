@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** If the target does not actually receive a wound, e.g. by a Resistance, Poison is not expended.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 71 (printed p. 68). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*

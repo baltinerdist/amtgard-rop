@@ -30,4 +30,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Does not affect (ex) abilities, abilities with a Range of Touch, nor abilities whose Range is greater than Touch but are used at a Range of Touch anyway.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 66 (printed p. 63). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 63 (PDF p. 66). Flavor text omitted.*

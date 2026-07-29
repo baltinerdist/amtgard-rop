@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** May not wield Heavy Thrown. Lose all instances of Resurrect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 71 (printed p. 68). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*

@@ -23,7 +23,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Three red strips
 
-**Effect:** Bearer may cast Destroy Armor (m) by incanting "<Player> the mists of corrosion destroy your <armor location> armor" and removing an enchantment strip. Enchantment is removed when the last strip is removed.
+**Effect:** Bearer may cast Destroy Armor (m) by incanting "`<Player>` the mists of corrosion destroy your `<armor location>` armor" and removing an enchantment strip. Enchantment is removed when the last strip is removed.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 65 (printed p. 62). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 62 (PDF p. 65). Flavor text omitted.*

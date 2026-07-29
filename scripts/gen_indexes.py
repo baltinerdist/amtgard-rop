@@ -2,8 +2,10 @@
 """Generate README.md (root navigable index) and rules/magic-and-abilities/INDEX.md
 (master ability index + by-class grouping) from the converted markdown corpus."""
 import glob, re, os
-ROOT = "/Users/averykrouse/GitHub/amtgard-rop"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MA = os.path.join(ROOT, "rules/magic-and-abilities")
+# files in the abilities directory that are not abilities
+NOT_ABILITIES = ("_overview.md", "INDEX.md")
 
 def fm(path):
     t = open(path).read()
@@ -19,15 +21,28 @@ def fm(path):
 # ---- abilities index ----
 abilities = []
 for f in sorted(glob.glob(os.path.join(MA, "*.md"))):
-    if os.path.basename(f) == "_overview.md": continue
+    if os.path.basename(f) in NOT_ABILITIES: continue
     d = fm(f)
     name = d.get("title", "")
     ca = d.get("class_availability", "[]")
     classes = re.findall(r'"([^"]+)"', ca)
     abilities.append((name, classes, os.path.basename(f)))
+# sort by ability name, not by filename slug: '-' sorts before '.', which would put
+# poison-glands.md ahead of poison.md and Shatter Weapon ahead of Shatter
+abilities.sort(key=lambda a: a[0].lower())
 
 def ability_index():
-    out = ["# Magic and Abilities — Index",
+    out = ["---",
+           'title: "Magic and Abilities — Index"',
+           "section: Magic and Abilities",
+           "printed_pages: 59-75",
+           "pdf_pages: 62-78",
+           'rulebook_version: V8.7 "Soupy"',
+           "rulebook_date: 2025-07-26",
+           "source: Amtgard Rules of Play Version 8",
+           "---",
+           "",
+           "# Magic and Abilities — Index",
            "",
            f"All {len(abilities)} abilities from the *Magic and Abilities* section, one file each.",
            "See [`_overview.md`](_overview.md) for the section intro and format key.",
@@ -50,6 +65,9 @@ def ability_index():
         for lvl, name, fn in sorted(byclass[cls]):
             out.append(f"| {lvl} | {name} | [{fn}]({fn}) |")
         out.append("")
+    out += ["---",
+            "*Source: Amtgard Rules of Play V8.7, printed pp. 59–75 (PDF pp. 62–78). "
+            "Flavor text omitted.*"]
     return "\n".join(out) + "\n"
 
 with open(os.path.join(MA, "INDEX.md"), "w") as f:
@@ -57,6 +75,7 @@ with open(os.path.join(MA, "INDEX.md"), "w") as f:
 
 # ---- root README ----
 SECTIONS = [  # (book order) label, path (relative to root)
+    ("This Rulebook Made Easy", "rules/this-rulebook-made-easy.md"),
     ("Introduction", "rules/introduction.md"),
     ("Amtgard the Organization", "rules/amtgard-the-organization.md"),
     ("Roleplaying in Amtgard", "rules/roleplaying-in-amtgard.md"),
@@ -124,7 +143,12 @@ def readme():
              "conflict, the official rulebook at [amtgard.com](https://www.amtgard.com) is authoritative.\n")
     o.append("## Regenerating\n")
     o.append("- `scripts/gen_abilities.py --write` — regenerate the 180 ability files from the PDF.\n"
-             "- `scripts/gen_indexes.py` — regenerate this README and the ability index.\n")
+             "- `scripts/gen_indexes.py` — regenerate this README and the ability index.\n"
+             "- `scripts/verify_abilities.py` — check the ability files against the PDF "
+             "(body text, class availability, spell-table completeness, counts).\n"
+             "- `scripts/verify_prose.py` — token-multiset check of the prose and class files.\n"
+             "- `scripts/lint_corpus.py` — structural lint: frontmatter, titles, page offsets, "
+             "source notes, links, page coverage.\n")
     return "\n".join(o) + "\n"
 
 with open(os.path.join(ROOT, "README.md"), "w") as f:

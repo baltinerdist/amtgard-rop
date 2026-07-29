@@ -21,9 +21,9 @@ source: Amtgard Rules of Play Version 8
 
 **Incantation:** "I command thy attention" x3
 
-**Effect:** Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies. If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the     offending party as well.
+**Effect:** Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies. If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the offending party as well.
 
 **Note:** The target may still charge and throw Magic Balls at the caster.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 69 (printed p. 66). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 66 (PDF p. 69). Flavor text omitted.*

@@ -21,7 +21,11 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Yellow Magic Ball
 
-**Effect:** A player struck is subject to an Engulfing Stopped effect for 60 seconds. In addition Lightning Bolt will have one of the following effects on the object first struck: 1. A weapon hit is destroyed 2. Armor hit with Armor Points remaining is subject to Armor Breaking. 3. A player hit receives a wound in that hit location.
+**Effect:** A player struck is subject to an Engulfing Stopped effect for 60 seconds. In addition Lightning Bolt will have one of the following effects on the object first struck:
+
+1. A weapon hit is destroyed
+2. Armor hit with Armor Points remaining is subject to Armor Breaking.
+3. A player hit receives a wound in that hit location.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 70 (printed p. 67). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 67 (PDF p. 70). Flavor text omitted.*

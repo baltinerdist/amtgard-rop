@@ -48,4 +48,4 @@ Once you've made contact with your local group there are a few next steps to sta
 5. Join in with the wider organization. Amtgard has an online presence on Facebook and Discord. These can be great resources to meet new people, learn about what is going on in the world of Amtgard, and get ideas about fighting, crafting, and anything else that might interest you.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 1–1 (PDF pp. 4–4). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.7, printed p. 1 (PDF p. 4). Flavor text omitted.*

@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Does not use up any purchased instances of Swift.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 74 (printed p. 71). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 71 (PDF p. 74). Flavor text omitted.*

@@ -20,4 +20,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Each Extension purchased gives double the uses. Example: 1/Life becomes 2/Life. Swift may not be purchased or used.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 70 (printed p. 67). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 67 (PDF p. 70). Flavor text omitted.*

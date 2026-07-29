@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** This Enchantment can be removed by Dispel Magic and similar abilities. If the Insubstantial State is ended, the rest of the effect is ended as well.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 75 (printed p. 72). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 72 (PDF p. 75). Flavor text omitted.*

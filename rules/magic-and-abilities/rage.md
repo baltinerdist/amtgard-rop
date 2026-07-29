@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Caster is unaffected by Verbal abilities and their wielded melee weapons are Shield Crushing and Armor Breaking for seven seconds. Caster must count this time out loud, audible to 50'; failure to count ends the effect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 72 (printed p. 69). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 69 (PDF p. 72). Flavor text omitted.*

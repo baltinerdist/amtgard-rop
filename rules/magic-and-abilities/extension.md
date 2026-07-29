@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Verbal becomes 50'. Only works on Verbals with a range of 20'.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 67 (printed p. 64). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 64 (PDF p. 67). Flavor text omitted.*

@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Resistant to all effects from the next source which would inflict a wound, death, State, or other negative effect. Does not trigger against effects cast by the player.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 64 (printed p. 61). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 61 (PDF p. 64). Flavor text omitted.*

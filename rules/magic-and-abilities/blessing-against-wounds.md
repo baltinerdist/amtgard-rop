@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** May not be worn with any other Enchantments from the Protection School unless the other Enchantment is (ex).
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 64 (printed p. 61). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 61 (PDF p. 64). Flavor text omitted.*

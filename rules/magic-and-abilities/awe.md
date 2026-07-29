@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated. This is a Forced Movement effect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 63 (printed p. 60). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*

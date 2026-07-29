@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Engulfing Effects that do not strike the bearer's armor, abilities that ignore armor entirely, and abilities that have been entirely negated due to Ability Order do not trigger Ancestral Armor. Phasing equipment interacts with armor worn by the bearer as though Ancestral Armor was not present.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 62 (printed p. 59). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). Flavor text omitted.*

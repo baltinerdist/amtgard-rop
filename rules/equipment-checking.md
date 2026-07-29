@@ -39,4 +39,4 @@ This is an outline for checking equipment. This is not exhaustive, but serves as
 3. Chain armor does not have broken or separated links which could catch on equipment or players in the normal course of combat.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 18 (PDF pp. 21). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.7, printed p. 18 (PDF p. 21). Flavor text omitted.*

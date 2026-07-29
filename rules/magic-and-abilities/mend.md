@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Destroyed or damaged item is repaired, or one point of armor in one location is repaired.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 70 (printed p. 67). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 67 (PDF p. 70). Flavor text omitted.*

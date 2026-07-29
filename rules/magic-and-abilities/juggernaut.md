@@ -17,9 +17,9 @@ source: Amtgard Rules of Play Version 8
 
 **School:** Neutral
 
-**Effect:** Gain Imbue Armor (T) and Phoenix Tears (Self) 3/ Refresh (ex) (Swift). Replace Harden with Greater Harden (Self) (ex) at the same frequency.
+**Effect:** Gain Imbue Armor (T) and Phoenix Tears (Self) 3/Refresh (ex) (Swift). Replace Harden with Greater Harden (Self) (ex) at the same frequency.
 
 **Limitations:** Lose all instances of Ancestral Armor and True Grit.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 69 (printed p. 66). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 66 (PDF p. 69). Flavor text omitted.*

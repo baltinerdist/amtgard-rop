@@ -1,5 +1,5 @@
 ---
-title: "Appendix B: Kingdom Boundaries and Park Sponsorship"
+title: "Appendix B: Kingdom Boundaries & Park Sponsorship"
 section: "Appendix B: Kingdom Boundaries and Park Sponsorship"
 printed_pages: 83
 pdf_pages: 86

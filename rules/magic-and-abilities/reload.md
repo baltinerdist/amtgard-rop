@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** May ask reeve for assistance in retrieving arrows that are within 10' of other players.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 73 (printed p. 70). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 70 (PDF p. 73). Flavor text omitted.*

@@ -17,11 +17,14 @@ source: Amtgard Rules of Play Version 8
 
 **School:** Neutral
 
-**Effect:** May wield Great weapons and Javelins. Pick one: -Hold Person becomes 1/Life Charge x3 (m). -Pinning Arrow becomes 2 Arrows / Unlimited (ex)
+**Effect:** May wield Great weapons and Javelins. Pick one:
+
+- Hold Person becomes 1/Life Charge x3 (m).
+- Pinning Arrow becomes 2 Arrows / Unlimited (ex)
 
 **Limitations:** May not wield shields. Lose all instances of Evolution and Release.
 
 **Note:** Gain the benefit of an option only if that ability was chosen at level 4.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 69 (printed p. 66). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 66 (PDF p. 69). Flavor text omitted.*

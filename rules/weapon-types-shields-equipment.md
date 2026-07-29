@@ -1,8 +1,8 @@
 ---
 title: Weapon Types, Shields, and Equipment
 section: Weapon Types, Shields, and Equipment
-printed_pages: 13-17
-pdf_pages: 16-20
+printed_pages: 13-18
+pdf_pages: 16-21
 rulebook_version: V8.7 "Soupy"
 rulebook_date: 2025-07-26
 source: Amtgard Rules of Play Version 8

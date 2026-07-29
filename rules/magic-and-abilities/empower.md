@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Does not allow a player to have more than their maximum uses of an ability.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 66 (printed p. 63). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 63 (PDF p. 66). Flavor text omitted.*

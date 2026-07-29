@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** If the player's Insubstantial State is removed before they have reached their destination, the effects of Teleport end. If Teleport is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial. This is a Forced Movement effect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 77 (printed p. 74). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 74 (PDF p. 77). Flavor text omitted.*

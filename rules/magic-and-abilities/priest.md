@@ -20,4 +20,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Meta-Magic may only be used on Spirit abilities. All Meta-Magics purchased become 1/Life Charge x3. Heal costs zero points.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 72 (printed p. 69). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 69 (PDF p. 72). Flavor text omitted.*

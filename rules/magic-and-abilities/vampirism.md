@@ -23,7 +23,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Yellow strip and white strip
 
-**Effect:** Player gains Adrenaline Unlimited (ex), is Immune to Death, and is Cursed. Bearer's Adrenaline ability will work through their Cursed State.     Did you Know?     Vampires have been illegal in the Kingdom of the Burning Lands ever since the infamous Edict of Ben's Living Room was passed over two decades ago. The task of hunting down and destroying these undead creatures has been the responsibility of the Royal Amtgard Navy. Fortunately for the undead, the RAN is rather lax and easily bribed.
+**Effect:** Player gains Adrenaline Unlimited (ex), is Immune to Death, and is Cursed. Bearer's Adrenaline ability will work through their Cursed State.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 77 (printed p. 74). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 74 (PDF p. 77). Flavor text omitted.*

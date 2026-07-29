@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Enchantments on the player are retained.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 68 (printed p. 65). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 65 (PDF p. 68). Flavor text omitted.*

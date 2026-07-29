@@ -20,4 +20,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** May use Bows. The cost of all available Equipment is reduced to zero points. Enchantment costs are doubled.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 72 (printed p. 69). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 69 (PDF p. 72). Flavor text omitted.*

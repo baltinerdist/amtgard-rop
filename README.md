@@ -6,10 +6,11 @@ Actionable markdown conversion of the **Amtgard Rules of Play, Version 8** (V8.7
 - **Flavor text excluded** (the rulebook's in-world stories/quotes).
 - Conversion conventions: [`STYLE.md`](STYLE.md).
 - Accuracy verification: [`VERIFICATION.md`](VERIFICATION.md) (180/180 abilities token-for-token; all prose diffs explained).
-- Total: **212 files**.
+- Total: **213 files**.
 
 ## Core Sections
 
+- [This Rulebook Made Easy](rules/this-rulebook-made-easy.md)
 - [Introduction](rules/introduction.md)
 - [Amtgard the Organization](rules/amtgard-the-organization.md)
 - [Roleplaying in Amtgard](rules/roleplaying-in-amtgard.md)
@@ -44,9 +45,9 @@ Actionable markdown conversion of the **Amtgard Rules of Play, Version 8** (V8.7
 
 ## Magic and Abilities
 
-- [Ability Index (all 181, + by-class)](rules/magic-and-abilities/INDEX.md)
+- [Ability Index (all 180, + by-class)](rules/magic-and-abilities/INDEX.md)
 - [Section Overview & Format Key](rules/magic-and-abilities/_overview.md)
-- 181 individual ability files in [`rules/magic-and-abilities/`](rules/magic-and-abilities/)
+- 180 individual ability files in [`rules/magic-and-abilities/`](rules/magic-and-abilities/)
 
 ## Reference & Appendices
 
@@ -68,4 +69,7 @@ This repository restructures the Amtgard Rules of Play (V8.7 "Soupy") into markd
 
 - `scripts/gen_abilities.py --write` — regenerate the 180 ability files from the PDF.
 - `scripts/gen_indexes.py` — regenerate this README and the ability index.
+- `scripts/verify_abilities.py` — check the ability files against the PDF (body text, class availability, spell-table completeness, counts).
+- `scripts/verify_prose.py` — token-multiset check of the prose and class files.
+- `scripts/lint_corpus.py` — structural lint: frontmatter, titles, page offsets, source notes, links, page coverage.
 

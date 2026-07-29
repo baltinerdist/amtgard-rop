@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Planar Grounding causes Enchantments that automatically render their bearer Insubstantial, such as Gift of Air, to fail and be removed if they activate while Planar Grounding is in effect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 71 (printed p. 68). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*

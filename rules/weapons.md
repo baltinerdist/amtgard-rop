@@ -45,4 +45,4 @@ A safe weapon is one that will not break bones, teeth, or regularly leave bruise
 **Thrust/Stab:** Indicates a weapon intended to be able to score a hit by thrusting the weapon in such a way that the tip (as opposed to the sides) of the weapon strikes an opponent. Stab-only weapons must have at least 6" of Strike-Legal padding.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 12 (PDF pp. 15). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.7, printed p. 12 (PDF p. 15). Flavor text omitted.*

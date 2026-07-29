@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Persistent is a Meta-Magic; it must be used before another incantation, and affects the next ability cast by that same caster. Persistent does not retroactively make an enchantment already on a player Persistent. Persistent Enchantments with limited uses (Mass Healing, Corrosive Mist, etc.) will retain the number of uses they had remaining. Persistent Magic Armor behaves like normal armor: it will be repaired upon respawning or retain any prior damage if the bearer is returned to life by some other method, such as Resurrect.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 71 (printed p. 68). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*

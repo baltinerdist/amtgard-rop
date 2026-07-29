@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Target dead player who has not moved more than 5' from where they died is returned to life. Non-Persistent Enchantments on the player are removed before the player returns to life. Any wounds on the player are healed.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 73 (printed p. 70). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 70 (PDF p. 73). Flavor text omitted.*

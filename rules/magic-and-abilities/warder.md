@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Player may not purchase any abilities from the Death, Command, or Subdual Schools.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 78 (printed p. 75). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 75 (PDF p. 78). Flavor text omitted.*

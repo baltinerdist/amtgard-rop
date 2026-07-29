@@ -23,7 +23,7 @@ source: Amtgard Rules of Play Version 8
 
 **Limitations:** May not be used on the Charge Incantation.
 
-**Note:** Using Ambulant allows both the target indication and Ambulant to be said while moving, but not other Meta- Magics.
+**Note:** Using Ambulant allows both the target indication and Ambulant to be said while moving, but not other Meta-Magics.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 62 (printed p. 59). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). Flavor text omitted.*

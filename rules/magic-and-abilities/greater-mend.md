@@ -19,9 +19,9 @@ source: Amtgard Rules of Play Version 8
 
 **Range:** Touch
 
-**Incantation:** "Return this <object name> to its former glory" x5
+**Incantation:** "Return this `<object name>` to its former glory" x5
 
 **Effect:** Will restore all armor points in one location or repair a damaged or broken item.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 68 (printed p. 65). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 65 (PDF p. 68). Flavor text omitted.*

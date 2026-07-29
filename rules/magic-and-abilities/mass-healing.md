@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** The effect is not an incantation, and so is not stopped by being Suppressed, and may be used while moving, etc.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 70 (printed p. 67). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 67 (PDF p. 70). Flavor text omitted.*

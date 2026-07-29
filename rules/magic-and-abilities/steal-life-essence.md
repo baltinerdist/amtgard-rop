@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** In order to charge an ability, the name of the ability being charged must still be stated immediately after the incantation.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 76 (printed p. 73). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 73 (PDF p. 76). Flavor text omitted.*

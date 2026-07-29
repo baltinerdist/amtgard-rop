@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer gains 2 points of Magic Armor affected as per Ancestral Armor.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 76 (printed p. 73). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 73 (PDF p. 76). Flavor text omitted.*

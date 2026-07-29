@@ -19,7 +19,7 @@ source: Amtgard Rules of Play Version 8
 
 **Range:** 50'
 
-**Incantation:** "I call upon the element of flame to destroy thy belongings"     x3
+**Incantation:** "I call upon the element of flame to destroy thy belongings" x3
 
 **Effect:** All shields and weapons carried by the target player are destroyed.
 
@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Pyrotechnics targets the player but affects their equipment. Immunities, resistances, and other protections will only protect the equipment from Pyrotechnics if they specifically extend to the equipment, such as Blessed Aura or Flame Blade. Abilities like Enlightened Soul, Protection from Magic, and Adaptive Protection (Flame) do not extend to equipment and thus cannot protect from Pyrotechnics.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 72 (printed p. 69). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 69 (PDF p. 72). Flavor text omitted.*

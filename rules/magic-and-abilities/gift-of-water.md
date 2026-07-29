@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer gains one point of Magic Armor and Heal (Self) Unlimited (m).
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 67 (printed p. 64). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 64 (PDF p. 67). Flavor text omitted.*

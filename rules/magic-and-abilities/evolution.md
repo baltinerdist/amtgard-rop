@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** This ability does work in conjunction with Attuned, Essence Graft, or Phoenix Tears so long as the other limitations of those Enchantments are followed.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 66 (printed p. 63). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 63 (PDF p. 66). Flavor text omitted.*

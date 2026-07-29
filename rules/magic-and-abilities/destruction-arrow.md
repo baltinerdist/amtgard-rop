@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** This arrow is Armor Destroying and Shield Destroying. Armor Destroying and Shield Destroying are applied after the normal effect of being hit with an arrow is applied.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 65 (printed p. 62). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 62 (PDF p. 65). Flavor text omitted.*

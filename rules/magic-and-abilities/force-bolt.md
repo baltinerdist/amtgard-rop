@@ -21,7 +21,11 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Blue Magic Ball
 
-**Effect:** Force Bolt will have one of the following effects on the object first struck: 1. A weapon hit is destroyed 2. Armor hit with Armor Points remaining is subject to Armor Breaking. 3. A player hit receives a wound to that hit location.
+**Effect:** Force Bolt will have one of the following effects on the object first struck:
+
+1. A weapon hit is destroyed
+2. Armor hit with Armor Points remaining is subject to Armor Breaking.
+3. A player hit receives a wound to that hit location.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 67 (printed p. 64). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 64 (PDF p. 67). Flavor text omitted.*

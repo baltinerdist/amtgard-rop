@@ -20,4 +20,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** All the casters Enchantments of level 4 and below are now range Self instead of their previous range. Does not apply to Golem.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 63 (printed p. 60). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*

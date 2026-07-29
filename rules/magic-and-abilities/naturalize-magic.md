@@ -23,7 +23,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Three red strips
 
-**Effect:** Bearer may cast Dispel Magic (m) by incanting"<Player> thou art dispelled" and removing an enchantment strip. Enchantment is removed when the last strip is removed.
+**Effect:** Bearer may cast Dispel Magic (m) by incanting"`<Player>` thou art dispelled" and removing an enchantment strip. Enchantment is removed when the last strip is removed.
 
 ---
-*Source: Amtgard Rules of Play V8.7, Magic and Abilities, PDF p. 71 (printed p. 68). Verbatim.*
+*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*

@@ -27,9 +27,18 @@ flavor text — keep them, but render as a labeled blockquote at the point they 
 For your assigned PDF page range `A`–`B`, run BOTH:
 
 ```bash
-PDF="/Users/averykrouse/Downloads/Amtgard Rules of Play.pdf"
+# Place your own copy of the V8.7 rulebook here; it is gitignored, not distributed.
+PDF="$(git rev-parse --show-toplevel)/Amtgard Rules of Play.pdf"
 pdftotext -layout -f A -l B "$PDF" -   # PRIMARY: preserves columns & tables spatially
 pdftotext        -f A -l B "$PDF" -   # secondary cross-check for wording only
+```
+
+For the two-column stat-block sections, crop each column separately so reading order is
+exact (the page is 612pt wide, so each column is 306pt):
+
+```bash
+pdftotext -layout -x 0   -W 306 -f A -l B "$PDF" -   # LEFT column
+pdftotext -layout -x 306 -W 306 -f A -l B "$PDF" -   # RIGHT column
 ```
 
 **The layout is two-column.** In the `-layout` output the LEFT and RIGHT columns sit
@@ -65,8 +74,14 @@ source: Amtgard Rules of Play Version 8
 - Preserve special terms' capitalization exactly (Strike-Legal, Enchantment, Magic Ball,
   Refresh, Incantation, Trait, etc.).
 - Straight-quote normalization is fine (curly → straight) but do not change wording.
-- End every file with a `---` rule followed by a one-line source note:
-  `*Source: Amtgard Rules of Play V8.7, printed pp. X–Y (PDF pp. A–B). Flavor text omitted.*`
+- End every file with a `---` rule followed by a one-line source note. Use the plural form
+  for a range and the singular for a single page — never a degenerate range (`pp. 1–1`):
+  - range: `*Source: Amtgard Rules of Play V8.7, printed pp. X–Y (PDF pp. A–B). Flavor text omitted.*`
+  - single: `*Source: Amtgard Rules of Play V8.7, printed p. X (PDF p. A). Flavor text omitted.*`
+
+  This one template covers every file in `rules/`, including the 180 generated ability
+  files. The only exception is unnumbered front matter (PDF p. 2), which has no printed
+  page number and so names the PDF page alone.
 
 ## Ability stat-block format (Classes & Magic and Abilities sections)
 Abilities are printed as compact stat blocks, e.g.:
@@ -74,5 +89,13 @@ Abilities are printed as compact stat blocks, e.g.:
 Render each ability as a `###` heading (the ability name), followed by a definition-style
 list of its fields (Type `T`, School `S`, Range `R`, Incantation `I`, Effect `E`, etc.)
 exactly as labeled, then the prose description. Preserve the `xN` incantation-repeat counts.
+
+Where a field's value contains a list the book sets as indented items (a `…:` lead-in
+followed by `1.` `2.` `3.` or `-` entries), render it as a real markdown ordered or
+bulleted list rather than inlining it into the paragraph. Any sentence the book sets flush
+after the list belongs outside it, as a following paragraph.
+
+The book's literal placeholders — `<Player>`, `<armor location>`, `<object name>` — must be
+wrapped in backticks so markdown renderers do not swallow them as HTML tags.
 
 See `rules/combat-rules.md` for a worked exemplar of all the above.
