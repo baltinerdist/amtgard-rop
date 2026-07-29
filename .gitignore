@@ -7,3 +7,6 @@ __pycache__/
 Amtgard Rules of Play.pdf
 # stray page-image extracts
 Amtgard Rules of Play-*.png
+
+# viewer build intermediate (regenerate with scripts/build_viewer_data.py)
+viewer/wiki-data.json
