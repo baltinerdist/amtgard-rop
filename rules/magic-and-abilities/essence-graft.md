@@ -2,10 +2,10 @@
 title: "Essence Graft"
 section: Magic and Abilities
 pdf_page: 66
-printed_page: 63
+printed_page: 64
 class_availability: ["Druid 5"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -25,9 +25,9 @@ source: Amtgard Rules of Play Version 8
 
 **Effect:** Bearer may wear up to three additional Enchantments. Essence Graft does not count towards the bearer's Enchantment limit.
 
-**Limitations:** Bearer may only wear (m) Enchantments from the caster of Essence Graft. This ability may not be used in conjunction with any other similar abilities.
+**Limitations:** Bearer may only wear (m) Enchantments from the caster of Essence Graft. This ability may not be used in conjunction with itself or any other similar abilities.
 
 **Note:** If Essence Graft is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 63 (PDF p. 66). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 64 (PDF p. 66). Flavor text omitted.*

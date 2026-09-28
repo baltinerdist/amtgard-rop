@@ -1,11 +1,11 @@
 ---
 title: "Phoenix Tears"
 section: Magic and Abilities
-pdf_page: 71
+pdf_page: 70
 printed_page: 68
 class_availability: ["Warrior 6", "Healer 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -17,24 +17,24 @@ source: Amtgard Rules of Play Version 8
 
 **School:** Spirit
 
-**Range:** Self
+**Range:** Self (Wa) Other (He)
 
-**Incantation:** "May the tears of the phoenix wash over thee"
+**Incantation:** "May the tears of the phoenix wash over thee" x3
 
 **Materials:** Two white strips
 
-**Effect:** Enchanted player does not die as normal. When the player would otherwise die they instead become Frozen for 30 seconds. If the player is still enchanted when the Frozen State elapses or is removed:
+**Effect:** Bearer does not die as normal. When the bearer would otherwise die they instead remove all wounds and become Frozen for 30 seconds. If the bearer is still enchanted when the Frozen State elapses or is removed:
 
-1. Remove all wounds.
-2. Remove all States that would be removed by death or respawning.
-3. Remove all Ongoing Effects with a timer.
-4. Repair all carried equipment.
-5. Remove all non-persistent enchantments other than Phoenix Tears.
-6. Remove a strip.
+1. Remove the Cursed state, if Cursed
+2. Repair all carried equipment.
+3. Remove all non-persistent enchantments other than Phoenix Tears.
+4. Remove a strip.
 
-Additionally, Phoenix Tears allows you to wear an extra Enchantment from the Protection School. This extra enchantment is considered Persistent as long as Phoenix Tears is present. The additional Enchantment is not removed once Phoenix Tears is removed.
+Additionally, Phoenix Tears allows the bearer to wear an extra Enchantment from the Protection School. This extra enchantment is considered Persistent as long as Phoenix Tears is present. The additional Enchantment is not removed once Phoenix Tears is removed.
+
+**Limitations:** May not be worn with Attuned or Essence Graft.
 
 **Note:** Phoenix Tears is removed when the last strip is removed If Phoenix Tears is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 68 (PDF p. 70). Flavor text omitted.*

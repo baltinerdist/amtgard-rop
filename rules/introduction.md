@@ -1,10 +1,10 @@
 ---
 title: Introduction
 section: Introduction
-printed_pages: 1
+printed_pages: 2
 pdf_pages: 4
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -36,6 +36,8 @@ Getting started in Amtgard is easy and fun. Here are a few simple guidelines a n
 2. Read the 'Playing in Battlegames Made Easy' section in this rulebook. This will explain the basic concept behind team games in Amtgard.
 3. Read the 'Magics, Abilities, States and Special Effects Made Easy' section in this rulebook. This will explain the basics of how the non-combat game mechanics work.
 4. Find a group near you and visit it! That's it, nothing more complicated than that. In fact, you're encouraged to skip directly to step 4 and jump in with both feet. The best way to learn is from friendly and experienced veterans. Find a park near you at amtgard.com.
+5. Questions about the rules?
+6. Check out the list of Official Clarifications at amtgard.com/documents. If you have questions, see the Official Amtgard Rules Clarification pages on Facebook or Discord.
 
 ## Next Steps
 
@@ -48,4 +50,4 @@ Once you've made contact with your local group there are a few next steps to sta
 5. Join in with the wider organization. Amtgard has an online presence on Facebook and Discord. These can be great resources to meet new people, learn about what is going on in the world of Amtgard, and get ideas about fighting, crafting, and anything else that might interest you.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 1 (PDF p. 4). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 2 (PDF p. 4). Flavor text omitted.*

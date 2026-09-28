@@ -2,10 +2,10 @@
 title: "Adaptive Protection"
 section: Magic and Abilities
 pdf_page: 62
-printed_page: 59
+printed_page: 60
 class_availability: ["Healer 3", "Scout 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -17,7 +17,7 @@ source: Amtgard Rules of Play Version 8
 
 **School:** Protection
 
-**Range:** Other
+**Range:** Other (He), Self (Sc)
 
 **Incantation:** "I enchant thee with this protection" x3
 
@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer becomes Immune to one of the following Schools: Death, Flame, Subdual, Command, Sorcery. School is chosen at the time of casting.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 60 (PDF p. 62). Flavor text omitted.*

@@ -1,16 +1,16 @@
 ---
 title: Equipment Checking
 section: Equipment Checking
-printed_pages: 18
+printed_pages: 19
 pdf_pages: 21
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
 # Equipment Checking
 
-Before any day of combat begins all combat equipment brought to the field must be checked by the Champion or their appointed representative. Equipment which does not pass a check may not be used on the field. Equipment that is checked as one type of equipment may not be used as another. Equipment should be re-checked as necessary throughout the day. Using unchecked equipment on the field is grounds for immediate suspension from combat for the day at the discretion of the Champion. Issues with the performance of Equipment checks may be adjudicated by the Monarch and the Guildmaster of Reeves.
+Before any day of combat begins all combat equipment brought to the field must be checked by the Champion or their appointed representative. Equipment which does not pass a check may not be used on the field. Equipment that is checked as one type of equipment may not be used as another. For example, a player may not attach a colored strip to a normal arrow to transform it into a Specialty Arrow mid-game. Equipment should be re-checked as necessary throughout the day. Using unchecked equipment on the field is grounds for immediate suspension from combat for the day at the discretion of the Champion. Issues with the performance of Equipment checks may be adjudicated by the Monarch and the Guildmaster of Reeves.
 
 ## Checking Process
 
@@ -39,4 +39,4 @@ This is an outline for checking equipment. This is not exhaustive, but serves as
 3. Chain armor does not have broken or separated links which could catch on equipment or players in the normal course of combat.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 18 (PDF p. 21). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 19 (PDF p. 21). Flavor text omitted.*

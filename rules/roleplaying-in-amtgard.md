@@ -1,10 +1,10 @@
 ---
 title: Roleplaying in Amtgard
 section: Roleplaying in Amtgard
-printed_pages: 5
+printed_pages: 6
 pdf_pages: 8
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -43,4 +43,4 @@ Just as with the other aspects of Amtgard, role-play in Amtgard is limited only 
 > Likewise, selecting someone to play a monster who is not interested in role-playing can give false hope to the role-players involved and be counter-productive. Get people who are willing to role-play to play non-player characters and Monsters in quests.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 5 (PDF p. 8). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 6 (PDF p. 8). Flavor text omitted.*

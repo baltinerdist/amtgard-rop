@@ -1,11 +1,11 @@
 ---
 title: "Corruptor"
 section: Magic and Abilities
-pdf_page: 65
+pdf_page: 64
 printed_page: 62
 class_availability: ["Anti-Paladin 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** May not wield Great Weapons or Javelins and lose all instances of Flame Blade.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 62 (PDF p. 65). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 62 (PDF p. 64). Flavor text omitted.*

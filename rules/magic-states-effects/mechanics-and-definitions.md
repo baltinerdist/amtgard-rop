@@ -1,10 +1,10 @@
 ---
 title: Magic and Ability Mechanics & Definitions
 section: Magic, Abilities, States and Special Effects
-printed_pages: 24-30
-pdf_pages: 27-33
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+printed_pages: 25-30
+pdf_pages: 27-32
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -24,11 +24,11 @@ Special Effects are typically triggered events that have a specific result. Spec
 >
 > The number and variety of Abilities, States, and Special Effects can seem overwhelming, but it doesn't have to be. Here are a few quick steps to help you learn what you need to know to play on the field with magic and abilities.
 >
-> Only three things can adversely affect you: Weapons, Magic Balls, and Verbals.
+> Only four things can adversely affect you: Weapons, Arrows, Magic Balls, and Verbals.
 >
 > Most weapons and Magic Balls have to physically hit you or your equipment to have an effect. No hit, no effect, no problem.
 >
-> Certain Magic Balls and weapons are Engulfing (Iceball, Pinning Arrow, etc), meaning that they can also affect you by hitting your carried equipment or garb. Everything else has to hit your body.
+> Certain Magic Balls and Specialty Arrows are Engulfing (Iceball, Pinning Arrow, etc), meaning that they can also affect you by hitting your carried equipment or garb. Everything else has to hit your body.
 >
 > Verbal abilities generally follow the same format: They state your name, point at you, and say an incantation of three repetitions of a phrase that casts the Verbal.
 >
@@ -36,11 +36,34 @@ Special Effects are typically triggered events that have a specific result. Spec
 >
 > No Verbal has a range greater than 50'. If you can get further away from the caster than that you won't be affected.
 >
-> There are lots of abilities, but only a few results. If you read through and understand the States Defined and Special Effects Defined sections below you will understand the result of any ability used against you in combat on the field. All offensive combat abilities (with very few exceptions) result in one of those States or Special Effects. If you don't know what an ability does by its incantation don't worry; ask the caster to explain and they can communicate to you in just a couple of words exactly what happened using States and Special Effects.
+> There are lots of abilities, but only a few results. If you read through and understand the States Defined and Special Effects Defined sections below you will understand the result of most abilities used against you in combat on the field. Most offensive combat abilities result in one of those States or Special Effects. If you don't know what an ability does by its incantation don't worry; ask the caster to explain and they can communicate to you in just a couple of words exactly what happened using States and Special Effects.
 >
-> Immunities are also very simple: If the ability targeting you is of a given School (which is always part of the incantation) and you have Immunity to that School, then the ability has no effect on you. The only exceptions are if they affect your equipment or your Enchantments instead of you yourself, but there are only a few abilities that do that. If you are unaffected by an ability, you must declare so when the ability is complete. You can also let them know before hand if you're feeling generous.
->
-> Declaring means to give information of the game state verbally. Some abilities and mechanics require declaration. Other things, such as your States, Ongoing Effects, armor points, safety information, etc can be declared at any time. You may make declarations even if you otherwise would not be able to speak, such as by being Frozen or Stunned.
+> Immunities are also very simple: If the ability targeting you is of a given School (which is always part of the incantation) and you have Immunity to that School, then the ability has no effect on you. The only exceptions are if they affect your equipment or your Enchantments instead of you yourself, but there are only a few abilities that do that.
+
+## Casting Abilities
+
+Several requirements must be met in order to successfully cast an ability. If a player casts an ability incorrectly, it is not expended and has no effect. Incompleted or improperly completed incantations do not expend uses of abilities, but they do fail and they must be restarted from the beginning and the target re-identified. Completing an incantation results in an ability being used up, even if the ability fails. Beginning a new incantation interrupts any other Incantations or Chants the player has in progress, and renders any Magic Balls inactive, if not yet thrown. Typically, a player must:
+
+1. Properly identify the target of the ability prior to any incantation. A player need not name a target if the intended target is at a range of Self, Touch, or Other. Magic Balls and Specialty Arrows also do not require targeting. This can take one of several forms:
+   a. Indicating the target by name or accepted nickname.
+   b. Pointing at the target with an empty hand and saying two descriptors for the target, such as their class and the color of their tunic. Example: `<Point with an empty hand>` "Warrior in blue, I command thee to stop..."
+   c. Targeting a piece of equipment by identifying the equipment in addition to the player carrying it, if carried. Example: "Timmy, blue sword on hip, I call upon flame to heat thy weapon..."
+2. Properly recite the incantation, which includes:
+   a. Completing the required number of repetitions of the incantation.
+   b. Avoiding a gap of more than two seconds between words.
+   c. Reciting the incantation audibly. Requirements vary based on the type of ability. In the event of a disagreement over audible range, consult a reeve.
+      i. Verbals and Enchantments must be audible within 20' and to the target.
+      ii. Magic Balls and Specialty Arrows must be audible within 20'.
+   d. When casting abilities at a range of Touch, Other, or Self, the caster may change the pronouns used for the target. For example, a Druid could cast Teleport on another player by incanting "You travel through the aether" rather than "I travel through the aether".
+3. Throughout the incantation, the player must:
+   a. Not move their feet during the incantation.
+   b. Have an empty hand, for Magic Users.
+4. Be able to see the target of the ability at the completion of the incantation.
+   a. If a player is the target, the player, their garb, or their armor must be visible. A player's carried equipment does not block line of sight to the player.
+   b. If a piece of equipment is the target, the equipment must be visible. Players or other equipment can block line of sight to equipment.
+   c. If the incantation is completed and the target is not at least partially visible, the ability fails but is still expended.
+5. Complete the incantation while within range of the target. If the incantation is completed and the target is not in range, the ability fails but is still expended.
+6. Meet any specific requirements of the ability listed in its Effect or Limitation.
 
 ## Magic and Ability Mechanics Defined
 
@@ -48,12 +71,8 @@ Special Effects are typically triggered events that have a specific result. Spec
 
 Powers or skills that must be cast to be used.
 
-1. Ability Enchantments denoted as Magical (m) in the class description count towards the bearers limit for carried Enchantments.
-2. Ability Enchantments denoted as Extraordinary (ex) in the class description do not count towards enchantment limits or count for the purposes of Attuned, Essence Graft, or similar abilities. A player may not have more than one (ex) enchantment of the same name.
-3. Abilities granted via an Enchantment retain the original School of the ability, not the School of the Enchantment.
-4. Ongoing Effects are effects applied by abilities where the effect lasts for some specified duration (Examples: Terror, Heat Weapon, and Shake it Off) or for an indefinite duration (Examples: Elemental Barrage, and Shove).
-5. An improperly cast ability, or ability which could not have been activated, fails. For example, abilities cast while Suppressed, or Magical abilities cast without an empty hand throughout the incantation.
-6. Failed abilities have no effect on any target. A use of the ability is still expended.
+1. If an ability fails, it has no effect.
+2. Abilities granted via an Enchantment retain the original School of the ability, not the School of the Enchantment.
 
 ### Ability order
 
@@ -61,6 +80,10 @@ When two abilities would take effect simultaneously:
 
 1. Effects on a player trigger in this order: Traits, Immunities, Resistances, Other Enchantments.
 2. Other Enchantment effects trigger at the same time, even if the result of one would prevent another. Example one: A player bearing Phoenix Tears and Troll Blood dies. Both enchantments trigger and lose a strip, player is Frozen for 30s, ignores the killing effect, and when Frozen is removed all wounds are removed, etc. Example two: A player bearing Ancestral Armor and Gift of Air is hit by a normal melee weapon in an armored location. That hit location loses 1 point of armor, and the player is Insubstantial.
+
+### Alternate Base
+
+Some abilities allow a player to act as an Alternate Base for other players. Players may treat Alternate Bases as bases for the purposes of Forced Movement effects which require the bearer to go to their base, but may not use Alternate Bases for other purposes, such as exiting Sanctuary, exiting Reload, or repairing equipment. A player may act as an Alternate Base while Dead, Frozen, or Insubstantial.
 
 ### Archetype
 
@@ -72,41 +95,53 @@ An audible component required by some abilities that sustains their continuing f
 
 ### Charge
 
-Some abilities may have their per-life or per-refresh uses restored after they are consumed. These abilities are denoted with the word "Charge" and a number after them. In order to gain an additional per-life or per-refresh use of a Chargeable ability the Charge Incantation must be repeated in full the number of times indicated by number after Charge. For instance an ability labeled 'Charge x3' requires three full repetitions of the Charge Incantation in order to regain a use.
+Some abilities have a listed Charge value, which allows a player to restore uses of an ability on their own. To Charge an ability, one must:
 
-1. Stating the name of an ability to Charge does not activate that ability.
-2. Charges for per-refresh abilities carry between lives; a per-refresh ability Charged on a previous life and not used can be used on the next life.
-3. The ability being Charged must be designated at the beginning of the Charge.
-4. Only abilities which may be Charged can benefit from Innate, Steal Life Essence, etc.
+1. Have an empty hand.
+2. Not move their feet.
+3. Repeat the Charge Incantation the listed number of times. For example, an ability listed as 'Charge x5' would require five repetitions of the Charge Incantation to be regained.
+   a. Improper wording or mispronunciation will require restarting the current repetition of the Charge Incantation. The entire Charge process must be restarted from the beginning if the player fails to have an empty hand, moves their feet, or waits more than than two seconds between words.
 
-### Charge Incantation
-
-The Incantation that is used to Charge an ability. A single 'Charge Incantation' is repeating the following phrase:
+**Charge Incantation**
 
 > "Out of battle I pause to rest,
 > I take some time to catch my breath.
 > Return to me my fleeting power
 > To aid me in my darkest hour."
 
-The Charge Incantation requires an empty hand and must be audible out to 20'.
+The name of the ability being Charged must be Declared before reciting the Charge Incantation. That Declaration, and the Charge Incantation, must be audible out to 20'.
+
+### Empty Hand
+
+Players are occasionally required to have an empty hand in order to perform some action, such as Magic Users casting abilities, using the Charge Incantation, or interacting with some game objectives. An empty hand is one which is not touching any of the following, unless it is the target of the ability:
+
+1. A shield, with the exception of hands incidentally touching a Small shield strapped securely to the arm.
+2. A weapon other than an unbroken Magic Staff
+3. Arrows
+4. Game objectives, at the discretion of the game runner.
 
 ### Enchantments
 
 Enchantments are ongoing abilities that remain until they are used up or removed.
 
-1. Players may only carry one magical enchantment at a time. A player may not have more than one (ex) enchantment of the same name.
+1. Players may only carry one Magical enchantment at a time.
+   a. A player may not have more than one Extraordinary (ex) enchantment of the same name.
+   b. Extraordinary Enchantments do not count for the purposes of Attuned, Essence Graft, or similar abilities.
 2. Enchantments may only be cast on willing players.
-3. Enchantments are always worn by players. An Enchantment can always be cast onto a player, regardless of any Immunity or other Enchantment, except for restrictions that affect Enchantments specifically such as Essence Graft.
+3. Enchantments are always worn by players. Immunities, Traits, or other Enchantments do not prevent new Enchantments from being applied to players, except for restrictions that affect Enchantments specifically such as Essence Graft.
    a. Effects imparted directly by an enchantment, such as Phoenix Tears returning a player to life or Gift of Air forcing a player to become insubstantial, will function regardless of Immunity.
    b. Abilities granted by Enchantments such as the uses of Heal granted by Regeneration or the uses of Raise Dead granted by Undead Minion are affected normally by Immunity.
-4. If a player bearing an Enchantment is killed the Enchantment remains but becomes inactive. Respawning removes any Enchantments from a player unless the Enchantments are Persistent. If the person is returned to life, as opposed to respawning, then Enchantments are preserved and will function again, unless removed by the ability that returned the player to life.
-   a. If a player voluntarily takes a death, all Enchantments carried are removed.
+4. If a player bearing an Enchantment is killed, the Enchantment remains but becomes inactive.
+   a. Inactive Enchantments have no effect on the bearer.
+   b. Respawning removes all non-Persistent Enchantments from a player. If the person is returned to life by an ability, their Enchantments will become active again unless removed by the ability that returned the player to life.
+   c. If a player voluntarily takes a death, all Enchantments carried are removed.
 5. Enchantments that have a definite number of uses, such as Blessing Against Harm or Snaring Vines, are removed when their last use is expended even if ineffective against their target. For example, discharging Poison against a target Immune to the Death School still expends that use of Poison.
 6. Uses of abilities granted by an Enchantment are tracked separately from a player's own abilities, and are recharged separately.
-7. States, Abilities, and Ongoing Effects imparted as an inherent part of Enchantments to their bearer cannot be removed in any way while the Enchantment is active and are removed when the Enchantment is removed unless otherwise noted, except for Cursed. This does not apply to States nor Ongoing Effects caused by the Enchantment or expiration timer. Example one: When a player bearing Heart of the Swarm dies, the Enchantment becomes inactive and the Stopped state imparted by the enchantment is removed, since all States other than Cursed are removed on death. If the player returns to life in a way that preserves their enchantments, the Stopped state will be reapplied when the enchantment becomes active again. Example two: When a player bearing Gift of Air becomes Insubstantial due to its effect and thereafter has the enchantment removed, the player will remain Insubstantial.
-   a. Cursed imparted by an Enchantment cannot be removed in any way while the Enchantment is worn, whether it is active or inactive. If the Enchantment is removed, Cursed is not removed. Example one: When a player bearing Vampirism dies, their enchantment becomes inactive but the Cursed State remains. If Vampirism is thereafter removed, the Player would remain Cursed.
-8. Enchantments worn (or a summary of their effects) must be declared at the beginning of an engagement if possible. Enchantments worn must always be declared when requested. Persistent enchantments must be declared as such.
-9. Players may remove any worn enchantments from themselves by declaring that they are doing so at any time. This must be audible out to 20 feet.
+7. States, Abilities, and Ongoing Effects imparted by an Enchantment to its bearer cannot be removed in any way while the Enchantment is active and are removed when the Enchantment is removed, except for Cursed.
+   a. This does not apply to States nor Ongoing Effects caused by the Enchantment. For example, when a player bearing Gift of Air becomes Insubstantial due to its effect and thereafter has the enchantment removed, the player will remain Insubstantial.
+   b. Cursed imparted by an Enchantment cannot be removed in any way while the Enchantment is worn, whether it is active or inactive. If the Enchantment is inactive or removed, Cursed is not removed. (For example, if Vampirism is removed, the bearer would remain Cursed.)
+8. Players may remove any worn enchantments from themselves by declaring that they are doing so at any time. This must be audible out to 20 feet.
+9. Enchantments that require Spell Strips do not function if the required strips are not present.
 
 ### Engulfing
 
@@ -114,11 +149,12 @@ Engulfing effects affect the target if they strike a valid hit location, garb, o
 
 ### Forced Movement
 
-Forced Movement effects require a player to move, or place limitations on where they may move.
+Some abilities contain effects that require players to move in specific ways.
 
 1. Forced Movement effects fail when cast upon a Stopped player.
    a. A player affected by a Forced Movement effect who becomes Stopped is affected normally. For example: a player affected by Awe may not move away from the caster, but still may not attack the caster.
-2. Players with a wounded leg who are affected by Forced Movement abilities may choose to ignore the requirement for dead legs to have the knee on the ground (or, if "posting," to not voluntarily move the foot of the wounded leg) for the purposes of completing the movement. While moving in this manner, the wounded player may not attack or cast abilities, but may defend themselves. Once the player has completed the movement, they must once again place their knee in contact with the ground, or re-declare "posting". This is known as the "Forced Movement accommodation."
+2. If a Forced Movement effect from an Enchantment effect activates while a player is Stopped, the effect is still applied but cannot be completed until the Stopped State ends. Example: A player is enchanted with Gift of Air and is later Stopped, then hit with a melee weapon. They remain Stopped for the duration of the Stopped effect, then may choose to return to base.
+3. Players with a wounded leg who are affected by Forced Movement abilities may choose to ignore the requirement for dead legs to have the knee on the ground (or, if "posting," to not voluntarily move the foot of the wounded leg) for the purposes of completing the movement. While moving in this manner, the wounded player may not attack or cast abilities, but may defend themselves. Once the player has completed the movement, they must once again place their knee in contact with the ground, or re-declare "posting". This is known as the "Forced Movement accommodation."
 
 ### Immune
 
@@ -132,21 +168,7 @@ The bearing player or object is unaffected by abilities from a given School.
 
 ### Incantation
 
-The verbal component required by some abilities that initiates their function.
-
-Abilities used at a Range greater than Touch require that the target be indicated by name. Example: "Timmy, I command thee to stop, I command thee to stop, I command thee to stop." If the name of the target is not known, or if the casting player prefers, they may instead point at the target with an empty hand and say two descriptors for the target, such as their class and the color of their tunic. Example: \<Point with an empty hand\> "Warrior in blue, I command thee to stop..." When targeting a piece of equipment, the caster must identify the equipment in addition to the player most recently using it. Example: "Timmy, blue sword on hip, I call upon flame to heat that sword..."
-
-All Incantations:
-
-1. Must be said loudly and clearly enough to be heard within 50' or by the recipient, whichever is closer. Incantations for abilities which target self must be audible to within 20'. In the event of a disagreement over audible range, consult a reeve.
-2. Unless otherwise noted in the ability description a player may not move their feet when incanting. If a player moves their feet the incantation is interrupted.
-3. Improper wording, mispronunciation, a gap of more than two seconds between words, or omitting words will all result in an interrupted incantation.
-4. An interrupted incantation does not result in an ability being consumed. Interrupted incantations must be restarted from the beginning.
-5. Require the caster to have an empty hand with the exception of holding Material Components or the target of a Touch or Other Range magic. Incantations listed as Extraordinary (ex) do not require an empty hand. Any hand that is touching a shield or weapon is not considered an empty hand, with the exception of hands touching a magic staff or incidentally touching Small shields that are strapped securely to the arm.
-6. Starting an incantation renders the player's active Magic Balls inactive and interrupts any other Incantation or Chant the player has in progress.
-7. The target of an ability must be at least partially visible at the completion of an Incantation. The target being out of sight at any other point does not prevent or interrupt the casting attempt. If a piece of equipment is the target, the physical equipment itself is what needs to be at least partially visible. If the incantation is completed and the target is not at least partially visible, the ability has no effect but is still expended.
-
-Completing an incantation results in an ability being used up, regardless of if the target was valid or affected.
+This is the verbal component required by some abilities that initiates their function.
 
 ### Magic Armor
 
@@ -157,11 +179,10 @@ Magic Armor is provided by some Enchantments. The specific enchantment will deno
 2. Magic Armor may be the target of abilities that affect armor such as Armor Breaking, Fireball, etc.
 3. Magic Armor may be repaired like any other armor.
 4. Magic Armor covers all locations on a player without any gaps in coverage.
-5. Unless it is inherently part of the Enchantment, Magic Armor can never benefit from armor enhancement abilities such as Ancestral Armor or Imbue Armor.
+5. Unless it is inherently part of the Enchantment, Magic Armor can never benefit from armor enhancement abilities such as Ancestral Armor or Harden Armor.
 6. Players may wear more Magic Armor than their class maximum allows. A class which cannot wear any armor can still wear Magic Armor.
 7. Magic Armor behaves identically to normal armor.
-8. The presence of Magic Armor must be declared to any opponents at the beginning of an engagement if possible; Magic Armor should not result in a 'surprise survival'.
-9. Enchantments which grant Magic Armor fail when targeting a player with worn armor. Players may not don worn armor while bearing an enchantment which grants magic armor. (If you are only wearing armor that was rated initially as zero points it may be worn with Magic Armor.)
+8. Enchantments which grant Magic Armor fail when targeting a player with worn armor. Players may not don worn armor while bearing an enchantment which grants magic armor. (If you are only wearing armor that was rated initially as zero points it may be worn with Magic Armor.)
 
 ### Magic Balls
 
@@ -170,12 +191,14 @@ Magic Balls which are thrown and strike a player or object can have various effe
 1. Players may only carry or bring on to the battlefield a number of Magic Balls up to the maximum uses allowed to them.
    a. Owners of Magic Balls may grant other players permission to carry their Magic Balls in order to return them to the owner or to the owner's base. They may also grant other players permission to use their Magic Balls if the other player has the ability to do so.
 2. A Magic Ball must be held in the caster's hand by the end of the incantation to become active.
-3. A Magic Ball will become inactive if the caster begins an incantation or the Magic Ball stops being held in hand and has not been thrown. The caster can transfer an active Magic Ball from one hand to the other without it becoming inactive and can wield a weapon or shield in a hand that is also holding an active Magic Ball.
-4. A player may only have one Magic Ball active at a time.
-5. Magic Balls of the Subdual School have no effect on equipment that is not being carried. Example: You may not Iceball a player's shield if it is not being wielded or carried by them.
-6. Magic Balls discharge and attempt to affect the first valid player or wielded equipment they strike, if any, before deactivating upon striking the terrain. Magic Balls are not Engulfing unless noted.
-7. Garb strikes count as hitting the player if the Magic Ball would have continued on to hit the player. Example: You may not block Lightning Bolts with your cloak.
-8. Magic Balls are not stopped by Protection from Projectiles, Song of Deflection, or similar abilities.
+3. A carried Magic Ball will become inactive if the caster begins an incantation, dies, or the Magic Ball stops being held in hand and has not been thrown. The caster can transfer an active Magic Ball from one hand to the other without it becoming inactive and can wield a weapon or shield in a hand that is also holding an active Magic Ball.
+4. A player may only carry one active Magic Ball at a time.
+5. Magic balls affect the first valid player or equipment struck, then become inactive. A Magic Ball that strikes terrain becomes inactive with no effect. Garb strikes count as hitting whatever target a Magic Ball would have continued on to hit, had it not struck garb. For example, you may not block Lightning Bolts with your cloak.
+   a. A Magic Ball that strikes armor will damage the armor if armor points remain and the ball is Armor Breaking or Armor Destroying.
+   b. A Weapon Destroying or Shield Destroying Magic Ball that strikes equipment will affect that equipment.
+   c. A Magic Ball that strikes unwielded equipment will affect both that equipment and whatever the Magic Ball would have struck if the unwielded equipment were not there.
+6. Engulfing Magic Balls affect a player upon striking a valid hit location, carried equipment, or garb, and then become inactive.
+7. Magic Balls are not stopped by Protection from Projectiles, Song of Deflection, or similar abilities.
 
 ### Meta-Magic
 
@@ -188,23 +211,31 @@ A type of ability which alters the typical behavior of other abilities.
 5. Meta-Magics are considered expended as soon as their incantation is finished regardless of whether or not the altered ability was completed.
 6. May not be used to modify the behavior of Magic Items or abilities granted by Enchantments such as Heat Weapon from Gift of Fire.
 
+### Ongoing Effects
+
+Some abilities impart effects that continue for some duration, known as Ongoing Effects.
+
+1. Ongoing Effects may have a definite duration (Example: Terror) or an indefinite duration. (Example: Elemental Barrage.)
+2. If a player would gain an Ongoing Effect they are already affected by, the Ongoing Effect's duration will simply be adjusted to the new duration if it is longer than the current duration.
+3. Unless otherwise noted, Ongoing Effects cannot apply to dead players and are removed when a player dies or has an ability activate which allows the player struck to avoid death (Troll Blood, Phoenix Tears, Song of Survival).
+
 ### Range
 
-The target of an ability must be in range at the completion of an Incantation. The target being out of range at any other point does not prevent or interrupt the casting attempt. If a piece of equipment is the target, the physical equipment itself is what needs to be in range. If the incantation is completed and the target is not in range, the ability has no effect but is still expended.
+Abilities may have one or more possible casting ranges:
 
 - **Self:** Target must be the caster.
-- **Touch:** Target may be Self or Other. Any physical contact between caster and target is sufficient, or placing one's hand within six inches of the target.
 - **Other:** Target must be other players or equipment that are in Touch range.
+- **Touch:** Target may be Self or Other. Any physical contact between caster and target is sufficient, or placing one's hand within six inches of the target.
 - **20':** Target must be within 20' upon completion of the incantation.
 - **50':** Target must be within 50' upon completion of the incantation.
 
 Abilities that are cast at Touch range may only be used provided at least one of the following is true:
 
-- The target is willing
-- The target is Dead
-- The target is Stunned
-- The target is Frozen
-- The target is Insubstantial and unable to move from their current location.
+- Willing
+- Dead
+- Stunned
+- Frozen
+- Insubstantial and unable to move from their current location.
 
 ### Resistant
 
@@ -212,6 +243,7 @@ The player is unaffected by the next effect of a given type. Players must declar
 
 - **Wounds:** Does not receive the next wound that would otherwise be inflicted.
 - **School:** Immune to the next ability from the given School.
+- **Source:** Unaffected by the next source in its entirety, including wounds, special effects, and ability effects.
 
 ### School
 
@@ -234,12 +266,21 @@ Specialty Arrows which strike a player or object can have various effects.
    a. Owners of Specialty Arrows may grant other players permission to carry their Specialty Arrows in order to return them to the owner or to the owner's base, but may not grant anyone else permission to use them.
 2. Specialty Arrows must be fired alone.
 3. Incantations for Specialty Arrows must be said immediately prior to firing, and said loudly and clearly enough to be heard within 50'.
-4. All Specialty Arrow incantations are treated as Ambulant but do not require the statement of "Ambulant" before their incantation.
-5. Properly cast Specialty Arrows count as a normal hit from an arrow to the location struck in addition to their listed effects.
+4. The incantations for Specialty Arrows are not interrupted by the caster moving their feet.
+5. Properly cast Specialty Arrows count as a normal hit from an arrow to the location struck in addition to their listed effects. Improperly cast Specialty Arrows have no effect, even that of a normal arrow.
+6. Specialty Arrows must be covered with the appropriate color.
+   a. Properly colored strips may be affixed to the shaft in lieu of colored head covers. These strips must be clearly visible from at least 20' away and not impact the safe use of the arrow.
 
 ### Traits
 
-Class abilities that function all of the time without activation being required. Includes such things as Immunity and the ability to use extra equipment. Traits are denoted with a (T) and are not considered States nor Enchantments. Traits may not be removed by any means and persist after respawn. Immunities granted by Traits persist after death. Traits are not enchantments, and do not count towards enchantment limits or count for the purposes of Attuned, Essence Graft, or similar abilities. Note: Some Traits mimic other abilities, but these Traits are still always on and ignore any incantation or Material Requirements listed.
+Class abilities that function all the time without activation being required. Traits are denoted with a (T) and are not considered States nor Enchantments.
+
+Traits:
+
+1. May not be removed by any means.
+2. Persist after death and respawn.
+3. Do not count towards enchantment limits or count for the purposes of Attuned, Essence Graft, nor similar abilities.
+4. Do not require strips, in the case of Enchantments granted as Traits.
 
 ### Trigger
 
@@ -250,7 +291,7 @@ Some abilities have special circumstances that must be met before they can be ca
 
 ### Verbal
 
-Abilities that require an incantation to be cast. Verbals can have an immediate effect or impart a State or an Ongoing Effect. Ongoing Effects may have a duration, after which it expires. If a player would gain an Ongoing Effect they are already affected by, the Ongoing Effect's duration will simply be adjusted to the new duration if it is longer than the current duration. An Ongoing Effect without a duration continues until it is removed by some outside force or until a condition is met. Unless otherwise noted, Ongoing Effects cannot apply to dead players and are removed when a player dies or has an ability activate which allows the player struck to avoid death (Troll Blood, Phoenix Tears, Song of Survival).
+Abilities that only require an incantation to be cast. Verbals can have an immediate effect (such as Mend), they can apply a State (such as Icy Blast), and they can apply an Ongoing Effect (such as Elemental Barrage).
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 24–30 (PDF pp. 27–33). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 25–30 (PDF pp. 27–32). Flavor text omitted.*

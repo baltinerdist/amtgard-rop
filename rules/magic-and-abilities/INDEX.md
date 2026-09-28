@@ -1,16 +1,16 @@
 ---
 title: "Magic and Abilities — Index"
 section: Magic and Abilities
-printed_pages: 59-75
-pdf_pages: 62-78
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+printed_pages: 60-75
+pdf_pages: 62-77
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
 # Magic and Abilities — Index
 
-All 180 abilities from the *Magic and Abilities* section, one file each.
+All 179 abilities from the *Magic and Abilities* section, one file each.
 See [`_overview.md`](_overview.md) for the section intro and format key.
 
 ## All Abilities (alphabetical)
@@ -40,7 +40,7 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Berserk | Barbarian 1 | [berserk.md](berserk.md) |
 | Berserker | Barbarian 6 | [berserker.md](berserker.md) |
 | Blessed Aura | Healer 5 | [blessed-aura.md](blessed-aura.md) |
-| Blessing Against Harm | Healer 4 | [blessing-against-harm.md](blessing-against-harm.md) |
+| Blessing Against Harm | Healer 4, Wizard 5 | [blessing-against-harm.md](blessing-against-harm.md) |
 | Blessing Against Wounds | Healer 1, Monk 6 | [blessing-against-wounds.md](blessing-against-wounds.md) |
 | Blink | Assassin 3 | [blink.md](blink.md) |
 | Blood and Thunder | Barbarian 6 | [blood-and-thunder.md](blood-and-thunder.md) |
@@ -76,7 +76,6 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Evoker | Wizard 6 | [evoker.md](evoker.md) |
 | Evolution | Scout 4 | [evolution.md](evolution.md) |
 | Experienced | Bard 1, Druid 1, Healer 1, Wizard 1 | [experienced.md](experienced.md) |
-| Extend Immunities | Paladin 3 | [extend-immunities.md](extend-immunities.md) |
 | Extension | Bard 3, Druid 3, Healer 3, Wizard 3 | [extension.md](extension.md) |
 | Finger of Death | Wizard 6 | [finger-of-death.md](finger-of-death.md) |
 | Fireball | Wizard 4, Anti-Paladin 6 | [fireball.md](fireball.md) |
@@ -95,16 +94,15 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Greater Resurrect | Healer 5, Paladin 4 | [greater-resurrect.md](greater-resurrect.md) |
 | Guardian | Paladin 6 | [guardian.md](guardian.md) |
 | Harden | Healer 1, Warrior 1 | [harden.md](harden.md) |
+| Harden Armor | Warrior 6, Druid 1 | [harden-armor.md](harden-armor.md) |
 | Heal | Druid 2, Healer 1, Monk 1, Scout 1 | [heal.md](heal.md) |
 | Heart of the Swarm | Bard 5, Druid 5 | [heart-of-the-swarm.md](heart-of-the-swarm.md) |
 | Heat Weapon | Druid 1, Wizard 1 | [heat-weapon.md](heat-weapon.md) |
-| Hold Person | Assassin 4, Healer 2, Scout 5, Wizard 3 | [hold-person.md](hold-person.md) |
+| Hold Person | Assassin 4, Healer 2, Scout 4, Wizard 3 | [hold-person.md](hold-person.md) |
 | Hunter | Scout 6 | [hunter.md](hunter.md) |
 | Iceball | Druid 4, Healer 3, Wizard 3 | [iceball.md](iceball.md) |
 | Icy Blast | Druid 3, Wizard 4 | [icy-blast.md](icy-blast.md) |
-| Imbue Armor | Warrior 6, Druid 1 | [imbue-armor.md](imbue-armor.md) |
-| Imbue Shield | Paladin 6, Healer 4 | [imbue-shield.md](imbue-shield.md) |
-| Imbue Weapon | Druid 6 | [imbue-weapon.md](imbue-weapon.md) |
+| Imbue | Paladin 6, Healer 4 | [imbue.md](imbue.md) |
 | Infernal | Anti-Paladin 6 | [infernal.md](infernal.md) |
 | Innate | Monk 6, Bard 2, Druid 2, Healer 2, Wizard 2 | [innate.md](innate.md) |
 | Inquisitor | Paladin 6 | [inquisitor.md](inquisitor.md) |
@@ -135,6 +133,7 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Poison Arrow | Archer 1, Assassin 2 | [poison-arrow.md](poison-arrow.md) |
 | Poison Glands | Druid 5 | [poison-glands.md](poison-glands.md) |
 | Priest | Healer 6 | [priest.md](priest.md) |
+| Protection from Evil | Paladin 3 | [protection-from-evil.md](protection-from-evil.md) |
 | Protection from Magic | Healer 6, Paladin 6, Wizard 6 | [protection-from-magic.md](protection-from-magic.md) |
 | Protection from Projectiles | Healer 4 | [protection-from-projectiles.md](protection-from-projectiles.md) |
 | Pyrotechnics | Wizard 5 | [pyrotechnics.md](pyrotechnics.md) |
@@ -185,6 +184,7 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Teleport | Assassin 5, Druid 4, Healer 4, Wizard 2 | [teleport.md](teleport.md) |
 | Terror | Anti-Paladin 1, Bard 4 | [terror.md](terror.md) |
 | Throw | Wizard 3 | [throw.md](throw.md) |
+| Toxic Blades | Druid 6 | [toxic-blades.md](toxic-blades.md) |
 | Tracking | Scout 1 | [tracking.md](tracking.md) |
 | Trickery | Assassin 1 | [trickery.md](trickery.md) |
 | Troll Blood | Druid 5 | [troll-blood.md](troll-blood.md) |
@@ -192,7 +192,6 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | Undead Minion | Healer 5 | [undead-minion.md](undead-minion.md) |
 | Vampirism | Wizard 4 | [vampirism.md](vampirism.md) |
 | Void Touched | Anti-Paladin 6, Wizard 5 | [void-touched.md](void-touched.md) |
-| Ward Self | Wizard 5 | [ward-self.md](ward-self.md) |
 | Warder | Healer 6 | [warder.md](warder.md) |
 | Warlock | Wizard 6 | [warlock.md](warlock.md) |
 | Word of Mending | Druid 6, Wizard 6 | [word-of-mending.md](word-of-mending.md) |
@@ -316,8 +315,8 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 1 | Entangle | [entangle.md](entangle.md) |
 | 1 | Equipment: Weapon, Short | [equipment-weapon-short.md](equipment-weapon-short.md) |
 | 1 | Experienced | [experienced.md](experienced.md) |
+| 1 | Harden Armor | [harden-armor.md](harden-armor.md) |
 | 1 | Heat Weapon | [heat-weapon.md](heat-weapon.md) |
-| 1 | Imbue Armor | [imbue-armor.md](imbue-armor.md) |
 | 1 | Mend | [mend.md](mend.md) |
 | 2 | Corrosive Mist | [corrosive-mist.md](corrosive-mist.md) |
 | 2 | Equipment: Shield, Small | [equipment-shield-small.md](equipment-shield-small.md) |
@@ -356,11 +355,11 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 5 | Troll Blood | [troll-blood.md](troll-blood.md) |
 | 6 | Avatar of Nature | [avatar-of-nature.md](avatar-of-nature.md) |
 | 6 | Call Lightning | [call-lightning.md](call-lightning.md) |
-| 6 | Imbue Weapon | [imbue-weapon.md](imbue-weapon.md) |
 | 6 | Naturalize Magic | [naturalize-magic.md](naturalize-magic.md) |
 | 6 | Ranger | [ranger.md](ranger.md) |
 | 6 | Snaring Vines | [snaring-vines.md](snaring-vines.md) |
 | 6 | Summoner | [summoner.md](summoner.md) |
+| 6 | Toxic Blades | [toxic-blades.md](toxic-blades.md) |
 | 6 | Word of Mending | [word-of-mending.md](word-of-mending.md) |
 
 ### Healer
@@ -397,7 +396,7 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 4 | Circle of Protection | [circle-of-protection.md](circle-of-protection.md) |
 | 4 | Dispel Magic | [dispel-magic.md](dispel-magic.md) |
 | 4 | Greater Heal | [greater-heal.md](greater-heal.md) |
-| 4 | Imbue Shield | [imbue-shield.md](imbue-shield.md) |
+| 4 | Imbue | [imbue.md](imbue.md) |
 | 4 | Protection from Projectiles | [protection-from-projectiles.md](protection-from-projectiles.md) |
 | 4 | Swift | [swift.md](swift.md) |
 | 4 | Teleport | [teleport.md](teleport.md) |
@@ -443,10 +442,10 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | --- | --- | --- |
 | 1 | Awe | [awe.md](awe.md) |
 | 2 | Greater Heal | [greater-heal.md](greater-heal.md) |
-| 3 | Extend Immunities | [extend-immunities.md](extend-immunities.md) |
+| 3 | Protection from Evil | [protection-from-evil.md](protection-from-evil.md) |
 | 4 | Greater Resurrect | [greater-resurrect.md](greater-resurrect.md) |
 | 6 | Guardian | [guardian.md](guardian.md) |
-| 6 | Imbue Shield | [imbue-shield.md](imbue-shield.md) |
+| 6 | Imbue | [imbue.md](imbue.md) |
 | 6 | Inquisitor | [inquisitor.md](inquisitor.md) |
 | 6 | Martyr | [martyr.md](martyr.md) |
 | 6 | Protection from Magic | [protection-from-magic.md](protection-from-magic.md) |
@@ -462,7 +461,7 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 3 | Dispel Magic | [dispel-magic.md](dispel-magic.md) |
 | 3 | Shadow Step | [shadow-step.md](shadow-step.md) |
 | 4 | Evolution | [evolution.md](evolution.md) |
-| 5 | Hold Person | [hold-person.md](hold-person.md) |
+| 4 | Hold Person | [hold-person.md](hold-person.md) |
 | 5 | Pinning Arrow | [pinning-arrow.md](pinning-arrow.md) |
 | 6 | Adaptive Protection | [adaptive-protection.md](adaptive-protection.md) |
 | 6 | Apex | [apex.md](apex.md) |
@@ -479,7 +478,7 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 5 | Shake It Off | [shake-it-off.md](shake-it-off.md) |
 | 6 | Ancestral Armor | [ancestral-armor.md](ancestral-armor.md) |
 | 6 | Greater Harden | [greater-harden.md](greater-harden.md) |
-| 6 | Imbue Armor | [imbue-armor.md](imbue-armor.md) |
+| 6 | Harden Armor | [harden-armor.md](harden-armor.md) |
 | 6 | Juggernaut | [juggernaut.md](juggernaut.md) |
 | 6 | Marauder | [marauder.md](marauder.md) |
 | 6 | Momentum | [momentum.md](momentum.md) |
@@ -525,13 +524,13 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 4 | Vampirism | [vampirism.md](vampirism.md) |
 | 4 | Wounding | [wounding.md](wounding.md) |
 | 5 | Ambulant | [ambulant.md](ambulant.md) |
+| 5 | Blessing Against Harm | [blessing-against-harm.md](blessing-against-harm.md) |
 | 5 | Contagion | [contagion.md](contagion.md) |
 | 5 | Equipment: Weapon, Long | [equipment-weapon-long.md](equipment-weapon-long.md) |
 | 5 | Phase Bolt | [phase-bolt.md](phase-bolt.md) |
 | 5 | Pyrotechnics | [pyrotechnics.md](pyrotechnics.md) |
 | 5 | Steal Life Essence | [steal-life-essence.md](steal-life-essence.md) |
 | 5 | Void Touched | [void-touched.md](void-touched.md) |
-| 5 | Ward Self | [ward-self.md](ward-self.md) |
 | 6 | Battlemage | [battlemage.md](battlemage.md) |
 | 6 | Elemental Barrage | [elemental-barrage.md](elemental-barrage.md) |
 | 6 | Evoker | [evoker.md](evoker.md) |
@@ -543,4 +542,4 @@ See [`_overview.md`](_overview.md) for the section intro and format key.
 | 6 | Word of Mending | [word-of-mending.md](word-of-mending.md) |
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 59–75 (PDF pp. 62–78). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 60–75 (PDF pp. 62–77). Flavor text omitted.*

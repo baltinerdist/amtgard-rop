@@ -2,10 +2,10 @@
 title: "Attuned"
 section: Magic and Abilities
 pdf_page: 63
-printed_page: 60
+printed_page: 61
 class_availability: ["Druid 3"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -25,9 +25,9 @@ source: Amtgard Rules of Play Version 8
 
 **Effect:** May wear an additional Enchantment. Attuned does not count towards the bearer's Enchantment limit.
 
-**Limitations:** This ability may not be used in conjunction with any other similar ability.
+**Limitations:** This ability may not be used in conjunction with itself or any other similar abilities.
 
 **Note:** If Attuned is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 61 (PDF p. 63). Flavor text omitted.*

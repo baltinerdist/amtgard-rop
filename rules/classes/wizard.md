@@ -1,10 +1,10 @@
 ---
 title: Wizard
 section: Classes
-printed_pages: 57-58
+printed_pages: 58-59
 pdf_pages: 60-61
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -26,7 +26,7 @@ The Wizard class is designed for powerful ranged offense and battlefield control
 
 ## Magic User
 
-Wizards may purchase five magic points from each level. Unused points from higher levels can be rolled down to lower levels. A list of all magic purchased must be carried at all times. All abilities purchased by Magic Users are Magical abilities.
+Magic Users may purchase five magic points from each level. Unused points from higher levels can be rolled down to lower levels. A list of all magical abilities purchased must be carried at all times. All abilities purchased by Magic Users are Magical abilities. Magic Users must have an empty hand to cast their abilities.
 
 ## Spell List
 
@@ -37,8 +37,8 @@ Full definitions for each spell/ability live in `../magic-and-abilities/`.
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
 | Banish | 1 | - | 1/Life | Verbal | Spirit | 20' |
-| Equipment: Weapon, Short | 2 | 1 | - | Neutral | Neutral | - |
-| Experienced | 2 | 2 | - | Neutral | Neutral | - |
+| Equipment: Weapon, Short | 2 | 1 | - | Trait | Neutral | - |
+| Experienced | 2 | 2 | - | Trait | Neutral | - |
 | Force Barrier | 1 | - | 1/Life | Verbal | Sorcery | Self |
 | Force Bolt | 1 | 8 | 3 Balls / Unlimited | Magic Ball | Sorcery | - |
 | Heat Weapon | 1 | - | 1/Life | Verbal | Flame | 20' |
@@ -80,8 +80,8 @@ Full definitions for each spell/ability live in `../magic-and-abilities/`.
 | Destroy Armor | 1 | - | 2/Refresh | Verbal | Death | 20' |
 | Dimensional Rift | 1 | - | 1/Refresh | Verbal | Sorcery | 20' |
 | Fireball | 1 | 4 | 1 Ball / Unlimited | Magic-Ball | Flame | - |
-| Icy Blast | 1 | - | 1/Refresh | Verbal | Sorcery | 20' |
-| Shatter | 1 | - | 1/Refresh | Verbal | Sorcery | 20' |
+| Icy Blast | 1 | 4 | 1/Refresh | Verbal | Sorcery | 20' |
+| Shatter | 1 | 4 | 1/Refresh | Verbal | Sorcery | 20' |
 | Suppress Aura | 1 | - | 1/Refresh | Verbal | Command | 50' |
 | Swift | 1 | 2 | 1/Life | Meta-Magic | Neutral | - |
 | Vampirism | 1 | - | 1/Refresh | Enchantment | Death | Other |
@@ -92,13 +92,13 @@ Full definitions for each spell/ability live in `../magic-and-abilities/`.
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
 | Ambulant | 1 | 2 | 1/Life | Meta-Magic | Neutral | - |
+| Blessing Against Harm | 1 | 2 | 1/Refresh | Enchantment | Protection | Self |
 | Contagion | 1 | - | 1/Refresh | Enchantment | Death | Other |
-| Equipment: Weapon, Long | 4 | 1 | - | Neutral | Neutral | - |
+| Equipment: Weapon, Long | 4 | 1 | - | Trait | Neutral | - |
 | Phase Bolt | 1 | 4 | 1 Ball / Unlimited | Magic Ball | Sorcery | - |
 | Pyrotechnics | 1 | 2 | 1/Refresh | Verbal | Flame | 50' |
 | Steal Life Essence | 1 | 2 | 1/Life | Verbal | Death | Touch |
 | Void Touched | 1 | 2 | 1/Refresh | Enchantment | Sorcery | Other |
-| Ward Self | 1 | 2 | 1/Refresh | Enchantment | Protection | Self |
 
 ### 6th Level
 
@@ -115,4 +115,4 @@ Full definitions for each spell/ability live in `../magic-and-abilities/`.
 | Word of Mending | 1 | - | 1/Refresh | Verbal | Sorcery | Touch |
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 57–58 (PDF pp. 60–61). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 58–59 (PDF pp. 60–61). Flavor text omitted.*

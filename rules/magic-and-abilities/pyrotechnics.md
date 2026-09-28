@@ -1,11 +1,11 @@
 ---
 title: "Pyrotechnics"
 section: Magic and Abilities
-pdf_page: 72
+pdf_page: 71
 printed_page: 69
 class_availability: ["Wizard 5"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -28,4 +28,4 @@ source: Amtgard Rules of Play Version 8
 **Note:** Pyrotechnics targets the player but affects their equipment. Immunities, resistances, and other protections will only protect the equipment from Pyrotechnics if they specifically extend to the equipment, such as Blessed Aura or Flame Blade. Abilities like Enlightened Soul, Protection from Magic, and Adaptive Protection (Flame) do not extend to equipment and thus cannot protect from Pyrotechnics.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 69 (PDF p. 72). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 69 (PDF p. 71). Flavor text omitted.*

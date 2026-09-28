@@ -1,10 +1,10 @@
 ---
 title: Combat Rules
 section: Combat Rules
-printed_pages: 6-8
+printed_pages: 7-9
 pdf_pages: 9-11
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -33,9 +33,9 @@ A foot on the ground is not wounded if struck below the ankle and all effects of
 3. A wounded arm may carry equipment, but may not wield equipment or cast abilities, and must be kept out of combat. A wounded arm is capable of receiving an additional wound.
 4. Players who receive a leg wound must decide if they are going to kneel or post with that leg. A player can switch between kneeling and posting by declaring as such with no living enemies within 20', or when instructed by a reeve.
    a. If a player chooses to kneel, their wounded leg must have the knee in contact with the ground. The knee of the wounded leg may be lifted from the ground briefly to enable movement so long as the unwounded leg has a knee on the ground.
-   b. If a player chooses to post, the player must immediately notify their opponent(s) of this by stating "posting". While posting, the player may not voluntarily move the foot of the wounded leg, although it may be used to pivot.
+   b. If a player chooses to post, the player must immediately notify their opponent(s) of this by declaring "posting". While posting, the player may not voluntarily move the foot of the wounded leg, although it may be used to pivot.
 5. A wounded leg is capable of receiving an additional wound (even if "posting"), except when the knee is on the ground or during the initial placement of the knee on the ground after receiving a wound.
-6. A player with a wounded leg may 'hobble' by declaring "hobbling" and then moving slowly, taking no more than one step per second, and dragging a leg as long as there are no living enemies within 20'. While moving in this manner, the wounded player must chant "hobbling" and may not attack or cast abilities, but may defend themselves. Afterwards, the player must either kneel or re-declare "posting".
+6. A player with a wounded leg may 'hobble' by declaring and chanting "hobbling" while no living enemies are within 20'. The wounded player must move slowly, take no more than one step per second, and drag a leg. While hobbling, the wounded player may not attack or cast abilities, but may defend themselves. Afterwards, they must either kneel or re-declare "posting".
 
 ## Combat Contact
 
@@ -44,8 +44,8 @@ A broad range of contact is allowed in combat. The rules below outline what is a
 **Allowed:** The following actions are acceptable.
 
 1. Weapon to weapon contact is allowed.
-2. Weapon to body contact is allowed on valid Hit Locations using Strike-Legal portions.
-3. Body to weapon contact: Weapons may be pushed, swept, and otherwise manipulated with your body so long as the weapon is not trapped or grabbed. Pushing or sweeping a Strike-Legal surface results in a valid hit to the location used for contact.
+2. Weapon to body contact is allowed on valid hit locations using Strike-Legal portions.
+3. Body to weapon contact: an enemy's weapons may be pushed, swept, and otherwise manipulated with your body so long as the weapon is not trapped or grabbed. Pushing or sweeping a Strike-Legal surface on an enemy's weapon results in a valid hit to the location used for contact.
 4. Weapon to shield contact is allowed.
 5. Shield to weapon contact: Shields may be used to deflect, move or pin an opponent's weapon.
 6. Shield to shield contact: Shields may be used to deflect, turn, or pin an opponent's shield so long as the wielder of the struck shield is not moved. Bashing a shield is prohibited.
@@ -58,46 +58,56 @@ A broad range of contact is allowed in combat. The rules below outline what is a
 4. Active weapon to body contact using portions of a weapon other than Strike-Legal is prohibited; passively planting the shaft of a weapon to block an incoming opponent is acceptable.
 5. Forcing a player's weapons against them with your body or shield is prohibited.
 
-## Inflicting Wounds
+## Valid Strikes
 
-Wounds may be inflicted by contacting a Hit Location with the Strike-Legal portion of a weapon. Shots from melee weapons fall into two broad categories:
+In order for a hit to count, certain requirements must be met. Most hits must hit a player or their armor to count. Hits to garb or a player's other carried equipment won't count unless the hit is Engulfing, or if the hit otherwise would have struck the player. In this case, it counts as hitting both the player and whatever it actually struck. For example, an arrow striking a sword on a player's hip might both break the sword and injure the leg behind the blade.
+
+**Melee Weapons:** Melee weapons inflict wounds by contacting a Hit Location with the Strike-Legal portion of the weapon, and can be used to slash or stab depending on their construction.
 
 - **Slash:** A valid slash must be percussive (contact with an audible pop) and stop on or deflect off the victim.
 - **Stab:** A valid stab must strike with the tip and stop on or deflect off the victim.
 
-These requirements do not apply to projectiles. Any contact from the Strike-Legal portion of a projectile weapon is considered a valid hit.
-
-Some contacts which partially fulfill the above criteria are listed here as examples of invalid shots.
-
-**Examples of Invalid Shots:**
+For melee weapons, these are some examples of what would constitute an invalid shot:
 
 - **Grazes:** Slashes that are neither percussive nor stop/deflect.
 - **Draw Cuts:** Stabs which fail to strike with the tip. These contacts slide against a victim instead of impacting cleanly.
 - **Pushes:** These contacts are pushed into or slid against a victim after the initial motion was completely blocked and the initial motion had stopped.
 
+**Thrown Weapons:** Contact from any part of most thrown weapons will count as a valid hit. For javelins, contact must be made by the Strike-Legal portion of the weapon.
+
+**Arrows:** Contact from any part of the arrow in front of the arrow blunt will constitute a valid hit.
+
+**Magic Balls:** Contact from any part of the magic ball, including the tail, will count as a valid hit.
+
+**Shot in Motion:** If a person is killed or wounded in an arm that is throwing a shot, the hit may still count if it lands within an acceptable timeframe. For melee weapons, this is half a second. For projectiles, the projectile must already be in flight. This should be a clear case of finishing an already thrown shot, meaning that it requires no change of direction and the last action required to finish the shot has already been started prior to being struck. In the case of a two-handed weapon, the wielder must remove their wounded hand from the weapon within a half second for the shot to count. If you have any questions, ask your kingdom/group level Guildmaster of Reeves. A reeve's call is always final in determining if a shot is in time or late.
+
 ## Death
 
 Any two wounds, or a wound to the torso, results in a death. Dead players:
 
-1. May not speak to living players or interact with game play in any manner.
-2. May move to avoid mundane danger or interfering with living players. This does not count as moving for the purposes of abilities so long as no game advantage was derived.
-3. May retrieve their own equipment from the field while dead, but may not interfere with play in any way and must stay at least 10' from any living opposing players while doing so.
-4. May only be affected by mechanics that work on dead players in specific, such as Resurrect or Raise Dead. Otherwise the player and their carried equipment are not affected by combat, abilities, etc.
+1. Should visually indicate that they are dead by placing their hand or weapon on or above their head.
+2. May not speak to living players or interact with game play in any manner.
+3. May move to avoid mundane danger or interfering with living players. This does not count as moving for the purposes of abilities so long as no game advantage was derived.
+4. May retrieve their own equipment from the field while dead, but may not interfere with play in any way and must stay at least 10' from any living opposing players while doing so.
+5. May only be affected by mechanics that work on dead players in specific, such as Resurrect or Raise Dead. Otherwise the player and their carried equipment are not affected by combat, abilities, etc.
 
-## Combat Notes
+Players may also always choose to take a death. Intentionally causing your own death is the same as taking a death. Examples include purposefully striking yourself with a weapon, casting Finger of Death on yourself, and jumping into lava or off a bridge. Players who take a death:
 
-Miscellaneous rules necessary for the smooth operation of combat.
+1. May not return to play except by respawning
+2. May not cast any 'on death' abilities such as True Grit
+3. Have all Enchantments removed (including Persistent ones)
+4. Do not benefit from any abilities that prevent death such as Phoenix Tears.
 
-1. Shots that only strike garb, armor, or carried equipment do not count as a hit unless:
-   a. Said items blocked a blow that would have struck a combatant (i.e. garb, carried equipment, etc. are not shields and do not count as armor). Strikes to unwielded equipment are treated as having struck that equipment as well as whatever they would have made contact with were the equipment not there.
-   b. The shot is Engulfing. Engulfing effects do trigger on garb and equipment hits.
-2. If a person is wounded in an arm that is throwing a shot, or is killed, shots they threw into motion before being struck still count as a hit if the shot lands within a half second of the throwing arm being struck. In the case of a two-handed weapon, the wielder must remove their wounded hand from the weapon within a half second for the shot to count. This should be a clear case of finishing an already thrown shot, meaning that it requires no change of direction and the last action required to finish the shot has already been started prior to being struck. If you have any questions, ask your kingdom/group level Guildmaster of Reeves. A reeve's call is always final in determining if a shot is in time or late.
-3. Carried equipment includes both wielded and unwielded equipment in hand, as well as any equipment held or worn on the player's person in any way.
-   a. A player may hold more than one weapon in a single hand, but may not wield more than one weapon in a single hand at the same time.
-   b. It must be visually clear at all times which weapons are wielded and which weapons are unwielded. If this is not the case, all of the player's weapons are considered unwielded. Example: A player may hold a Dagger in one of the two hands wielding a Great weapon, but could not hold two Shorts in the same hand and only consider one of them wielded.
-   c. A player may fire multiple non-Specialty arrows simultaneously, but may not throw multiple thrown weapons, Javelins, or Magic Balls at once from a single hand.
-4. Players may always choose to take a death. Players who take a death may not return to play except by respawning, may not cast any 'on death' abilities such as True Grit, have all Enchantments removed (including Persistent ones), and do not benefit from any abilities that prevent death such as Phoenix Tears.
-   a. Intentionally causing your own death is the same as taking a death. Examples include striking yourself with a weapon, casting Finger of Death on yourself, and jumping into lava or off a bridge.
+## Using Equipment
+
+All equipment carried upon a player's person counts as carried equipment, whether carried in hand like a sword or otherwise attached to their body, like armor or a bag of thrown weapons. A player may carry any amount of equipment, but is limited in the amount of equipment they can wield (use) at a given time.
+
+1. A player may hold more than one melee weapon in a single hand, but may not wield more than one weapon in a single hand at the same time.
+2. A player may carry multiple Magic Balls or thrown weapons in the same hand, but may only throw one at a time.
+3. A player may fire multiple non-Specialty arrows simultaneously.
+4. A player may wield only one shield at any time.
+5. A player may wield both a shield and a weapon in the same hand. (A Madu counts as both a shield and a weapon.)
+6. It must be visually clear at all times which weapons are wielded and which weapons are unwielded. If this is not the case, all of the player's weapons are considered unwielded. Example: A player may hold a Dagger in one of the two hands wielding a Great weapon, but could not hold two Shorts in the same hand and only consider one of them wielded.
 
 ## Combat Etiquette
 
@@ -113,8 +123,7 @@ Combat is fast-paced and highly competitive. In order to minimize misunderstandi
 2. Communicate early and often with your opponents. If you made a close block or feel your opponent's shot was invalid, communicate it immediately.
 3. If you are unsure if your opponent's shot was good enough, it was. Only shots which are clearly invalid should be treated as such. If you have to think about it, take it.
 4. If an opponent hits you with a shot you think is late, ask them if they think it was in time. If they believe it was in time or are unsure if it was in time, take the shot.
-5. When dead, immediately move yourself the minimum distance necessary to avoid interfering with ongoing combat. Visually indicate that you are dead by placing your hand or weapon on or above your head.
-6. If asked you must promptly declare your current wounded status.
+5. When dead, immediately move yourself the minimum distance necessary to avoid interfering with ongoing combat.
 
 ### Delivering Shots
 
@@ -133,4 +142,4 @@ Combat is fast-paced and highly competitive. In order to minimize misunderstandi
 5. If it is necessary to notify nearby players of a safety situation which requires them to stop play, then the player recognizing the situation should announce loudly "safety" to get the attention of nearby players and direct them away from the situation. If it is necessary to stop play for the entire field a player should announce loudly "emergency". All players must avoid safety incidents while continuing play. All players must immediately stop play and cease moving until an emergency incident has been resolved.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 6–8 (PDF pp. 9–11). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 7–9 (PDF pp. 9–11). Flavor text omitted.*

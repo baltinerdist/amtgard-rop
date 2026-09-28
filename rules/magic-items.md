@@ -2,47 +2,45 @@
 title: Magic Items
 section: Magic Items
 printed_pages: 76-78
-pdf_pages: 79-81
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+pdf_pages: 78-80
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
 # Magic Items
 
-Items imbued with magic are a common part of Amtgard. Unlike temporary Enchantments, some Magic Items may be reused by their owners in each game. Magic Items may be acquired in a variety of ways. Some common examples are quests, themed battlegames, rewards for doing work for the group, or as part of reign-long campaign.
+Relics imbued with magic are a common part of Amtgard. Magic Items may be acquired in a variety of ways. Some common examples are quests, themed battlegames, rewards for doing work for the group, or as part of a reign-long campaign.
 
 ## Magic Item Rules
 
-1. Magical Items each have a category corresponding with their level of power from Trinket to Talisman to Artifact.
-2. Magical Items are awarded at the discretion of the group officers.
-3. The officers of the group are responsible for tracking what Magic Items are owned by whom.
-4. Some Magic Items are one-use only. Magic Items which are used up are no longer available to the player and must be reported to the officers of the group.
-5. Ownership of Magical Items resets at the beginning of each reign.
-6. Magical Items may only be used by the person to whom they are given initially. Magical Items may not be transferred or traded to another player without the permission of the monarch who awarded them and the reeve of the battlegame.
-7. All magical items require the player to carry a copy of the write-up in order to function.
-8. Enchantments conferred by Magical Items function exactly as normal (m) Enchantments; they count towards your Enchantment limit, may be removed by Dispel Magic, require a strip, etc.
-9. Some Magic Items have a material component requirement. These components must be present in order for the Magic Item to be used and must be verified by the reeve prior to the start of the battlegame. Identical material component requirements may all be served by the same physical object. You do not need a unique bottle for each potion.
-10. Magical Items only function at the group level they were awarded and are unique to that group. For instance a player who receives a Magical Item at the park level may only use it at that park, but a player who receives a Magical Item at the kingdom level may use it at any park in that kingdom.
-11. Magical Items may not be used at interkingdom events unless allowed by the host kingdom.
-12. Magic items that may be destroyed cease to function in all ways while destroyed.
-13. Uses of abilities granted by a Magic Item are tracked separately from a player's own abilities, and are recharged separately.
+1. Magic Items, or Relics, fall into one of three categories:
+   a. Trinkets: Minor items suitable for use in most battlegames.
+   b. Talismans: Items of meaningful power that may not be suitable for all battlegames.
+   c. Artifacts: Items of substantial power that should be carefully considered before being allowed in battlegames. Artifacts are typically unique within a kingdom, with only one of a given artifact in play at any time.
+2. Magic Items are awarded at the discretion of the group officers, and ownership of those items resets at the beginning of each Monarch's reign.
+   a. Magic Items may not be transferred, lent, or traded to another player without the permission of the monarch who awarded them and the reeve of the battlegame.
+   b. Magic Items only function at the group level they were awarded. A player who receives a Magic Item at the park level may only use it at that park, but a player who receives a Magic Item at the kingdom level may use it at any park in that kingdom.
+   c. Magic Items may not be used at interkingdom events unless allowed by the host kingdom.
+3. Magic Items typically have a material component requirement, such as a particular sword, scroll, or bracelet.
+   a. These components must be present in order for the Magic Item to be used and must be verified by the reeve prior to the start of the battlegame.
+   b. Identical material component requirements may all be served by the same physical object. You do not need a unique bottle for each potion.
+   c. Magic Items with a Material Component that may be destroyed - such as a sword - cease to function in all ways while destroyed.
+4. All Magic Items require the player to carry a copy of the write-up in order to function.
+5. Uses of abilities granted by a Magic Item are tracked separately from a player's own abilities, and are recharged separately.
+   a. Magic Items with only one use are expended after that use, and may never be used again.
 
 ## Battlegaming With Magic Items
 
-Here are some basic guidelines for how to use Magic Items in battlegames. These guidelines may be changed or adapted by the battlegame reeve. Reeves are always encouraged to consider game balance when determining what Magic Items are allowed in the game.
+Here are some basic guidelines for how to use Magic Items in battlegames.
 
-1. Magic Items are typically only used in full-class battlegames
-2. The reeve always has final say over the use or behavior of Magic Items in a battlegame.
-3. The reeve for the game has the final say in what Magical Items (if any) are allowed in a battlegame in all situations.
-4. Typically games with less than 14 people are limited to Trinkets, 15 to 30 people may use up to Talismans, and games with more than 30 people may use Artifacts.
-5. A player may use up to one Artifact in a battlegame.
-6. A player may use up to two Talismans in a battlegame.
-7. A player may use up to three Trinkets in a battlegame.
+1. The reeve for the game always has final say over the use or behavior of Magic Items in a battlegame, including adjusting these guidelines. Reeves are always encouraged to consider game balance when determining what Magic Items are allowed in the game.
+2. A player may only use a limited number of Magic Items in a battlegame at one time, including:
+   a. Three Trinkets in any game.
+   b. Two Talismans in games with 15+ people.
+   c. One Artifact in games with 30+ people.
 
 ## Trinkets
-
-Trinkets are lesser Magical Items that are not overly powerful and can safely be used in most battlegames.
 
 ### Potion of Barkskin
 
@@ -129,8 +127,6 @@ Trinkets are lesser Magical Items that are not overly powerful and can safely be
 
 ## Talismans
 
-Talismans are Magical Items of meaningful power that may require consideration before being allowed in some battlegames.
-
 ### Amulet of Force
 
 - **Use:** 1/Game
@@ -175,13 +171,13 @@ Talismans are Magical Items of meaningful power that may require consideration b
 
 - **Use:** Always on while worn
 - **M:** Bracelet measuring at least 1" wide worn around the wrist. Must be made of leather or metal and may not be red, yellow, or white.
-- **E:** Further Effects which make the player Insubstantial, including effects initiated by the player or beneficial effects, fail as per Planar Grounding. Bearer must announce "Immune to insubstantial" when this effect is triggered.
+- **E:** Further Effects which make the player Insubstantial, including effects initiated by the player or beneficial effects, fail as per Planar Grounding. Bearer must declare "Immune to insubstantial" when this effect is triggered.
 
 ### Bracelet of Stoneskin
 
 - **Use:** 1/Game
 - **R:** Self
-- **I:** "I draw upon the power of my bracer of stoneskin"
+- **I:** "I draw upon the power of my bracelet of stoneskin"
 - **M:** Bracelet measuring at least 1" wide worn around the wrist. Must be made of leather or metal and may not be red, yellow, or white.
 - **E:** Player casts Stoneskin (m).
 
@@ -199,7 +195,7 @@ Talismans are Magical Items of meaningful power that may require consideration b
 - **R:** Self
 - **I:** "My wand makes this item whole"
 - **M:** Rigid wand measuring at least 6" long and at least 0.5" in diameter.
-- **E:** Player casts Greater Mend (m)
+- **E:** Player casts Greater Mend (m).
 
 ### Wand of Release
 
@@ -211,25 +207,23 @@ Talismans are Magical Items of meaningful power that may require consideration b
 
 ## Artifacts
 
-Artifacts are powerful Magical Items which require careful consideration before being allowed into any battlegame. Artifacts are unique; there may only be one of each Artifact awarded per kingdom at a time.
-
 ### Ankh of Ran
 
 - **Use:** Always on while worn
 - **M:** A white ankh measuring at least twenty-five square inches prominently displayed on garb/equipment, or worn as an amulet.
-- **E:** Bearer gains Terror (20') Unlimited (ex). Terror may only be cast on players bearing Undead Minion, Vampirism, or Void Touched and will affect those players regardless of immunities.
+- **E:** Bearer gains Terror Unlimited (ex). Terror may only be cast on players bearing Undead Minion, Vampirism, or Void Touched and will affect those players regardless of immunities.
 
 ### Andalsa's Lament
 
 - **Use:** Always on while worn
 - **M:** A helmet worn upon the head which qualifies for the helm armor modifier. Must have a white Enchantment strip tied to it.
-- **E:** Bearer is affected as per Imbue Armor. Does not count as an Enchantment.
+- **E:** Bearer is affected as per Harden Armor.
 
 ### Cloak of Enigmas
 
 - **Use:** Always on while worn
 - **M:** A black cloak that covers from the shoulders to the back of the knees.
-- **E:** Doubles the bearers normal use of Shadow Step, Teleport, and Blink. Does not count as an Enchantment.
+- **E:** Doubles the bearers normal use of Shadow Step, Teleport, and Blink.
 - **L:** May only be used by Assassin or Scout.
 
 ### Homestone
@@ -237,38 +231,38 @@ Artifacts are powerful Magical Items which require careful consideration before 
 - **Use:** Always on while carried
 - **I:** As per Greater Mend
 - **M:** A highly polished stone sphere at least 1" in diameter.
-- **E:** Bearer gains Greater Mend 1/Life Charge x3. Does not count as an Enchantment.
+- **E:** Bearer gains Greater Mend 1/Life Charge x3 (m).
 
 ### Michael's Hammer
 
 - **Use:** Always on while carried
 - **M:** A Short weapon with a yellow cover or lightning decorations. Must have a red Enchantment strip tied to it. Must have at least 6" of Heavy Padding and be shaped like a hammer.
-- **E:** This weapon is Armor Destroying and Shield Destroying. Does not count as an Enchantment.
+- **E:** This weapon is Armor Destroying and Shield Destroying.
 
 ### Nuntius Staff
 
 - **Use:** Always on
 - **M:** A double ended great weapon no longer than 6' or a Magic Staff.
-- **E:** May be used by any Magic User at no cost to magic points. Grants an additional two magic points at the user's highest level. Magic points gained are not removed regardless of what happens to the staff. Does not count as an Enchantment.
+- **E:** May be used by any Magic User at no cost to magic points. Grants an additional two magic points at the user's highest level. Magic points gained are not removed regardless of what happens to the staff.
 - **L:** May only be used by Magic Users.
 
 ### Phase Blade
 
 - **Use:** Always on while carried
 - **M:** A Short weapon with a gray cover or force themed decorations. Must have a red and a yellow Enchantment strip tied to it.
-- **E:** This weapon is Phasing. Does not count as an Enchantment.
+- **E:** This weapon is Phasing.
 
 ### Shield of the Chosen
 
 - **Use:** Always on
 - **M:** A medium shield with a black cover featuring a white device. Must have a white Enchantment strip tied to it.
-- **E:** Shield is completely indestructible, including against other Magical Items. Engulfing effects striking the shield are nullified and ignored while it is wielded. Does not count as an Enchantment.
+- **E:** Shield is completely indestructible, including against other Magical Items. Engulfing effects striking the shield are nullified and ignored while it is wielded.
 
 ### Sword of Flame
 
 - **Use:** Always on while carried
 - **M:** A Short weapon with an orange cover or flame decorations. Must have a red and a white Enchantment strip tied to it.
-- **E:** The bearer and this weapon are Immune to Flame. This weapon is Armor Breaking and Shield Crushing. Does not count as an Enchantment.
+- **E:** The bearer and this weapon are Immune to Flame. This weapon is Armor Breaking and Shield Crushing.
 
 ## Creating New Magic Items
 
@@ -280,4 +274,4 @@ For themed reigns, special battlegames, or just for fun local group officers may
 4. Non-standard magic items should go away at the beginning of every reign.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 76–78 (PDF pp. 79–81). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 76–78 (PDF pp. 78–80). Flavor text omitted.*

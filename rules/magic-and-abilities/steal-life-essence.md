@@ -1,11 +1,11 @@
 ---
 title: "Steal Life Essence"
 section: Magic and Abilities
-pdf_page: 76
+pdf_page: 75
 printed_page: 73
 class_availability: ["Anti-Paladin 3", "Healer 5", "Wizard 5"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -21,11 +21,11 @@ source: Amtgard Rules of Play Version 8
 
 **Incantation:** "Steal life"
 
-**Effect:** Caster may heal a wound or instantly Charge an ability. May only be used on a dead player. That player is Cursed.
+**Effect:** Target dead player is Cursed. Caster may heal a wound or instantly Charge an ability.
 
-**Limitations:** Does not work on Cursed players. The caster does not gain the effect if the dead player is unaffected.
+**Limitations:** Does not work on Cursed players.
 
-**Note:** In order to charge an ability, the name of the ability being charged must still be stated immediately after the incantation.
+**Note:** Caster will always benefit if successfully cast on a valid target, regardless of the caster's Traits, States, Immunities, Ongoing Effects, or Enchantments. In order to charge an ability, the name of the ability being charged must still be stated immediately after the incantation.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 73 (PDF p. 76). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 73 (PDF p. 75). Flavor text omitted.*

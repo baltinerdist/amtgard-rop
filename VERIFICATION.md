@@ -1,17 +1,17 @@
 # Verification — Character-for-Character Accuracy
 
 Systematic verification of every converted file against the source PDF
-(`Amtgard Rules of Play.pdf`, V8.7). Reproducible via the scripts noted below.
+(`Amtgard Rules of Play.pdf`, V8.08 "Spongy"). The V8.7 → V8.08 update was verified with the same tooling; findings labelled *V8.7* below are historical and were fixed in the generators. Reproducible via the scripts noted below.
 
 **The source PDF is not tracked in this repo** — it is the copyrighted rulebook, and `LICENSE`
 limits who may reproduce it. The scripts resolve it relative to the repo root, so to re-run any
-of them place your own copy of the V8.7 rulebook at `<repo root>/Amtgard Rules of Play.pdf`
+of them place your own copy of the V8.08 rulebook at `<repo root>/Amtgard Rules of Play.pdf`
 (it is listed in `.gitignore`). Everything below was produced against that file.
 
 ## Result: PASS
 
-- **180 ability files** — token-for-token identical to source field text; class availability
-  correct on all 180; the four magic-user spell tables reconcile in both directions.
+- **179 ability files** — token-for-token identical to source field text; class availability
+  correct on all 179; the four magic-user spell tables reconcile in both directions.
 - **31 prose/class files** — no dropped rules, no altered numbers, no hallucinated content.
   Every residual difference is an intentional transformation (see "Explained differences").
 
@@ -19,7 +19,7 @@ of them place your own copy of the V8.7 rulebook at `<repo root>/Amtgard Rules o
 
 1. **`verify_abilities.py`** — four independent checks, non-zero exit if any fails:
 
-   a. **Body text.** For each of the 180 abilities, re-extract its raw source stat block
+   a. **Body text.** For each of the 179 abilities, re-extract its raw source stat block
       (column-cropped) and compare token by token against the rule text actually written in
       the `.md` — including list items, not just `**Label:**` lines. Source lines are rejoined
       with the generator's own rule so a token the PDF wrapped mid-word (`Meta-` / `Magics`)
@@ -31,10 +31,10 @@ of them place your own copy of the V8.7 rulebook at `<repo root>/Amtgard Rules o
       file claims appears in that class's table. Levels are compared as sets, because a class
       may list the same ability at two levels (Bard buys *Equipment: Armor, 1 Point* at both
       2 and 6 — 43 table rows across 42 distinct names).
-   d. **Count reconciliation.** 181 `T:` type-lines on PDF pp. 62–78 − 1 format-key line = 180
-      abilities = 180 blocks parsed = 180 files on disk.
+   d. **Count reconciliation.** 180 `T:` type-lines on PDF pp. 62–77 − 1 format-key line = 179
+      abilities = 179 blocks parsed = 179 files on disk.
 
-   **Current output:** `180/180` body text identical · `180/180` availability correct ·
+   **Current output:** `179/179` body text identical · `179/179` availability correct ·
    tables complete both ways (Bard 43, Druid 50, Healer 50, Wizard 52) · counts reconcile ·
    **0 failures**.
 
@@ -43,7 +43,7 @@ of them place your own copy of the V8.7 rulebook at `<repo root>/Amtgard Rules o
    *coverage* = fraction of source tokens present in the md; *omitted spans* = consecutive
    source tokens absent from the md; *extra tokens* = md tokens absent from source.
    A follow-up pass isolates risky tokens (numbers, measurements, negations).
-   31 files, mean coverage 0.941; every gap is accounted for below.
+   31 files, mean coverage 0.938; every gap is accounted for below.
 
 ## Scope note — what these scripts do and do not catch
 
@@ -63,7 +63,17 @@ It does **not** catch, on its own:
 A full cross-review against the PDF, covering exactly what these scripts cannot, is in
 [`CROSS-REVIEW.md`](CROSS-REVIEW.md).
 
-## Bugs found and fixed
+## V8.08 update notes
+
+- **Column gutters are per-page.** V8.08 is typeset with mirrored margins, so the fixed `x=306` crop
+  that worked for V8.7 chops words on some pages (`Warlock` → `Wa`|`rlock`) and drops class-code tails
+  (`Bd`|`1`). `scripts/pdfcols.py` finds each page's gutter; `gen_abilities.py` uses it.
+- **Source errata carried faithfully:** the Scout table places Evolution at 1st level and Pinning Arrow
+  at 4th, while their ability stat blocks still read `Sc 4` / `Sc 5` (see `viewer/README.md`).
+- **Change Log:** V8.08 no longer prints a change log; the V8.7 one is archived in
+  `archive/v8.7-change-log.md`.
+
+## Bugs found and fixed (V8.7)
 
 1. **`marauder.md`** — the source has a stray leading `.` on the effect line
    (`.    E: Gain Momentum…`, a PDF text-layer artifact). The parser didn't recognize `E:` as
@@ -97,8 +107,8 @@ A full cross-review against the PDF, covering exactly what these scripts cannot,
 ## Page coverage
 
 Every PDF page carrying rules content is claimed by some file: p. 2 (front matter) and
-pp. 4–86, plus pp. 88–96. Intentionally omitted: p. 1 (cover), p. 3 (table of contents,
-credits, copyright), and p. 87 — the book's printed Index, a page-number index of the print
+pp. 4–85, plus pp. 87–89. Intentionally omitted: p. 1 (cover), p. 3 (table of contents,
+credits, copyright), and p. 86 — the book's printed Index, a page-number index of the print
 edition superseded by `README.md` and `rules/magic-and-abilities/INDEX.md`.
 
 ## Explained differences (not errors)

@@ -1,15 +1,15 @@
 ---
-title: "Imbue Weapon"
+title: "Toxic Blades"
 section: Magic and Abilities
-pdf_page: 69
-printed_page: 66
+pdf_page: 76
+printed_page: 74
 class_availability: ["Druid 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
-# Imbue Weapon
+# Toxic Blades
 
 **Available to:** Druid 6
 
@@ -26,4 +26,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Bearer's wielded melee weapons are Wounds Kill.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 66 (PDF p. 69). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 74 (PDF p. 76). Flavor text omitted.*

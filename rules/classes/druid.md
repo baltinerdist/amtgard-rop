@@ -1,10 +1,10 @@
 ---
 title: Druid
 section: Classes
-printed_pages: 53-54
+printed_pages: 54-55
 pdf_pages: 56-57
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -24,7 +24,7 @@ The Druid class is designed for versatile support and fighting, with a focus on 
 
 ## Magic User
 
-Druids may purchase five magic points from each level. Unused points from higher levels can be rolled down to lower levels. A list of all magic purchased must be carried at all times. All abilities purchased by Magic Users are Magical abilities.
+Magic Users may purchase five magic points from each level. Unused points from higher levels can be rolled down to lower levels. A list of all magical abilities purchased must be carried at all times. All abilities purchased by Magic Users are Magical abilities. Magic Users must have an empty hand to cast their abilities.
 
 ## Spell List
 
@@ -36,10 +36,10 @@ Full definitions for each ability below live in [`/rules/magic-and-abilities/`](
 |------|------|-----|-----------|------|--------|-------|
 | [Barkskin](../magic-and-abilities/barkskin.md) | 1 | 2 | 1/Refresh Charge x10 | Enchantment | Protection | Other |
 | [Entangle](../magic-and-abilities/entangle.md) | 1 | 2 | 2 Balls / Unlimited | Magic Ball | Subdual | - |
-| [Equipment: Weapon, Short](../magic-and-abilities/equipment-weapon-short.md) | 2 | 2 | - | Neutral | Neutral | - |
-| [Experienced](../magic-and-abilities/experienced.md) | 2 | 2 | - | Neutral | Neutral | - |
+| [Equipment: Weapon, Short](../magic-and-abilities/equipment-weapon-short.md) | 2 | 2 | - | Trait | Neutral | - |
+| [Experienced](../magic-and-abilities/experienced.md) | 2 | 2 | - | Trait | Neutral | - |
+| [Harden Armor](../magic-and-abilities/harden-armor.md) | 1 | - | 1/Life | Enchantment | Protection | Other |
 | [Heat Weapon](../magic-and-abilities/heat-weapon.md) | 1 | - | 1/Life Charge x3 | Verbal | Flame | 20' |
-| [Imbue Armor](../magic-and-abilities/imbue-armor.md) | 1 | - | 1/Life | Enchantment | Protection | Other |
 | [Mend](../magic-and-abilities/mend.md) | 1 | - | 1/Life | Verbal | Sorcery | Touch |
 
 ### 2nd Level
@@ -47,7 +47,7 @@ Full definitions for each ability below live in [`/rules/magic-and-abilities/`](
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
 | [Corrosive Mist](../magic-and-abilities/corrosive-mist.md) | 1 | 1 | 1/Refresh | Enchantment | Death | Touch |
-| [Equipment: Shield, Small](../magic-and-abilities/equipment-shield-small.md) | 4 | 1 | - | Neutral | Neutral | - |
+| [Equipment: Shield, Small](../magic-and-abilities/equipment-shield-small.md) | 4 | 1 | - | Trait | Neutral | - |
 | [Force Bolt](../magic-and-abilities/force-bolt.md) | 1 | 2 | 2 Balls / Unlimited | Magic Ball | Sorcery | - |
 | [Gift of Earth](../magic-and-abilities/gift-of-earth.md) | 1 | 2 | 1/Refresh | Enchantment | Protection | Other |
 | [Heal](../magic-and-abilities/heal.md) | 1 | - | 1/Life | Verbal | Spirit | Touch |
@@ -74,7 +74,7 @@ Full definitions for each ability below live in [`/rules/magic-and-abilities/`](
 
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
-| [Equipment: Weapon, Long](../magic-and-abilities/equipment-weapon-long.md) | 4 | 1 | - | Neutral | Neutral | - |
+| [Equipment: Weapon, Long](../magic-and-abilities/equipment-weapon-long.md) | 4 | 1 | - | Trait | Neutral | - |
 | [Flame Blade](../magic-and-abilities/flame-blade.md) | 2 | 2 | 1/Refresh | Enchantment | Flame | Other |
 | [Gift of Water](../magic-and-abilities/gift-of-water.md) | 1 | 2 | 1/Refresh | Enchantment | Sorcery | Other |
 | [Golem](../magic-and-abilities/golem.md) | 1 | - | 1/Refresh | Enchantment | Sorcery | Other |
@@ -88,7 +88,7 @@ Full definitions for each ability below live in [`/rules/magic-and-abilities/`](
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
 | [Ambulant](../magic-and-abilities/ambulant.md) | 1 | 2 | 1/Life | Meta-Magic | Neutral | - |
-| [Equipment: Weapon, Great](../magic-and-abilities/equipment-weapon-great.md) | 5 | 1 | - | Neutral | Neutral | - |
+| [Equipment: Weapon, Great](../magic-and-abilities/equipment-weapon-great.md) | 5 | 1 | - | Trait | Neutral | - |
 | [Essence Graft](../magic-and-abilities/essence-graft.md) | 1 | - | 1/Refresh | Enchantment | Sorcery | Other |
 | [Gift of Air](../magic-and-abilities/gift-of-air.md) | 1 | 2 | 1/Refresh | Enchantment | Protection | Other |
 | [Heart of the Swarm](../magic-and-abilities/heart-of-the-swarm.md) | 1 | 2 | 1/Refresh | Enchantment | Spirit | Self |
@@ -101,14 +101,14 @@ Full definitions for each ability below live in [`/rules/magic-and-abilities/`](
 
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
-| [Avatar of Nature](../magic-and-abilities/avatar-of-nature.md) | 1 | 1 | - | Archetype | Neutral | - |
+| [Avatar of Nature](../magic-and-abilities/avatar-of-nature.md) | 2 | 1 | - | Archetype | Neutral | - |
 | [Call Lightning](../magic-and-abilities/call-lightning.md) | 1 | - | 1/Refresh | Verbal | Flame | 20' |
-| [Imbue Weapon](../magic-and-abilities/imbue-weapon.md) | 1 | - | 1/Refresh | Enchantment | Death | Other |
 | [Naturalize Magic](../magic-and-abilities/naturalize-magic.md) | 1 | 2 | 1/Refresh | Enchantment | Sorcery | Self |
 | [Ranger](../magic-and-abilities/ranger.md) | 2 | 1 | - | Archetype | Neutral | - |
 | [Snaring Vines](../magic-and-abilities/snaring-vines.md) | 1 | 1 | 1/Refresh | Enchantment | Command | Self |
 | [Summoner](../magic-and-abilities/summoner.md) | 2 | 1 | - | Archetype | Neutral | - |
+| [Toxic Blades](../magic-and-abilities/toxic-blades.md) | 1 | - | 1/Refresh | Enchantment | Death | Other |
 | [Word of Mending](../magic-and-abilities/word-of-mending.md) | 1 | - | 1/Refresh | Verbal | Sorcery | Touch |
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 53–54 (PDF pp. 56–57). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 54–55 (PDF pp. 56–57). Flavor text omitted.*

@@ -2,9 +2,9 @@
 title: "Appendix B: Kingdom Boundaries & Park Sponsorship"
 section: "Appendix B: Kingdom Boundaries and Park Sponsorship"
 printed_pages: 83
-pdf_pages: 86
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+pdf_pages: 85
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -21,5 +21,31 @@ The united Kingdoms of Amtgard, speaking with the voice and leadership of the Ci
 - VII. Chapters sponsored by kingdoms at the time of this agreement retain their sponsorship, but are subject to the terms of this agreement should they seek to change sponsorship.
 - VIII. The Circle of Monarchs shall have authority to hear and resolve all issues related to this agreement.
 
+| Kingdom | Seat |
+|---|---|
+| Burning Lands | El Paso, TX |
+| Blackspire | Salem, OR |
+| Crystal Groves | Hagerstown, MD |
+| Celestial Kingdom | San Antonio, TX |
+| Dragonspine | Las Cruces, NM |
+| Desert Winds | Salt Lake City, UT |
+| Emerald Hills | Duncanville, TX |
+| Golden Plains | Lubbock, TX |
+| Goldenvale | Nashua, NH |
+| Iron Mountains | Denver, CO |
+| Northern Lights | Redmond, WA |
+| Northreach | Anchorage, AK |
+| Neverwinter | Lake Worth, FL |
+| Polaris | Eau Claire, WI |
+| Rivermoor | Omaha, NE |
+| Rising Winds | Indianapolis, IN |
+| Tal Dagore | Rolla, MO |
+| Viridian Outlands | Kennewick, WA |
+| Winters Edge | Knoxville, TN |
+| Wetlands | College Station, TX |
+| Westmarch | Santa Clara, CA |
+| Nine Blades | Peterborough, Ontario |
+| 13 Roads | Bloomington, IL |
+
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 83 (PDF p. 86). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 83 (PDF p. 85). Flavor text omitted.*

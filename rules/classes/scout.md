@@ -1,10 +1,10 @@
 ---
 title: Scout
 section: Classes
-printed_pages: 47-48
+printed_pages: 48-49
 pdf_pages: 50-51
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -16,7 +16,7 @@ The Scout class is designed for versatile support and control on a team, with a 
 
 **Garb:** Green sash and medieval/sword and sorcery looking garb
 
-**Look The Part:** Heal 1/Life (ex)
+**Look The Part:** Heal 1/Life Charge x5 (ex)
 
 ## Equipment
 
@@ -30,11 +30,11 @@ The Scout class is designed for versatile support and control on a team, with a 
 
 | Level | Abilities |
 | --- | --- |
-| 1st | Tracking 2/Life Charge x3 (ex) (Ambulant) |
-| 2nd | Heal 1/Life (ex)<br>Release 1/Life Charge x3 (ex) |
+| 1st | Tracking 2/Life Charge x3 (ex) (Ambulant)<br>Evolution (T) |
+| 2nd | Heal 1/Life Charge x5 (ex)<br>Release 1/Life Charge x3 (ex) |
 | 3rd | Dispel Magic 1/Refresh Charge x5 (ex)<br>Shadow Step 1/Life (ex) |
 | 4th | Pick one:<br>Hold Person 1/Life (m)<br>Pinning Arrow - 1 Arrow / Unlimited (ex) |
-| 5th | Evolution (T) |
+| 5th | Heal 1/Life Charge x5 (ex)<br>Release 1/Life Charge x3 (ex) |
 | 6th | Adaptive Protection (Self) 1/Life (ex)<br>Optional – Pick one:<br>Hunter (A)<br>Apex (A) |
 
 ## Abilities
@@ -46,6 +46,14 @@ The Scout class is designed for versatile support and control on a team, with a 
 **Range:** Touch
 **Incantation:** "The white light of healing hath healed thee." x5
 **Effect:** Target player heals a wound.
+
+### Evolution
+
+**Type:** Granted as a Trait
+**School:** Sorcery
+**Range:** Self
+**Effect:** May wear an additional Enchantment. Evolution does not count towards the bearer's Enchantment limit.
+**Note:** This ability does work in conjunction with Attuned, Essence Graft, or Phoenix Tears so long as the other limitations of those Enchantments are followed.
 
 ### Tracking
 
@@ -70,7 +78,7 @@ The Scout class is designed for versatile support and control on a team, with a 
 **School:** Sorcery
 **Range:** Self
 **Incantation:** "I step into the shadows"
-**Effect:** Player becomes Insubstantial. Shadow Step may be cast while moving.
+**Effect:** Caster becomes Insubstantial. Shadow Step may be cast while moving.
 **Note:** Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.
 
 ### Dispel Magic
@@ -78,9 +86,9 @@ The Scout class is designed for versatile support and control on a team, with a 
 **Type:** Verbal
 **School:** Sorcery
 **Range:** 20'
-**Incantation:** "By my power I dispel that magic" x3
-**Effect:** All Enchantments on target are removed.
-**Note:** Will always remove Enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects, or Enchantments (except Sleight of Mind).
+**Incantation:** "By my power I dispel thy magic" x3
+**Effect:** All Enchantments on target are removed. Will always remove Enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects, or Enchantments (except Sleight of Mind).
+**Note:** Does not affect Invulnerable players.
 
 ### Hold Person
 
@@ -97,14 +105,6 @@ The Scout class is designed for versatile support and control on a team, with a 
 **Incantation:** "Pinning Arrow"
 **Materials:** Arrow with yellow head cover labeled 'Pinning'.
 **Effect:** A player struck by this arrow is Stopped for 30 seconds. Engulfing.
-
-### Evolution
-
-**Type:** Granted as a Trait
-**School:** Sorcery
-**Range:** Self
-**Effect:** May wear an additional Enchantment. Evolution does not count towards the bearer's Enchantment limit.
-**Note:** This ability does work in conjunction with Attuned, Essence Graft, or Phoenix Tears so long as the other limitations of those Enchantments are followed.
 
 ### Adaptive Protection
 
@@ -152,4 +152,4 @@ Pick one:
 **Effect:** Enchantments worn by the bearer, other than Sleight of Mind, are not removed by Dispel Magic or similar abilities. Does not count towards the bearer's Enchantment Limit.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 47–48 (PDF pp. 50–51). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 48–49 (PDF pp. 50–51). Flavor text omitted.*

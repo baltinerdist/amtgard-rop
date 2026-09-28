@@ -3,8 +3,8 @@ title: This Rulebook Made Easy
 section: Front Matter
 printed_pages: unnumbered
 pdf_pages: 2
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -57,4 +57,4 @@ for how our game mechanics might be explained through role-play. These bits of f
 not rules and should not be used to justify rule interpretations.
 
 ---
-*Source: Amtgard Rules of Play V8.7, PDF p. 2 (unnumbered front matter, preceding printed p. 1). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, PDF p. 2 (unnumbered front matter). Flavor text omitted.*

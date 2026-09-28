@@ -1,10 +1,10 @@
 ---
 title: Armor
 section: Armor
-printed_pages: 9-11
+printed_pages: 10-12
 pdf_pages: 12-14
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -21,7 +21,7 @@ Armor is rated by its ability to stop wounds and is referred to as Armor Points.
    b. Armor cannot be reduced to less than 0 points in a location by any means.
 2. A hit to armor from any weapon will remove one Armor Point from the location hit.
    a. Blows to armor can be modified by the following three Special Effects: Armor Breaking, Armor Destroying, and Siege. See Special Effects Defined for more information on these effects.
-3. Armor with no remaining Armor Points no longer interacts with hits from weapons, ammunition, Magic Balls, etc.
+3. Armor with no remaining Armor Points no longer interacts with hits from weapons, arrows, magic balls, etc.
 4. Armor only protects the area that it covers. Example: You have armor on the front of your leg, but a gap on your thigh, and are struck in the area left open by the gap. You are wounded and the armor itself takes no damage.
 5. Armor present on a wounded hit location will continue to function and stop blows as per normal. This does not exempt wounded arms from the requirement to be kept out of combat.
 6. Hits to armor covering a foot that strike below the ankle while that foot is on the ground have no effect on the armor or hit location.
@@ -60,11 +60,11 @@ Each Armor Type is rated with base points equal to its tier. Armor may also rece
 
 **Layered Armor:** Where multiple layers of armor overlap, such as chainmail over cloth or leather over chainmail, the overlapping area is given a bonus over the highest rated armor's usual rating.
 
-**Helm Bonus:** Helms provide a bonus to the Torso location, and are divided into two categories: Light Helms, and Heavy Helms. The helm must cover at least 50% of the area from the base of the neck upwards.
+**Helm Bonus:** Helms provide a bonus to worn armor, and provide a different bonus depending on their category. The armor bonus from a helm may allow the wearer to exceed the maximum value for the armor type in the location, though not their class max. Helms must cover at least 50% of the area from the base of the neck upwards.
 
-Light Helms must meet the requirements of at least a Tier 2 armor type. The torso bonus received for a Light Helm may not exceed the maximum value for the armor type.
+Light Helms must meet the requirements of at least a Tier 2 armor type and provide an armor bonus to the torso location.
 
-Heavy Helms must meet the requirements of at least a Tier 4 armor type. The torso bonus received from a Heavy Helm may allow the wearer to exceed the maximum value for the armor type.
+Heavy Helms must meet the requirements of at least a Tier 4 armor type and provide an armor bonus to all armor locations.
 
 | Tier | Maximum Points | Armor Types |
 | --- | --- | --- |
@@ -82,7 +82,7 @@ All armor must meet certain construction requirements according to its type.
 
 1. Armor that is made from materials thinner than the minimum thickness is not allowed.
 2. Armor that is made from materials significantly above the standard may qualify for the Superior Construction bonus.
-3. All Tier 4-6 armor is assumed to be made of metal, as well as butcher's mail.
+3. All Tier 4-6 armor except Light Scale and Heavy Scale is assumed to be made of sheet metal. Light Scale and Heavy Scale are instead assumed to be made of metal scales.
 
 | Material | Minimum | Standard | Superior |
 | --- | --- | --- | --- |
@@ -106,11 +106,11 @@ Must be visually distinct from garb.
 
 ### Butcher's Mail/Sharkmail
 
-This armor type is for machine-welded chain mesh. There are no material thickness requirements for this armor, and it may receive no modifiers for superior construction. Any weave pattern is permitted, but it must not allow a 1/8" dowel to pass through.
+This armor type is for machine-welded metal chain mesh. There are no material thickness requirements for this armor, and it may receive no modifiers for superior construction. Any weave pattern is permitted, but it must not allow a 1/8" dowel to pass through.
 
 ### Rigid Non-Metal/Synthetic Armor
 
-Rigid armor that utilizes unusual materials must meet any non-material requirements for the style of armor that it is mimicking. The density of the material must be at least equal to 0.9g/cm³, equal to HDPE plastic.
+Rigid armor that utilizes unusual materials must meet any non-material requirements for the style of armor that it is mimicking, which must be a Tier 6 armor. The density of the material must be at least equal to 0.9g/cm³, equal to HDPE plastic. The material must not deform locally when struck.
 
 ### Chainmail
 
@@ -147,4 +147,4 @@ Armor that doesn't clearly fit into any of the typical armor styles should be ra
 If an armor type is not listed here, it has no special construction requirements beyond material thickness.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 9–11 (PDF pp. 12–14). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 10–12 (PDF pp. 12–14). Flavor text omitted.*

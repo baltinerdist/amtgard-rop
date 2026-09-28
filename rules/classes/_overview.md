@@ -1,10 +1,10 @@
 ---
 title: Classes — Overview
 section: Classes
-printed_pages: 33-34
+printed_pages: 34-35
 pdf_pages: 36-37
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -33,13 +33,14 @@ Often abilities which do not seem useful to you personally may be invaluable whe
 >
 > **Name:** The name of the ability.
 >
-> **Uses:** How often the ability can be used. Possible options are:
+> **Frequency:** Abilities usually have a listed Frequency, which defines how often the ability can be used.
 >
 > - **Unlimited:** This ability may be used any number of times.
-> - **'X'/Life:** This ability may be used X number of times each life. Each time you respawn you have a fresh set of these 'per life' abilities.
-> - **'X'/Refresh:** This ability may be used X number of times per Refresh. You start the game with a full set of these 'per Refresh' abilities, but they are only refilled when a Reeve announces a Refresh.
-> - **Charge:** May be used in conjunction with per life or per Refresh, or on its own. Charge abilities can be used any number of times, but must be Charged after the initial uses are expended. See the definition of Charge under the section 'Abilities, States, and Special Effects Defined' for a full explanation of how Charge works.
-> - **Not listed:** This ability isn't a cast ability.
+> - **X/Life or Per-Life:** This ability may be used X number of times each life. Each time you respawn you have a fresh set of these. Merely returning to life is not sufficient to regain these abilities; you must Respawn.
+> - **X/Refresh or Per-Refresh:** This ability may be used X number of times per Refresh. You start the game with a full set of these 'per Refresh' abilities, but they are only refilled when a Reeve announces a Refresh. Neither dying nor respawning affects your remaining per-Refresh abilities.
+> - **X Arrows/Y or X Balls/Y:** This ability requires a material component each time the ability is used.
+>   1. You may only bring X number of these objects to the field, which must be retrieved to continue using the ability.
+>   2. These abilities are further limited by a frequency Y. To use these abilities, one must both have the material component and an available use of the ability.
 >
 > **Category:** What kind of ability it is. Possible options are:
 >
@@ -73,19 +74,23 @@ Classes are listed in the following manner:
 
 **Levels and Abilities:** Most classes receive abilities at each level. Some abilities are presented as a choice. Ability choices may be changed before each new game. When an ability is made chargeable at a higher level or through an Archetype, all instances of that ability gained through the class are made chargeable, including Look the Part. Any ability choice presented as 'Pick x of y' allows you to choose up to x of the following y abilities. No duplicates may be chosen.
 
+## Color
+
+A catch-all class for members of Amtgard who do not participate in the combat portion of the game. These players are often very valuable to the organization as they provide logistics, leadership, and support to keep the rest of the game moving smoothly. Examples can include water bearers, heralds, event organizers, and Serpent Knights.
+
 ## Monster
 
 Monster is a special class, playable only in games where the game designer and local monarch have given their permission for the class to be used. A player playing Monster in a class battlegame is identified by wearing two Eye Class Symbols. The eyes may be of any solid color, with silver reserved for paragons, on a contrasting background. A player's level in the Monster class determines which Monsters they may portray. For more information and rules regarding the Monster class please refer to the Dor Un Avathar.
 
 ## Peasant
 
-Players who do not meet the garb requirement for any class may only participate in battlegames by playing the Peasant class. This class has no armor, shields, or abilities. The weapons available to them are Daggers and Short Weapons, though they may only use one at a time.
+This class has no armor, shields, nor abilities, and may only wield either a single Short weapon or a single Dagger at a time. Players who do not meet the garb requirements for other classes may still play Peasant. Players in adequate garb may choose to play this class if they seek the challenge of victory using no tools but their own wits and strategy.
 
 ## Credits and Levels
 
-Only one attendance credit may be given on a single day, in any class. Following their corpora, Kingdoms are allowed to award a maximum of 12 total bonus credits (credits above and beyond attendance credits) to any player in a single month and no more than 3 bonus credits may be issued per 1 attendance credit.
+Each time a player attends a day of Amtgard, they earn one attendance credit in any class. A player may typically only play one class in a given battlegame, and must have the requisite credits in order to play above the first level.
 
-If you wish to fight or participate in a battlegame, you must conform to one class for each game. A person must have the requisite credits in order to play higher class level, though you may take credits in any class. All classes gain new abilities and levels at the following rate:
+Following their corpora, Kingdoms are allowed to award a maximum of 16 total bonus credits (credits above and beyond attendance credits) to any player in a single month. Bonus credits may be issued alongside a normal attendance credit or independently, though a kingdom may issue no more than three bonus credits for a single day or credit opportunity.
 
 All classes gain new levels at the following rate:
 
@@ -99,4 +104,4 @@ All classes gain new levels at the following rate:
 | 6th | 53 or more credits in that class |
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 33–34 (PDF pp. 36–37). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 34–35 (PDF pp. 36–37). Flavor text omitted.*

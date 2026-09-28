@@ -1,6 +1,6 @@
 # Conversion Style Guide — Amtgard Rules of Play → Markdown
 
-Source: `Amtgard Rules of Play.pdf` (Version 8, V8.7 "Soupy", dated 2025-07-26).
+Source: `Amtgard Rules of Play.pdf` (Version 8, V8.08 "Spongy", dated 2026-07-25). The previous V8.7 "Soupy" edition is kept locally as `Amtgard Rules of Play V8.7.pdf` (gitignored) for diffing. Printed page = PDF page − 2 (it was − 3 in V8.7).
 Goal: faithful, actionable markdown rules files that can be programmatically acted upon later.
 
 ## Decisions (locked)
@@ -27,18 +27,19 @@ flavor text — keep them, but render as a labeled blockquote at the point they 
 For your assigned PDF page range `A`–`B`, run BOTH:
 
 ```bash
-# Place your own copy of the V8.7 rulebook here; it is gitignored, not distributed.
+# Place your own copy of the V8.08 rulebook here; it is gitignored, not distributed.
 PDF="$(git rev-parse --show-toplevel)/Amtgard Rules of Play.pdf"
 pdftotext -layout -f A -l B "$PDF" -   # PRIMARY: preserves columns & tables spatially
 pdftotext        -f A -l B "$PDF" -   # secondary cross-check for wording only
 ```
 
-For the two-column stat-block sections, crop each column separately so reading order is
-exact (the page is 612pt wide, so each column is 306pt):
+For the two-column sections, do NOT crop at a fixed x. The book uses mirrored (recto/verso)
+margins, so the gutter moves from page to page (V8.08: x≈289 on some pages, ≈319 on others) and a
+fixed crop chops words (`Warlock` → `Wa`|`rlock`) or drops class-code tails. Use the helper, which
+finds each page's real gutter:
 
 ```bash
-pdftotext -layout -x 0   -W 306 -f A -l B "$PDF" -   # LEFT column
-pdftotext -layout -x 306 -W 306 -f A -l B "$PDF" -   # RIGHT column
+python3 scripts/pdfcols.py FIRST [LAST]     # LEFT column then RIGHT column, page by page
 ```
 
 **The layout is two-column.** In the `-layout` output the LEFT and RIGHT columns sit
@@ -57,8 +58,8 @@ title: <Human title>
 section: <Table-of-Contents section name>
 printed_pages: <e.g. 6-8>
 pdf_pages: <e.g. 9-11>
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 ```
@@ -76,8 +77,8 @@ source: Amtgard Rules of Play Version 8
 - Straight-quote normalization is fine (curly → straight) but do not change wording.
 - End every file with a `---` rule followed by a one-line source note. Use the plural form
   for a range and the singular for a single page — never a degenerate range (`pp. 1–1`):
-  - range: `*Source: Amtgard Rules of Play V8.7, printed pp. X–Y (PDF pp. A–B). Flavor text omitted.*`
-  - single: `*Source: Amtgard Rules of Play V8.7, printed p. X (PDF p. A). Flavor text omitted.*`
+  - range: `*Source: Amtgard Rules of Play V8.08, printed pp. X–Y (PDF pp. A–B). Flavor text omitted.*`
+  - single: `*Source: Amtgard Rules of Play V8.08, printed p. X (PDF p. A). Flavor text omitted.*`
 
   This one template covers every file in `rules/`, including the 180 generated ability
   files. The only exception is unnumbered front matter (PDF p. 2), which has no printed

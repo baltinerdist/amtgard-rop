@@ -2,9 +2,9 @@
 title: "Appendix A: Award Standards"
 section: "Appendix A: Award Standards"
 printed_pages: 80-82
-pdf_pages: 83-85
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+pdf_pages: 82-84
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -46,13 +46,13 @@ source: Amtgard Rules of Play Version 8
       - i. A 1st Order is granted for winning three consecutive matches in any tournament format, for taking at least 3rd overall in a shire-level tournament, or for battlefield prowess.
       - ii. A 2nd Order is granted for winning five consecutive matches in any tournament format, for taking at least 2nd overall in a shire-level tournament, or for battlefield prowess.
       - iii. A 3rd Order is granted for winning seven consecutive matches in any tournament format, for winning a shire-level tournament, for taking at least 3rd overall in a barony-level tournament, or for battlefield prowess.
-      - iv. A 4th level is granted for winning nine consecutive matches in any tournament format, for taking at least 2nd overall in a barony-level tournament, or for battlefield prowess.
-      - v. A 5th level is granted for winning eleven consecutive matches in any tournament format, for winning a barony-level tournament, for taking at least 3rd overall in a duchy-level tournament, or for battlefield prowess.
-      - vi. A 6th level is granted for winning thirteen consecutive matches in any tournament format, for placing at least 2nd overall in a duchy-level tournament, or for placing at least 3rd overall in a kingdom-level tournament.
-      - vii. A 7th level is granted for winning fifteen consecutive matches in any tournament format, for winning a duchy-level tournament, or placing at least 2nd overall in a kingdom-level tournament.
-      - viii. An 8th level is granted for winning seventeen consecutive matches in any tournament format or for winning a major kingdom-level tournament.
-      - ix. A 9th is granted for winning nineteen consecutive matches in any tournament format or for winning a second major kingdom-level tournament.
-      - x. A 10th is granted for winning twenty-one consecutive matches in any tournament format or for winning a third major kingdom-level tournament.
+      - iv. A 4th Order is granted for winning nine consecutive matches in any tournament format, for taking at least 2nd overall in a barony-level tournament, or for battlefield prowess.
+      - v. A 5th Order is granted for winning eleven consecutive matches in any tournament format, for winning a barony-level tournament, for taking at least 3rd overall in a duchy-level tournament, or for battlefield prowess.
+      - vi. A 6th Order is granted for winning thirteen consecutive matches in any tournament format, for placing at least 2nd overall in a duchy-level tournament, or for placing at least 3rd overall in a kingdom-level tournament.
+      - vii. A 7th Order is granted for winning fifteen consecutive matches in any tournament format, for winning a duchy-level tournament, or placing at least 2nd overall in a kingdom-level tournament.
+      - viii. An 8th Order is granted for winning seventeen consecutive matches in any tournament format or for winning a major kingdom-level tournament.
+      - ix. A 9th Order is granted for winning nineteen consecutive matches in any tournament format or for winning a major kingdom-level tournament after having qualified for the previous rank.
+      - x. A 10th Order is granted for winning twenty-one consecutive matches in any tournament format or for winning a major kingdom-level tournament after having qualified for the previous rank.
 
       **Note:** Major kingdom-level tournament is defined as Weaponmaster, Warmaster (Crown Quals tournament), Olympiad, an inter-kingdom event tournament, or other events as defined by the Kingdom Monarch. The level of competition and number of entrants in all tournaments must be considered before handing out Orders of the Warrior above seven. The difficulty of the tournament must warrant the level of order awarded.
     - 9. **Battle:** An Order of Battle is awarded to players who have an understanding of tactics in class battlegaming and/or effectiveness as a player in class battlegaming. This order ranges from individual excellence in multiple classes in Amtgard to being able to command multiple small units and/or large teams. Below are examples of a 1st order through to Battlemaster title for the Order of Battle. These are recommendations, but not requirements. The criteria mentioned are not meant to be comprehensive, and they are meant to work in conjunction with each other and not as individual avenues towards masterhood/knighthood.
@@ -94,4 +94,4 @@ source: Amtgard Rules of Play Version 8
       The suggested symbol for Orders of the Battle is a wand, arrow and sword.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 80–82 (PDF pp. 83–85). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 80–82 (PDF pp. 82–84). Flavor text omitted.*

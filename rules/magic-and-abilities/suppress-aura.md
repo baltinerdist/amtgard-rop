@@ -1,11 +1,11 @@
 ---
 title: "Suppress Aura"
 section: Magic and Abilities
-pdf_page: 76
+pdf_page: 75
 printed_page: 73
 class_availability: ["Bard 4", "Wizard 4"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -24,4 +24,4 @@ source: Amtgard Rules of Play Version 8
 **Effect:** Target is Suppressed for 30 seconds.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 73 (PDF p. 76). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 73 (PDF p. 75). Flavor text omitted.*

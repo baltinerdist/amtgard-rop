@@ -1,4 +1,4 @@
-<title>Amtgard Rules of Play V8.7 &mdash; cross-linked viewer</title>
+<title>Amtgard Rules of Play V8.08 &mdash; cross-linked viewer</title>
 
 <style>
 /* Every text token clears 4.5:1 on all three grounds (paper / surface / sunk) and every
@@ -499,7 +499,7 @@ kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--edge);border-b
 <div class="app">
   <a class="skip" id="skip" href="#main">Skip to content</a>
   <header class="topbar">
-    <div class="brand"><b>Rules of Play</b><span class="v">V8.7 &middot; viewer</span></div>
+    <div class="brand"><b>Rules of Play</b><span class="v">V8.08 &middot; viewer</span></div>
     <nav class="trail" id="trail" aria-label="Path followed, most recent nine pages"></nav>
     <div class="tools">
       <button class="iconbtn" id="railtoggle" aria-expanded="false" aria-controls="rail">Index</button>
@@ -745,7 +745,7 @@ function renderMeta(p){
   m.innerHTML = "";
   if(!p){
     m.appendChild(metaBlock("About", el("p","src",
-      "The complete Amtgard Rules of Play V8.7, one page per rule, class, ability and defined "+
+      "The complete Amtgard Rules of Play V8.08, one page per rule, class, ability and defined "+
       "term. Cross-links are applied to every occurrence, so you can enter anywhere and follow "+
       "the rules outward.")));
     m.appendChild(metaBlock("Keys", el("p","src",
@@ -831,8 +831,7 @@ function renderHome(missing){
     ["page:introduction","Introduction","What Amtgard is, and how to start playing."],
     ["page:combat-rules","Combat Rules","Hit locations, wounds, death \u2014 the core loop."],
     ["page:classes-overview","Classes","How the twelve classes work, and levels."],
-    ["page:abilities-overview","Magic & Abilities","The stat-block format every ability uses."],
-    ["page:change-log","What changed in V8.7","Every rules change in this release, by area."]
+    ["page:abilities-overview","Magic & Abilities","The stat-block format every ability uses."]
   ].filter(e=>BY[e[0]]).map(([id,label,blurb]) =>
     // heading outside the link: the h3s sit under the "Start here" h2 and the link's
     // accessible name is the label alone, not label + blurb
@@ -853,7 +852,7 @@ function renderHome(missing){
       'may come from an earlier version. Search below, or start from the overview.</div>'
     : '';
   doc.innerHTML = miss +
-    '<div class="hero"><div class="eyebrow"><span class="kind">Amtgard Rules of Play &middot; V8.7 "Soupy"</span></div>'+
+    '<div class="hero"><div class="eyebrow"><span class="kind">Amtgard Rules of Play &middot; V8.08 "Spongy"</span></div>'+
     '<h1 tabindex="-1">The whole rulebook, cross-linked</h1><div class="sash"></div>'+
     '<p class="big">Every rule term is a link, everywhere it appears &mdash; not just the first time. '+
     'Follow a thread from a class to an ability to the state it inflicts to the rule that defines '+
@@ -874,7 +873,7 @@ function renderHome(missing){
     '<p class="note">Text is verbatim from the rulebook; flavour text is omitted by design. '+
     'Every page carries its source file and printed page number, so anything here can be checked '+
     'against the printed book. Press <kbd>/</kbd> to search.</p></div>';
-  document.title = "Amtgard Rules of Play V8.7 \u2014 cross-linked viewer";
+  document.title = "Amtgard Rules of Play V8.08 \u2014 cross-linked viewer";
   renderMeta(null);
 }
 

@@ -2,9 +2,9 @@
 title: Magic and Abilities — Overview
 section: Magic and Abilities
 pdf_pages: 62
-printed_pages: 59
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+printed_pages: 60
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -30,4 +30,4 @@ Each ability's class availability and level are printed to the right of its name
 > **Note:** Individual abilities are in one file each in this directory. See [`INDEX.md`](INDEX.md) for the full list.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 60 (PDF p. 62). Flavor text omitted.*

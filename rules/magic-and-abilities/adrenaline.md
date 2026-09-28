@@ -2,10 +2,10 @@
 title: "Adrenaline"
 section: Magic and Abilities
 pdf_page: 62
-printed_page: 59
+printed_page: 60
 class_availability: ["Barbarian 3"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -21,9 +21,9 @@ source: Amtgard Rules of Play Version 8
 
 **Incantation:** "Adrenaline"
 
-**Effect:** Player heals a wound.
+**Effect:** Caster heals a wound.
 
 **Limitations:** Kill Trigger.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 60 (PDF p. 62). Flavor text omitted.*

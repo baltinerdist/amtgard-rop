@@ -1,10 +1,10 @@
 ---
 title: Amtgard the Organization
 section: Amtgard the Organization
-printed_pages: 2-4
+printed_pages: 3-5
 pdf_pages: 5-7
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -43,7 +43,13 @@ Parks typically have the same leadership positions as kingdoms do and are electe
 
 ## Reeves
 
-In order to ensure that the Park is following the rules, and that the game is being run fairly for all participants, members of the park may also choose to become members of the Reeves Guild and take credit in the Reeve class. Reeves are the judges or referees of the game and will wear or carry a unique identifier to reflect this status. This identifier will be either a black and white sash, in either checkerboard or stripes, a tunic or tabard of alternating stripes of contrasting high-visibility colors (black and white, neon green and purple, etc.), or a "Reeve's Staff" (a padded staff at least 5' long with padded ends at least 2" in diameter and covered in alternating stripes or spiraling contrasting high-visibility colors as above). The identifier will be communicated to players before the start of a game. Reeves should have in-depth knowledge of the rules, and are tested by the current Guildmaster of Reeves to become members of the guild. When a reeve is in charge of a battlegame, their word is final on disputes involving game play. If a player wishes to dispute a reeve's decision, they may do so after the game with the reeve in question or with the Guildmaster of Reeves. However, while the game is occurring, the decision may not be disputed. Arguing with a reeve on the field may result in being penalized or even ejected from the game. Consistent arguing may result in being removed from play for an extended period.
+In order to ensure that the Park is following the rules, and that the game is being run fairly for all participants, members of the park may also choose to become members of the Reeves Guild and take credit in the Reeve class. Reeves are the judges or referees of the game and will wear or carry a unique identifier to reflect this status. This identifier will be one of:
+
+1. A black and white sash, in either checkerboard or stripes
+2. A tunic or tabard of alternating stripes of contrasting high-visibility colors (black and white, neon green and purple, etc.)
+3. A Reeve Staff (a Magic Staff covered in alternating stripes or spiraling contrasting high-visibility colors as above).
+
+The identifier will be communicated to players before the start of a game. Reeves should have in-depth knowledge of the rules, and are tested by the current Guildmaster of Reeves to become members of the guild. When a reeve is in charge of a battlegame, their word is final on disputes involving game play. If a player wishes to dispute a reeve's decision, they may do so after the game with the reeve in question or with the Guildmaster of Reeves. However, while the game is occurring, the decision may not be disputed. Arguing with a reeve on the field may result in being penalized or even ejected from the game. Consistent arguing may result in being removed from play for an extended period.
 
 ## Companies and Households
 
@@ -58,8 +64,6 @@ Each Park may choose to have additional awards as they deem necessary with the a
 **Apprentice:** Apprentices are individuals who have a formal student-mentor relationship with a Paragon. Apprentices are taught the ways of the Paragon's class and have a desire to improve their abilities within that class. Players are typically Apprenticed to only a single Paragon at a time. Paragons of a class may themselves be Apprenticed to a Paragon of a different class. The reserved symbol of an Apprentice is a belt favor in the color of their Paragon's class trimmed in silver. For Anti-Paladins, use gold trim.
 
 **At-Arms and Pages:** At-Arms or Pages are usually individuals who are sworn to Knights, Squires, or Nobles. In Amtgard, being an At-Arms or Page denotes a special relationship between the individual and their mentor, who is typically a Knight, Noble, or Squire. At-Arms can generally be recognized by either a black belt with silver trim, or a green belt. Pages can generally be recognized by a yellow belt. At-Arms may also go by Man-at-Arms, Woman-at-Arms, Comrade-at-Arms, Sword-at-Arms, Shieldmaiden, Shield Brother, or other similar terms.
-
-**Color:** A catch-all class for members of Amtgard who do not participate in the combat portion of the game. These players are often very valuable to the organization as they provide logistics, leadership, and support to keep the rest of the game moving smoothly. Examples can include water bearers, heralds, event organizers, and Serpent Knights.
 
 **Knights:** Knights are members of Amtgard who have been recognized as exemplars in a given area as well as role-models. Knighthood is a recognition of character in addition to possessing a level of skill equal to that of a Master in their field. Knights are recognized by a variety of reserved symbols, such as a white belt, an unadorned chain, spurs, and a white or black phoenix. There are five orders of Knighthood in Amtgard, each of which recognizes a different skill and has its own belt trim color:
 
@@ -85,7 +89,7 @@ Knighthood may only be bestowed at the Kingdom level.
 
 **Nobles:** Monarchs may award titles of nobility for service to Amtgard. The specific titles and symbols will be listed in your local Kingdom corpora.
 
-**Paragon:** Sometimes referred to as a 'Class Masterhood' this is an award given to a player for consistently being an excellent example of their class in full-class battlegames. A player should look like, role-play, and be highly effective at playing their class to be bestowed a Paragon title. A Paragon should take the lead in teaching new players how to play their class, assist them with getting the necessary equipment, etc. A player may receive multiple Paragon titles, one for each class. The reserved symbol of a Paragon is silver trim on their class sash. Monster paragons use a silver eye as their reserved symbol.
+**Paragon:** Sometimes referred to as a 'Class Masterhood' this is an award given to a player for consistently being an excellent example of their class in full-class battlegames. A player should look like, role-play, and be highly effective at playing their class to be bestowed a Paragon title. A Paragon should take the lead in teaching new players how to play their class, assist them with getting the necessary equipment, etc. A player may receive multiple Paragon titles, one for each class. The reserved symbol of a Paragon is a sash in the color of their class with silver trim, or in the case of Anti-Paladin, gold trim. Monster paragons use a silver eye as their reserved symbol.
 
 **Phoenix:** The phoenix is the symbol of Amtgard and is generally only worn by Knights, Masters, or as part of a Kingdom or Park heraldry.
 
@@ -103,7 +107,7 @@ Amtgard strives to maintain a fun, friendly, welcoming environment for mature pl
 6. Creating a hostile environment detrimental to the enjoyment of the group as a whole. This includes engaging in online or in person harassment.
 7. Violating the Amtgard Youth Policy, which can be found at www.amtgard.com/documents or in the Annexure at the end of this document.
 
-The Monarch, with the joint agreement of either the Prime Minister or the Guildmaster of Reeves, may ban a player from their group (and subgroups) for any of the reasons including, but not limited to, the list above at their discretion for any amount of time they feel appropriate. Any Monarch, with the joint agreement of either the Prime Minister or the Guildmaster of Reeves, may end a ban on a player at any time with the exception that a park Monarch may not overturn a ban instituted at the Kingdom level.
+The Monarch, with the joint agreement of either the Prime Minister or the Guildmaster of Reeves, may ban a player from their group (and subgroups) for any of the reasons including, but not limited to, the list above at their discretion for any amount of time they feel appropriate. Any Monarch, with the joint agreement of either the Prime Minister or the Guildmaster of Reeves, may end a ban on a player at any time with the exception that a park Monarch may not overturn a ban instituted at the Kingdom level. Kingdoms may delegate this authority from the Monarch, Prime Minister, and Guildmaster of Reeves.
 
 Any Kingdom level ban placed by a player's Kingdom of residence or Kingdom of physical residence for items 1 through 5 and 7 is automatically extended to all Kingdoms and their Subgroups. For purposes of this section "Kingdom of residence" means the Kingdom where a player's records are maintained and "Kingdom of physical residence" means the Kingdom in which the player has obtained the majority of their credits in the past three months. It is the responsibility of the Monarch enacting the ban to notify the Kingdoms using the Circle of Monarchs communication tools. Any Kingdom Monarch, with the joint agreement of either the Prime Minister or the Guildmaster of Reeves, may exempt their Kingdom from this extension by choosing to assume responsibility for the banned player and allowing the banned player to engage in Amtgard activities within their Kingdom and Subgroups, except that a Monarch may not exempt their Kingdom from a ban under item 3. In making an exemption, that Monarch is stating that they believe the following is true:
 
@@ -128,4 +132,4 @@ Combat in Amtgard is reserved for players of at least fourteen years of age. How
 Children under the age of fourteen may still engage in combat with children of similar age and size, provided they do so separately from other players, have a signed waiver, and are supervised by their legal guardians.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 2–4 (PDF pp. 5–7). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 3–5 (PDF pp. 5–7). Flavor text omitted.*

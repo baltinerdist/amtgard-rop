@@ -1,10 +1,10 @@
 ---
 title: Healer
 section: Classes
-printed_pages: 55-56
+printed_pages: 56-57
 pdf_pages: 58-59
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -24,7 +24,7 @@ The Healer class is designed for support and protection, with a focus on restori
 
 ## Level Progression
 
-**Magic User:** Healers may purchase five magic points from each level. Unused points from higher levels can be rolled down to lower levels. A list of all magic purchased must be carried at all times. All abilities purchased by Magic Users are Magical abilities.
+**Magic User:** Magic Users may purchase five magic points from each level. Unused points from higher levels can be rolled down to lower levels. A list of all magical abilities purchased must be carried at all times. All abilities purchased by Magic Users are Magical abilities. Magic Users must have an empty hand to cast their abilities.
 
 ## Spell List
 
@@ -36,9 +36,9 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 |------|------|-----|-----------|------|--------|-------|
 | Banish | 1 | - | 1/Life | Verbal | Spirit | 20' |
 | Blessing Against Wounds | 1 | - | 1/Life | Enchantment | Protection | Other |
-| Equipment: Shield, Small | 2 | 1 | - | Neutral | Neutral | - |
-| Equipment: Weapon, Short | 3 | 2 | - | Neutral | Neutral | - |
-| Experienced | 2 | 2 | - | Neutral | Neutral | - |
+| Equipment: Shield, Small | 2 | 1 | - | Trait | Neutral | - |
+| Equipment: Weapon, Short | 3 | 2 | - | Trait | Neutral | - |
+| Experienced | 2 | 2 | - | Trait | Neutral | - |
 | Harden | 1 | - | 1/Refresh | Enchantment | Protection | Other |
 | Heal | 1 | 1 | Unlimited | Verbal | Spirit | Touch |
 | Release | 1 | - | 2/Life Charge x3 | Verbal | Sorcery | Touch |
@@ -49,7 +49,7 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 |------|------|-----|-----------|------|--------|-------|
 | Adaptive Blessing | 1 | - | 1/Life | Enchantment | Protection | Other |
 | Entangle | 1 | 4 | 2 Balls / Unlimited | Magic Ball | Subdual | - |
-| Equipment: Weapon, Hinged | 3 | 1 | - | Neutral | Neutral | - |
+| Equipment: Weapon, Hinged | 3 | 1 | - | Trait | Neutral | - |
 | Greater Release | 1 | - | 1/Refresh | Verbal | Sorcery | 20' |
 | Hold Person | 1 | - | 1/Life Charge x3 | Verbal | Command | 20' |
 | Innate | 2 | 2 | 1/Life | Meta-Magic | Neutral | - |
@@ -63,7 +63,7 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 |------|------|-----|-----------|------|--------|-------|
 | Adaptive Protection | 1 | - | 1/Refresh | Enchantment | Protection | Other |
 | Astral Intervention | 1 | - | 1/Life Charge x3 | Verbal | Command | 20' |
-| Equipment: Shield, Medium | 2 | 1 | - | Neutral | Neutral | - |
+| Equipment: Shield, Medium | 2 | 1 | - | Trait | Neutral | - |
 | Extension | 1 | 2 | 1/Life | Meta-Magic | Neutral | - |
 | Greater Harden | 1 | - | 1/Refresh | Enchantment | Protection | Other |
 | Iceball | 1 | 3 | 1 Ball / Unlimited | Magic Ball | Subdual | - |
@@ -75,11 +75,11 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 
 | Name | Cost | Max | Frequency | Type | School | Range |
 |------|------|-----|-----------|------|--------|-------|
-| Blessing Against Harm | 1 | - | 1/Refresh | Enchantment | Protection | Other |
-| Circle of Protection | 1 | 1 | 1/Refresh Charge x10 | Verbal | Protection | Self |
+| Blessing Against Harm | 1 | 2 | 1/Life | Enchantment | Protection | Other |
+| Circle of Protection | 1 | 1 | 1/Refresh Charge x10 | Verbal | Protection | Touch |
 | Dispel Magic | 1 | - | 1/Refresh | Verbal | Sorcery | 20' |
 | Greater Heal | 1 | - | 1/Life | Verbal | Spirit | Touch |
-| Imbue Shield | 1 | 2 | 2/Refresh | Enchantment | Protection | Other |
+| Imbue | 1 | 2 | 2/Refresh | Enchantment | Protection | Other |
 | Protection from Projectiles | 1 | - | 1/Refresh | Enchantment | Protection | Other |
 | Swift | 1 | 2 | 1/Life | Meta-Magic | Neutral | - |
 | Teleport | 1 | 2 | 1/Life | Verbal | Sorcery | Touch |
@@ -90,7 +90,7 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 |------|------|-----|-----------|------|--------|-------|
 | Abeyance | 1 | 2 | 1 Ball / Unlimited | Magic Ball | Subdual | - |
 | Ambulant | 1 | - | 1/Refresh | Meta-Magic | Neutral | - |
-| Blessed Aura | 1 | - | 1/Refresh | Enchantment | Protection | Other |
+| Blessed Aura | 1 | 2 | 1/Life | Enchantment | Protection | Other |
 | Enlightened Soul | 1 | - | 1/Refresh | Enchantment | Protection | Other |
 | Greater Resurrect | 1 | - | 1/Refresh | Verbal | Spirit | Other |
 | Steal Life Essence | 1 | 2 | 1/Life | Verbal | Death | Touch |
@@ -102,7 +102,7 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 |------|------|-----|-----------|------|--------|-------|
 | Ancestral Armor | 1 | - | 1/Refresh | Enchantment | Protection | Other |
 | Mass Healing | 1 | 1 | 1/Refresh | Enchantment | Spirit | Self |
-| Necromancer | 1 | 1 | - | Archetype | Neutral | - |
+| Necromancer | 2 | 1 | - | Archetype | Neutral | - |
 | Persistent | 1 | - | 1/Life | Meta-Magic | Neutral | - |
 | Phoenix Tears | 1 | - | 1/Refresh | Enchantment | Spirit | Other |
 | Priest | 1 | 1 | - | Archetype | Neutral | - |
@@ -111,4 +111,4 @@ Full definitions for each ability below live in `../magic-and-abilities/`.
 | Warder | 2 | 1 | - | Archetype | Neutral | - |
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 55–56 (PDF pp. 58–59). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 56–57 (PDF pp. 58–59). Flavor text omitted.*

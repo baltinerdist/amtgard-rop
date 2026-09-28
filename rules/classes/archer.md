@@ -1,10 +1,10 @@
 ---
 title: Archer
 section: Classes
-printed_pages: 37-38
+printed_pages: 38-39
 pdf_pages: 40-41
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -42,19 +42,19 @@ The Archer class is designed for ranged combat, with a focus on strategic use of
     - Pinning Arrow - 1 Arrow / Unlimited (ex)
     - Poison Arrow - 1 Arrow / Unlimited (ex)
 - **4th**
-  - Suppression Arrow - 1 Arrow / Unlimited (ex)
+  - Suppression Arrow - 2 Arrows / Unlimited (ex)
 - **5th**
   - Pick two of three:
     - Destruction Arrow - 1 Arrow / Unlimited (ex)
     - Pinning Arrow - 1 Arrow / Unlimited (ex)
     - Poison Arrow - 1 Arrow / Unlimited (ex)
 - **6th**
-  - Phase Arrow - 1 Arrow / Unlimited (ex)
+  - Phase Arrow - 2 Arrows / Unlimited (ex)
   - Optional – Pick one:
     - Sniper (A)
     - Artificer (A)
 
-> Reminder: All Specialty Arrow incantations are treated as Ambulant but do not require the statement of "Ambulant" before their incantation.
+> Reminder: The incantations for Specialty Arrows are not interrupted by the caster moving their feet.
 
 ## Abilities
 
@@ -88,9 +88,9 @@ The Archer class is designed for ranged combat, with a focus on strategic use of
 **School:** Sorcery
 **Range:** Self
 **Incantation:** "I nocked my arrows to my bow, I let them fly, my quiver is low. Now I pause to go reload." x3
-**Effect:** Player becomes Invulnerable and may move about the field retrieving their arrows. The player may remove their Invulnerable State in the location they started or at base by stating, "I return with a full quiver" x3.
-**Limitations:** Must stay at least 10' away from other players at all times. A player may not exit Reload at an alternate base location, such as Heart of the Swarm, in this way.
-**Note:** May ask reeve for assistance in retrieving arrows that are within 10' of other players.
+**Effect:** Caster becomes Invulnerable and may move about the field retrieving their arrows. Caster may remove their Invulnerable State in the location they started or at base by declaring, "I return with a full quiver" x3.
+**Limitations:** Must stay at least 10' away from combat at all times.
+**Note:** A player may not exit Reload at an Alternate Base. May ask reeve for assistance in retrieving arrows that are within 10' of other players.
 
 ### Mend
 
@@ -120,7 +120,7 @@ The Archer class is designed for ranged combat, with a focus on strategic use of
 
 **Type:** Archetype
 **School:** Neutral
-**Effect:** May physically carry any number of Specialty Arrows of each type. The frequency of each type of Specialty Arrow ability becomes 1 Arrow/Life Charge x3. Gain Momentum Unlimited (ex) (Ambulant). Look the Part becomes Mend 1/Life.
+**Effect:** May physically carry any number of Specialty Arrows of each type. The frequency of each type of Specialty Arrow ability becomes 1 Arrow/Life Charge x3. Gain Momentum Unlimited (ex) (Ambulant). Look the Part becomes Mend 1/Life (ex).
 **Limitations:** May not fire normal arrows.
 
 ### Momentum
@@ -139,8 +139,8 @@ The Archer class is designed for ranged combat, with a focus on strategic use of
 **Effect:** May wield a Small shield. Gain Greater Mend 2/Refresh Charge x10 (ex). Mend becomes 2/Life Charge x3 (ex). Casting Mend on weapons or shields does not consume a use of Mend.
 **Limitations:** Rather than the normal amount of Specialty Arrows for an Archer, gain:
 - Pinning Arrow 3 Arrows / Unlimited (ex)
-- Phase Arrow 1 Arrow / Unlimited (ex)
-- Suppression Arrow 1 Arrow / Unlimited (ex)
+- Phase Arrow 2 Arrows / Unlimited (ex)
+- Suppression Arrow 2 Arrows / Unlimited (ex)
 
 Look the Part becomes a fourth Pinning Arrow.
 
@@ -152,7 +152,7 @@ Look the Part becomes a fourth Pinning Arrow.
 **School:** Sorcery
 **Range:** Touch
 **Incantation:** "Return this `<object name>` to its former glory" x5
-**Effect:** Will restore all armor points in one location or repair a damaged or broken item.
+**Effect:** Will restore all armor points in one location, repair one armor point in each location, or repair a damaged or broken item.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 37–38 (PDF pp. 40–41). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 38–39 (PDF pp. 40–41). Flavor text omitted.*

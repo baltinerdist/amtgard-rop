@@ -4,7 +4,7 @@ cheap to check and easy to drift on:
 
   - every file under rules/ has complete YAML frontmatter
   - frontmatter title matches the file's H1
-  - printed page(s) == PDF page(s) - 3   (front matter, which has no printed number, is exempt)
+  - printed page(s) == PDF page(s) - PRINT_OFFSET (2 in V8.08)   (front matter, which has no printed number, is exempt)
   - every file ends with a `---` rule followed by a one-line source note
   - the source note's page numbers agree with the frontmatter
   - single-page notes use "p." not "pp." and never a degenerate range ("pp. 1-1")
@@ -14,12 +14,14 @@ cheap to check and easy to drift on:
 Exit status is non-zero if anything fails.
 """
 import glob, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import rop_version as V
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQUIRED = ["title", "section", "rulebook_version", "rulebook_date", "source"]
 # PDF pages deliberately not converted: cover, TOC/credits/copyright, the printed Index
-SKIP_PAGES = {1, 3, 87}
-LAST_PAGE = 96
+SKIP_PAGES = {1, 3, 86}
+LAST_PAGE = 89
 
 def frontmatter(text):
     m = re.match(r'^---\n(.*?)\n---\n', text, re.S)
@@ -62,8 +64,8 @@ def main():
         pdf_l, pr_l = pages(pdf), pages(printed)
         if not pdf_l:
             fails.append(f"{rel}: no usable pdf page(s) ({pdf!r})")
-        if pr_l and [p - 3 for p in pdf_l] != pr_l:
-            fails.append(f"{rel}: printed {printed!r} != pdf {pdf!r} - 3")
+        if pr_l and [p - V.PRINT_OFFSET for p in pdf_l] != pr_l:
+            fails.append(f"{rel}: printed {printed!r} != pdf {pdf!r} - {V.PRINT_OFFSET}")
         for p in pdf_l:
             claimed.setdefault(p, []).append(rel)
 

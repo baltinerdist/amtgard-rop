@@ -1,5 +1,7 @@
 # Cross-Review: Amtgard Rules of Play V8.7 markdown conversion vs. source PDF
 
+> *This review covers the V8.7 conversion. The corpus was rebuilt from V8.08 afterwards; see [`CHANGES-V8.08.md`](CHANGES-V8.08.md).*
+
 *Systematic, sharded review of every file under `rules/` (plus `README.md`, `STYLE.md`,
 `VERIFICATION.md`) against `Amtgard Rules of Play.pdf`. Every finding below was independently
 re-verified by a second reviewer who re-read both the PDF page and the markdown file.*

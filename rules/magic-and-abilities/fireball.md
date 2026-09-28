@@ -1,11 +1,11 @@
 ---
 title: "Fireball"
 section: Magic and Abilities
-pdf_page: 67
+pdf_page: 66
 printed_page: 64
 class_availability: ["Wizard 4", "Anti-Paladin 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -21,12 +21,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Red Magic Ball
 
-**Effect:** Fireball will have one of the following effects on the object first struck:
-
-1. A weapon hit is destroyed
-2. A Shield hit is subject to Shield Destroying
-3. Armor hit with Armor Points remaining is subject to Armor Destroying.
-4. A player hit dies.
+**Effect:** This Magic Ball is Weapon Destroying, Armor Destroying, and Shield Destroying. Player hit dies.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 64 (PDF p. 67). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 64 (PDF p. 66). Flavor text omitted.*

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Generate README.md (root navigable index) and rules/magic-and-abilities/INDEX.md
 (master ability index + by-class grouping) from the converted markdown corpus."""
-import glob, re, os
+import glob, re, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import rop_version as V
+_A, _B = V.ABILITY_PAGES[0], V.ABILITY_PAGES[-1]
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MA = os.path.join(ROOT, "rules/magic-and-abilities")
 # files in the abilities directory that are not abilities
@@ -35,10 +38,10 @@ def ability_index():
     out = ["---",
            'title: "Magic and Abilities — Index"',
            "section: Magic and Abilities",
-           "printed_pages: 59-75",
-           "pdf_pages: 62-78",
-           'rulebook_version: V8.7 "Soupy"',
-           "rulebook_date: 2025-07-26",
+           f"printed_pages: {_A-V.PRINT_OFFSET}-{_B-V.PRINT_OFFSET}",
+           f"pdf_pages: {_A}-{_B}",
+           f'rulebook_version: {V.NAME}',
+           f"rulebook_date: {V.DATE}",
            "source: Amtgard Rules of Play Version 8",
            "---",
            "",
@@ -66,7 +69,7 @@ def ability_index():
             out.append(f"| {lvl} | {name} | [{fn}]({fn}) |")
         out.append("")
     out += ["---",
-            "*Source: Amtgard Rules of Play V8.7, printed pp. 59–75 (PDF pp. 62–78). "
+            f"*Source: Amtgard Rules of Play {V.VERSION}, printed pp. {_A-V.PRINT_OFFSET}–{_B-V.PRINT_OFFSET} (PDF pp. {_A}–{_B}). "
             "Flavor text omitted.*"]
     return "\n".join(out) + "\n"
 
@@ -93,13 +96,13 @@ def readme():
     o = []
     o.append("# Amtgard Rules of Play — Markdown\n")
     o.append("Actionable markdown conversion of the **Amtgard Rules of Play, Version 8** "
-             '(V8.7 "Soupy", 2025-07-26). Each rules section is its own file; large sections '
+             f'({V.NAME}, {V.DATE}). Each rules section is its own file; large sections '
              "(Classes, Magic and Abilities) are split one file per class / per ability.\n")
     o.append("- **Verbatim** rules text, restructured into clean markdown (headings, lists, tables).\n"
              "- **Flavor text excluded** (the rulebook's in-world stories/quotes).\n"
              "- Conversion conventions: [`STYLE.md`](STYLE.md).\n"
              "- Accuracy verification: [`VERIFICATION.md`](VERIFICATION.md) "
-             "(180/180 abilities token-for-token; all prose diffs explained).\n"
+             f"({n_ab}/{n_ab} abilities token-for-token; all prose diffs explained).\n"
              f"- Total: **{len(glob.glob(os.path.join(ROOT,'rules/**/*.md'),recursive=True))} files**.\n")
     o.append("## Core Sections\n")
     for label, path in SECTIONS:
@@ -129,6 +132,8 @@ def readme():
     o.append("- [Appendix A: Award Standards](rules/appendix-a-award-standards.md)")
     o.append("- [Appendix B: Kingdom Boundaries and Park Sponsorship](rules/appendix-b-kingdom-boundaries.md)")
     o.append("- [Amtgard International Policies](rules/amtgard-international-policies.md)")
+    o.append("- [What changed in V8.08 vs V8.7](CHANGES-V8.08.md)")
+    o.append("- [V8.7 change log (archived; V8.08 no longer prints one)](archive/v8.7-change-log.md)")
     o.append("")
     o.append("> The book's Index (printed p. 84) is intentionally omitted — it is a page-number "
              "index of the print edition, superseded by this file and the ability index.\n")
@@ -136,17 +141,17 @@ def readme():
     o.append("Copyright © 2014–2025 **Amtgard International**. All rights reserved. "
              '"Amtgard" and "Amtgard Rules of Play" are trademarks of Amtgard International '
              "([amtgard.com](https://www.amtgard.com)).\n")
-    o.append("This repository restructures the Amtgard Rules of Play (V8.7 \"Soupy\") into markdown. "
+    o.append("This repository restructures the Amtgard Rules of Play (" + V.NAME + ") into markdown. "
              "It was prepared by Avery W. Krouse as an Amtgard International volunteer under a "
              "Copyright Work for Hire and Transfer Agreement; all rights in the work product belong "
              "to Amtgard International. See [`LICENSE`](LICENSE) for reproduction terms. In any "
              "conflict, the official rulebook at [amtgard.com](https://www.amtgard.com) is authoritative.\n")
     o.append("## Interactive Viewer\n")
     o.append("- [`viewer/amtgard-rules-viewer.html`](viewer/amtgard-rules-viewer.html) \u2014 the whole "
-             "rulebook as a single offline, cross-linked page: 250 pages, 3,087 inline links, "
+             "rulebook as a single offline, cross-linked page: 253 pages, 3,172 inline links, "
              "search, deep links and both themes. See [`viewer/README.md`](viewer/README.md).\n")
     o.append("## Regenerating\n")
-    o.append("- `scripts/gen_abilities.py --write` — regenerate the 180 ability files from the PDF.\n"
+    o.append(f"- `scripts/gen_abilities.py --write` — regenerate the {n_ab} ability files from the PDF.\n"
              "- `scripts/gen_indexes.py` — regenerate this README and the ability index.\n"
              "- `scripts/verify_abilities.py` — check the ability files against the PDF "
              "(body text, class availability, spell-table completeness, counts).\n"

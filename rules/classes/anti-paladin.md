@@ -1,10 +1,10 @@
 ---
 title: Anti-Paladin
 section: Classes
-printed_pages: 35-36
+printed_pages: 36-37
 pdf_pages: 38-39
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -63,9 +63,9 @@ The Anti-Paladin class is designed for aggressive front-line combat, with a focu
 **School:** Death
 **Range:** Touch
 **Incantation:** "Steal life"
-**Effect:** Caster may heal a wound or instantly Charge an ability. May only be used on a dead player. That player is Cursed.
-**Limitations:** Does not work on Cursed players. The caster does not gain the effect if the dead player is unaffected.
-**Note:** In order to charge an ability, the name of the ability being charged must still be stated immediately after the incantation.
+**Effect:** Target dead player is Cursed. Caster may heal a wound or instantly Charge an ability.
+**Limitations:** Does not work on Cursed players.
+**Note:** Caster will always benefit if successfully cast on a valid target, regardless of the caster's Traits, States, Immunities, Ongoing Effects, or Enchantments. In order to charge an ability, the name of the ability being charged must still be stated immediately after the incantation.
 
 ### Brutal Strike
 
@@ -73,7 +73,7 @@ The Anti-Paladin class is designed for aggressive front-line combat, with a focu
 **School:** Death
 **Range:** Unlimited
 **Incantation:** "And stay down!"
-**Effect:** Target is Cursed. Target is also Suppressed for 30 seconds.
+**Effect:** Target player is Cursed indefinitely. Target player is also Suppressed for 30 seconds.
 **Limitations:** Wound Trigger.
 **Note:** Brutal Strike targets the wounded or dead player and does not require verbal targeting.
 
@@ -82,7 +82,7 @@ The Anti-Paladin class is designed for aggressive front-line combat, with a focu
 **Type:** Enchantment
 **School:** Flame
 **Range:** Self
-**Incantation:** "The element of fire shall infuse your weapons" x3
+**Incantation:** "The element of fire shall infuse thy weapons" x3
 **Materials:** Red strip and white strip
 **Effect:** Bearer's wielded melee weapons are Armor Breaking and Shield Crushing. Bearer and their wielded weapons are Immune to Flame.
 
@@ -99,12 +99,7 @@ The Anti-Paladin class is designed for aggressive front-line combat, with a focu
 **School:** Flame
 **Incantation:** "The flame of fire is mine to evoke" x3
 **Materials:** Red Magic Ball
-**Effect:** Fireball will have one of the following effects on the object first struck:
-
-1. A weapon hit is destroyed
-2. A shield hit is subject to Shield Destroying
-3. Armor hit with Armor Points remaining is subject to Armor Destroying.
-4. A player hit dies.
+**Effect:** This Magic Ball is Weapon Destroying, Armor Destroying, and Shield Destroying. Player hit dies.
 
 ### Corruptor
 
@@ -120,7 +115,7 @@ The Anti-Paladin class is designed for aggressive front-line combat, with a focu
 **Range:** Self
 **Incantation:** "Embrace the old ones and surrender thyself" x3
 **Materials:** Red strip and white strip
-**Effect:** Bearer's wielded melee weapons are Armor Breaking. Bearer gains Shadow Step 1/Refresh Charge x30 (ex), Steal Life Essence Unlimited (ex), and is unaffected by Magical abilities from the Sorcery, Spirit, and Death Schools. May still benefit from their own Steal Life Essence. Player is Cursed.
+**Effect:** Bearer's wielded melee weapons are Armor Breaking. Bearer gains Shadow Step 1/Refresh Charge x30 (ex), Steal Life Essence Unlimited (ex), and is unaffected by Magical abilities from the Sorcery, Spirit, and Death Schools. Bearer is Cursed.
 **Note:** This effect does not interact with other Enchantments worn by the bearer.
 
 ### Shadow Step
@@ -129,8 +124,8 @@ The Anti-Paladin class is designed for aggressive front-line combat, with a focu
 **School:** Sorcery
 **Range:** Self
 **Incantation:** "I step into the shadows"
-**Effect:** Player becomes Insubstantial. Shadow Step may be cast while moving.
+**Effect:** Caster becomes Insubstantial. Shadow Step may be cast while moving.
 **Note:** Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 35–36 (PDF pp. 38–39). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 36–37 (PDF pp. 38–39). Flavor text omitted.*

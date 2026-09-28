@@ -1,11 +1,11 @@
 ---
 title: "Phase Bolt"
 section: Magic and Abilities
-pdf_page: 71
+pdf_page: 70
 printed_page: 68
 class_availability: ["Wizard 5"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -21,11 +21,7 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Gray Magic Ball
 
-**Effect:** This Magic Ball is Phasing. Additionally, will have one of the following effects:
-
-1. A weapon hit is destroyed
-2. Armor hit with Armor Points remaining is subject to Armor Breaking.
-3. A player hit receives a wound in that hit location.
+**Effect:** This Magic Ball is Phasing, Weapon Destroying, and Armor Breaking. Player hit receives a wound to that hit location.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 68 (PDF p. 71). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 68 (PDF p. 70). Flavor text omitted.*

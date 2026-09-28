@@ -11,11 +11,11 @@ you took stays visible along the top and is clickable back to any step.
 
 | | |
 | --- | ---: |
-| Pages | 250 |
-| Abilities | 180 |
-| Defined terms (States, Special Effects, Mechanics) | 37 |
-| Inline cross-links | 3,087 |
-| Links resolving to a specific clause, not just a page | 110 |
+| Pages | 253 |
+| Abilities | 179 |
+| Defined terms (States, Special Effects, Mechanics) | 42 |
+| Inline cross-links | 3,172 |
+| Links resolving to a specific clause, not just a page | 108 |
 
 Nothing here is retyped. Every page is generated from the markdown in [`../rules/`](../rules/) and
 carries its source file and printed/PDF page number, so any line can be checked against the book.
@@ -60,14 +60,13 @@ unsubstituted, or whose embedded JSON could break out of its `<script>` block.
 
 Building the viewer cross-checked every ability's `class_availability` against the class tables for
 all twelve classes — including the martial classes, which the existing verification scripts never
-covered. Three Scout entries disagree **in the rulebook itself**:
+covered. Two Scout entries disagree **in the rulebook itself**:
 
-| Ability | Scout class table (PDF p. 50) | Ability stat block (PDF pp. 66–71) |
+| Ability | Scout class table (PDF p. 50) | Ability stat block (PDF pp. 62-77) |
 | --- | --- | --- |
-| Hold Person | 4th | `Sc 5` |
 | Pinning Arrow | 4th | `Sc 5` |
-| Evolution | 5th | `Sc 4` |
+| Evolution | 1st | `Sc 4` |
 
-The conversion is faithful to both sides, so this is errata in V8.7 rather than a conversion bug —
-worth raising with the rules committee. (A fourth flag, Greater Harden at Warrior 6, is explainable:
+The conversion is faithful to both sides, so this is errata in V8.08 rather than a conversion bug —
+worth raising with the rules committee. (V8.7 had a third, Hold Person; V8.08 corrected it. A further flag, Greater Harden at Warrior 6, is explainable:
 it is granted by the Juggernaut archetype rather than by the level table.)

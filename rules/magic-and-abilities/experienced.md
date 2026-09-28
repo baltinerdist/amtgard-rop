@@ -2,10 +2,10 @@
 title: "Experienced"
 section: Magic and Abilities
 pdf_page: 66
-printed_page: 63
+printed_page: 64
 class_availability: ["Bard 1", "Druid 1", "Healer 1", "Wizard 1"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -13,7 +13,7 @@ source: Amtgard Rules of Play Version 8
 
 **Available to:** Bard 1, Druid 1, Healer 1, Wizard 1
 
-**Type:** Neutral
+**Type:** Trait
 
 **School:** Neutral
 
@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Verbal must be 4th level or lower.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 63 (PDF p. 66). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 64 (PDF p. 66). Flavor text omitted.*

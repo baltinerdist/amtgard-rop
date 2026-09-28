@@ -2,10 +2,10 @@
 title: "Heart of the Swarm"
 section: Magic and Abilities
 pdf_page: 68
-printed_page: 65
+printed_page: 66
 class_availability: ["Bard 5", "Druid 5"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -23,9 +23,9 @@ source: Amtgard Rules of Play Version 8
 
 **Materials:** Yellow strip
 
-**Effect:** Bearer is Stopped. Any player on the bearer's team may use the bearer as their respawn point as per the normal game rules. Players respawning at the caster do so by announcing "My life for the swarm." Players on the bearer's team may treat the bearer as a base for the purposes of the effects which require the teammate to go to their base.
+**Effect:** Bearer is Stopped. Friendly players may use the bearer as their respawn point as per the normal game rules. Players respawning at the caster do so by declaring "My life for the swarm." Friendly players may treat the caster as an Alternate Base.
 
-**Limitations:** Players cannot respawn at the bearer if there are living enemy players or a game objective within 20' of the bearer.
+**Limitations:** Players cannot respawn at the bearer if there are living enemy players or game objectives within 20' of the bearer.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 65 (PDF p. 68). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 66 (PDF p. 68). Flavor text omitted.*

@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Deterministically split the Amtgard 'Magic and Abilities' section (PDF pp 62-78)
+"""Deterministically split the Amtgard 'Magic and Abilities' section (PDF pp 62-77)
 into one verbatim markdown file per ability. Uses column-cropped pdftotext output so
 two-column reading order is exact. Dry-run by default; pass --write to emit files."""
 import re, subprocess, sys, os, unicodedata
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import rop_version as V
+import pdfcols
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDF = os.path.join(ROOT, "Amtgard Rules of Play.pdf")
 OUT = os.path.join(ROOT, "rules/magic-and-abilities")
-PAGES = range(62, 79)  # PDF pages 62..78 inclusive
+PAGES = V.ABILITY_PAGES  # PDF pages 62..77 inclusive
 
 CLASS = {"Ap":"Anti-Paladin","Ar":"Archer","As":"Assassin","Bn":"Barbarian",
          "Bd":"Bard","Dr":"Druid","He":"Healer","Mk":"Monk","Pa":"Paladin",
@@ -15,7 +18,7 @@ CLASS = {"Ap":"Anti-Paladin","Ar":"Archer","As":"Assassin","Bn":"Barbarian",
 CODE = r'(?:Ap|Ar|As|Bn|Bd|Dr|He|Mk|Pa|Sc|Wa|Wi)\s+[1-6]'
 CODES_ONLY = re.compile(r'^\s*(?:'+CODE+r')(?:\s*,\s*'+CODE+r')*\s*,?\s*$')
 CODE_TOKEN = re.compile(r'\b('+ '|'.join(CLASS) + r')\s+([1-6])\b')
-FURNITURE = re.compile(r'^\s*(Amtgard 8\b.*|07-26-2025|\d{1,3})\s*$')
+FURNITURE = re.compile(r'^\s*(' + V.FURNITURE + r'|\d{1,3})\s*$')
 # a field label is "X:" followed by a space OR immediately by its value (source has "N:If ...")
 FIELD = re.compile(r'\b([TSRIMELN]):(?:\s|(?=[A-Z"“]))')
 
@@ -30,11 +33,8 @@ def extract_lines():
     apart. Every other consumer skips None."""
     lines = []
     for p in PAGES:
-        for x0 in (0, 306):
-            out = subprocess.run(
-                ["pdftotext","-layout","-x",str(x0),"-y","0","-W","306","-H","792",
-                 "-f",str(p),"-l",str(p),PDF,"-"],
-                capture_output=True, text=True).stdout
+        # gutter is per-page (mirrored margins); a fixed x=306 crop chops words in V8.08
+        for x0, out in zip((0, 306), pdfcols.columns(PDF, p)):
             for ln in out.split("\n"):
                 if ln.strip() == "\x0c" or ln == "\x0c": continue
                 ln = ln.replace("\x0c","")
@@ -238,10 +238,10 @@ def render(b):
           f'title: "{norm(b["name"])}"',
           "section: Magic and Abilities",
           f'pdf_page: {b["page"]}',
-          f'printed_page: {b["page"]-3}',
+          f'printed_page: {b["page"]-V.PRINT_OFFSET}',
           f'class_availability: [{", ".join(chr(34)+a+chr(34) for a in avail)}]',
-          'rulebook_version: V8.7 "Soupy"',
-          "rulebook_date: 2025-07-26",
+          f'rulebook_version: {V.NAME}',
+          f"rulebook_date: {V.DATE}",
           "source: Amtgard Rules of Play Version 8",
           "---",""]
     out = fm + [f'# {norm(b["name"])}', ""]
@@ -250,7 +250,7 @@ def render(b):
     for lab,val in fields:
         out += render_field(lab, val)
     out += ["---",
-            f'*Source: Amtgard Rules of Play V8.7, printed p. {b["page"]-3} '
+            f'*Source: Amtgard Rules of Play {V.VERSION}, printed p. {b["page"]-V.PRINT_OFFSET} '
             f'(PDF p. {b["page"]}). Flavor text omitted.*',""]
     return "\n".join(out)
 
@@ -269,8 +269,8 @@ def render_overview(lines, first_name_idx):
         (key if key else intro).append(s)
     key = [k for k in key if k != "SPLIT"]
     fm = ["---",'title: Magic and Abilities — Overview',"section: Magic and Abilities",
-          "pdf_pages: 62","printed_pages: 59",'rulebook_version: V8.7 "Soupy"',
-          "rulebook_date: 2025-07-26","source: Amtgard Rules of Play Version 8","---","",
+          "pdf_pages: 62",f"printed_pages: {62-V.PRINT_OFFSET}",f'rulebook_version: {V.NAME}',
+          f"rulebook_date: {V.DATE}","source: Amtgard Rules of Play Version 8","---","",
           "# Magic and Abilities — Overview",""]
     out = fm + [norm(flatten(intro)), "", "## Abilities Format Key", ""]
     for k in key:
@@ -286,7 +286,7 @@ def render_overview(lines, first_name_idx):
             "> **Note:** Individual abilities are in one file each in this directory. "
             "See [`INDEX.md`](INDEX.md) for the full list.", "",
             "---",
-            "*Source: Amtgard Rules of Play V8.7, printed p. 59 (PDF p. 62). "
+            f"*Source: Amtgard Rules of Play {V.VERSION}, printed p. {62-V.PRINT_OFFSET} (PDF p. 62). "
             "Flavor text omitted.*", ""]
     return "\n".join(out)
 

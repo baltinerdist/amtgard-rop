@@ -1,10 +1,10 @@
 ---
 title: Battlegames
 section: Battlegames
-printed_pages: 19-23
+printed_pages: 20-24
 pdf_pages: 22-26
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -18,7 +18,7 @@ These are the individual pieces that make up how a game works. These parts can b
 
 **Lives:** How many times players can return to life. This can be a fixed number per player, a fixed number per team, unlimited, or something else.
 
-**Respawn:** Where and when players return to life. This can be after a period of time, instantly, in groups of a minimum size, at base, where they died, in a central location or something else. Players who Respawn do so with all of their carried equipment intact, wounds healed, non-Persistent Enchantments removed, and all States and Ongoing Effects removed. When designing a game keep in mind that dying should generally be the worst thing that can happen on the field. For instance when designing a Full-Class game your Respawn counts should not be shorter than the longest negative field effect (60 seconds because of Magic Balls). Alternatively dying can be penalized by having a finite life pool for the team as a whole.
+**Respawn:** Where and when players return to life. This can be after a period of time, instantly, in groups of a minimum size, at base, where they died, in a central location or something else. Players who Respawn do so with all of their carried equipment intact, wounds healed, non-Persistent Enchantments removed, per-life abilities restored, and all States and Ongoing Effects removed from themselves and their carried equipment. When designing a game keep in mind that dying should generally be the worst thing that can happen on the field. For instance when designing a Full-Class game your Respawn counts should not be shorter than the longest negative field effect (60 seconds because of Magic Balls). Alternatively dying can be penalized by having a finite life pool for the team as a whole.
 
 **Base:** Some abilities refer to 'returning to base' or otherwise reference the location of a base. Determine what the bases will be for these abilities for each team. This can be a fixed location, a team reeve, or something else. A player who remains at their base for 30 seconds may heal a wound; repair a weapon, bow, or shield; or repair all armor in one location.
 
@@ -40,7 +40,7 @@ These are the individual pieces that make up how a game works. These parts can b
 
 **Refresh:** How and when per-Refresh abilities are returned to full uses in Class games. This could be none, every 30 minutes, when teams rotate, when a point is scored, or something else. Refreshes should be infrequent in order to encourage players to use their per-Refresh abilities tactically and thoughtfully.
 
-**Scenario Rules:** Any specific rules that modify the way the game is played. This could involve monsters, ruling out specific classes, creating off-limit areas, creating special-effect areas, or anything else. The battlegame designer may also adjust ability durations, modify ability effects, add/remove abilities, or add magic items as needed to suit the scenario and ensure fun.
+**Scenario Rules:** Any specific rules that modify the way the game is played. This could involve monsters, ruling out specific classes, creating off-limit areas, creating special-effect areas, or anything else. The battlegame designer may also adjust ability durations, modify ability effects, add/remove abilities, or add magic items as needed to suit the scenario and ensure fun. Example: in a battlegame with faster respawns, the designer may opt to reduce Magic Ball durations to 30 seconds.
 
 Combine different components in different ways to create entirely different game types to suit the needs of the group. A good battlegame is fast-paced and focuses on providing constructive conflict for all opposing teams. Combat is a means of resolving conflict, but should not be a goal in and of itself. Downtime for players should be minimal, but killing an opponent should still provide a meaningful advantage to the killer or their team.
 
@@ -155,7 +155,7 @@ Two teams fight until all the players on one team are out of lives, or 'shattere
 >     b. A player wielding otherwise legal equipment in an unsafe manner.
 >     c. A player knowingly attacking someone whom they are unable to affect (e.g. Insubstantial or frozen players).
 >     d. Any situation where the player's justification is "But the rules don't say I can't..."
-> 4. Making required declarations and explaining what abilities do to other players should not interrupt existing incantations or ongoing chants. The point of declaring enchantments is to keep the game flowing smoothly for all involved. A player is not punished for pausing an incantation to aid in the flow of gameplay. If a Bard, for example, paused their Chant to explain to a new player what the Chant represents, they may resume the chant when they are finished. A player may also communicate what states are affecting them at any time. When in doubt, give leeway to players who go out of their way to help other players during a game.
+> 4. Players should be encouraged to explain what abilities do and otherwise communicate to keep the game flowing smoothly for all involved. For example, if a Bard pauses a Chant to explain to a new player what the Chant represents, they should be allowed to resume the chant afterwards. When in doubt, give leeway to players who go out of their way to help other players during a game.
 
 ## Quests
 
@@ -272,4 +272,4 @@ Monster and NPC undead (including monsters and NPCs affected by Undead Minion, V
 Player is an experienced campaigner and is aware before a Quest starts of any special equipment or circumstances that may be encountered. The reeve in charge of the Quest should privately give the player a brief overview of the monsters and challenges they are likely to encounter.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 19–23 (PDF pp. 22–26). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 20–24 (PDF pp. 22–26). Flavor text omitted.*

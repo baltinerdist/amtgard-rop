@@ -1,10 +1,10 @@
 ---
 title: Barbarian
 section: Classes
-printed_pages: 41-42
+printed_pages: 42-43
 pdf_pages: 44-45
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -52,7 +52,7 @@ The Barbarian class is designed for aggressive front-line fighting, with a focus
 **School:** Sorcery
 **Range:** Self
 **Incantation:** "I am filled with rage!"
-**Effect:** Caster is unaffected by Verbal abilities and their wielded melee weapons are Shield Crushing and Armor Breaking for seven seconds. Caster must count this time out loud, audible to 50'; failure to count ends the effect.
+**Effect:** Caster is unaffected by Verbal abilities and their wielded melee weapons are Shield Crushing and Armor Breaking for seven seconds. Caster must count this time out loud, audible to 50'. Failure to count or starting an Incantation ends the effect.
 
 ### Adrenaline
 
@@ -60,7 +60,7 @@ The Barbarian class is designed for aggressive front-line fighting, with a focus
 **School:** Spirit
 **Range:** Self
 **Incantation:** "Adrenaline"
-**Effect:** Player heals a wound.
+**Effect:** Caster heals a wound.
 **Limitations:** Kill Trigger.
 
 ### Brutal Strike
@@ -69,7 +69,7 @@ The Barbarian class is designed for aggressive front-line fighting, with a focus
 **School:** Death
 **Range:** Unlimited
 **Incantation:** "And stay down!"
-**Effect:** Target is Cursed. Target is also Suppressed for 30 seconds.
+**Effect:** Target player is Cursed indefinitely. Target player is also Suppressed for 30 seconds.
 **Limitations:** Wound Trigger.
 **Note:** Brutal Strike targets the wounded or dead player and does not require verbal targeting.
 
@@ -79,9 +79,9 @@ The Barbarian class is designed for aggressive front-line fighting, with a focus
 **School:** Spirit
 **Range:** Self
 **Incantation:** "Blood and Thunder!"
-**Effect:** Player gains Blessing Against Wounds (ex).
+**Effect:** Caster gains Blessing Against Wounds (ex).
 **Limitations:** Kill Trigger.
-**Note:** Player must still wear a white strip to denote Blessing Against Wounds.
+**Note:** Caster must still wear a white strip to denote Blessing Against Wounds.
 
 ### Blessing Against Wounds
 
@@ -89,7 +89,7 @@ The Barbarian class is designed for aggressive front-line fighting, with a focus
 **School:** Protection
 **Range:** Self
 **Materials:** White strip
-**Effect:** Resistant to wounds. Does not count towards a players Enchantment limit.
+**Effect:** Bearer is resistant to wounds. Does not count towards the bearer's Enchantment limit.
 **Limitations:** May not be worn with any other Enchantments from the Protection School unless the other Enchantment is (ex).
 
 ### Raider
@@ -125,4 +125,4 @@ The Barbarian class is designed for aggressive front-line fighting, with a focus
 **Limitations:** Kill Trigger
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 41–42 (PDF pp. 44–45). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 42–43 (PDF pp. 44–45). Flavor text omitted.*

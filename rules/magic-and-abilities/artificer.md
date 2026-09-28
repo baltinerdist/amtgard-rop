@@ -2,10 +2,10 @@
 title: "Artificer"
 section: Magic and Abilities
 pdf_page: 63
-printed_page: 60
+printed_page: 61
 class_availability: ["Archer 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -22,12 +22,12 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Rather than the normal amount of Specialty Arrows for an Archer, gain:
 
 - Pinning Arrow 3 Arrows / Unlimited (ex)
-- Phase Arrow 1 Arrow / Unlimited (ex)
-- Suppression Arrow 1 Arrow / Unlimited (ex)
+- Phase Arrow 2 Arrows / Unlimited (ex)
+- Suppression Arrow 2 Arrows / Unlimited (ex)
 
 Look the Part becomes a fourth Pinning Arrow.
 
 **Note:** Must still have a use of Mend remaining to cast on weapons or shields.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 60 (PDF p. 63). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 61 (PDF p. 63). Flavor text omitted.*

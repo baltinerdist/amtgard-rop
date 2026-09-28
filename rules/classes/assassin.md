@@ -1,10 +1,10 @@
 ---
 title: Assassin
 section: Classes
-printed_pages: 39-40
+printed_pages: 40-41
 pdf_pages: 42-43
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -59,7 +59,7 @@ The Assassin class is designed for high-mobility, stealth-based play, with a foc
 **School:** Sorcery
 **Range:** Self
 **Incantation:** "I step into the shadows"
-**Effect:** Player becomes Insubstantial. Shadow Step may be cast while moving.
+**Effect:** Caster becomes Insubstantial. Shadow Step may be cast while moving.
 **Note:** Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.
 
 ### Assassinate
@@ -96,7 +96,7 @@ The Assassin class is designed for high-mobility, stealth-based play, with a foc
 **School:** Sorcery
 **Range:** Self
 **Incantation:** "I vanish from sight"
-**Effect:** Player becomes Insubstantial. While Insubstantial in this way, player can move as they wish as long as they remain within 50' from their starting point.
+**Effect:** Caster becomes Insubstantial. While Insubstantial in this way, caster can move as they wish as long as they remain within 50' from their starting point.
 **Limitations:** Caster may not end State within 10' of a living enemy. Blink fails if the caster is Stopped.
 **Note:** If the Insubstantial State is ended, the rest of the effect is ended as well. Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.
 
@@ -115,7 +115,7 @@ The Assassin class is designed for high-mobility, stealth-based play, with a foc
 **Range:** Self
 **Incantation:** "I travel through the aether" x5
 **Effect:** Target willing player becomes Insubstantial and moves directly to a chosen location chosen by the caster at the time of casting. This must be a fixed location (not relative to a player or to a moveable object). Upon arrival, they must immediately end the effect as per Insubstantial.
-**Note:** If the player's Insubstantial State is removed before they have reached their destination, the effects of Teleport end. If Teleport is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.
+**Note:** If the player's Insubstantial State is removed before they have reached their destination, the effects of Teleport end. If Teleport is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial. This is a Forced Movement effect.
 
 ### Coup de Grace
 
@@ -131,8 +131,8 @@ The Assassin class is designed for high-mobility, stealth-based play, with a foc
 
 **Type:** Archetype
 **School:** Neutral
-**Effect:** Regain a use of Coup de Grace upon killing a player with a thrown weapon.
-**Limitations:** May not wield Long weapons or Bows.
+**Effect:** Regain a use of Coup de Grace upon killing an enemy with a thrown weapon.
+**Limitations:** May not wield Bows nor Long weapons.
 
 ### Spy
 
@@ -142,4 +142,4 @@ The Assassin class is designed for high-mobility, stealth-based play, with a foc
 **Limitations:** May not wear Armor.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed pp. 39–40 (PDF pp. 42–43). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed pp. 40–41 (PDF pp. 42–43). Flavor text omitted.*

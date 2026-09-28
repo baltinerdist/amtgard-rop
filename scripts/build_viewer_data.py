@@ -66,9 +66,9 @@ CURATED = {
   "Hit Locations":    ("page:combat-rules", "hit-locations"),
   "Dead":             ("page:combat-rules", "death"),
   "dead players":     ("page:combat-rules", "death"),
-  "wounded":          ("page:combat-rules", "inflicting-wounds"),
-  "wounds":           ("page:combat-rules", "inflicting-wounds"),
-  "unwielded":        ("page:combat-rules", "combat-notes"),
+  "wounded":          ("page:combat-rules", "hit-locations"),
+  "wounds":           ("page:combat-rules", "hit-locations"),
+  "unwielded":        ("page:combat-rules", "using-equipment"),
   # the only prose reference to the checking chapter anywhere in the book
   "checked for legality": ("page:equipment-checking", "checking-process"),
   "Weapon Type":      ("page:weapon-types-shields-equipment", None),
@@ -335,7 +335,7 @@ LINK_RE = re.compile(r'(?<![\w-])(' + "|".join(re.escape(n) for n in NAMES) + r'
 # ---------------------------------------------------------------- rendering
 def esc(s): return html.escape(s, quote=False)
 
-MARK = re.compile(r'^(\s*)(\d+\.|[a-z]\.|-)\s+(.*)$')
+MARK = re.compile(r'^(\s*)(\d+\.|[ivx]{2,4}\.|[a-z]\.|-)\s+(.*)$')
 
 def autolink(text, self_id, state):
     """Link the first occurrence of each target in every block (paragraph, list item, table
@@ -483,24 +483,28 @@ def md_to_html(md, self_id, state):
                 # a lettered marker is only a list item when it is indented under one
                 if mark[0].isalpha() and mark != "-" and ind == 0: break
                 stack.append((ind, mark, m2.group(3))); j += 1
-            base = min(x[0] for x in stack)
-            ordered = stack[0][1][0].isdigit()
-            buf, sub = [], None
+            # nest by indentation: 1. > a. > i.  (V8.08 sets "c. ... i. ... ii." under a numbered step)
+            root, path = [], []
             for ind, mark, txt in stack:
-                if ind > base:
-                    if sub is None:
-                        sub = '<ol type="a">' if mark[0].isalpha() and mark != "-" else "<ul>"
-                        buf.append(sub)
-                    buf.append(f'<li>{inline(txt, self_id, state)}</li>')
+                while path and path[-1][0] >= ind: path.pop()
+                node = {"mark": mark, "txt": txt, "kids": []}
+                (path[-1][1]["kids"] if path else root).append(node)
+                path.append((ind, node))
+
+            def render_list(nodes, depth):
+                first = nodes[0]["mark"]
+                if depth == 0:
+                    tag = "ol" if first[0].isdigit() else "ul"; attr = ""
+                elif first[0].isalpha():
+                    roman = len(first) > 2 or (first == "i." and depth >= 2)
+                    tag = "ol"; attr = ' type="i"' if roman else ' type="a"'
                 else:
-                    if sub is not None:
-                        buf.append(("</ol>" if sub.startswith("<ol") else "</ul>") + "</li>"); sub = None
-                    elif buf: buf.append("</li>")
-                    buf.append(f'<li>{inline(txt, self_id, state)}')
-            if sub is not None: buf.append(("</ol>" if sub.startswith("<ol") else "</ul>") + "</li>")
-            elif buf: buf.append("</li>")
-            tag = "ol" if ordered else "ul"
-            out.append(f'<{tag}>{"".join(buf)}</{tag}>')
+                    tag = "ul"; attr = ""
+                lis = "".join("<li>" + inline(n["txt"], self_id, state)
+                              + (render_list(n["kids"], depth + 1) if n["kids"] else "") + "</li>"
+                              for n in nodes)
+                return f"<{tag}{attr}>{lis}</{tag}>"
+            out.append(render_list(root, 0))
             i = j; continue
         if LABEL_RE.match(s):
             # the martial class pages carry the same **Type:**/**School:**/... stat blocks as

@@ -1,11 +1,11 @@
 ---
 title: "Warder"
 section: Magic and Abilities
-pdf_page: 78
+pdf_page: 77
 printed_page: 75
 class_availability: ["Healer 6"]
-rulebook_version: V8.7 "Soupy"
-rulebook_date: 2025-07-26
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
 source: Amtgard Rules of Play Version 8
 ---
 
@@ -22,4 +22,4 @@ source: Amtgard Rules of Play Version 8
 **Limitations:** Player may not purchase any abilities from the Death, Command, or Subdual Schools.
 
 ---
-*Source: Amtgard Rules of Play V8.7, printed p. 75 (PDF p. 78). Flavor text omitted.*
+*Source: Amtgard Rules of Play V8.08, printed p. 75 (PDF p. 77). Flavor text omitted.*
