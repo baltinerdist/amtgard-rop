@@ -11,3 +11,8 @@ Amtgard Rules of Play-*.png
 
 # viewer build intermediate (regenerate with scripts/build_viewer_data.py)
 viewer/wiki-data.json
+
+# simulator: local environment and run outputs
+.venv/
+sim/out/
+.pytest_cache/

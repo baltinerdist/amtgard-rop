@@ -1,0 +1,335 @@
+{
+  "_about": "Every number here is an ASSUMPTION made for the Phase 1 model, not a rule from the Rules of Play. Each has a unit and a reason. Change them here; nothing in the engine hard-codes these values. Run analyses at more than one setting before trusting a conclusion.",
+  "time": {
+    "tick_seconds": {
+      "value": 1,
+      "unit": "s",
+      "assumption": true,
+      "why": "Resolution of the round-based loop. Melee exchanges and incantation progress are resolved once per tick."
+    },
+    "speech_words_per_second": {
+      "value": 2.5,
+      "unit": "words/s",
+      "assumption": true,
+      "why": "Incantation time = words x repetitions / this rate. Brisk but audible speech."
+    },
+    "charge_incantation_words": {
+      "value": 28,
+      "unit": "words",
+      "assumption": false,
+      "why": "Counted from the Charge Incantation in rules/magic-states-effects/mechanics-and-definitions.md. Listed here so charge time uses the same speech rate."
+    }
+  },
+  "skill": {
+    "sd": {
+      "value": 1.0,
+      "unit": "logit-scale sd",
+      "assumption": true,
+      "why": "Player fighting skill is drawn from Normal(0, sd). Scenarios can widen or narrow the spread."
+    },
+    "logit_per_sd": {
+      "value": 0.8,
+      "unit": "logit",
+      "assumption": true,
+      "why": "How strongly a one-sd skill gap moves the chance of landing a hit."
+    }
+  },
+  "melee": {
+    "base_hit_per_second": {
+      "value": 0.22,
+      "unit": "probability/s",
+      "assumption": true,
+      "why": "Chance an attacker lands a valid hit on one engaged opponent in one second, equal skill, no shield."
+    },
+    "shield_logit": {
+      "value": {
+        "none": 0.0,
+        "small": -0.25,
+        "medium": -0.45,
+        "large": -0.65
+      },
+      "unit": "logit",
+      "assumption": true,
+      "why": "Larger shields make the bearer harder to hit."
+    },
+    "gang_logit_per_extra_attacker": {
+      "value": 0.6,
+      "unit": "logit",
+      "assumption": true,
+      "why": "Each extra attacker on the same defender makes each attacker more likely to land a hit."
+    },
+    "wounded_leg_logit": {
+      "value": 0.5,
+      "unit": "logit",
+      "assumption": true,
+      "why": "A kneeling or posting player is easier to hit."
+    },
+    "wounded_weapon_arm_logit": {
+      "value": -0.4,
+      "unit": "logit",
+      "assumption": true,
+      "why": "Attacking with the off hand after the weapon arm is wounded."
+    },
+    "no_weapon_attack_scale": {
+      "value": 0.0,
+      "unit": "multiplier",
+      "assumption": true,
+      "why": "A player whose melee weapon is destroyed cannot attack until it is repaired (no backup weapon modeled)."
+    },
+    "hit_location_weights": {
+      "value": {
+        "torso": 0.4,
+        "left_arm": 0.15,
+        "right_arm": 0.15,
+        "left_leg": 0.15,
+        "right_leg": 0.15
+      },
+      "unit": "weights",
+      "assumption": true,
+      "why": "Where landed melee and projectile hits strike."
+    },
+    "great_weapon_share": {
+      "value": 0.25,
+      "unit": "probability",
+      "assumption": true,
+      "why": "Share of shield-less players of classes allowed All Melee who use a two-handed Great weapon (Armor Breaking + Shield Crushing per rules/weapon-types-shields-equipment.md)."
+    },
+    "shield_use_share": {
+      "value": 0.7,
+      "unit": "probability",
+      "assumption": true,
+      "why": "Share of players allowed a shield who carry one (their largest allowed size)."
+    },
+    "stunned_logit": {
+      "value": 1.5,
+      "unit": "logit",
+      "assumption": true,
+      "why": "A Stunned player cannot defend, so hits on them land far more often."
+    },
+    "weak_weapon_logit": {
+      "value": -0.5,
+      "unit": "logit",
+      "assumption": true,
+      "why": "Magic Users and Archers fighting with a dagger, staff or short weapon."
+    },
+    "p_shield_struck_on_miss": {
+      "value": 0.3,
+      "unit": "probability",
+      "assumption": true,
+      "why": "When an attack with Shield Crushing misses a shield bearer, this often it struck the shield instead (three hits destroy it)."
+    }
+  },
+  "engagement": {
+    "p_engage_per_second": {
+      "value": 0.35,
+      "unit": "probability/s",
+      "assumption": true,
+      "why": "Chance a free melee player reaches an enemy in one second (non-spatial stand-in for movement)."
+    },
+    "backline_factor": {
+      "value": 0.35,
+      "unit": "multiplier",
+      "assumption": true,
+      "why": "Casters and archers stay back, so enemies reach them at this fraction of the normal rate."
+    },
+    "p_disengage_per_second": {
+      "value": 0.05,
+      "unit": "probability/s",
+      "assumption": true,
+      "why": "Chance an engaged pair breaks apart in a second without a death."
+    },
+    "caster_weight_when_choosing_melee_target": {
+      "value": 1.5,
+      "unit": "weight",
+      "assumption": true,
+      "why": "Fighters slightly prefer to go after reachable casters."
+    }
+  },
+  "range": {
+    "p_in_range": {
+      "value": {
+        "Self": 1.0,
+        "Touch": 0.6,
+        "Other": 0.6,
+        "20'": 0.5,
+        "50'": 0.75,
+        "Unlimited": 1.0
+      },
+      "unit": "probability",
+      "assumption": true,
+      "why": "Chance the intended target is within the ability's range when the caster wants to cast. Checked when the incantation starts."
+    },
+    "p_ally_nearby_for_touch": {
+      "value": 0.6,
+      "unit": "probability",
+      "assumption": true,
+      "why": "Chance a chosen friendly target is close enough for Touch or Other."
+    }
+  },
+  "casting": {
+    "p_interrupt_on_armor_hit": {
+      "value": 0.5,
+      "unit": "probability",
+      "assumption": true,
+      "why": "A caster struck on armor while incanting moves their feet or loses the incantation this often. Wounds, death and action-preventing states always interrupt (rules: feet may not move; Magic Users need an empty hand)."
+    },
+    "engaged_casting_allowed": {
+      "value": false,
+      "unit": "bool",
+      "assumption": true,
+      "why": "Policies do not start non-Self incantations while engaged in melee."
+    }
+  },
+  "projectiles": {
+    "magic_ball_p_hit": {
+      "value": 0.35,
+      "unit": "probability/throw",
+      "assumption": true,
+      "why": "Chance a thrown Magic Ball strikes its target."
+    },
+    "magic_ball_retrieve_seconds": {
+      "value": 20,
+      "unit": "s",
+      "assumption": true,
+      "why": "Time to pick thrown balls back up once none are in hand."
+    },
+    "arrow_p_hit": {
+      "value": 0.28,
+      "unit": "probability/shot",
+      "assumption": true,
+      "why": "Chance an arrow strikes its target."
+    },
+    "arrow_shot_seconds": {
+      "value": 3,
+      "unit": "s",
+      "assumption": true,
+      "why": "Nock, draw and aim time per shot. Arrows are Armor Breaking (rules/weapon-types-shields-equipment.md)."
+    },
+    "thrown_p_hit": {
+      "value": 0.25,
+      "unit": "probability/throw",
+      "assumption": true,
+      "why": "Chance a thrown weapon (javelin, rock) strikes. Not yet used by Phase 1 policies."
+    }
+  },
+  "respawn": {
+    "rejoin_seconds": {
+      "value": 20,
+      "unit": "s",
+      "assumption": true,
+      "why": "Time from respawning at base to rejoining the fight. Enchantments can be cast during this time."
+    },
+    "pregame_prep_seconds": {
+      "value": 60,
+      "unit": "s",
+      "assumption": true,
+      "why": "Time at the start of a game when players at base cast enchantments before fighting."
+    }
+  },
+  "loadout": {
+    "look_the_part_share": {
+      "value": 0.3,
+      "unit": "probability",
+      "assumption": true,
+      "why": "Share of players awarded Look The Part."
+    },
+    "archetype_share": {
+      "value": 0.6,
+      "unit": "probability",
+      "assumption": true,
+      "why": "Share of 6th-level players who take an optional Archetype (chosen uniformly among options)."
+    },
+    "magic_user_copy_cap": {
+      "value": 3,
+      "unit": "copies",
+      "assumption": true,
+      "why": "Magic Users buy at most this many copies of a spell whose Max is not listed."
+    },
+    "armor_worn_share": {
+      "value": 0.8,
+      "unit": "probability",
+      "assumption": true,
+      "why": "Share of players allowed armor who wear their class maximum on every location (the rest wear none)."
+    }
+  },
+  "policy": {
+    "revive_priority": {
+      "value": true,
+      "unit": "bool",
+      "assumption": true,
+      "why": "Support casters try to return dead allies to life before anything else."
+    },
+    "p_use_offensive_ability_when_free": {
+      "value": 0.6,
+      "unit": "probability/s",
+      "assumption": true,
+      "why": "Chance a free martial player with a usable offensive ability casts it instead of closing to melee."
+    },
+    "self_insubstantial_seconds": {
+      "value": 30,
+      "unit": "s",
+      "assumption": true,
+      "why": "How long a player stays in a self-imposed Insubstantial state (Blink etc.) before returning."
+    },
+    "forced_move_seconds": {
+      "value": 10,
+      "unit": "s",
+      "assumption": true,
+      "why": "How long Shove/Push/keep-away style effects keep a player out of melee when the rule gives no duration."
+    },
+    "p_charge_when_safe": {
+      "value": 0.1,
+      "unit": "probability/s",
+      "assumption": true,
+      "why": "Chance an unengaged player with a spent chargeable ability starts the Charge incantation."
+    },
+    "p_enchant_ally_on_field": {
+      "value": 0.2,
+      "unit": "probability/s",
+      "assumption": true,
+      "why": "Chance a free enchanter tries to enchant an unenchanted ally on the field (rather than only at base)."
+    }
+  },
+  "game": {
+    "max_seconds": {
+      "value": 1800,
+      "unit": "s",
+      "assumption": true,
+      "why": "Hard time cap. Games at the cap are scored by remaining lives or kills."
+    }
+  },
+  "population": {
+    "level_weights": {
+      "value": {
+        "1": 0.3,
+        "2": 0.15,
+        "3": 0.15,
+        "4": 0.13,
+        "5": 0.12,
+        "6": 0.15
+      },
+      "unit": "weights",
+      "assumption": true,
+      "why": "Placeholder level mix until ORK attendance data is available."
+    },
+    "class_weights": {
+      "value": {
+        "Anti-Paladin": 1,
+        "Archer": 1,
+        "Assassin": 1,
+        "Barbarian": 1,
+        "Bard": 1,
+        "Druid": 1,
+        "Healer": 1,
+        "Monk": 1,
+        "Paladin": 1,
+        "Scout": 1,
+        "Warrior": 1,
+        "Wizard": 1
+      },
+      "unit": "weights",
+      "assumption": true,
+      "why": "Placeholder: uniform class mix until ORK data is available."
+    }
+  }
+}
