@@ -1,0 +1,498 @@
+<title>Amtgard Rules Rulings Docket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans+SC:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a court docket. Sticky filter rail on the left, numbered cases down the right; one column on phones. */
+:root {
+  --bg: #eef1ed;
+  --panel: #fbfcfa;
+  --ink: #1b2420;
+  --muted: #5c6862;
+  --line: #d3dad5;
+  --accent: #8a6a12;
+  --accent-ink: #fbfcfa;
+  --accent-soft: #f1e6c4;
+  --good: #2f6b45;
+  --good-soft: #dcebdf;
+  --warn: #9a5a12;
+  --warn-soft: #f5e3cc;
+  --crit: #9b2c2c;
+  --crit-soft: #f4d9d6;
+  --quote: #e4e9e5;
+  --font-display: "Alegreya Sans SC", "Gill Sans", "Trebuchet MS", sans-serif;
+  --font-body: "Alegreya", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141a17; --panel: #1b2320; --ink: #e5ebe7; --muted: #9aa7a0; --line: #2e3833;
+    --accent: #d9b44a; --accent-ink: #1b1605; --accent-soft: #3a3019;
+    --good: #7fc398; --good-soft: #1f3528; --warn: #e3a45c; --warn-soft: #3a2a17;
+    --crit: #ec8c84; --crit-soft: #3d2220; --quote: #222b27; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141a17; --panel: #1b2320; --ink: #e5ebe7; --muted: #9aa7a0; --line: #2e3833;
+  --accent: #d9b44a; --accent-ink: #1b1605; --accent-soft: #3a3019;
+  --good: #7fc398; --good-soft: #1f3528; --warn: #e3a45c; --warn-soft: #3a2a17;
+  --crit: #ec8c84; --crit-soft: #3d2220; --quote: #222b27; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 17px/1.5 var(--font-body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+.label { font-family: var(--font-display); font-weight: 700; letter-spacing: .06em; font-size: 13px; color: var(--muted); }
+.mono { font-family: var(--font-mono); font-size: 12.5px; }
+
+header.top { display: grid; gap: 10px; padding-bottom: 22px; border-bottom: 2px solid var(--ink); margin-bottom: 24px; }
+header.top h1 { font-family: var(--font-body); font-weight: 700; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; }
+header.top p { margin: 0; max-width: 68ch; color: var(--muted); }
+header.top p strong { color: var(--ink); }
+
+.layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 32px; align-items: start; }
+aside.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: grid; gap: 18px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
+.progress-num { font-family: var(--font-body); font-weight: 700; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.bar { height: 6px; background: var(--quote); border-radius: 3px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.save-state { font-size: 14px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
+.save-state .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 6px; flex: none; background: var(--muted); }
+.save-state[data-mode="shared"] .dot { background: var(--good); }
+.save-state[data-mode="local"] .dot { background: var(--warn); }
+label.field { display: grid; gap: 4px; }
+input[type="text"], input[type="search"], select, textarea {
+  font: inherit; font-size: 15px; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 4px; padding: 7px 9px; width: 100%;
+}
+textarea { font-size: 16px; min-height: 76px; resize: vertical; line-height: 1.45; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible, .choice input:focus-visible + span {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+button { font: 600 14px/1 var(--font-body); cursor: pointer; border-radius: 4px; padding: 9px 12px; border: 1px solid var(--ink); background: var(--ink); color: var(--bg); }
+button.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+button:hover { filter: brightness(1.1); }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.hint { font-size: 13px; color: var(--muted); margin: 0; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 18px; }
+.toolbar > * { flex: 1 1 150px; min-width: 0; }
+.toolbar .count { flex: 0 0 auto; font-size: 14px; color: var(--muted); padding-bottom: 8px; font-variant-numeric: tabular-nums; }
+
+ol.cases { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
+.case { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 20px 22px; display: grid; gap: 14px; min-width: 0; }
+.case[data-answered="1"] { border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+.case-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.case-no { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.case-head h2 { font-size: 22px; font-weight: 700; }
+.case-meta { color: var(--muted); font-size: 14px; flex-basis: 100%; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .05em; padding: 3px 8px; border-radius: 999px; background: var(--quote); color: var(--muted); white-space: nowrap; }
+.chip.impact-high { background: var(--crit-soft); color: var(--crit); }
+.chip.impact-medium { background: var(--warn-soft); color: var(--warn); }
+.chip.impact-low { background: var(--quote); color: var(--muted); }
+.chip.done { background: var(--good-soft); color: var(--good); }
+.chip.hint { background: transparent; border: 1px dashed var(--line); }
+.related { font-size: 14.5px; color: var(--muted); margin: 0; }
+.related a { color: var(--ink); }
+.q { font-size: 20px; line-height: 1.45; margin: 0; max-width: 70ch; }
+details.rule { border-left: 3px solid var(--line); padding-left: 12px; }
+details.rule summary { cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .06em; color: var(--muted); }
+details.rule dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 10px 0 2px; font-size: 15.5px; }
+details.rule dt { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 3px; white-space: nowrap; }
+details.rule dd { margin: 0; }
+.proposal { background: var(--accent-soft); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 4px; }
+.proposal p { margin: 0; }
+.proposal .why { font-size: 14.5px; color: var(--muted); }
+.proposal .why code { font-family: var(--font-mono); font-size: 12px; }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+legend { padding: 0; margin-bottom: 6px; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice { position: relative; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice span { display: inline-block; padding: 7px 12px; border: 1px solid var(--line); border-radius: 4px; font-size: 15px; cursor: pointer; background: var(--bg); line-height: 1.3; }
+.choice input:checked + span { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.choice.agree input:checked + span { background: var(--good); border-color: var(--good); color: var(--panel); }
+.saved-note { font-size: 13px; color: var(--muted); min-height: 1.2em; }
+details.others summary { cursor: pointer; font-size: 14px; color: var(--muted); }
+details.others ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+details.others li { font-size: 15px; border-top: 1px solid var(--line); padding-top: 8px; }
+details.others li b { font-weight: 700; }
+.empty { padding: 40px 16px; text-align: center; color: var(--muted); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 4px; font-size: 15px; z-index: 5; }
+textarea.copybox { font-family: var(--font-mono); font-size: 12px; min-height: 160px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  aside.rail { position: static; }
+}
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .case { padding: 16px; }
+  .q { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="label">Rules of Play <span class="mono">__EDITION__</span> · Open questions</span>
+    <h1>Amtgard Rules Rulings Docket</h1>
+    <p>While turning every ability in the rulebook into structured data, we found <strong><span id="total-inline">87</span> places where the text can be read more than one way</strong>. Each case below quotes the rule, asks the question, and gives the reading we assume for now. Tell us whether you agree. Your answers will settle how a battlegame simulator plays these rules.</p>
+    <p>You don't need to answer everything. Cases marked <strong>High impact</strong> change fight outcomes the most, so start there.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="rail" aria-label="Your progress and filters">
+      <div class="box">
+        <span class="label">Your answers</span>
+        <div><span class="progress-num" id="prog-num">0</span> <span class="hint" style="display:inline">of <span id="prog-total">0</span></span></div>
+        <div class="bar" aria-hidden="true"><i id="prog-bar"></i></div>
+        <div class="save-state" id="save-state" data-mode="pending"><span class="dot"></span><span id="save-text">Connecting to shared answers…</span></div>
+      </div>
+      <div class="box">
+        <label class="field"><span class="label">Sign your answers</span>
+          <input type="text" id="signature" maxlength="120" placeholder="Name, kingdom, role" autocomplete="name"></label>
+        <p class="hint">Shown next to your answers so we know whose ruling it is. Optional.</p>
+      </div>
+      <div class="box">
+        <span class="label">Send your answers</span>
+        <div class="btnrow"><button type="button" id="copy-btn">Copy my answers</button></div>
+        <p class="hint">Copies your answers as plain text. Use it if saving isn't available to you, then paste them into a message to the organizer.</p>
+        <textarea class="copybox" id="copy-fallback" readonly hidden aria-label="Your answers as text"></textarea>
+      </div>
+    </aside>
+
+    <main>
+      <div class="toolbar">
+        <label class="field"><span class="label">Search</span><input type="search" id="f-q" placeholder="Ability or words"></label>
+        <label class="field"><span class="label">Impact</span><select id="f-impact"><option value="">All</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
+        <label class="field"><span class="label">Topic</span><select id="f-topic"><option value="">All</option></select></label>
+        <label class="field"><span class="label">Class</span><select id="f-class"><option value="">All</option></select></label>
+        <label class="field"><span class="label">Show</span><select id="f-status"><option value="">Everything</option><option value="open">Not answered by me</option><option value="done">Answered by me</option><option value="real">Hide likely settled</option></select></label>
+        <label class="field"><span class="label">Order</span><select id="f-sort"><option value="impact">Impact first</option><option value="az">Ability A–Z</option></select></label>
+        <span class="count" id="f-count"></span>
+      </div>
+      <ol class="cases" id="cases"></ol>
+      <div class="empty" id="empty" hidden>No cases match these filters.</div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+(function () {
+  "use strict";
+  var D = __DATA__;
+  var Q = D.questions, N = Q.length;
+  var LS_KEY = "rulings-docket-v1";
+  var IMPACT_RANK = { high: 0, medium: 1, low: 2 };
+  var HINT_TEXT = { settled: "Probably settled by the rulebook", "no-effect": "Answer doesn't change play", errata: "Rulebook contradicts itself" };
+  var BY_ID = {}; Q.forEach(function (q) { BY_ID[q.id] = q; });
+  var CHOICE_TEXT = { agree: "Agrees with the proposed reading", other: "Different ruling", unsure: "Not sure" };
+
+  // ---- state -------------------------------------------------------------
+  var state = { signature: "", answers: {} };   // answers[id] = {choice, text, at}
+  var others = {};                               // uid -> {signature, answers}
+  var myId = null, db = null, mode = "pending";  // pending | shared | local
+  var saveTimer = null, saving = false, dirty = false;
+
+  function loadLocal() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (raw) { var s = JSON.parse(raw); if (s && s.answers) state = { signature: s.signature || "", answers: s.answers }; }
+    } catch (e) {}
+  }
+  function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+
+  // ---- helpers -----------------------------------------------------------
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === "text") n.textContent = attrs[k];
+      else if (k === "class") n.className = attrs[k];
+      else n.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c != null) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+  function answered(id) { var a = state.answers[id]; return !!(a && a.choice); }
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 2600);
+  }
+  function choiceLabel(q, c) {
+    if (!c) return "";
+    if (c.indexOf("opt:") === 0) { var i = +c.slice(4); return (q.options && q.options[i]) || "Option " + (i + 1); }
+    return CHOICE_TEXT[c] || c;
+  }
+
+  // ---- filters -----------------------------------------------------------
+  var topics = {}, classes = {};
+  Q.forEach(function (q) { topics[q.topic] = 1; q.classes.forEach(function (c) { classes[c] = 1; }); });
+  Object.keys(topics).sort().forEach(function (t) { $("f-topic").appendChild(el("option", { value: t, text: t })); });
+  Object.keys(classes).sort().forEach(function (c) { $("f-class").appendChild(el("option", { value: c, text: c })); });
+  $("prog-total").textContent = N; $("total-inline").textContent = N;
+
+  function visible() {
+    var s = $("f-q").value.trim().toLowerCase(), im = $("f-impact").value, tp = $("f-topic").value,
+        cl = $("f-class").value, st = $("f-status").value;
+    var list = Q.filter(function (q) {
+      if (im && q.sim_impact !== im) return false;
+      if (tp && q.topic !== tp) return false;
+      if (cl && q.classes.indexOf(cl) < 0) return false;
+      if (st === "open" && answered(q.id)) return false;
+      if (st === "done" && !answered(q.id)) return false;
+      if (st === "real" && (q.hint === "settled" || q.hint === "no-effect")) return false;
+      if (s && q.hay.indexOf(s) < 0) return false;
+      return true;
+    });
+    if ($("f-sort").value === "az") list.sort(function (a, b) { return a.no - b.no; });
+    else list.sort(function (a, b) { return ((a.hint && a.hint !== "errata") - (b.hint && b.hint !== "errata")) || (IMPACT_RANK[a.sim_impact] - IMPACT_RANK[b.sim_impact]) || (a.no - b.no); });
+    return list;
+  }
+
+  // ---- rendering ---------------------------------------------------------
+  var cards = {};   // id -> {li, note, othersBox, chips}
+
+  function buildCard(q) {
+    var li = el("li", { class: "case", id: "case-" + q.no });
+    var head = el("div", { class: "case-head" }, [
+      el("span", { class: "case-no", text: "No. " + String(q.no).padStart(2, "0") }),
+      el("h2", { text: q.title }),
+      el("span", { class: "case-meta", text: q.where })
+    ]);
+    var chips = el("div", { class: "chips" }, [
+      el("span", { class: "chip impact-" + q.sim_impact, text: q.sim_impact.charAt(0).toUpperCase() + q.sim_impact.slice(1) + " impact" }),
+      el("span", { class: "chip", text: q.topic }),
+      q.hint ? el("span", { class: "chip hint", text: HINT_TEXT[q.hint] }) : null
+    ]);
+    var doneChip = el("span", { class: "chip done", text: "Answered" }); doneChip.hidden = true; chips.appendChild(doneChip);
+
+    var dl = el("dl");
+    q.sentences.forEach(function (s) { dl.appendChild(el("dt", { text: s[1] })); dl.appendChild(el("dd", { text: s[2] })); });
+    var rule = el("details", { class: "rule" }, [el("summary", { text: "Rulebook text" }), dl]);
+
+    var proposal = el("div", { class: "proposal" }, [
+      el("span", { class: "label", text: "Proposed reading · " + q.confidence + " confidence" }),
+      el("p", { text: q.proposed }),
+      q.why ? el("p", { class: "why", text: q.why }) : null
+    ]);
+
+    var name = "c-" + q.no;
+    var choices = el("div", { class: "choices" });
+    function addChoice(value, text, cls) {
+      var inp = el("input", { type: "radio", name: name, value: value, id: name + "-" + value.replace(":", "") });
+      var lab = el("label", { class: "choice" + (cls ? " " + cls : ""), for: inp.id }, [inp, el("span", { text: text })]);
+      inp.addEventListener("change", function () { setAnswer(q.id, { choice: value }); });
+      choices.appendChild(lab);
+    }
+    addChoice("agree", "Agree with proposed", "agree");
+    (q.options || []).forEach(function (o, i) { addChoice("opt:" + i, o); });
+    addChoice("other", "Different ruling");
+    addChoice("unsure", "Not sure");
+
+    var ta = el("textarea", { id: "t-" + q.no, placeholder: "Your ruling or reasoning. Cite a rule or precedent if you know one.", "aria-label": "Your ruling or reasoning for case " + q.no });
+    ta.addEventListener("input", function () { setAnswer(q.id, { text: ta.value }, true); });
+    var note = el("div", { class: "saved-note", "aria-live": "polite" });
+    var fs = el("fieldset", null, [el("legend", { class: "label", text: "Your answer" }), choices, ta, note]);
+
+    var othersBox = el("details", { class: "others" }); othersBox.hidden = true;
+
+    li.appendChild(head); li.appendChild(chips); li.appendChild(el("p", { class: "q", text: q.question }));
+    li.appendChild(rule); li.appendChild(proposal);
+    if (q.related.length) {
+      var rel = el("p", { class: "related" }, ["Answer together with "]);
+      q.related.forEach(function (rid, i) {
+        var r = BY_ID[rid];
+        if (i) rel.appendChild(document.createTextNode(i === q.related.length - 1 ? " and " : ", "));
+        rel.appendChild(el("a", { href: "#case-" + r.no, text: "No. " + r.no + " " + r.title }));
+      });
+      rel.appendChild(document.createTextNode("."));
+      li.appendChild(rel);
+    } li.appendChild(fs); li.appendChild(othersBox);
+    cards[q.id] = { li: li, note: note, othersBox: othersBox, done: doneChip, ta: ta, name: name };
+    return li;
+  }
+
+  function paintAnswer(q) {
+    var c = cards[q.id], a = state.answers[q.id] || {};
+    var radios = c.li.querySelectorAll('input[name="' + c.name + '"]');
+    radios.forEach(function (r) { r.checked = r.value === a.choice; });
+    if (document.activeElement !== c.ta) c.ta.value = a.text || "";
+    c.done.hidden = !a.choice;
+    c.li.dataset.answered = a.choice ? "1" : "0";
+  }
+
+  function paintOthers(q) {
+    var c = cards[q.id], rows = [];
+    Object.keys(others).forEach(function (uid) {
+      if (uid === myId) return;
+      var a = others[uid].answers && others[uid].answers[q.id];
+      if (a && (a.choice || a.text)) rows.push({ sig: others[uid].signature, a: a });
+    });
+    c.othersBox.textContent = "";
+    if (!rows.length) { c.othersBox.hidden = true; return; }
+    c.othersBox.hidden = false;
+    c.othersBox.appendChild(el("summary", { text: rows.length === 1 ? "1 other answer" : rows.length + " other answers" }));
+    var ul = el("ul");
+    rows.forEach(function (r) {
+      ul.appendChild(el("li", null, [
+        el("b", { text: (r.sig || "Unsigned") + ": " }),
+        choiceLabel(q, r.a.choice) || "No choice",
+        r.a.text ? el("div", { text: r.a.text }) : null
+      ]));
+    });
+    c.othersBox.appendChild(ul);
+  }
+
+  function render() {
+    var list = visible(), ol = $("cases");
+    ol.textContent = "";
+    list.forEach(function (q) { ol.appendChild(cards[q.id].li); });
+    $("empty").hidden = list.length > 0;
+    $("f-count").textContent = list.length === N ? N + " cases" : list.length + " of " + N;
+  }
+
+  function paintProgress() {
+    var n = Q.filter(function (q) { return answered(q.id); }).length;
+    $("prog-num").textContent = n;
+    $("prog-bar").style.width = (100 * n / N) + "%";
+  }
+
+  function setMode(m, text) {
+    mode = m;
+    $("save-state").dataset.mode = m;
+    $("save-text").textContent = text;
+  }
+
+  // ---- answering & saving ------------------------------------------------
+  function setAnswer(id, patch, isTyping) {
+    var a = Object.assign({}, state.answers[id] || {}, patch, { at: new Date().toISOString() });
+    if (!a.choice && !a.text) delete state.answers[id]; else state.answers[id] = a;
+    saveLocal();
+    var q = Q.find(function (x) { return x.id === id; });
+    if (!isTyping) paintAnswer(q);
+    else { cards[id].done.hidden = !a.choice; }
+    paintProgress();
+    cards[id].note.textContent = mode === "shared" ? "Saving…" : "Kept in this browser";
+    scheduleSave(id, isTyping ? 1200 : 300);
+  }
+
+  var lastSavedIds = {};
+  function scheduleSave(id, delay) {
+    if (id) lastSavedIds[id] = 1;
+    dirty = true;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, delay);
+  }
+
+  function flush() {
+    if (mode !== "shared" || !db || !myId) return;
+    if (saving) { saveTimer = setTimeout(flush, 400); return; }
+    if (!dirty) return;
+    dirty = false; saving = true;
+    var ids = Object.keys(lastSavedIds); lastSavedIds = {};
+    db.doc("responses/" + myId).set({ signature: state.signature, updatedAt: new Date().toISOString(), answers: state.answers })
+      .then(function () {
+        ids.forEach(function (id) { if (cards[id]) cards[id].note.textContent = "Saved"; });
+      }, function (e) {
+        if (e && e.code === "unavailable") { dirty = true; ids.forEach(function (id) { lastSavedIds[id] = 1; }); saveTimer = setTimeout(flush, 1500 + Math.random() * 1000); return; }
+        goLocal(e && e.code === "quota_exceeded"
+          ? "The shared answer store is full. Your answers are kept in this browser; use Copy my answers."
+          : "You can read this page but can't save answers to it. Your answers are kept in this browser; use Copy my answers to send them.");
+        ids.forEach(function (id) { if (cards[id]) cards[id].note.textContent = "Kept in this browser"; });
+      })
+      .then(function () { saving = false; });
+  }
+
+  function goLocal(text) { setMode("local", text); }
+
+  $("signature").addEventListener("input", function () {
+    state.signature = this.value.slice(0, 120); saveLocal(); scheduleSave(null, 1200);
+  });
+
+  // ---- copy --------------------------------------------------------------
+  function answersText() {
+    var lines = ["Amtgard Rules Rulings Docket answers" + (state.signature ? " from " + state.signature : ""), ""];
+    Q.forEach(function (q) {
+      var a = state.answers[q.id]; if (!a) return;
+      lines.push("No. " + q.no + " " + q.title + " [" + q.id + "]");
+      if (a.choice) lines.push("  " + choiceLabel(q, a.choice));
+      if (a.text) lines.push("  " + a.text.replace(/\n/g, "\n  "));
+      lines.push("");
+    });
+    if (lines.length === 2) lines.push("(No answers yet.)");
+    return lines.join("\n");
+  }
+  $("copy-btn").addEventListener("click", function () {
+    var text = answersText(), box = $("copy-fallback");
+    function fallback() { box.value = text; box.hidden = false; box.focus(); box.select(); toast("Select all and copy the text below the button"); }
+    try {
+      navigator.clipboard.writeText(text).then(function () { box.hidden = true; toast("Answers copied"); }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  // ---- filters wiring ----------------------------------------------------
+  ["f-q", "f-impact", "f-topic", "f-class", "f-status", "f-sort"].forEach(function (id) {
+    $(id).addEventListener(id === "f-q" ? "input" : "change", render);
+  });
+
+  // ---- boot --------------------------------------------------------------
+  Q.forEach(function (q, i) {
+    q.hay = (q.title + " " + q.question + " " + q.proposed + " " + q.topic + " " + q.id + " " + q.classes.join(" ")).toLowerCase();
+    buildCard(q);
+  });
+  loadLocal();
+  $("signature").value = state.signature;
+  Q.forEach(paintAnswer);
+  paintProgress();
+  render();
+
+  var connectTimer = setTimeout(function () {
+    if (mode === "pending") goLocal("Shared saving isn't available here. Your answers are kept in this browser; use Copy my answers to send them.");
+  }, 12000);
+
+  if (window.claude && window.claude.use) {
+    Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function (r) {
+      db = r[0]; var user = r[1];
+      if (!db || !user) { db = null; goLocal("Shared saving isn't available here. Your answers are kept in this browser; use Copy my answers to send them."); return; }
+      return user.id().then(function (id) {
+        myId = id;
+        // Everyone admitted can read the other answers.
+        db.collection("responses").onSnapshot(function (snap) {
+          var next = {};
+          snap.docs.forEach(function (d) { if (d.exists) next[d.id] = d.data(); });
+          others = next;
+          if (myId && next[myId] && mode === "pending") {
+            // Merge what this person already saved from another device, newest answer wins.
+            var remote = next[myId];
+            Object.keys(remote.answers || {}).forEach(function (k) {
+              var mine = state.answers[k], theirs = remote.answers[k];
+              if (!mine || (theirs.at || "") > (mine.at || "")) state.answers[k] = theirs;
+            });
+            if (!state.signature && remote.signature) { state.signature = remote.signature; $("signature").value = remote.signature; }
+            saveLocal(); Q.forEach(paintAnswer); paintProgress();
+          }
+          if (mode === "pending") {
+            clearTimeout(connectTimer);
+            if (!myId) { goLocal("Sign in to claude.ai to save answers here. Until then they're kept in this browser; use Copy my answers to send them."); }
+            else {
+              setMode("shared", "Saving to shared answers. Others with access can see them.");
+              if (Object.keys(state.answers).length) { Object.keys(state.answers).forEach(function (k) { lastSavedIds[k] = 1; }); scheduleSave(null, 500); }
+            }
+          }
+          Q.forEach(paintOthers);
+        }, function () {
+          if (mode === "pending") goLocal("Shared answers couldn't load. Your answers are kept in this browser; use Copy my answers to send them.");
+        });
+      });
+    }, function () { goLocal("Shared saving isn't available here. Your answers are kept in this browser; use Copy my answers to send them."); });
+  } else {
+    clearTimeout(connectTimer);
+    goLocal("Shared saving isn't available here. Your answers are kept in this browser; use Copy my answers to send them.");
+  }
+})();
+</script>

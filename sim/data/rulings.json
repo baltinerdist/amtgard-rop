@@ -1,0 +1,1604 @@
+[
+ {
+  "id": "adaptive-blessing#1",
+  "slug": "adaptive-blessing",
+  "note": "E2 does not say who chooses the School (caster or bearer); 'at the time of casting' suggests the caster.",
+  "question": "Adaptive Blessing says the School \"is chosen at the time of casting\" but not who makes the choice. Does the caster or the bearer choose the School?",
+  "options": [
+   "The caster chooses and declares it at casting",
+   "The bearer chooses at casting",
+   "Either, by agreement at casting"
+  ],
+  "ruling": "The caster chooses the School and declares it when casting; the bearer consents by accepting the Enchantment.",
+  "why": "The text ties the choice to \"the time of casting\", which is the caster's act, and Enchantments \"may only be cast on willing players\" (rules/magic-states-effects/mechanics-and-definitions.md), so the bearer can refuse a choice they don't want.",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Choice & who decides",
+  "hint": null,
+  "related": [
+   "adaptive-protection#1"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "adaptive-blessing#2",
+  "slug": "adaptive-blessing",
+  "note": "Whether the Enchantment is removed once the Resistance is used is not stated in the text.",
+  "question": "Adaptive Blessing makes the bearer \"Resistant\" to one chosen School; once that Resistance stops an ability, is the Enchantment (and its strip) removed?",
+  "options": [
+   "Removed after it stops one ability",
+   "Stays on until dispelled, removed or respawn"
+  ],
+  "ruling": "Adaptive Blessing is removed after it stops one ability from the chosen School.",
+  "why": "Resistant to a School means \"Immune to the next ability from the given School\", and \"Enchantments that have a definite number of uses ... are removed when their last use is expended\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "adaptive-protection#1",
+  "slug": "adaptive-protection",
+  "note": "E2 does not say who chooses the School (caster or bearer); 'at the time of casting' suggests the caster.",
+  "question": "Adaptive Protection says the School \"is chosen at the time of casting\" but not who makes the choice. Does the caster or the bearer choose the School?",
+  "options": [
+   "The caster chooses and declares it at casting",
+   "The bearer chooses at casting",
+   "Either, by agreement at casting"
+  ],
+  "ruling": "The caster chooses the School and declares it when casting (for the Scout's Self version they are the same player); the bearer consents by accepting the Enchantment.",
+  "why": "Same wording as Adaptive Blessing: \"chosen at the time of casting\" ties the choice to the caster's act, and Enchantments \"may only be cast on willing players\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Choice & who decides",
+  "hint": null,
+  "related": [
+   "adaptive-blessing#1"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "artificer#1",
+  "slug": "artificer",
+  "note": "L1 replaces 'the normal amount of Specialty Arrows for an Archer' without naming what is lost. The Archer normally picks two of Destruction, Pinning and Poison Arrow at 1st, 3rd and 5th and gains Suppression Arrow (4th) and Phase Arrow (6th); read literally, Destruction and Poison Arrow are no longer available, but the text does not name them.",
+  "question": "Artificer says \"Rather than the normal amount of Specialty Arrows for an Archer, gain\" 3 Pinning, 2 Phase and 2 Suppression Arrows. Does an Artificer lose Destruction Arrow and Poison Arrow entirely, even though they are not named?",
+  "options": [
+   "Yes: only the listed arrows (plus Look the Part Pinning)",
+   "No: only the listed types' counts change; picks are kept"
+  ],
+  "ruling": "Artificer replaces all of the Archer's class Specialty Arrows with exactly the listed 3 Pinning, 2 Phase and 2 Suppression Arrows (plus a fourth Pinning from Look the Part), so Destruction and Poison Arrow are not available.",
+  "why": "\"Rather than the normal amount ... gain\" substitutes a complete list for the Archer's level picks (rules/classes/archer.md), and Look the Part is separately converted to Pinning, which would be unnecessary if the normal picks survived.",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "Class features",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "assassinate#1",
+  "slug": "assassinate",
+  "note": "L1 says 'immediately upon killing an enemy' but does not call it a Kill Trigger; no kill-trigger property recorded (Kill Trigger rules such as 30 seconds and 10' from enemies are not stated). Timing on-kill used.",
+  "question": "Assassinate \"May only be used immediately upon killing an enemy\" but is not labelled a Kill Trigger. Does it use the Kill Trigger rules (a 30-second window and no living enemy within 10'), or must it be used right away with no distance restriction?",
+  "options": [
+   "Right away, no 10' restriction (not a Kill Trigger)",
+   "Kill Trigger rules apply (30 seconds, 10' from enemies)"
+  ],
+  "ruling": "Assassinate must be used immediately after the kill, with no 30-second window and no 10' distance requirement.",
+  "why": "The Kill Trigger defined in rules/magic-states-effects/mechanics-and-definitions.md is a named limitation that other abilities (e.g. Blood and Thunder) invoke explicitly; Assassinate instead uses \"immediately\", matching the Wound Trigger's \"immediately after\" timing.",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Timing & duration",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "astral-intervention#1",
+  "slug": "astral-intervention",
+  "note": "N1 only grants early exit when self-cast; a target other than the caster apparently may not exit early even if willing (Insubstantial's general exit rule needs them to have caused it).",
+  "question": "Astral Intervention's note lets the caster exit early only \"If cast on self\". When cast on another player, even a willing ally, must that player stay Insubstantial for the full 30 seconds?",
+  "options": [
+   "Yes: other targets stay Insubstantial the full 30 seconds",
+   "A willing target may exit early"
+  ],
+  "ruling": "A target other than the caster cannot use the exit incantation and stays Insubstantial for the full 30 seconds unless the State is removed by another ability.",
+  "why": "Insubstantial may be self-removed only \"provided they are the cause of the State\"; \"Otherwise, they must end the State as per the description of the responsible ability\" (rules/magic-states-effects/states.md), and the note grants early exit only to a self-cast.",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "States",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "attuned#1",
+  "slug": "attuned",
+  "note": "L1 'any other similar abilities' is not defined; Essence Graft (same wording) and Phoenix Tears (which excludes Attuned) are the likely candidates, but Evolution N1 says Evolution does work with Attuned.",
+  "question": "Attuned \"may not be used in conjunction with itself or any other similar abilities\", which the rulebook never lists. Which abilities count as \"similar\"?",
+  "options": [
+   "Essence Graft and Phoenix Tears (Evolution exempt)",
+   "Only Essence Graft",
+   "Any ability that raises the Enchantment limit, including Evolution"
+  ],
+  "ruling": "\"Similar abilities\" are other Enchantments that raise the Enchantment limit: Essence Graft and Phoenix Tears; Evolution is exempt by its own note.",
+  "why": "Phoenix Tears says it \"May not be worn with Attuned or Essence Graft\" and adds an extra Enchantment slot; Evolution's note says it \"does work in conjunction with Attuned, Essence Graft, or Phoenix Tears\", and rules/magic-states-effects/mechanics-and-definitions.md groups \"Attuned, Essence Graft, or similar abilities\" as limit-raising abilities.",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "awe#1",
+  "slug": "awe",
+  "note": "E1 blocks only Magical abilities cast at the caster; Extraordinary abilities are not restricted, literally.",
+  "question": "Awe says the target \"may not attack or cast Magical abilities at the caster\". Can the target still use Extraordinary (ex) abilities on the caster, such as a Scout's Dispel Magic (ex)?",
+  "options": [
+   "Yes: (ex) abilities are allowed unless they are an attack",
+   "No: every ability is blocked"
+  ],
+  "ruling": "Extraordinary abilities are not blocked unless using them is itself an attack (a weapon blow or an arrow shot, including Specialty Arrows).",
+  "why": "The restriction names only attacks and \"Magical abilities\", and (ex) abilities are defined as \"not Magical in nature\" (rules/classes/_overview.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [
+   "terror#1",
+   "insult#3"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "banish#1",
+  "slug": "banish",
+  "note": "Convention 10 encodes Banish only as move.to-base; N1's replacement Insubstantial State is kept as a clarification rather than a state.apply effect.",
+  "question": "Banish replaces the target's Insubstantial State with \"a new Insubstantial State from Banish\". Can a player Banished by someone else still leave Insubstantial early (for example if they were originally Insubstantial from Shadow Step, which allows exit at will)?",
+  "options": [
+   "No: must walk to base unless another ability removes it",
+   "Yes: original exit rules still apply"
+  ],
+  "ruling": "No; the Banish State replaces the old one, so the target cannot use the exit incantation and must walk to base unless the State is removed by another ability (e.g. Release), which ends the Banish effect.",
+  "why": "Insubstantial may be self-removed only when the player caused the State (rules/magic-states-effects/states.md); Banish's own note grants early exit only when self-cast and says ending the State early ends \"the rest of the effect\".",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "States",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "banish#2",
+  "slug": "banish",
+  "note": "Beneficiary 'any': normally used on enemies, but N3 explicitly allows casting it on self (a quick return to base).",
+  "question": "Banish's target is an Insubstantial player, and its note says \"If Banish is cast on self, the caster may end this Insubstantial State at any time\". Can a player legitimately cast Banish on themselves to get back to base?",
+  "options": [
+   "Yes, if the caster is already Insubstantial",
+   "No, Banish is only for other players"
+  ],
+  "ruling": "Yes; an Insubstantial caster may Banish themselves to return to base and may end that State at any time.",
+  "why": "Banish's note explicitly covers self-casting (rules/magic-and-abilities/banish.md), and Insubstantial players \"may only target themselves with abilities that are able to affect insubstantial players\" (rules/magic-states-effects/states.md), which Banish does.",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Targeting",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "blessed-aura#1",
+  "slug": "blessed-aura",
+  "note": "Whether the Enchantment is removed once it triggers is not stated in its own text; the general rule that Enchantments with a definite number of uses are removed when the last use is expended (it names Blessing Against Harm) probably applies.",
+  "question": "Blessed Aura makes the bearer \"resistant to all effects from the next source\" but does not say it is removed afterward. Is Blessed Aura removed once it stops one source?",
+  "options": [
+   "Removed after stopping one source",
+   "Stays until dispelled, removed or respawn"
+  ],
+  "ruling": "Blessed Aura is removed after it stops one source.",
+  "why": "Its wording matches Blessing Against Harm, which rules/magic-states-effects/mechanics-and-definitions.md names as an Enchantment with \"a definite number of uses\" that is \"removed when their last use is expended\"; Resistant covers only \"the next effect\".",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "blessing-against-wounds#1",
+  "slug": "blessing-against-wounds",
+  "note": "Whether the Enchantment is removed once the Resistance is used is not stated in its own text; the general rule that Enchantments with a definite number of uses are removed when the last use is expended (it names Blessing Against Harm) probably applies.",
+  "question": "Blessing Against Wounds says only that the bearer \"is resistant to wounds\". Is it removed after it stops one wound, or does it keep stopping wounds?",
+  "options": [
+   "Removed after stopping one wound",
+   "Keeps stopping every wound until removed"
+  ],
+  "ruling": "Blessing Against Wounds stops the next wound and is then removed.",
+  "why": "Resistant to Wounds is defined as \"Does not receive the next wound\", and single-use Enchantments are \"removed when their last use is expended\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "blood-and-thunder#1",
+  "slug": "blood-and-thunder",
+  "note": "Duration recorded as until-used on the reading that Blessing Against Wounds makes the bearer resistant to the next wound; the text itself gives no duration.",
+  "question": "Blood and Thunder gives the Barbarian \"Blessing Against Wounds (ex)\" but gives no duration. How long does that Blessing last?",
+  "options": [
+   "Until it stops one wound, or respawn/removal",
+   "For the rest of that life, stopping every wound",
+   "Until the next Refresh"
+  ],
+  "ruling": "It lasts until it stops one wound, or until it is removed by respawn, a voluntary death, Dispel Magic or the bearer.",
+  "why": "The ability grants a Blessing Against Wounds, whose Resistance covers \"the next wound\"; Enchantments remain \"until they are used up or removed\" and respawning removes non-Persistent Enchantments (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Timing & duration",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "brutal-strike#1",
+  "slug": "brutal-strike",
+  "note": "N1 allows a dead target, but States normally cannot apply to dead players unless noted; unclear whether the 30-second Suppressed of E2 applies when the target is dead (Cursed persists after death).",
+  "question": "Brutal Strike \"targets the wounded or dead player\" and makes them \"Cursed indefinitely\" and \"Suppressed for 30 seconds\", but States normally \"cannot apply to dead players\". When the target is already dead, do both States apply, or only Cursed?",
+  "options": [
+   "Only Cursed applies to a dead target",
+   "Both Cursed and Suppressed apply",
+   "Neither applies to a dead target"
+  ],
+  "ruling": "Against a dead target only Cursed applies; Suppressed does not.",
+  "why": "States \"cannot apply to dead players\" unless otherwise noted (rules/magic-states-effects/states.md); Cursed is noted to persist after death and the note's mention of dead targets only makes sense if Cursed lands, while nothing says Suppressed does.",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "circle-of-protection#1",
+  "slug": "circle-of-protection",
+  "note": "E1 removes all States and Ongoing Effects before applying Insubstantial; whether Enchantments count as Ongoing Effects here is not stated.",
+  "question": "Circle of Protection removes \"all States and Ongoing Effects\" from its targets. Does that also strip their Enchantments?",
+  "options": [
+   "No: Enchantments stay",
+   "Yes: Enchantments are removed too"
+  ],
+  "ruling": "No; Enchantments are not removed, and States or Ongoing Effects imparted by an active Enchantment also stay.",
+  "why": "The rules define Enchantments separately from Ongoing Effects, and \"States, Abilities, and Ongoing Effects imparted by an Enchantment to its bearer cannot be removed in any way while the Enchantment is active\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "circle-of-protection#2",
+  "slug": "circle-of-protection",
+  "note": "N1 implies a player prevented from Insubstantial also keeps their States/Ongoing Effects (unaffected entirely); encoded as a clarification only.",
+  "question": "Circle of Protection's note says a player \"prevented from becoming Insubstantial\" is \"unaffected by Circle of Protection\". Does that player also keep all their States and Ongoing Effects instead of having them removed?",
+  "options": [
+   "Yes: they are entirely unaffected",
+   "No: States are still removed; only Insubstantial fails"
+  ],
+  "ruling": "Yes; that player is entirely unaffected and keeps their States and Ongoing Effects.",
+  "why": "\"Unaffected by Circle of Protection\" covers the whole ability, including the removal of States and Ongoing Effects (rules/magic-and-abilities/circle-of-protection.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Stacking & interaction",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "confidence#1",
+  "slug": "confidence",
+  "note": "L1 does not say whether the 20' is measured from the caster, the target, or both; recorded with the standard no-enemy-within-20ft requirement (caster).",
+  "question": "Confidence \"May not be used within 20' of a living enemy\". Is the 20' measured from the Bard casting it, from the player receiving it, or from both?",
+  "options": [
+   "From the caster only",
+   "From the target only",
+   "From both caster and target"
+  ],
+  "ruling": "The 20' is measured from the caster.",
+  "why": "Restrictions on \"using\" an ability apply to the caster, as with the Kill Trigger's \"The caster must be outside of 10' of a living enemy\" (rules/magic-states-effects/mechanics-and-definitions.md); Confidence's Other range also puts the target within touch of the caster.",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "confidence#2",
+  "slug": "confidence",
+  "note": "E1 does not say whether the target must Charge immediately or may choose later, nor whether the ability must have a listed Charge value.",
+  "question": "Confidence lets the target \"instantly Charge a single ability\". Must the target use it right away, and must the chosen ability have a listed Charge value (e.g. 'Charge x3')?",
+  "options": [
+   "Immediately; only abilities with a Charge value",
+   "Immediately; any ability",
+   "Can be saved for later; only abilities with a Charge value"
+  ],
+  "ruling": "The target must use it right away, naming one of their abilities that has a listed Charge value, and it restores one use without the Charge incantation.",
+  "why": "\"Instantly\" describes immediate use, not a stored benefit, and Charge is defined for abilities that \"have a listed Charge value\", and the name of the ability \"must be Declared\" before charging (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "dispel-magic#1",
+  "slug": "dispel-magic",
+  "note": "E2 says it works regardless of the target's States, but N1 says it does not affect Invulnerable players (Invulnerable is a State); encoded N1 as the requirement target-not-invulnerable as the specific exception.",
+  "question": "Dispel Magic works \"regardless of the player's ... States\", but its note says it \"Does not affect Invulnerable players\", and Invulnerable is a State. Does Dispel Magic fail on an Invulnerable player?",
+  "options": [
+   "Yes: it fails on Invulnerable players",
+   "No: the 'regardless of States' clause wins"
+  ],
+  "ruling": "Yes; Dispel Magic has no effect on an Invulnerable player.",
+  "why": "The note is a specific exception to the general clause, and Invulnerable players are unaffected by abilities \"that do not specifically work on Invulnerable players\" (rules/magic-states-effects/states.md).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Stacking & interaction",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "dispel-magic#2",
+  "slug": "dispel-magic",
+  "note": "E2 'valid target' is not defined further.",
+  "question": "Dispel Magic \"Will always remove Enchantments if successfully cast on a valid target, regardless of the player's ... States\". Is a Frozen or Insubstantial player a valid target (for example, stripping Phoenix Tears during its 30-second Frozen)?",
+  "options": [
+   "Yes: any player but an Invulnerable one",
+   "No: Frozen and Insubstantial still protect them"
+  ],
+  "ruling": "Yes; any player who meets the normal casting requirements is a valid target, including Frozen and Insubstantial players, and only Invulnerable players are excepted.",
+  "why": "\"Regardless of the player's ... States\" overrides the Frozen and Insubstantial \"otherwise unaffected\" clauses (rules/magic-states-effects/states.md), and the note singles out only Invulnerable, which would be unnecessary if States in general protected.",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "elemental-barrage#1",
+  "slug": "elemental-barrage",
+  "note": "'Currently carrying' could mean balls held at casting time only; balls picked up later end the effect anyway (L1).",
+  "question": "Elemental Barrage works on \"Magic Balls they are currently carrying\" and ends \"if the caster picks up any additional Magic Balls\". Does retrieving a ball the caster already threw during the effect count as picking up an additional ball and end it?",
+  "options": [
+   "Yes: any pickup ends it, only balls held at casting count",
+   "No: picking up your own thrown balls is allowed"
+  ],
+  "ruling": "Only the balls carried when Elemental Barrage is cast can be used, and picking up any ball, including one already thrown, ends the effect.",
+  "why": "A thrown ball is no longer being carried, so picking it up adds a ball, and the limitation says \"any additional Magic Balls\" (rules/magic-and-abilities/elemental-barrage.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "empower#1",
+  "slug": "empower",
+  "note": "E1 does not say who chooses which expended per-life ability regains a use (caster or target).",
+  "question": "Empower lets the target regain \"one use of any per-life ability they have expended\". Who picks which ability: the Bard casting it or the player receiving it?",
+  "options": [
+   "The target chooses",
+   "The caster chooses"
+  ],
+  "ruling": "The target chooses which of their expended per-life abilities regains a use.",
+  "why": "Release states \"Casters choice\" when the caster decides, and Empower has no such wording; its effect is written from the target's side (\"they have expended\") (rules/magic-and-abilities/empower.md).",
+  "confidence": "low",
+  "sim_impact": "low",
+  "topic": "Choice & who decides",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "essence-graft#1",
+  "slug": "essence-graft",
+  "note": "L2 'any other similar abilities' is not defined (Attuned presumably; Evolution N1 says Evolution does work with Essence Graft).",
+  "question": "Essence Graft \"may not be used in conjunction with itself or any other similar abilities\", which the rulebook never lists. Which abilities count as \"similar\"?",
+  "options": [
+   "Attuned and Phoenix Tears (Evolution exempt)",
+   "Only Attuned",
+   "Any ability that raises the Enchantment limit, including Evolution"
+  ],
+  "ruling": "\"Similar abilities\" are other Enchantments that raise the Enchantment limit: Attuned and Phoenix Tears; Evolution is exempt by its own note.",
+  "why": "Phoenix Tears says it \"May not be worn with Attuned or Essence Graft\" and adds an extra Enchantment slot; Evolution's note says it \"does work in conjunction with Attuned, Essence Graft, or Phoenix Tears\", and rules/magic-states-effects/mechanics-and-definitions.md groups \"Attuned, Essence Graft, or similar abilities\" as limit-raising abilities.",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "evolution#1",
+  "slug": "evolution",
+  "note": "Source mismatch: rules/magic-and-abilities/evolution.md says 'Available to: Scout 4' and Type Enchantment, but rules/classes/scout.md lists 'Evolution (T)' at 1st level and 'Granted as a Trait'; the packet shows both Scout 1st (ex) and Scout 4th. Duration recorded as permanent (Trait).",
+  "question": "The Scout class lists Evolution as a 1st-level Trait (\"Granted as a Trait\"), but the ability list says \"Available to: Scout 4\" and \"Type: Enchantment\". Which is correct?",
+  "options": [
+   "1st-level Trait: always on, can't be dispelled",
+   "4th-level Enchantment that can be removed"
+  ],
+  "ruling": "Evolution is a 1st-level Scout Trait: always on, never removed, and not counted as an Enchantment.",
+  "why": "The Scout class table and entry (rules/classes/scout.md) say \"Evolution (T)\" at 1st level and \"Granted as a Trait\", and Traits \"May not be removed by any means\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Class features",
+  "hint": "errata",
+  "related": [
+   "trickery#1"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "experienced#1",
+  "slug": "experienced",
+  "note": "Max 2 per class: whether a second instance may pick the other option or another Verbal is not stated; each instance is read as its own single Verbal.",
+  "question": "Experienced may be bought twice (Max 2) and makes \"A single per-life Verbal\" Charge x5 \"OR a single per-refresh Verbal\" Charge x10. With two purchases, does each apply to its own Verbal, and may the two use different options?",
+  "options": [
+   "Each applies to a different Verbal; either option each",
+   "Both must use the same option",
+   "Both may stack on the same Verbal"
+  ],
+  "ruling": "Each purchase applies to a different Verbal chosen before the game, and each may independently use the per-life or the per-refresh option.",
+  "why": "Each instance grants \"A single ... Verbal\" and must be \"determined before the game begins\" (rules/magic-and-abilities/experienced.md); a second Charge value on the same Verbal would add nothing.",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Class features",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "gift-of-air#1",
+  "slug": "gift-of-air",
+  "note": "The text never says whether Gift of Air is removed (expended) after it activates; the negation is recorded as an instant effect but the Enchantment's end is unstated.",
+  "question": "When Gift of Air activates, the bearer ignores the hit and becomes Insubstantial, but the text never says the Enchantment is used up. Does Gift of Air stay on and trigger again on later hits?",
+  "options": [
+   "Stays on and triggers on every qualifying hit",
+   "Removed after it triggers once"
+  ],
+  "ruling": "Gift of Air stays on after activating and triggers on each later weapon or arrow hit until it is removed.",
+  "why": "The effect covers \"any weapon or arrow\", and the rules' own example describes a bearer who becomes Insubstantial from Gift of Air \"and thereafter has the enchantment removed\" as a separate event (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "gift-of-air#2",
+  "slug": "gift-of-air",
+  "note": "Contradiction: E5 says option 2 may not exit early, but N2 says the bearer may end this Insubstantial State at any time. Both encoded (restriction no-exit-early for option 2, termination exit-at-will citing N2).",
+  "question": "Gift of Air's option 2 says the bearer \"must return to their base ... but may not exit early\", yet the note says \"Bearer may end this Insubstantial State at any time\". Can a bearer who picked option 2 use the exit incantation before reaching base?",
+  "options": [
+   "No: the note applies only to option 1",
+   "Yes: the note overrides option 2"
+  ],
+  "ruling": "No; a bearer who chose option 2 cannot exit early by incantation, though the State can still be removed by another ability, which ends the return to base.",
+  "why": "Option 2's specific \"may not exit early\" is the only difference between the two choices, and note 1 covers the State ending by other means; Song of Survival has the same wording (rules/magic-and-abilities/song-of-survival.md).",
+  "confidence": "low",
+  "sim_impact": "medium",
+  "topic": "States",
+  "hint": null,
+  "related": [
+   "song-of-survival#1"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "gift-of-air#3",
+  "slug": "gift-of-air",
+  "note": "E7 limits the exception to melee weapons; arrows or thrown weapons carrying those Special Effects appear to still trigger Gift of Air.",
+  "question": "Gift of Air does not trigger against \"Melee weapons with the Siege, Armor Breaking, Armor Destroying, Shield Crushing, or Shield Destroying Special Effects\". Do arrows or thrown weapons with those effects (such as a Destruction Arrow) still trigger Gift of Air?",
+  "options": [
+   "Yes: only melee weapons bypass Gift of Air",
+   "No: any weapon with those effects bypasses it"
+  ],
+  "ruling": "Yes; arrows and thrown weapons with those effects still trigger Gift of Air, and any worn armor is still affected as normal.",
+  "why": "The exception names \"Melee weapons\" only, while the trigger covers \"any weapon or arrow\", and armor \"is affected as normal in addition to triggering Gift of Air\" (rules/magic-and-abilities/gift-of-air.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Armor & protection",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "gift-of-fire#1",
+  "slug": "gift-of-fire",
+  "note": "The granted Heat Weapon has no Range given; presumably Heat Weapon's own range applies.",
+  "question": "Gift of Fire grants \"Heat Weapon 1/Refresh Charge x3 (m)\" without listing a range. Does that Heat Weapon use Heat Weapon's normal 20' range?",
+  "options": [
+   "Yes: Heat Weapon's own 20' range",
+   "Touch or another range"
+  ],
+  "ruling": "Yes; the granted Heat Weapon uses its own definition, including its 20' range.",
+  "why": "A granted ability is named by reference and keeps its definition (rules/magic-and-abilities/heat-weapon.md); abilities granted via an Enchantment \"retain the original School\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Targeting",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "golem#1",
+  "slug": "golem",
+  "note": "E3 does not say how many wounds or how often Mend removes one; recorded literally as one wound per Mend.",
+  "question": "Golem says the \"Bearer can remove a wound via Mend\". Does each casting of Mend remove exactly one wound?",
+  "options": [
+   "One wound per Mend casting",
+   "All wounds per Mend casting"
+  ],
+  "ruling": "Yes; each casting of Mend on the bearer removes one wound, as its effect in place of a repair.",
+  "why": "The text says \"a wound\", singular, and Golem's note excludes Greater Mend and Word of Mending, so only Mend's one-item effect is converted (rules/magic-and-abilities/golem.md, rules/magic-and-abilities/mend.md).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "greater-release#1",
+  "slug": "greater-release",
+  "note": "E1 says 'All ... States' without excepting Cursed (Release's L1 explicitly cannot remove Cursed); recorded bypass-cursed on the literal reading.",
+  "question": "Greater Release removes \"All Ongoing Effects and States\", while plain Release says it \"Cannot remove Cursed\". Can Greater Release remove Cursed, for example from a dead player after Assassinate?",
+  "options": [
+   "Yes, unless the Curse comes from a worn Enchantment",
+   "No, Cursed can never be released"
+  ],
+  "ruling": "Yes; Greater Release removes Cursed, except Cursed imparted by an Enchantment the player still wears.",
+  "why": "Release's explicit Cursed exception is absent from Greater Release, which \"may target Dead players\"; Cursed only blocks Spirit and Greater Release is Sorcery, and Enchantment-imparted Cursed \"cannot be removed in any way while the Enchantment is worn\" (rules/magic-states-effects/states.md).",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "harden#1",
+  "slug": "harden",
+  "note": "L1 does not say who chooses between weapons and shield, or when.",
+  "question": "Harden \"Will only affect either the weapons or the shield of the bearer, not both\", but doesn't say who picks or when. Is the choice made at casting and fixed, or can it change?",
+  "options": [
+   "Chosen at casting and fixed",
+   "Bearer may switch at any time",
+   "Applies to whatever is wielded when hit"
+  ],
+  "ruling": "The choice between weapons and shield is made when Harden is cast (by the bearer, who must accept it) and does not change.",
+  "why": "Imbue, the similar Protection Enchantment, says \"Bearer chooses\", and Adaptive Blessing fixes its choice \"at the time of casting\"; nothing in Harden allows switching (rules/magic-and-abilities/harden.md).",
+  "confidence": "low",
+  "sim_impact": "medium",
+  "topic": "Choice & who decides",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "heart-of-the-swarm#1",
+  "slug": "heart-of-the-swarm",
+  "note": "E3 and E4 say 'caster' while E1, E2 and L1 say 'bearer'; treated as the same player (Self range).",
+  "question": "Heart of the Swarm uses \"bearer\" in some sentences and \"caster\" in others (players respawning \"at the caster\", treating \"the caster as an Alternate Base\"). Since the ability is Self-range, do both words mean the same player?",
+  "options": [
+   "Yes: caster and bearer are the same player",
+   "No: they refer to different players"
+  ],
+  "ruling": "Yes; caster and bearer are the same player.",
+  "why": "The range is Self, so \"Target must be the caster\" (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Other",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "heat-weapon#1",
+  "slug": "heat-weapon",
+  "note": "E2 names players Immune to Flame; unclear whether other Flame protections (e.g. Resistance to Flame) also let the weapon be wielded.",
+  "question": "Heat Weapon says \"Players who are Immune to Flame may continue to wield the weapon\". Can a player who is only Resistant to Flame (e.g. from Adaptive Blessing) also keep wielding it, using up their Resistance?",
+  "options": [
+   "No: only Immunity to Flame lets them wield it",
+   "Yes: Resistance triggers and is used up"
+  ],
+  "ruling": "No; only a player Immune to Flame keeps wielding the heated weapon, and a Flame Resistance is not triggered because the weapon, not the player, is the target.",
+  "why": "The exception names only Immunity, the note says \"The equipment, not the person, is the target\", and protections on a player do not extend to equipment unless noted (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "low",
+  "sim_impact": "low",
+  "topic": "Equipment & weapons",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "imbue#1",
+  "slug": "imbue",
+  "note": "E1 does not say when the bearer chooses (at casting or later), or whether the choice can change.",
+  "question": "Imbue says \"Bearer chooses either shield or weapons\" but not when. Is the choice made once when Imbue is cast, or can the bearer change it later?",
+  "options": [
+   "Once, at casting; fixed",
+   "Bearer may switch at any time"
+  ],
+  "ruling": "The bearer chooses once, when Imbue is cast, and cannot change it.",
+  "why": "\"Chooses\" describes a single choice, and nothing in the text allows changing it (rules/magic-and-abilities/imbue.md); Adaptive Blessing similarly fixes its choice \"at the time of casting\".",
+  "confidence": "low",
+  "sim_impact": "medium",
+  "topic": "Choice & who decides",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "immune-to-command#1",
+  "slug": "immune-to-command",
+  "note": "The rule text is the generic Immune mechanic; its examples name Flame and Sorcery, not Command.",
+  "question": "The rulebook's Immune rules use Flame and Sorcery as examples. Does Immune to Command follow exactly the same rules for Command abilities (the player can still be targeted, existing effects stay, own class abilities still work)?",
+  "options": [
+   "Yes: the general Immune rules apply to Command",
+   "No: Command Immunity has its own rules"
+  ],
+  "ruling": "Yes; Immune to Command follows the general Immune rules, applied to Command abilities.",
+  "why": "The Immune rule is written for \"a given School\" and its Flame and Sorcery examples only illustrate that general rule (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Armor & protection",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "immune-to-death#1",
+  "slug": "immune-to-death",
+  "note": "The rule text is the generic Immune mechanic; examples name Flame and Sorcery, not Death.",
+  "question": "The rulebook's Immune rules use Flame and Sorcery as examples. Does Immune to Death follow exactly the same rules for Death abilities (e.g. it protects the player but not their equipment or armor)?",
+  "options": [
+   "Yes: the general Immune rules apply to Death",
+   "No: Death Immunity has its own rules"
+  ],
+  "ruling": "Yes; Immune to Death follows the general Immune rules, applied to Death abilities.",
+  "why": "The Immune rule is written for \"a given School\" and its Flame and Sorcery examples only illustrate that general rule (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Armor & protection",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "immune-to-subdual#1",
+  "slug": "immune-to-subdual",
+  "note": "The rule text is the generic Immune mechanic; its examples name Flame and Sorcery, not Subdual.",
+  "question": "The rulebook's Immune rules use Flame and Sorcery as examples. Does Immune to Subdual follow exactly the same rules for Subdual abilities (e.g. it protects the player but not their equipment)?",
+  "options": [
+   "Yes: the general Immune rules apply to Subdual",
+   "No: Subdual Immunity has its own rules"
+  ],
+  "ruling": "Yes; Immune to Subdual follows the general Immune rules, applied to Subdual abilities.",
+  "why": "The Immune rule is written for \"a given School\" and its Flame and Sorcery examples only illustrate that general rule (rules/magic-states-effects/mechanics-and-definitions.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Armor & protection",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "infernal#1",
+  "slug": "infernal",
+  "note": "E2 gives Flame Blade's new frequency without a (m)/(ex) tag; read as unchanged from the class entry (ex).",
+  "question": "Infernal says \"Flame Blade becomes (Self) 2/Refresh Charge x5\" without an (m) or (ex) tag. Does Flame Blade stay Extraordinary (ex), as in the Anti-Paladin's 6th-level entry?",
+  "options": [
+   "Stays (ex)",
+   "Becomes (m)"
+  ],
+  "ruling": "Flame Blade stays (ex); Infernal changes only its frequency.",
+  "why": "The Anti-Paladin table lists \"Flame Blade (Self) 2/Refresh (ex)\", and Infernal restates only the frequency (rules/classes/anti-paladin.md); archetypes that change the category say so, as Warrior's \"Insult becomes 1/Life Charge x5 (m)\" does.",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Class features",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "innate#1",
+  "slug": "innate",
+  "note": "E1 does not say whether the ability must be one with a Charge frequency, nor whether 'stating its name' is part of the incantation or a separate declaration.",
+  "question": "Innate \"May be used to instantly Charge a single ability by stating its name\". Must that ability have a listed Charge value, and is naming the ability a spoken declaration right after saying \"Innate\"?",
+  "options": [
+   "Charge value required; say \"Innate\" then name the ability",
+   "Any ability; say \"Innate\" then name the ability",
+   "Charge value required; the name is part of the incantation"
+  ],
+  "ruling": "The ability must have a listed Charge value; the player says \"Innate\" and then declares the ability's name, audible to 20', and one use is restored without the Charge incantation.",
+  "why": "Charge is defined for abilities that \"have a listed Charge value\", and the name of the ability \"must be Declared\" before charging (rules/magic-states-effects/mechanics-and-definitions.md). Meta-Magic is stated \"prior to beginning the incantation\" for what it modifies, so the name is the Charge declaration that follows.",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "insult#1",
+  "slug": "insult",
+  "note": "E2 lets the target 'attack' the offending party; it does not say whether the target may also cast Magical abilities at them. Encoded literally (attack only).",
+  "question": "When someone other than the Insult caster attacks the Insulted player, that player \"becomes able to choose to attack the offending party as well\". Can they also cast Magical abilities at that offender, or only attack them?",
+  "options": [
+   "Only attack (weapons, arrows)",
+   "Attack and cast Magical abilities"
+  ],
+  "ruling": "They may only attack the offender; they still may not cast Magical abilities at them.",
+  "why": "E1 restricts \"attack or cast Magical abilities\", naming the two separately, and the exception frees only \"attack\" (rules/magic-and-abilities/insult.md).",
+  "confidence": "low",
+  "sim_impact": "medium",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "insult#2",
+  "slug": "insult",
+  "note": "N1 'charge' may mean the Charge incantation or physically charging at the caster; referenced the charge mechanic.",
+  "question": "Insult's note says \"The target may still charge and throw Magic Balls at the caster.\" Does \"charge\" mean incanting the Magic Ball, the Charge incantation, or physically running at the caster?",
+  "options": [
+   "Incanting (activating) Magic Balls to throw",
+   "Using the Charge incantation",
+   "Physically charging at the caster"
+  ],
+  "ruling": "\"Charge\" means incanting Magic Balls to make them active before throwing them at the caster; none of the readings changes what Insult allows.",
+  "why": "Insult restricts only attacks and Magical abilities aimed at others (rules/magic-and-abilities/insult.md), so movement and the Charge incantation were never limited; the note only confirms Magic Balls at the caster are allowed.",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Other",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "insult#3",
+  "slug": "insult",
+  "note": "E1 restricts only Magical abilities; Extraordinary abilities cast at others are not restricted, literally.",
+  "question": "Insult says the target \"is unable to attack or cast Magical abilities at anyone other than the caster\". Can the target still use Extraordinary (ex) abilities on other players?",
+  "options": [
+   "Yes: (ex) abilities are allowed unless they are an attack",
+   "No: every ability is blocked"
+  ],
+  "ruling": "Extraordinary abilities are not blocked unless using them is itself an attack (a weapon blow or an arrow shot, including Specialty Arrows).",
+  "why": "The restriction names only attacks and \"Magical abilities\", and (ex) abilities are defined as \"not Magical in nature\" (rules/classes/_overview.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [
+   "awe#1",
+   "terror#1"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "martyr#1",
+  "slug": "martyr",
+  "note": "E1 does not say who chooses which State is removed when the target has several; presumably the caster.",
+  "question": "Martyr removes \"A single State\" from a willing player and gives it to the Paladin, but doesn't say who picks the State when the target has several. Does the caster or the target choose?",
+  "options": [
+   "The caster chooses",
+   "The target chooses"
+  ],
+  "ruling": "The caster chooses which State to take; the target must be willing.",
+  "why": "Release, the comparable single-State removal, says \"Casters choice\" (rules/magic-and-abilities/release.md), and Martyr's caster is the one who takes on the State.",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Choice & who decides",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "mass-healing#1",
+  "slug": "mass-healing",
+  "note": "N1 ends with 'etc.': other incantation rules (e.g. the empty-hand requirement) presumably do not apply either, but the text does not list them.",
+  "question": "Mass Healing's note says the \"I grant thee healing\" declaration \"is not an incantation, and so is not stopped by being Suppressed, and may be used while moving, etc.\" Does that \"etc.\" also waive the other casting requirements for Magic Users, such as having an empty hand?",
+  "options": [
+   "Yes, no incantation requirements apply, including empty hand",
+   "No, only Suppressed and moving are waived; empty hand still needed"
+  ],
+  "ruling": "No incantation requirement applies to the declaration (no empty hand needed, may move, not stopped by Suppressed); the Heal still needs a target at Touch.",
+  "why": "The empty-hand rule applies \"Throughout the incantation\" (\"Have an empty hand, for Magic Users\", rules/magic-states-effects/mechanics-and-definitions.md, Casting Abilities), and the note says the declaration is not an incantation.",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Other",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "naturalize-magic#1",
+  "slug": "naturalize-magic",
+  "note": "E1 does not state the range of the Dispel Magic cast via strips; presumably Dispel Magic's own 20'.",
+  "question": "Naturalize Magic lets the bearer \"cast Dispel Magic (m) by incanting '<Player> thou art dispelled'\" and removing a strip, but gives no range for it. Does that Dispel Magic use Dispel Magic's normal 20' range?",
+  "options": [
+   "Yes, Dispel Magic's normal 20'",
+   "No, Touch only"
+  ],
+  "ruling": "The Dispel Magic cast from a strip uses Dispel Magic's own 20' range.",
+  "why": "rules/magic-and-abilities/dispel-magic.md gives Range 20', and the incantation names a \"<Player>\" target the way ranged Verbals do; Naturalize Magic's own \"Range: Self\" is the range for casting the Enchantment itself.",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "persistent#1",
+  "slug": "persistent",
+  "note": "E1 says the Enchantment returns 'with the user'; read as whoever wears the Enchantment (which may be another player), not only the caster of Persistent.",
+  "question": "Persistent says the \"Enchantment returns with the user after respawning until it has been otherwise removed.\" When the Persistent Enchantment was cast on another player, does \"the user\" mean the player wearing it rather than the caster?",
+  "options": [
+   "The player wearing the Enchantment",
+   "Only the caster who used Persistent"
+  ],
+  "ruling": "\"The user\" is whoever wears the Enchantment; it stays on that player through their respawn.",
+  "why": "Enchantments \"are always worn by players\" and \"Respawning removes all non-Persistent Enchantments from a player\" (rules/magic-states-effects/mechanics-and-definitions.md, Enchantments 3 and 4b), so Persistent exempts the wearer from that removal.",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Death & respawn",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "phoenix-tears#1",
+  "slug": "phoenix-tears",
+  "note": "N1 is two sentences run together in the source (missing period after 'removed'); segmentation treats them as one.",
+  "question": "The Healer copy of Phoenix Tears reads \"Phoenix Tears is removed when the last strip is removed If Phoenix Tears is removed, the bearer chooses which (m) Enchantments to lose...\", with no period between the two. Is that two separate rules, so the bearer's choice applies whenever Phoenix Tears is removed by any means?",
+  "options": [
+   "Two rules: the choice applies to any removal",
+   "One rule: the choice applies only when the last strip is used"
+  ],
+  "ruling": "It is two sentences: Phoenix Tears ends when its last strip is removed, and whenever it is removed by any means the bearer chooses which (m) Enchantments to drop to meet their limit.",
+  "why": "The Warrior copy of the same ability prints the period (\"...when the last strip is removed. If Phoenix Tears is removed...\", rules/classes/warrior.md), and Attuned uses the same stand-alone sentence (rules/magic-and-abilities/attuned.md).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Stacking & interaction",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "phoenix-tears#2",
+  "slug": "phoenix-tears",
+  "note": "E10 vs N1: the extra Enchantment is kept after Phoenix Tears is removed, yet the bearer may then have to drop (m) Enchantments to meet the limit; unclear whether the kept extra one can be the one dropped.",
+  "question": "Phoenix Tears lets the bearer wear an extra Protection Enchantment and says \"The additional Enchantment is not removed once Phoenix Tears is removed\", but also that \"the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit.\" When that happens, may the bearer choose to drop the extra Protection Enchantment?",
+  "options": [
+   "Yes, the bearer may drop any (m) Enchantment, including the extra one",
+   "No, the extra one must be kept and another dropped"
+  ],
+  "ruling": "The extra Enchantment is not removed automatically, but it is one of the (m) Enchantments the bearer may choose to drop to get back within their limit.",
+  "why": "The note gives the bearer an open choice among their (m) Enchantments, the same wording Attuned and Essence Graft use (rules/magic-and-abilities/attuned.md). The choice arises mainly for the Warrior's Phoenix Tears (ex), which does not count toward the limit (rules/classes/warrior.md).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "planar-grounding#1",
+  "slug": "planar-grounding",
+  "note": "N1 'fail': does the rest of the failing Enchantment's activation (e.g. Gift of Air ignoring the triggering hit) also not happen? The plain reading is that the whole activation fails.",
+  "question": "Planar Grounding's note says Enchantments that automatically make their bearer Insubstantial, such as Gift of Air, \"fail and be removed if they activate while Planar Grounding is in effect.\" When Gift of Air fails this way, is the weapon hit that triggered it still ignored?",
+  "options": [
+   "No, the whole activation fails and the hit lands",
+   "Yes, the hit is ignored; only the Insubstantial part fails"
+  ],
+  "ruling": "The whole activation fails, so the triggering hit takes effect normally and Gift of Air is removed.",
+  "why": "\"If an ability fails, it has no effect\" (rules/magic-states-effects/mechanics-and-definitions.md, Ability 1). In Gift of Air, ignoring the hit and becoming Insubstantial are one effect: \"are ignored, instead the bearer declares 'Gift of Air' and becomes Insubstantial\" (rules/magic-and-abilities/gift-of-air.md).",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "priest#1",
+  "slug": "priest",
+  "note": "E2 sets the frequency to '1/Life Charge x3' rather than adding Charge x3; a Meta-Magic bought at a different frequency (for example 1/Refresh) could gain or lose uses. Recorded as charge-x3 with polarity neutral and the full frequency in the note.",
+  "question": "The Priest Archetype says \"All Meta-Magics purchased become 1/Life Charge x3.\" Does this replace each Meta-Magic's bought frequency, so that a 1/Refresh Ambulant becomes 1/Life Charge x3 and each extra purchase adds another use?",
+  "options": [
+   "Replaces the frequency; each purchase is 1/Life Charge x3",
+   "Replaces it; all purchases of one Meta-Magic merge into one use",
+   "Adds Charge x3 but keeps the bought frequency"
+  ],
+  "ruling": "Each purchased Meta-Magic's frequency is replaced by 1/Life Charge x3, so a 1/Refresh Meta-Magic becomes 1/Life Charge x3 and buying one twice gives 2/Life Charge x3.",
+  "why": "\"Become\" gives a complete new frequency, not just a Charge value, and the class rules say that when an ability is made chargeable through an Archetype \"all instances of that ability gained through the class are made chargeable\" (rules/classes/_overview.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "protection-from-magic#1",
+  "slug": "protection-from-magic",
+  "note": "E1 read literally blocks beneficial Magical abilities too (healing, revival, other Magical Enchantments cast later); the text does not say 'hostile'.",
+  "question": "Protection from Magic says the \"Bearer is unaffected by Magical abilities from any school.\" Does that also block helpful Magical abilities cast on the bearer, such as a Healer's Heal?",
+  "options": [
+   "Yes, all Magical abilities, helpful or hostile",
+   "No, only hostile Magical abilities"
+  ],
+  "ruling": "It blocks all Magical abilities, helpful ones included; Extraordinary abilities still affect the bearer.",
+  "why": "The text says \"from any school\" with no \"hostile\" qualifier, and all Magic User abilities are Magical (rules/classes/healer.md). Once the bearer dies the Enchantment is inactive (rules/magic-states-effects/mechanics-and-definitions.md, Enchantments 4a), so it does not itself block revival, though the Curse it imposes on death does block Spirit revival.",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "Armor & protection",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "protection-from-magic#2",
+  "slug": "protection-from-magic",
+  "note": "N1 'does not interact with other Enchantments worn by the bearer' is read as: Enchantments already worn keep working and are not blocked; the text does not say whether new Magical Enchantments can be placed on the bearer.",
+  "question": "Protection from Magic's note says \"This effect does not interact with other Enchantments worn by the bearer.\" Can a new Magical Enchantment still be cast on a player who already has Protection from Magic, and does it then work?",
+  "options": [
+   "Yes, new Enchantments can be applied and work",
+   "No, new Magical Enchantments are blocked"
+  ],
+  "ruling": "New Enchantments can still be placed on the bearer (within their Enchantment limit) and work normally; Protection from Magic only blocks other Magical abilities.",
+  "why": "\"Immunities, Traits, or other Enchantments do not prevent new Enchantments from being applied to players, except for restrictions that affect Enchantments specifically such as Essence Graft\" (rules/magic-states-effects/mechanics-and-definitions.md, Enchantments 3).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "protection-from-projectiles#1",
+  "slug": "protection-from-projectiles",
+  "note": "N1 'Equipment can still be affected by the above' is read as the bearer's own equipment (e.g. a shield hit by a Specialty Arrow); the text does not say whose equipment.",
+  "question": "Protection from Projectiles makes the bearer \"unaffected by projectiles other than Magic Balls\", and its note says \"Equipment can still be affected by the above.\" Does that mean a projectile striking the bearer's own shield or weapon still affects that equipment (for example a Destruction Arrow destroying their shield)?",
+  "options": [
+   "Yes, the bearer's own carried equipment is still affected",
+   "No, only unwielded or other players' equipment"
+  ],
+  "ruling": "The bearer is protected but their carried equipment is not, so a projectile that hits their shield or weapon affects it normally.",
+  "why": "Protection normally stops at the player: \"Unless otherwise noted, Immunities do not extend beyond the player or object that has them\" (rules/magic-states-effects/mechanics-and-definitions.md, Immune 2). Abilities that do protect gear say so, e.g. \"Caster and their carried equipment\" (rules/magic-and-abilities/sanctuary.md).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Armor & protection",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "raise-dead#1",
+  "slug": "raise-dead",
+  "note": "Subject after revival is a living player; 'dead-target' used for all effects because the ability targets a dead player.",
+  "question": "Raise Dead targets a \"willing dead player\", and the target \"is returned to life and is Cursed\" and \"also Suppressed for 30 seconds.\" Do the Curse and the Suppressed land once the player is alive again, with the 30 seconds counted from the moment of revival?",
+  "options": [
+   "Yes, both apply on revival; 30 seconds start then",
+   "Suppressed starts at casting, while still dead"
+  ],
+  "ruling": "Non-Persistent Enchantments are removed, the player returns to life with wounds healed, and is then Cursed and Suppressed for 30 seconds counted from revival.",
+  "why": "States \"cannot apply to dead players\" unless noted (rules/magic-states-effects/states.md), so the Suppressed can only begin once the player is alive; Cursed \"persists after death\" so its timing does not matter.",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Death & respawn",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "ravage#1",
+  "slug": "ravage",
+  "note": "The Fragile State has no stated duration; left as until-removed (States end on death).",
+  "question": "Ravage makes the target Fragile (\"Player dies on the next wound\") and gives no duration. Does Fragile last with no time limit until the target's next wound, their death, or its removal (e.g. by Release)?",
+  "options": [
+   "No time limit: lasts until wound, death, or removal",
+   "Expires after a set time"
+  ],
+  "ruling": "Fragile has no time limit; it lasts until the next wound kills the target, the target dies another way, or the State is removed.",
+  "why": "\"A State without a duration continues until it is removed by some outside force or until a condition is met\", and States \"are removed when a player dies\" (rules/magic-states-effects/states.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Timing & duration",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "release#1",
+  "slug": "release",
+  "note": "L1 says Release cannot remove Cursed, but L2 says all other States from the same source also end; the text does not say whether a Cursed imposed by the same multi-effect ability (e.g. Raise Dead's Cursed with its Suppressed) ends too.",
+  "question": "Release \"Cannot remove Cursed\", but \"When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended.\" If Release removes the Suppressed from Raise Dead, does the Curse from that same Raise Dead end too?",
+  "options": [
+   "No, Cursed always stays",
+   "Yes, Cursed ends with the other effects"
+  ],
+  "ruling": "No; Release never removes Cursed, even as a side effect of ending another State from the same source.",
+  "why": "The limitation is a flat exclusion (\"Cannot remove Cursed\", rules/magic-and-abilities/release.md), and the Cursed State is otherwise removed only on respawn or by abilities that say so (rules/magic-states-effects/states.md, Cursed).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "sacred-blades#1",
+  "slug": "sacred-blades",
+  "note": "E1 applies Harden to all 'wielded weapons' while E2 limits the bypass to melee weapons; the text does not say whether thrown weapons are Hardened too (plainer reading: yes).",
+  "question": "Sacred Blades says \"Bearer's wielded weapons are affected as per Harden\", while its armor-bypass applies only to \"wielded melee weapons\". Are the bearer's thrown weapons also Hardened?",
+  "options": [
+   "Yes, all wielded weapons including thrown ones",
+   "No, melee weapons only"
+  ],
+  "ruling": "Yes, Harden covers every weapon the bearer wields, thrown weapons in hand included; this changes nothing in practice because projectiles are already indestructible.",
+  "why": "\"Projectile weapons are considered wielded if gripped in hand\" and projectiles \"are indestructible\" (rules/weapon-types-shields-equipment.md, Projectiles); the word \"melee\" appears only in the second sentence.",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Equipment & weapons",
+  "hint": "no-effect",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "sanctuary#1",
+  "slug": "sanctuary",
+  "note": "'Hostile actions originating from within 20'' is undefined (abilities and attacks alike, presumably).",
+  "question": "Sanctuary makes the caster and their carried equipment \"unaffected by hostile actions originating from within 20'.\" Does \"hostile actions\" cover weapon attacks as well as abilities, and do attacks or abilities from beyond 20' still affect the caster?",
+  "options": [
+   "All attacks and abilities from within 20'; beyond 20' works",
+   "Only abilities cast from within 20'",
+   "Only weapon attacks from within 20'"
+  ],
+  "ruling": "Every hostile weapon attack, projectile, Magic Ball, or ability whose attacker or caster is within 20' is ignored; anything from farther than 20' affects the caster normally.",
+  "why": "The text limits Sanctuary only by where the action originates, not by its kind (rules/magic-and-abilities/sanctuary.md), so a bow shot or 50' Verbal from outside 20' is not covered.",
+  "confidence": "medium",
+  "sim_impact": "high",
+  "topic": "Armor & protection",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "sever-spirit#1",
+  "slug": "sever-spirit",
+  "note": "E3's 'regardless of ...' guarantee is stated only for removing Enchantments, not for the Curse; the bypass properties are noted as applying to the removal only.",
+  "question": "Sever Spirit \"Will always remove enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects, or Enchantments.\" Does that guarantee also force the Curse, or can a dead target who is Immune to Spirit avoid being Cursed while still losing their Enchantments?",
+  "options": [
+   "Guarantee covers Enchantment removal only",
+   "Guarantee covers both the removal and the Curse"
+  ],
+  "ruling": "The guarantee covers only removing Enchantments; the Curse follows normal Immunity rules, so a target Immune to Spirit loses their Enchantments but is not Cursed.",
+  "why": "The sentence names only enchantments (\"Will always remove enchantments\"), mirroring Dispel Magic's wording (rules/magic-and-abilities/dispel-magic.md); otherwise an Immune player \"is unaffected by abilities from a given School\" (rules/magic-states-effects/mechanics-and-definitions.md, Immune).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "shadow-step#1",
+  "slug": "shadow-step",
+  "note": "No duration or movement allowance is stated: the caster stays Insubstantial in place until they exit or the State is removed.",
+  "question": "Shadow Step says only \"Caster becomes Insubstantial\" and gives no duration or movement allowance. Does the caster stay Insubstantial in place, with no time limit, until they use the exit incantation or the State is removed?",
+  "options": [
+   "Yes, in place with no time limit",
+   "They may move while Insubstantial",
+   "It expires after a set time"
+  ],
+  "ruling": "The caster stays Insubstantial in place with no time limit until they exit or the State is removed (for example by Tracking or Planar Grounding), subject to the rule against delaying the game.",
+  "why": "Insubstantial players \"May not move from their starting location unless specified by the ability\" and \"May not delay the game excessively\"; a State without a duration continues until removed (rules/magic-states-effects/states.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Timing & duration",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "shake-it-off#1",
+  "slug": "shake-it-off",
+  "note": "'Any number of States' literally includes Cursed, but Shake It Off is Spirit and a Cursed caster is Immune to Spirit when casting (N1: immunity matters at cast time); bypass-cursed was not recorded.",
+  "question": "Shake It Off lets the Warrior remove \"any number of States or Ongoing Effects of their choice\", but it is a Spirit ability and Cursed makes a player \"Immune to Spirit.\" Can a Cursed Warrior use Shake It Off, and can it ever remove Cursed?",
+  "options": [
+   "Fails if Cursed when cast; a later Curse can be shaken off",
+   "Never works while Cursed and never removes Cursed",
+   "Works through Cursed and can remove it"
+  ],
+  "ruling": "A Warrior who is Cursed when they cast it gets no effect; if they become Cursed after casting, and not from an Enchantment, they may remove the Curse at the 10-second mark.",
+  "why": "The note says \"Immunity to Shake It Off only matters when the ability is cast\", and Cursed \"Has no effect on abilities already cast or ongoing\" but cannot be removed while its Enchantment is worn (rules/magic-states-effects/states.md, Cursed).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "shatter-weapon#1",
+  "slug": "shatter-weapon",
+  "note": "The text does not say whether protections on the wielder (Immunities, Enchantments) protect the targeted weapon; since the weapon, not the person, is the target, the plainer reading is that the wielder's personal protections do not apply.",
+  "question": "Shatter Weapon's note says \"The equipment, not the person, is the target.\" Do the wielder's own protections, such as Immunity to Sorcery or Protection from Magic, stop their weapon from being destroyed?",
+  "options": [
+   "No, personal protections don't cover the weapon",
+   "Yes, the wielder's protections cover the weapon"
+  ],
+  "ruling": "No; only protections that explicitly cover carried equipment (such as Frozen, Insubstantial, Invulnerable, or Sanctuary) save the weapon.",
+  "why": "\"Immunities do not extend to equipment unless noted\", e.g. a player Immune to Flame \"can still be the target of Pyrotechnics which would still destroy their equipment\" (rules/magic-states-effects/mechanics-and-definitions.md, Immune 2 and 4); Harden also gives way to Verbals \"which destroy objects\" (rules/magic-and-abilities/harden.md).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Equipment & weapons",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "shove#1",
+  "slug": "shove",
+  "note": "E2 says Shove works on Stunned players while N2 ends it when the target becomes Stunned; read as: already Stunned when cast is moved, becoming Stunned during the movement ends it.",
+  "question": "Shove \"Works on Stopped and Stunned players\", but its note says the effect \"is ended if the target ... becomes Frozen, Insubstantial, Invulnerable, or Stunned.\" Is a target who is already Stunned when it lands moved the full 20', with the movement ending only if they become Stunned partway through?",
+  "options": [
+   "Yes: already Stunned is moved; newly Stunned mid-move ends it",
+   "No: any Stunned target is not moved"
+  ],
+  "ruling": "A target already Stunned when Shove lands is moved the full 20'; becoming newly Stunned during the movement ends it.",
+  "why": "\"Becomes\" describes a change during the movement, and Stunned players \"May be forced to move by abilities that require movement to a specific destination, such as Shove and Banish\" (rules/magic-states-effects/states.md, Stunned).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "sleight-of-mind#1",
+  "slug": "sleight-of-mind",
+  "note": "'Similar abilities' is undefined; presumably other Enchantment-removing abilities (e.g. Naturalize Magic's Dispel Magic), but the text does not list them.",
+  "question": "Sleight of Mind keeps the bearer's other Enchantments from being removed \"by Dispel Magic or similar abilities.\" Which abilities count as \"similar\": does it also stop Sever Spirit, or the Enchantment loss from Raise Dead, Resurrect, or respawning?",
+  "options": [
+   "Only Dispel Magic from any source, incl. Naturalize Magic",
+   "Dispel Magic and Sever Spirit",
+   "Any effect that removes Enchantments"
+  ],
+  "ruling": "It stops Dispel Magic from any source, including Naturalize Magic, but not Sever Spirit or the removals built into respawning, Raise Dead, or Resurrect.",
+  "why": "Dispel Magic names the exception (\"regardless of ... Enchantments (except Sleight of Mind)\"), while Sever Spirit's otherwise identical guarantee leaves it out (rules/magic-and-abilities/dispel-magic.md, sever-spirit.md). Respawn and revival removals are rules of those events, not abilities aimed at Enchantments.",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "sniper#1",
+  "slug": "sniper",
+  "note": "E2 sets each Specialty Arrow's frequency to 1 Arrow / Life Charge x3; whether that is more or fewer uses depends on the class frequency, so polarity is neutral.",
+  "question": "Sniper says \"The frequency of each type of Specialty Arrow ability becomes 1 Arrow / Life Charge x3.\" If the Archer picked the same arrow type at several levels (say Pinning Arrow at 1st, 3rd, and 5th), do they get one 1/Life Charge x3 use for that type, or one per pick?",
+  "options": [
+   "One 1/Life Charge x3 use per arrow type",
+   "One 1/Life Charge x3 use per pick of that type"
+  ],
+  "ruling": "Each arrow type gets a single 1/Life Charge x3 use, however many times it was picked.",
+  "why": "The text sets the frequency of \"each type\", not each pick (rules/classes/archer.md). The class rule that \"all instances of that ability ... are made chargeable\" (rules/classes/_overview.md) could support per-pick uses, so this is uncertain.",
+  "confidence": "low",
+  "sim_impact": "high",
+  "topic": "Uses & charges",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-deflection#1",
+  "slug": "song-of-deflection",
+  "note": "N1 'Equipment can still be affected by the above' is read as the bearer's own equipment; the text does not say whose equipment.",
+  "question": "Song of Deflection makes the bearer \"unaffected by projectiles other than Magic Balls\", and its note says \"Equipment can still be affected by the above.\" Does that mean a projectile striking the bearer's own shield or weapon still affects that equipment (for example a Destruction Arrow destroying their shield)?",
+  "options": [
+   "Yes, the bearer's own carried equipment is still affected",
+   "No, only unwielded or other players' equipment"
+  ],
+  "ruling": "The bearer is protected but their carried equipment is not, so a projectile that hits their shield or weapon affects it normally.",
+  "why": "Protection normally stops at the player: \"Unless otherwise noted, Immunities do not extend beyond the player or object that has them\" (rules/magic-states-effects/mechanics-and-definitions.md, Immune 2). Abilities that do protect gear say so, e.g. \"Caster and their carried equipment\" (rules/magic-and-abilities/sanctuary.md).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Armor & protection",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-freedom#1",
+  "slug": "song-of-freedom",
+  "note": "E1 says 'cannot receive': read as prevention of new States only; the text does not say whether a State already held when the song starts is removed.",
+  "question": "Song of Freedom says the \"Bearer cannot receive the States Stopped, Frozen, or Insubstantial.\" If the Bard is already Stopped when they start the song, does the song remove it?",
+  "options": [
+   "No, it only prevents new States",
+   "Yes, it also removes existing ones"
+  ],
+  "ruling": "It only prevents new Stopped, Frozen, or Insubstantial States; one already on the bearer stays until it ends.",
+  "why": "\"A target becoming Immune to the source of an Ongoing Effect or State while it is applied does not remove ... States currently affecting the target. Example: If a player who is Stopped by Hold Person casts Song of Determination on themselves, that player remains Stopped\" (rules/magic-states-effects/mechanics-and-definitions.md, Immune 5).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-power#1",
+  "slug": "song-of-power",
+  "note": "E1 'friendly players within 20' of the bearer': the text does not say whether the bearer counts as one of them.",
+  "question": "Song of Power halves the Charge Incantation repetitions of \"Friendly players within 20' of the bearer.\" Does the singing Bard count as one of those friendly players?",
+  "options": [
+   "No, only other friendly players",
+   "Yes, the bearer benefits too"
+  ],
+  "ruling": "Only other friendly players benefit; this is mostly moot because starting a Charge Incantation would interrupt the Bard's own Chant and end the song.",
+  "why": "\"Within 20' of the bearer\" describes the players around the bearer, and \"Beginning a new incantation interrupts any other Incantations or Chants the player has in progress\" (rules/magic-states-effects/mechanics-and-definitions.md, Casting Abilities; Chant).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Targeting",
+  "hint": "no-effect",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-survival#1",
+  "slug": "song-of-survival",
+  "note": "N1 lets the bearer end the Insubstantial State at any time, but E6 says option 2 may not exit early.",
+  "question": "Song of Survival's option 2 says the bearer \"must return to their base as a Forced Movement effect, but may not exit early\", yet its note says the \"Bearer may end the Insubstantial State caused by Song of Survival at any time with the standard incantation.\" Can a bearer who chose option 2 leave Insubstantial before reaching base?",
+  "options": [
+   "No, the note applies only to option 1",
+   "Yes, the note allows early exit under either option"
+  ],
+  "ruling": "No; option 2's \"may not exit early\" is the specific rule, so the note's exit-at-any-time applies only to option 1.",
+  "why": "Option 1 already grants \"may exit Insubstantial at any time\", and option 2 would lose its only drawback if the note overrode it; Gift of Air uses the same two-option wording (rules/magic-and-abilities/gift-of-air.md).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Timing & duration",
+  "hint": null,
+  "related": [
+   "gift-of-air#2"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-survival#2",
+  "slug": "song-of-survival",
+  "note": "E2 says 'The caster' while the rest says 'bearer'; same person (Self range).",
+  "question": "Song of Survival says \"The caster treats the triggering event as though it had no effect on them\", while every other sentence says \"bearer\". Since the song is Self range, is \"the caster\" simply the bearer?",
+  "options": [],
+  "ruling": "Yes; the caster and the bearer are the same player, so the bearer ignores the event that would have killed them.",
+  "why": "Range Self means \"Target must be the caster\" (rules/magic-states-effects/mechanics-and-definitions.md, Range), so only the caster can ever be the bearer.",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Other",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-visit#1",
+  "slug": "song-of-visit",
+  "note": "E4 'when Song of Visit is removed' is read as any removal (Chant stopping, Dispel Magic or similar).",
+  "question": "Song of Visit says \"Immediately when Song of Visit is removed, the bearer becomes Invulnerable and must move directly to their base.\" Does any ending of the song, including the Bard choosing to stop the Chant, trigger that Invulnerable walk to base?",
+  "options": [
+   "Yes, any ending, voluntary or not",
+   "Only removal by another player or ability"
+  ],
+  "ruling": "Any ending triggers it: stopping or failing the Chant, voluntarily removing the Enchantment, or removal by an ability.",
+  "why": "\"Failure to Chant or becoming unable to Chant ends the effect\" (rules/magic-states-effects/mechanics-and-definitions.md, Chant) and the text does not distinguish how the song is removed; Dispel Magic \"Does not affect Invulnerable players\", so ending the Chant is the usual way it ends.",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Timing & duration",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "song-of-visit#2",
+  "slug": "song-of-visit",
+  "note": "L1 'Bearer may not impede play' is encoded for while the song is worn; the text does not say whether it also binds the Invulnerable return to base.",
+  "question": "Song of Visit's limitation says \"Bearer may not impede play.\" Does that also apply during the Invulnerable walk back to base after the song ends?",
+  "options": [
+   "Yes, for the whole effect including the return",
+   "No, only while singing"
+  ],
+  "ruling": "Yes; the limitation applies to the whole ability, including the return to base.",
+  "why": "The limitation is not tied to the Chant, and an Invulnerable player \"is incapable of physically interacting with game items, objectives, or other players\" anyway (rules/magic-states-effects/states.md, Invulnerable).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Other",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "sphere-of-annihilation#1",
+  "slug": "sphere-of-annihilation",
+  "note": "'Ignores armor' does not say whether Magic Armor from a Trait (not an Enchantment) is ignored; bypass-magic-armor was not recorded.",
+  "question": "Sphere of Annihilation \"ignores armor and Enchantments.\" Does \"ignores armor\" also cover Magic Armor that does not come from an Enchantment (for example from a Trait or a monster ability)?",
+  "options": [
+   "Yes, it ignores all armor, including any Magic Armor",
+   "No, Magic Armor not from an Enchantment still counts"
+  ],
+  "ruling": "Yes; it ignores all armor, worn or Magic, whatever the source.",
+  "why": "\"Magic Armor behaves identically to normal armor\" (rules/magic-states-effects/mechanics-and-definitions.md, Magic Armor 7), so \"ignores armor\" includes it; no class in the rulebook grants Magic Armor as a Trait, so this is rare.",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Armor & protection",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "spy#1",
+  "slug": "spy",
+  "note": "'(ex)' in E1 may just restate that the abilities are Extraordinary or may change them to Extraordinary; recorded in the change text as written.",
+  "question": "The Spy Archetype says \"Blink and Shadow Step become Charge x3 (ex).\" Is \"(ex)\" only restating that the Assassin's Blink and Shadow Step are Extraordinary, so they simply become 2/Life Charge x3 (ex)?",
+  "options": [
+   "Yes, (ex) restates their category; they gain Charge x3",
+   "No, (ex) changes them from another category"
+  ],
+  "ruling": "\"(ex)\" only restates their category; the Assassin's Blink 2/Life (ex) and Shadow Step 2/Life (ex) become 2/Life Charge x3 (ex).",
+  "why": "Spy is Assassin-only, and rules/classes/assassin.md already lists \"Shadow Step 2/Life (ex)\" and \"Blink 2/Life (ex) (Ambulant)\".",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Class features",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "steal-life-essence#1",
+  "slug": "steal-life-essence",
+  "note": "Beneficiary set to 'enemy' (cast on an enemy corpse, per convention 20) although the payoff is to the caster; E1 does not literally restrict the target to enemies.",
+  "question": "Steal Life Essence targets a \"dead player\" and only says it \"Does not work on Cursed players.\" Can it be cast on a dead teammate (to heal a wound or Charge an ability), or only on enemies?",
+  "options": [
+   "Any dead, non-Cursed player, friend or foe",
+   "Only dead enemies"
+  ],
+  "ruling": "Any dead player who is not already Cursed, friend or foe, is a valid target.",
+  "why": "Neither the Effect nor the Limitation restricts the target's side (rules/magic-and-abilities/steal-life-essence.md), and Touch range allows dead targets (rules/magic-states-effects/mechanics-and-definitions.md, Range).",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Targeting",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "stoneform#1",
+  "slug": "stoneform",
+  "note": "E2 lets a Frozen caster speak the release phrase although Frozen prevents speaking; read as a specific exception. The text does not say whether the phrase is an incantation (stopped by Suppressed) or a declaration.",
+  "question": "Stoneform makes the caster Frozen (they \"may not move, speak, or take any action\") but lets them end it \"by saying 'The earth release me' x2.\" Is that phrase a built-in exception the caster can always use, free of normal casting requirements such as an empty hand?",
+  "options": [
+   "Yes, usable anytime with no casting requirements",
+   "No, it is an incantation with normal casting requirements"
+  ],
+  "ruling": "The phrase is a built-in exception to Frozen that the caster may say whenever they choose; it is not a new ability cast, so empty-hand and Suppressed rules do not apply.",
+  "why": "Insubstantial's matching exit phrase \"does not require an empty hand\", and a Frozen player cannot newly become Suppressed because Frozen players are \"not affected by combat, abilities, etc.\" (rules/magic-states-effects/states.md).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "States",
+  "hint": "no-effect",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "summon-dead#1",
+  "slug": "summon-dead",
+  "note": "E3 says 'when Summon Dead ends', which may include ending other than by arrival (for example if the caster dies or the movement is interrupted); timing on-arrival used as the only end the text states.",
+  "question": "Summon Dead says \"Wherever the player is when Summon Dead ends is treated as where the player died\", but the only ending it describes is \"Upon reaching the caster.\" If it ends early (for example if the caster dies), does the corpse's current spot become its new death location?",
+  "options": [
+   "Yes, wherever it ends, by any means",
+   "Only arriving at the caster resets the spot",
+   "It cannot end early; the corpse always completes the trip"
+  ],
+  "ruling": "Wherever the dead player is when Summon Dead ends, by any means, counts as where they died.",
+  "why": "The sentence is general (\"Wherever the player is when Summon Dead ends\") and separate from the arrival sentence (rules/magic-and-abilities/summon-dead.md).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Death & respawn",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "teleport#1",
+  "slug": "teleport",
+  "note": "N2 lets a self-cast Teleport be ended early; the text does not say whether another player who was Teleported may end it before arrival (the general Insubstantial rule would require them to end it as per Teleport, i.e. on arrival).",
+  "question": "Teleport's note says \"If Teleport is cast on self, the caster may end this Insubstantial State at any time.\" When another player casts Teleport on a willing target, can that target leave Insubstantial before reaching the destination?",
+  "options": [
+   "No, they must travel to the destination",
+   "Yes, any Teleported player may exit early"
+  ],
+  "ruling": "No; a player Teleported by someone else must travel to the destination and end the State on arrival, unless another ability removes it.",
+  "why": "The general exit incantation works only if the player is \"the cause of the State\"; \"Otherwise, they must end the State as per the description of the responsible ability\" (rules/magic-states-effects/states.md, Insubstantial 4), and Teleport says \"Upon arrival, they must immediately end the effect\".",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Timing & duration",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "terror#1",
+  "slug": "terror",
+  "note": "E1 blocks only Magical abilities cast at the caster; Extraordinary abilities are not restricted, literally.",
+  "question": "Terror says the target \"may not attack or cast Magical abilities at the caster or their carried equipment.\" Can the target still use Extraordinary abilities, such as an (ex) Verbal, against the caster?",
+  "options": [
+   "Yes, (ex) abilities are not restricted",
+   "No, all abilities at the caster are blocked"
+  ],
+  "ruling": "Yes; only attacks and Magical abilities are barred, so Extraordinary abilities may still be used on the caster (from at least 50' away).",
+  "why": "The text says \"Magical abilities\", and (ex) abilities are \"not Magical in nature\" (rules/classes/_overview.md); Awe uses the same wording (rules/magic-and-abilities/awe.md).",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [
+   "awe#1",
+   "insult#3"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "throw#1",
+  "slug": "throw",
+  "note": "E2 says Throw works on Stunned players while N2 ends it when the target becomes Stunned; read as: already Stunned when cast is moved, becoming Stunned during the movement ends it.",
+  "question": "Throw \"Works on Stopped and Stunned players\", but its note says the effect \"is ended if the target ... becomes Frozen, Insubstantial, Invulnerable, or Stunned.\" Is a target who is already Stunned when it lands moved the full 50', with the movement ending only if they become Stunned partway through?",
+  "options": [
+   "Yes: already Stunned is moved; newly Stunned mid-move ends it",
+   "No: any Stunned target is not moved"
+  ],
+  "ruling": "A target already Stunned when Throw lands is moved the full 50'; becoming newly Stunned during the movement ends it.",
+  "why": "\"Becomes\" describes a change during the movement, and Stunned players \"May be forced to move by abilities that require movement to a specific destination, such as Shove and Banish\" (rules/magic-states-effects/states.md, Stunned).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "States",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "tracking#1",
+  "slug": "tracking",
+  "note": "Polarity is 'harm' for the usual use against an enemy; Tracking could also free an ally from an unwanted Insubstantial State.",
+  "question": "Tracking says \"Target Insubstantial player immediately has their Insubstantial effect ended.\" Can a Scout use it on a teammate, for example to free an ally from an unwanted Insubstantial State?",
+  "options": [
+   "Yes, any Insubstantial player, friend or foe",
+   "Only enemies"
+  ],
+  "ruling": "Yes; any Insubstantial player within 20', friend or foe, is a valid target.",
+  "why": "The text puts no restriction on the target's side, and Insubstantial players can be affected by mechanics that work \"on ... Insubstantial in specific\" (rules/magic-states-effects/states.md, Insubstantial 2).",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Targeting",
+  "hint": "settled",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "trickery#1",
+  "slug": "trickery",
+  "note": "rules/magic-and-abilities/trickery.md gives Type Enchantment, but rules/classes/assassin.md lists 'Trickery (T)' at 1st level, 'Granted as a Trait'; duration recorded as permanent.",
+  "question": "The ability list gives Trickery's type as Enchantment, but the Assassin class lists \"Trickery (T)\" and \"Granted as a Trait\". Is Trickery an always-on Trait that needs no strip, cannot be removed (for example by Dispel Magic), and does not count toward the Enchantment limit?",
+  "options": [
+   "Yes, an always-on Trait that cannot be removed",
+   "No, a normal Enchantment that can be dispelled"
+  ],
+  "ruling": "Trickery is an Enchantment granted as a Trait: always on, needs no strip, cannot be removed, and does not count toward the Enchantment limit.",
+  "why": "Traits \"May not be removed by any means\", \"Do not count towards enchantment limits\", and \"Do not require strips, in the case of Enchantments granted as Traits\" (rules/magic-states-effects/mechanics-and-definitions.md, Traits); rules/classes/assassin.md lists \"Trickery (T)\".",
+  "confidence": "high",
+  "sim_impact": "low",
+  "topic": "Class features",
+  "hint": "settled",
+  "related": [
+   "evolution#1"
+  ],
+  "status": "assumed"
+ },
+ {
+  "id": "undead-minion#1",
+  "slug": "undead-minion",
+  "note": "E2 grants Raise Dead '(Unlimited)' without a range; presumably Raise Dead's own Touch range applies.",
+  "question": "Undead Minion gives the caster \"Raise Dead (Unlimited) (m) which can only be cast with the bearer as the target\", but gives no range. Must the caster still be at Touch range of the dead minion, as with normal Raise Dead?",
+  "options": [
+   "Yes, Raise Dead's normal Touch range",
+   "No, it works at a longer range"
+  ],
+  "ruling": "Yes; the granted Raise Dead keeps Raise Dead's own range, so the caster must be at Touch.",
+  "why": "rules/magic-and-abilities/raise-dead.md gives Range Touch (the Healer spell list prints \"Other\", which is also touch distance), and Undead Minion waives only \"the requirement for the bearer to have not moved from where they died\".",
+  "confidence": "high",
+  "sim_impact": "medium",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "vampirism#1",
+  "slug": "vampirism",
+  "note": "E2 says 'Bearer's Adrenaline ability' generally; unclear whether it covers only the granted Adrenaline or also an Adrenaline the bearer has from another source. Encoded as applying to the bearer's Adrenaline.",
+  "question": "Vampirism says \"Bearer's Adrenaline ability will work through their Cursed State.\" Does that cover only the Adrenaline Vampirism grants, or also an Adrenaline the bearer already had (such as a Barbarian's)?",
+  "options": [
+   "Any Adrenaline the bearer has",
+   "Only the Adrenaline granted by Vampirism"
+  ],
+  "ruling": "It covers any Adrenaline the bearer uses; in practice this changes nothing because the granted Adrenaline is already Unlimited.",
+  "why": "The text says \"Bearer's Adrenaline ability\", not \"this Adrenaline\"; Adrenaline is Spirit school (rules/magic-and-abilities/adrenaline.md), so without the clause the Curse would block it.",
+  "confidence": "medium",
+  "sim_impact": "low",
+  "topic": "Stacking & interaction",
+  "hint": "no-effect",
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "void-touched#1",
+  "slug": "void-touched",
+  "note": "N1 'This effect does not interact with other Enchantments worn by the bearer' does not say which effect; read as the unaffected-by-Sorcery/Spirit/Death clause (so e.g. Sorcery or Spirit Enchantments already worn keep working).",
+  "question": "Void Touched makes the bearer \"unaffected by Magical abilities from the Sorcery, Spirit, and Death Schools\", and its note says \"This effect does not interact with other Enchantments worn by the bearer.\" Do the bearer's other Enchantments, even Sorcery, Spirit, or Death ones, keep working normally?",
+  "options": [
+   "Yes, other Enchantments work normally",
+   "No, other Sorcery, Spirit, or Death Enchantments are blocked"
+  ],
+  "ruling": "Yes; the protection does not switch off or block the bearer's other Enchantments, and new Enchantments can still be applied.",
+  "why": "Protection from Magic carries the same note (rules/magic-and-abilities/protection-from-magic.md), and \"Effects imparted directly by an enchantment ... will function regardless of Immunity\" (rules/magic-states-effects/mechanics-and-definitions.md, Enchantments 3a).",
+  "confidence": "medium",
+  "sim_impact": "medium",
+  "topic": "Stacking & interaction",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ },
+ {
+  "id": "wounding#1",
+  "slug": "wounding",
+  "note": "L1 'players already wounded' is read as any existing wound anywhere, not only on the named location.",
+  "question": "Wounding \"Has no effect on players already wounded.\" Does that mean a player with any existing wound, or only a player already wounded in the named limb?",
+  "options": [
+   "Any existing wound anywhere blocks it",
+   "Only a wound in the named limb blocks it"
+  ],
+  "ruling": "Any existing wound anywhere on the player blocks Wounding, so it can never cause a second, killing wound.",
+  "why": "The limitation speaks of \"players already wounded\", not locations, and \"Any two wounds, or a wound to the torso, results in a death\" (rules/combat-rules.md).",
+  "confidence": "high",
+  "sim_impact": "high",
+  "topic": "Targeting",
+  "hint": null,
+  "related": [],
+  "status": "assumed"
+ }
+]
