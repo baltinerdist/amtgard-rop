@@ -1,0 +1,57 @@
+{
+  "slug": "wounding",
+  "summary": "Wounds a named arm or leg of an unwounded target within 20'.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "wound.inflict",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "location": "chosen-by-caster"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "The caster names the limb ([left/right] [arm/leg]) in the Incantation."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-not-already-wounded",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [],
+  "clarifications": [
+    {
+      "text": "Wounding targets the player but its effect lands on the chosen hit location.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "Visibility (line of sight) may be drawn to any part of the target player, not only the chosen hit location.",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "offense"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "L1 'players already wounded' is read as any existing wound anywhere, not only on the named location."
+  ]
+}

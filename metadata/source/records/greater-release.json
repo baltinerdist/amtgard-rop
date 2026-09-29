@@ -1,0 +1,117 @@
+{
+  "slug": "greater-release",
+  "summary": "Removes all States and Ongoing Effects (caster may leave some) from a player within 20', including a dead player.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "what": "all-states-and-effects"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "All Ongoing Effects and States; the caster may choose to leave some in place (E2). Polarity is 'benefit' for the usual use (freeing an ally); it can also strip beneficial States from a foe."
+    },
+    {
+      "id": "e2",
+      "kind": "state.remove",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {
+        "what": "all-states-and-effects"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Greater Release may target Dead players."
+    },
+    {
+      "id": "e3",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "what": "all-states-and-effects"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Only the other States and Ongoing Effects from the same source, when the one removed was imposed by an ability with multiple effects; the caster cannot keep one effect of such a source while removing another (E2)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Caster may choose to leave some States or Effects in place."
+    },
+    {
+      "kind": "bypass-cursed",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Literal reading: 'All ... States' includes Cursed; the text does not name Cursed."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Caster may choose to leave some States or Ongoing Effects in place.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "Greater Release may target dead players.",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "text": "Ending a State or Ongoing Effect from an ability with multiple effects also ends all other States and Ongoing Effects from that same source.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "anti-magic",
+    "utility"
+  ],
+  "beneficiary": "any",
+  "open_questions": [
+    "E1 says 'All ... States' without excepting Cursed (Release's L1 explicitly cannot remove Cursed); recorded bypass-cursed on the literal reading."
+  ]
+}

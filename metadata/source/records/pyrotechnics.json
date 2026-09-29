@@ -1,0 +1,158 @@
+{
+  "slug": "pyrotechnics",
+  "summary": "Destroys all weapons and shields carried by a target within 50' when the Verbal completes; only equipment-specific protections stop it.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.destroy",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "weapons-and-shields"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "L1",
+        "N1"
+      ],
+      "note": "Only weapons and shields carried when the Verbal is completed."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "targets-player-affects-equipment",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "kind": "personal-protections-do-not-cover-equipment",
+      "evidence": [
+        "N2",
+        "N3"
+      ],
+      "note": "Immunities, Resistances and other protections stop it only if they specifically extend to equipment (e.g. Blessed Aura, Flame Blade); Enlightened Soul, Protection from Magic and Adaptive Protection (Flame) do not."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Blessed Aura",
+      "relation": "countered-by",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Example of a protection that extends to equipment."
+    },
+    {
+      "target": "ability",
+      "name": "Flame Blade",
+      "relation": "countered-by",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Example of a protection that extends to equipment."
+    },
+    {
+      "target": "ability",
+      "name": "Enlightened Soul",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ],
+      "note": "Does not extend to equipment; cannot protect from Pyrotechnics."
+    },
+    {
+      "target": "ability",
+      "name": "Protection from Magic",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ],
+      "note": "Does not extend to equipment; cannot protect from Pyrotechnics."
+    },
+    {
+      "target": "ability",
+      "name": "Adaptive Protection",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ],
+      "note": "Adaptive Protection (Flame) does not extend to equipment; cannot protect from Pyrotechnics."
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Only shields and weapons carried at the moment the Verbal is completed are destroyed.",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "text": "Immunities, Resistances and other protections protect the equipment only if they specifically extend to equipment, such as Blessed Aura or Flame Blade.",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "text": "Enlightened Soul, Protection from Magic and Adaptive Protection (Flame) do not extend to equipment and cannot protect from it.",
+      "evidence": [
+        "N3"
+      ]
+    }
+  ],
+  "roles": [
+    "equipment"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

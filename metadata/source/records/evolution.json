@@ -1,0 +1,97 @@
+{
+  "slug": "evolution",
+  "summary": "Bearer may wear one additional Enchantment; Evolution does not count towards the Enchantment limit and stacks with Attuned, Essence Graft or Phoenix Tears.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "enchantment.extra-slot",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "count": 1,
+        "only": "any"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May wear one additional Enchantment. Scout gets it as a Trait at 1st level (permanent)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "exempt-from-enchantment-limit",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Evolution does not count towards the bearer's Enchantment limit."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Attuned",
+      "relation": "works-with",
+      "evidence": [
+        "N1"
+      ],
+      "note": "So long as Attuned's other limitations are followed."
+    },
+    {
+      "target": "ability",
+      "name": "Essence Graft",
+      "relation": "works-with",
+      "evidence": [
+        "N1"
+      ],
+      "note": "So long as Essence Graft's other limitations are followed (e.g. only (m) Enchantments from its caster)."
+    },
+    {
+      "target": "ability",
+      "name": "Phoenix Tears",
+      "relation": "works-with",
+      "evidence": [
+        "N1"
+      ],
+      "note": "So long as Phoenix Tears' other limitations are followed."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Evolution works together with Attuned, Essence Graft or Phoenix Tears as long as the other limitations of those Enchantments are followed.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "Source mismatch: rules/magic-and-abilities/evolution.md says 'Available to: Scout 4' and Type Enchantment, but rules/classes/scout.md lists 'Evolution (T)' at 1st level and 'Granted as a Trait'; the packet shows both Scout 1st (ex) and Scout 4th. Duration recorded as permanent (Trait)."
+  ]
+}

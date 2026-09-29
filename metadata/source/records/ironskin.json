@@ -1,0 +1,111 @@
+{
+  "slug": "ironskin",
+  "summary": "Bearer is Immune to Flame and gains 2 points of Magic Armor that work as per Ancestral Armor.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Flame"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "armor.magic",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "points": 2
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Ancestral Armor",
+        "how": "as-per"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Ancestral Armor applies to the two points of Magic Armor granted by Ironskin."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Immune to Flame",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Text states the bearer is Immune to Flame."
+    },
+    {
+      "target": "ability",
+      "name": "Ancestral Armor",
+      "relation": "as-per",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The Magic Armor is affected as per Ancestral Armor."
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Flame School."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

@@ -1,0 +1,115 @@
+{
+  "slug": "destruction-arrow",
+  "summary": "Specialty Arrow: the normal arrow hit applies, then Armor Destroying and Shield Destroying.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "wound.inflict",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "location": "struck"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The normal effect of being hit with an arrow is applied first (a wound to the location struck, or damage to armor worn there)."
+    },
+    {
+      "id": "e2",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "armor-destroying",
+        "on": "this-arrow"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Applied after the normal effect of being hit with an arrow (E2)."
+    },
+    {
+      "id": "e3",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "shield-destroying",
+        "on": "this-arrow"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Applied after the normal effect of being hit with an arrow (E2)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "armor-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "shield-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "specialty-arrows",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Armor Destroying and Shield Destroying apply after the normal effect of being hit by an arrow.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "equipment",
+    "offense"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

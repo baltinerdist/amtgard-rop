@@ -1,0 +1,71 @@
+{
+  "slug": "gift-of-water",
+  "summary": "Bearer gains 1 point of Magic Armor and Heal (Self) Unlimited (m).",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "armor.magic",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "points": 1
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "One point of Magic Armor."
+    },
+    {
+      "id": "e2",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Heal",
+        "how": "gains",
+        "frequency": "(Self) Unlimited (m)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Heal",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ],
+      "note": "(Self) Unlimited (m)."
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense",
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

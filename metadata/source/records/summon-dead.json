@@ -1,0 +1,95 @@
+{
+  "slug": "summon-dead",
+  "summary": "A willing dead player within 50' must go directly to the caster; where they arrive is treated as where they died.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "move.to-caster",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Must go directly to the caster; Summon Dead ends immediately on reaching the caster (E2). Polarity benefit: the target is willing."
+    },
+    {
+      "id": "e2",
+      "kind": "life.set-death-location",
+      "subject": "dead-target",
+      "polarity": "neutral",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-arrival",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Wherever the player is when Summon Dead ends is treated as where the player died (the text's only stated end is reaching the caster, E2)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-willing",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-dead",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-not-moved-5ft",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Dead player has not moved more than 5' from where they died, or is at their respawn."
+    }
+  ],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Summon Dead immediately ends on reaching the caster."
+    }
+  ],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "respawn",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The place where Summon Dead ends is treated as the player's place of death.",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "mobility",
+    "utility"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E3 says 'when Summon Dead ends', which may include ending other than by arrival (for example if the caster dies or the movement is interrupted); timing on-arrival used as the only end the text states."
+  ]
+}

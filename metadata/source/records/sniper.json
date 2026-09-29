@@ -1,0 +1,172 @@
+{
+  "slug": "sniper",
+  "summary": "Archer archetype: carries any number of Specialty Arrows, each type 1 Arrow/Life Charge x3; gains Momentum (Ambulant); Look the Part becomes Mend; no normal arrows.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "any-number-of-specialty-arrows"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May physically carry any number of Specialty Arrows of each type."
+    },
+    {
+      "id": "e2",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "scope": "each type of Specialty Arrow ability",
+        "change": "charge-x3"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Frequency of each type becomes exactly 1 Arrow / Life Charge x3 (set, not added)."
+    },
+    {
+      "id": "e3",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Momentum",
+        "how": "gains",
+        "frequency": "Unlimited (ex)",
+        "meta": "Ambulant"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "id": "e4",
+      "kind": "class.look-the-part",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Mend",
+        "how": "replaced-by"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Look the Part becomes Mend 1/Life (ex)."
+    },
+    {
+      "id": "e5",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "fire-normal-arrows"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not fire normal arrows."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Momentum",
+      "relation": "grants",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Ambulant",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The granted Momentum is tagged Ambulant."
+    },
+    {
+      "target": "ability",
+      "name": "Mend",
+      "relation": "grants",
+      "evidence": [
+        "E4"
+      ],
+      "note": "In place of Look the Part."
+    },
+    {
+      "target": "mechanic",
+      "name": "specialty-arrows",
+      "relation": "modifies",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "look-the-part",
+      "relation": "modifies",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Look the Part is changed into Mend 1/Life (ex)."
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "resource",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E2 sets each Specialty Arrow's frequency to 1 Arrow / Life Charge x3; whether that is more or fewer uses depends on the class frequency, so polarity is neutral."
+  ]
+}

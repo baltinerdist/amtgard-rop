@@ -1,0 +1,115 @@
+{
+  "slug": "harden",
+  "summary": "Bearer's wielded weapons or shield (one or the other) can only be destroyed or damaged by object-destroying Magic Balls or Verbals.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.protect",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "weapons-or-shield",
+        "degree": "except-object-destroying-abilities"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Only Magic Balls or Verbals which destroy objects (e.g. Fireball, Pyrotechnics) can destroy or damage them. Covers either the weapons or the shield, not both."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "only-one-option",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Affects either the bearer's weapons or their shield, not both."
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Weapons or shield."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Fireball",
+      "relation": "example",
+      "evidence": [
+        "E1"
+      ],
+      "note": "A Magic Ball that destroys objects and so still affects Hardened equipment."
+    },
+    {
+      "target": "ability",
+      "name": "Pyrotechnics",
+      "relation": "example",
+      "evidence": [
+        "E1"
+      ],
+      "note": "A Verbal that destroys objects and so still affects Hardened equipment."
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Only one of the bearer's weapons or shield is protected, not both.",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "L1 does not say who chooses between weapons and shield, or when."
+  ]
+}

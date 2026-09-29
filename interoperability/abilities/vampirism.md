@@ -1,0 +1,85 @@
+---
+title: "Vampirism — Interoperability"
+section: Interoperability
+rulebook_version: V8.08 "Spongy"
+rulebook_date: 2026-07-25
+source: Derived from rules/classes and rules/magic-and-abilities (scripts/gen_interop.py)
+ability: Vampirism
+type: Enchantment
+school: Death
+targets_other_players: true
+classes: ["Wizard 4th"]
+---
+
+# Vampirism — Interoperability
+
+[Rule text](../../rules/magic-and-abilities/vampirism.md) · **Enchantment** · Death School · Range Other
+
+## Summary
+
+- **Can affect another player:** yes.
+- **Works on:** 12 of 12 classes.
+- **Blocked on:** no class.
+- **On 1 class list:** Wizard (4th).
+
+## What it does
+
+Bearer gains Adrenaline Unlimited (ex), usable through Cursed, and Immunity to Death, but is Cursed.
+
+| Effect | On | Details |
+| --- | --- | --- |
+| Grants Adrenaline | bearer (benefit) | how gains; frequency Unlimited (ex); while worn; continuously while it is worn, chanted or in effect |
+| Immune to Death | bearer (benefit) | while worn; continuously while it is worn, chanted or in effect |
+| Curses | bearer (harm) | while worn; continuously while it is worn, chanted or in effect |
+| Changes Adrenaline | bearer (benefit) | change the bearer's Adrenaline works through their Cursed State; while worn; continuously while it is worn, chanted or in effect |
+
+**Capabilities:** grants-abilities, has-drawback, protects · **Roles:** healing, defense
+
+Full profile (requirements, how it ends, properties, what stops it, similar abilities, every rule sentence): [`metadata/profiles/vampirism.md`](../../metadata/profiles/vampirism.md).
+
+## Where it is listed
+
+| Class | Level | Cost | Max | Frequency | Range here | Magical | Listed in | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| [Wizard](../classes/wizard.md) | 4th | 1 | - | 1/Refresh | Other | yes | Spell table | - |
+
+## Effect on each class
+
+Assumes every class is 6th level. Results do not depend on level.
+
+| Target class | Result | Why |
+| --- | --- | --- |
+| [Anti-Paladin](../classes/anti-paladin.md) | Works |  |
+| [Archer](../classes/archer.md) | Works |  |
+| [Assassin](../classes/assassin.md) | Works |  |
+| [Barbarian](../classes/barbarian.md) | Works |  |
+| [Monk](../classes/monk.md) | Works |  |
+| [Paladin](../classes/paladin.md) | Works | Enchantments apply despite Immunity (Enchantments rule 3) |
+| [Scout](../classes/scout.md) | Works |  |
+| [Warrior](../classes/warrior.md) | Works |  |
+| [Bard](../classes/bard.md) | Works |  |
+| [Druid](../classes/druid.md) | Works |  |
+| [Healer](../classes/healer.md) | Works |  |
+| [Wizard](../classes/wizard.md) | Works |  |
+
+Touch and Other range also need the target to be willing, dead, stunned, frozen or Insubstantial and unable to move. That applies to every class alike and is not modelled.
+
+## Connected abilities
+
+**Vampirism names these abilities in its own text** (auto-detected):
+
+| Ability | How | On classes |
+| --- | --- | --- |
+| [Adrenaline](adrenaline.md) | grants or gives | Barbarian |
+
+**Grants immunity:** the effect text says the bearer is Immune to Death. That immunity would stop any targeting ability of that School.
+
+## If you change its level
+
+- Who it works on does not change with level: class Immunities are 1st-level Traits, and Enlightened Soul is a 1st-level Monk Trait.
+- What can change: which classes can use it at a given level, what it competes with at that level, and any archetype or ability that depends on it (see above).
+
+- **Wizard** lists it at 4th for 1 point. That level's table has 9 entries (9 points if each were bought once, including 0 Equipment traits and 0 Archetypes). A Magic User has five points per level, and unused points roll down to lower levels, not up (see the README).
+
+---
+*Derived from the V8.08 "Spongy" rules by `scripts/gen_interop.py`. Cross-references are detected from ability text and should be read as pointers, not rulings.*

@@ -1,0 +1,84 @@
+{
+  "slug": "enlightened-soul",
+  "summary": "Bearer is unaffected by Verbal Magical abilities used from beyond Touch, harmful or beneficial; (ex) and Touch-range uses still work.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.unaffected",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "by": "verbal-magical-beyond-touch"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Not (ex) abilities, abilities with a Range of Touch, or longer-range abilities used at Touch range."
+    },
+    {
+      "id": "e2",
+      "kind": "defense.unaffected",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "by": "verbal-magical-beyond-touch"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: beneficial Verbal Magical abilities used from beyond Touch also have no effect on the bearer."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Blocks beneficial as well as harmful Magical abilities.",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "text": "Does not affect (ex) abilities, abilities with a Range of Touch, or abilities with a longer Range that are used at Touch range.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "anti-magic"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

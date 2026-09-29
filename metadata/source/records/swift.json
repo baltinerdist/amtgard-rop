@@ -1,0 +1,98 @@
+{
+  "slug": "swift",
+  "summary": "Meta-Magic: the next Touch, Other, Self or Magic Ball ability needs only one iteration of its incantation (last line if multi-line).",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "meta.modify-next",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "mode": "single-incantation"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "For multi-line incantations use the last line."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "only-touch-other-self-or-balls",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "kind": "not-on-charge-incantation",
+      "evidence": [
+        "L2"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "L2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "meta-magic",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Meta-Magic."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "For multi-line incantations, the single iteration is the last line.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

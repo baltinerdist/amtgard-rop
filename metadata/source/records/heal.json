@@ -1,0 +1,34 @@
+{
+  "slug": "heal",
+  "summary": "Heals one wound on a player by Touch (self or another).",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "wound.heal",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Range Touch: the target may be the caster or another player."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [],
+  "clarifications": [],
+  "roles": [
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

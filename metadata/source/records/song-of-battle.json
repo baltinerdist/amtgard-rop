@@ -1,0 +1,86 @@
+{
+  "slug": "song-of-battle",
+  "summary": "While chanting, the bearer's wielded melee weapons are Armor Breaking.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "armor-breaking",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Only the melee weapons the bearer is wielding."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Must follow all Chant rules; the Enchantment ends when the Chant stops."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "Chant \"Song of Battle\" or sing a song regarding their martial prowess."
+    }
+  ],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "offense",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

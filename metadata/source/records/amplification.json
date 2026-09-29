@@ -1,0 +1,104 @@
+{
+  "slug": "amplification",
+  "summary": "Bearer gains Extension 1/Refresh Charge x3 (m) without using purchased Extension; other sources of Extension cannot be used while worn.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Extension",
+        "how": "gains",
+        "frequency": "1/Refresh Charge x3 (m)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Does not use up any purchased instances of Extension."
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "use-other-sources-of-ability"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Other sources of Extension (e.g. purchased Extension) may not be used while Amplification is worn."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "excludes-other-sources",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Other sources of Extension may not be utilized while Amplification is worn (a drawback for a bearer who has purchased Extension)."
+    }
+  ],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Extension",
+      "relation": "grants",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Extension",
+      "relation": "excludes",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Other sources of Extension are blocked while Amplification is worn."
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The granted Extension is separate from, and does not use up, any Extension the bearer purchased.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

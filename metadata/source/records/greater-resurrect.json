@@ -1,0 +1,125 @@
+{
+  "slug": "greater-resurrect",
+  "summary": "Returns a willing dead player (within 5' of where they died) to life with wounds healed, regardless of States, removing Cursed; Enchantments kept.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "life.revive",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "wound.heal",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.remove",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {
+        "what": "specific-state",
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Removes Cursed if present."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-willing",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-dead",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-not-moved-5ft",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Has not moved more than 5' from where they died."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-states",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Works regardless of any States on the target."
+    },
+    {
+      "kind": "bypass-cursed",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Works on a Cursed target and removes Cursed."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "counters",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Enchantments on the player are retained when they are returned to life.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "revival",
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

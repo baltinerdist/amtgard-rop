@@ -1,0 +1,200 @@
+{
+  "slug": "void-touched",
+  "summary": "Armor Breaking melee weapons, Shadow Step 1/Refresh Charge x30, Steal Life Essence Unlimited, unaffected by Sorcery, Spirit and Death Magic; bearer is Cursed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "armor-breaking",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Wielded melee weapons."
+    },
+    {
+      "id": "e2",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Shadow Step",
+        "how": "gains",
+        "frequency": "1/Refresh Charge x30 (ex)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Steal Life Essence",
+        "how": "gains",
+        "frequency": "Unlimited (ex)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e4",
+      "kind": "defense.unaffected",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "by": "schools",
+        "schools": [
+          "Sorcery",
+          "Spirit",
+          "Death"
+        ]
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "note": "Magical abilities only from the Sorcery, Spirit and Death Schools (Extraordinary ones still affect the bearer). Per N1 this does not interact with other Enchantments the bearer wears."
+    },
+    {
+      "id": "e5",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Drawback on the bearer."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Shadow Step",
+      "relation": "grants",
+      "evidence": [
+        "E2"
+      ],
+      "note": "1/Refresh Charge x30 (ex)."
+    },
+    {
+      "target": "ability",
+      "name": "Steal Life Essence",
+      "relation": "grants",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Unlimited (ex)."
+    },
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Sorcery, Spirit and Death Schools."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The 'unaffected by Magical abilities' effect does not interact with (remove or block) other Enchantments already worn by the bearer.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "offense",
+    "equipment",
+    "defense",
+    "anti-magic",
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "N1 'This effect does not interact with other Enchantments worn by the bearer' does not say which effect; read as the unaffected-by-Sorcery/Spirit/Death clause (so e.g. Sorcery or Spirit Enchantments already worn keep working)."
+  ]
+}

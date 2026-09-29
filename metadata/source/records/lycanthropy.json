@@ -1,0 +1,120 @@
+{
+  "slug": "lycanthropy",
+  "summary": "Bearer gains 2 points of Magic Armor, Shield Crushing wielded melee weapons, and Immunity to Command.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "armor.magic",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "points": 2
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "shield-crushing",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Wielded melee weapons only."
+    },
+    {
+      "id": "e3",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Command"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "shield-crushing",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Immune to Command",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Text states the bearer is Immune to Command (same effect as the class Trait of that name)."
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Command School."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense",
+    "offense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

@@ -1,0 +1,99 @@
+{
+  "slug": "release",
+  "summary": "By touch, removes one State or Ongoing Effect of the caster's choice (not Cursed), along with others from the same source.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "what": "one-state-or-effect",
+        "except": [
+          "cursed"
+        ]
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "L1"
+      ],
+      "note": "Caster chooses which one; cannot remove Cursed. Polarity is 'benefit' for the usual use; it can also remove a beneficial State."
+    },
+    {
+      "id": "e2",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "what": "same-source-states-and-effects"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Only the other States and Ongoing Effects from the same source, when the one removed was imposed by an ability with multiple effects."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Caster chooses which State or Ongoing Effect is removed."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Cannot be removed by Release."
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Release cannot remove Cursed.",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "text": "Ending a State or Ongoing Effect from an ability with multiple effects also ends all other States and Ongoing Effects from that same source.",
+      "evidence": [
+        "L2"
+      ]
+    }
+  ],
+  "roles": [
+    "anti-magic",
+    "utility"
+  ],
+  "beneficiary": "any",
+  "open_questions": [
+    "L1 says Release cannot remove Cursed, but L2 says all other States from the same source also end; the text does not say whether a Cursed imposed by the same multi-effect ability (e.g. Raise Dead's Cursed with its Suppressed) ends too."
+  ]
+}

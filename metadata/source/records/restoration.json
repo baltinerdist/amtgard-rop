@@ -1,0 +1,70 @@
+{
+  "slug": "restoration",
+  "summary": "Another player has all uses of their per-life abilities restored; not Empower, Confidence or Restoration.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.restore-uses",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Only per-life abilities; uses of Empower, Confidence and Restoration are not restored (L1)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "not-on-certain-abilities",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Does not function on Empower, Confidence, or Restoration."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Empower",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Uses of Empower are not restored."
+    },
+    {
+      "target": "ability",
+      "name": "Confidence",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Uses of Confidence are not restored."
+    },
+    {
+      "target": "ability",
+      "name": "Restoration",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Uses of Restoration are not restored."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

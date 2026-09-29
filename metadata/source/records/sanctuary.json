@@ -1,0 +1,253 @@
+{
+  "slug": "sanctuary",
+  "summary": "While chanting, caster and carried equipment are unaffected by hostile actions from within 20'; may not approach enemy bases, touch objectives or impede play.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.unaffected",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "by": "hostile-actions-within-20ft"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Covers the caster; their carried equipment is encoded separately (e6)."
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "what": "approach-enemy-base"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not come within 20' of an unfriendly base; must immediately move to avoid it."
+    },
+    {
+      "id": "e3",
+      "kind": "action.restrict",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "what": "interact-with-game"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not interact with game items or game objectives."
+    },
+    {
+      "id": "e4",
+      "kind": "action.restrict",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "what": "impede-play"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not impede the play of other people in any manner; must immediately move to avoid such situations."
+    },
+    {
+      "id": "e5",
+      "kind": "action.restrict",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "what": "exit-early"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "conditions": [
+        "touched-weapon"
+      ],
+      "evidence": [
+        "L2"
+      ],
+      "note": "After voluntarily carrying or touching a weapon (other than blocking) during Sanctuary, the caster may only voluntarily end it at base and must keep chanting until there."
+    },
+    {
+      "id": "e6",
+      "kind": "defense.unaffected",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "by": "hostile-actions-within-20ft"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The caster's carried equipment is also unaffected."
+    },
+    {
+      "id": "e7",
+      "kind": "move.free",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "The caster may move about while in Sanctuary, subject to the limits in L1.",
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active"
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "may-not-impede-play",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not impede the play of other people in any manner; must immediately move to avoid such situations."
+    },
+    {
+      "kind": "no-exit-early",
+      "evidence": [
+        "L2"
+      ],
+      "conditions": [
+        "touched-weapon"
+      ],
+      "note": "Only after voluntarily carrying or touching a weapon (other than blocking): may then only end Sanctuary at base, chanting until there."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "E3",
+        "N1"
+      ],
+      "note": "Cease chanting and declare \"No longer in sanctuary\", audible to 20 feet. Only at base after touching a weapon (L2)."
+    },
+    {
+      "kind": "exit-only-at-base",
+      "evidence": [
+        "L2"
+      ],
+      "conditions": [
+        "touched-weapon"
+      ],
+      "note": "If the caster voluntarily carried or touched a weapon (other than blocking), they may only voluntarily end Sanctuary at base and must continue chanting until there."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Chant \"sanctuary\"."
+    },
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E3",
+        "N1"
+      ],
+      "note": "\"No longer in sanctuary\", audible out to 20 feet."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3",
+        "L2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E3",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "L1",
+        "L2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "game-objectives",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "L2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The exit declaration must be audible out to 20 feet.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "utility",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "'Hostile actions originating from within 20'' is undefined (abilities and attacks alike, presumably)."
+  ]
+}

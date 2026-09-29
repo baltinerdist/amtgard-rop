@@ -1,0 +1,164 @@
+{
+  "slug": "reload",
+  "summary": "Caster becomes Invulnerable to retrieve arrows, staying 10' from combat; ends at starting location or base by declaring \"I return with a full quiver\" x3.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "invulnerable"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Lasts until the caster removes it (E2)."
+    },
+    {
+      "id": "e2",
+      "kind": "move.free",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May move about the field retrieving their arrows."
+    },
+    {
+      "id": "e3",
+      "kind": "move.keep-away",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "feet": 10,
+        "from": "combat"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: must stay at least 10' away from combat at all times."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "stay-away-from-combat",
+      "evidence": [
+        "L1"
+      ],
+      "n": 10,
+      "note": "At least 10' away from combat at all times."
+    },
+    {
+      "kind": "not-exit-at-alternate-base",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "termination": [
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Caster may remove Invulnerable by declaring \"I return with a full quiver\" x3."
+    },
+    {
+      "kind": "exit-only-at-base",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "note": "Only in the location they started or at base; not at an Alternate Base (N1)."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E2"
+      ],
+      "note": "\"I return with a full quiver\" x3 to end it."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "invulnerable",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "alternate-base",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "reeve",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "A player may not exit Reload at an Alternate Base.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "May ask a reeve for help retrieving arrows that are within 10' of other players.",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "utility",
+    "mobility",
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

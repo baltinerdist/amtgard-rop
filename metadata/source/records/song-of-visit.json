@@ -1,0 +1,211 @@
+{
+  "slug": "song-of-visit",
+  "summary": "While chanting, the bearer is Stopped and Invulnerable; when the song ends they stay Invulnerable and must go directly to base.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "stopped"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Drawback on the bearer."
+    },
+    {
+      "id": "e2",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "state": "invulnerable"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "state": "invulnerable"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-removal",
+      "evidence": [
+        "E4",
+        "E5"
+      ],
+      "note": "Immediately when Song of Visit is removed; removed when the bearer arrives at base and declares \"I return from my visit\"."
+    },
+    {
+      "id": "e4",
+      "kind": "move.to-base",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-removal",
+      "evidence": [
+        "E4",
+        "E5"
+      ],
+      "note": "Drawback: when the song is removed the bearer must move directly to their base as a Forced Movement effect; ends on the arrival declaration."
+    },
+    {
+      "id": "e5",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "impede-play"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: bearer may not impede play."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "may-not-impede-play",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Must follow all Chant rules; the song ends when the Chant stops, which starts the return to base (E4)."
+    },
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E5"
+      ],
+      "note": "On arrival at base the bearer declares \"I return from my visit\"; Invulnerable is removed and the Forced Movement ends."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "Chant \"Song of Visit\" or sing a song regarding their general good nature and friendly disposition."
+    },
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "E4",
+        "E5"
+      ],
+      "note": "The return to base after the song is removed."
+    },
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E5"
+      ],
+      "note": "\"I return from my visit\" on arrival at base."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "invulnerable",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E5"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E4 'when Song of Visit is removed' is read as any removal (Chant stopping, Dispel Magic or similar).",
+    "L1 'Bearer may not impede play' is encoded for while the song is worn; the text does not say whether it also binds the Invulnerable return to base."
+  ]
+}

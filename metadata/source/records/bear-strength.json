@@ -1,0 +1,53 @@
+{
+  "slug": "bear-strength",
+  "summary": "Bearer's wielded melee weapons are Shield Crushing.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "shield-crushing",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Wielded melee weapons only."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "shield-crushing",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "offense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

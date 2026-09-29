@@ -1,0 +1,124 @@
+{
+  "slug": "necromancer",
+  "summary": "Healer archetype: Death School abilities become Charge x3; may have five Undead Minion Enchantments in total; may not purchase Protection School abilities.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "all abilities purchased in the Death School",
+        "change": "charge-x3"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Undead Minion",
+        "change": "bearer may have a combined total of five Undead Minion Enchantments"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Combined total of five (Undead Minion's own Limitations cap a caster at three)."
+    },
+    {
+      "id": "e3",
+      "kind": "economy.purchase-restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "any abilities from the Protection School"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not purchase any Protection School abilities."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "max-active-per-caster",
+      "n": 5,
+      "evidence": [
+        "E2"
+      ],
+      "note": "Combined total of five Undead Minion Enchantments (raised from Undead Minion's own limit)."
+    }
+  ],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Undead Minion",
+      "relation": "modifies",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Combined total of five Undead Minion Enchantments."
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Death School (E1); Protection School (L1)."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

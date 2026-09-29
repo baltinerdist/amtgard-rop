@@ -1,0 +1,42 @@
+{
+  "slug": "barkskin",
+  "summary": "Bearer gains one point of Magic Armor.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "armor.magic",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "points": 1
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

@@ -1,0 +1,231 @@
+{
+  "slug": "undead-minion",
+  "summary": "Bearer is Cursed and cannot respawn; caster gains unlimited Raise Dead on the bearer only; up to three per caster; Persistent.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "life.prevent-respawn",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.grant",
+      "subject": "caster-of-enchantment",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Raise Dead",
+        "how": "gains",
+        "frequency": "(Unlimited) (m)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Only while the bearer is enchanted."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.modify",
+      "subject": "caster-of-enchantment",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Raise Dead",
+        "change": "the granted Raise Dead ignores the requirement that the target has not moved from where they died"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e5",
+      "kind": "ability.modify",
+      "subject": "caster-of-enchantment",
+      "polarity": "harm",
+      "params": {
+        "ability": "Raise Dead",
+        "change": "the granted Raise Dead can only be cast with the bearer as the target"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Limit on the granted ability."
+    },
+    {
+      "id": "e6",
+      "kind": "team.alternate-base",
+      "subject": "caster-of-enchantment",
+      "polarity": "neutral",
+      "params": {
+        "for": "bearer-only"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "id": "e7",
+      "kind": "action.restrict",
+      "subject": "caster-of-enchantment",
+      "polarity": "harm",
+      "params": {
+        "what": "use-alternate-bases"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback on the caster."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "max-active-per-caster",
+      "evidence": [
+        "L1"
+      ],
+      "n": 3
+    },
+    {
+      "kind": "caster-may-not-use-alternate-bases",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "kind": "bearer-not-alternate-base",
+      "evidence": [
+        "L2"
+      ]
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "persistent",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "kind": "active-while-dead",
+      "evidence": [
+        "E4"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Raise Dead",
+      "relation": "grants",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Raise Dead",
+      "relation": "modifies",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Target limited to the bearer; ignores the not-moved-from-death-spot requirement."
+    },
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "respawn",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "alternate-base",
+      "relation": "mentions",
+      "evidence": [
+        "E3",
+        "L1",
+        "L2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "persistent",
+      "relation": "mentions",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E4",
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "revival",
+    "utility"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E2 grants Raise Dead '(Unlimited)' without a range; presumably Raise Dead's own Touch range applies."
+  ]
+}

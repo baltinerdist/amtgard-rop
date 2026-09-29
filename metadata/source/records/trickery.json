@@ -1,0 +1,106 @@
+{
+  "slug": "trickery",
+  "summary": "Bearer may cast Blink, Shadow Step and Teleport on themselves while already Insubstantial from a State they caused and entered voluntarily.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.cast-while-insubstantial",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "abilities": [
+          "Blink",
+          "Shadow Step",
+          "Teleport"
+        ],
+        "on": "self"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "conditions": [
+        "caster-was-cause"
+      ],
+      "evidence": [
+        "E1"
+      ],
+      "note": "Only if the bearer caused the initial Insubstantial State and entered it voluntarily. Assassin gets it as a Trait at 1st level; recorded as permanent."
+    },
+    {
+      "id": "e2",
+      "kind": "state.remove",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "what": "specific-state",
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Casting Blink, Shadow Step or Teleport this way removes the original Insubstantial effect (replaced by the new ability's)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Blink",
+      "relation": "modifies",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May be cast on self while already Insubstantial."
+    },
+    {
+      "target": "ability",
+      "name": "Shadow Step",
+      "relation": "modifies",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May be cast on self while already Insubstantial."
+    },
+    {
+      "target": "ability",
+      "name": "Teleport",
+      "relation": "modifies",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May be cast on self while already Insubstantial."
+    },
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Using Trickery ends the original Insubstantial effect; the newly cast ability's effect replaces it.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "mobility"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "rules/magic-and-abilities/trickery.md gives Type Enchantment, but rules/classes/assassin.md lists 'Trickery (T)' at 1st level, 'Granted as a Trait'; duration recorded as permanent."
+  ]
+}

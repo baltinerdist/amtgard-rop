@@ -1,0 +1,86 @@
+{
+  "slug": "poison",
+  "summary": "The bearer's next wound dealt with a wielded melee weapon is Wounds Kill; not expended if the target does not actually receive the wound.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "wounds-kill",
+        "on": "next-wound"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Only a wound dealt by the bearer with a wielded melee weapon. Used up only when a target actually receives the wound."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "activates-once",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Expended by the next wound the bearer deals with a wielded melee weapon that the target actually receives."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "not-expended-on-failure",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If the target does not actually receive a wound (e.g. because of a Resistance), Poison is not expended."
+    }
+  ],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "wounds-kill",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "example",
+      "evidence": [
+        "N1"
+      ],
+      "note": "A Resistance is the example of a wound not actually received."
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "If the target does not actually receive the wound (for example it is stopped by a Resistance), Poison is not expended and stays on.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "offense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

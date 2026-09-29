@@ -1,0 +1,348 @@
+{
+  "slug": "phoenix-tears",
+  "summary": "Instead of dying, bearer heals all wounds and is Frozen 30s; then loses Cursed, non-persistent Enchantments and a strip, repairs equipment; +1 Persistent Protection Enchantment.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "death.prevent",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "instead": "heal-and-frozen"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Bearer does not die as normal; instead removes all wounds and becomes Frozen for 30 seconds."
+    },
+    {
+      "id": "e2",
+      "kind": "wound.heal",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "frozen"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Part of the save; recorded as harm because the bearer is out of action for 30 seconds."
+    },
+    {
+      "id": "e4",
+      "kind": "state.remove",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "specific-state",
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-expiry",
+      "evidence": [
+        "E3",
+        "E4"
+      ],
+      "conditions": [
+        "still-enchanted"
+      ],
+      "note": "When the Frozen State elapses or is removed, if still enchanted: remove Cursed, if Cursed."
+    },
+    {
+      "id": "e5",
+      "kind": "equipment.repair",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "all-carried-equipment"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-expiry",
+      "evidence": [
+        "E3",
+        "E5"
+      ],
+      "conditions": [
+        "still-enchanted"
+      ]
+    },
+    {
+      "id": "e6",
+      "kind": "enchantment.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "non-persistent-others"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-expiry",
+      "evidence": [
+        "E3",
+        "E6"
+      ],
+      "conditions": [
+        "still-enchanted"
+      ],
+      "note": "All non-persistent Enchantments other than Phoenix Tears are removed."
+    },
+    {
+      "id": "e7",
+      "kind": "enchantment.spend-strip",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "n": 1
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-expiry",
+      "conditions": [
+        "still-enchanted"
+      ],
+      "evidence": [
+        "E3",
+        "E7"
+      ],
+      "note": "Step 4: remove a strip each time the save resolves."
+    },
+    {
+      "id": "e8",
+      "kind": "enchantment.extra-slot",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "count": 1,
+        "only": "protection-school"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E8"
+      ]
+    },
+    {
+      "id": "e9",
+      "kind": "enchantment.make-persistent",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "which": "the-extra-enchantment"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E9"
+      ],
+      "note": "Persistent only as long as Phoenix Tears is present."
+    },
+    {
+      "id": "e10",
+      "kind": "enchantment.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "chosen-to-meet-limit"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-removal",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If necessary, when Phoenix Tears is removed the bearer chooses which (m) Enchantments to lose to meet the new Enchantment limit."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "not-with-abilities",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not be worn with Attuned or Essence Graft."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "last-strip",
+      "evidence": [
+        "E7",
+        "N1"
+      ],
+      "note": "A strip is removed each time it resolves (step 4); removed when the last strip is removed."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "uses-strips",
+      "evidence": [
+        "E7",
+        "N1"
+      ],
+      "note": "Two white strips; one is removed per activation (E7)."
+    },
+    {
+      "kind": "bypass-cursed",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Removes the Cursed State (step 1)."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "N1"
+      ],
+      "note": "When Phoenix Tears is removed, the bearer chooses which (m) Enchantments to lose to meet the limit."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Attuned",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Essence Graft",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "persistent",
+      "relation": "mentions",
+      "evidence": [
+        "E6",
+        "E9"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E6",
+        "E8",
+        "E10"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E8"
+      ],
+      "note": "Protection School."
+    },
+    {
+      "target": "mechanic",
+      "name": "strips",
+      "relation": "mentions",
+      "evidence": [
+        "E7",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Steps 1-4 happen only if the bearer is still enchanted when the Frozen State elapses or is removed.",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "text": "The extra Protection Enchantment is not removed when Phoenix Tears is removed.",
+      "evidence": [
+        "E10"
+      ]
+    },
+    {
+      "text": "When Phoenix Tears is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "healing",
+    "equipment",
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "N1 is two sentences run together in the source (missing period after 'removed'); segmentation treats them as one.",
+    "E10 vs N1: the extra Enchantment is kept after Phoenix Tears is removed, yet the bearer may then have to drop (m) Enchantments to meet the limit; unclear whether the kept extra one can be the one dropped."
+  ]
+}

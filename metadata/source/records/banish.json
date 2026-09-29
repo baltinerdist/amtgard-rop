@@ -1,0 +1,147 @@
+{
+  "slug": "banish",
+  "summary": "An Insubstantial player within 20' must return to base, their Insubstantial State replaced by Banish's, ending it on arrival.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "move.to-base",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1",
+        "N4"
+      ],
+      "note": "Must return to their base while Insubstantial from Banish (N1). A Forced Movement effect. When cast on another player; the self-cast case is e2.",
+      "conditions": [
+        "cast-on-other"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "move.to-base",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "conditions": [
+        "cast-on-self"
+      ],
+      "evidence": [
+        "E1",
+        "N3",
+        "N4"
+      ],
+      "note": "When cast on self (the caster must already be Insubstantial): the caster travels to their base (Forced Movement) and may end the Insubstantial State at any time with the Insubstantial exit incantation (N3)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-insubstantial",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Upon arrival they must immediately end the effect as per Insubstantial."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "N2"
+      ],
+      "note": "If the Insubstantial State ends before reaching the base, the rest of the effect ends as well."
+    },
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "N3"
+      ],
+      "note": "Only when Banish is cast on self: the caster may end the Insubstantial State at any time with the Insubstantial exit incantation.",
+      "conditions": [
+        "cast-on-self"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "N4"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "requires",
+      "evidence": [
+        "E1",
+        "E2",
+        "N1",
+        "N2",
+        "N3"
+      ],
+      "note": "Target must be Insubstantial; that State is replaced by a new Insubstantial State from Banish."
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "N4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The target's existing Insubstantial State is replaced with a new Insubstantial State from Banish, so the State is now governed by Banish.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "control",
+    "mobility"
+  ],
+  "beneficiary": "any",
+  "open_questions": [
+    "Convention 10 encodes Banish only as move.to-base; N1's replacement Insubstantial State is kept as a clarification rather than a state.apply effect.",
+    "Beneficiary 'any': normally used on enemies, but N3 explicitly allows casting it on self (a quick return to base)."
+  ]
+}

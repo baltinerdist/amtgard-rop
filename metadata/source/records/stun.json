@@ -1,0 +1,43 @@
+{
+  "slug": "stun",
+  "summary": "Stuns a player within 20' for 30 seconds.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "state": "stunned"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "stunned",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "control"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

@@ -1,0 +1,120 @@
+{
+  "slug": "planar-grounding",
+  "summary": "Removes a target's Insubstantial State within 20' and prevents it for 30 seconds; auto-Insubstantial Enchantments like Gift of Air fail and are removed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "specific-state",
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Only happens if the target is currently Insubstantial; the ability may also be cast on players who are not (E2).",
+      "conditions": [
+        "target-insubstantial"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "state.prevent",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "states": [
+          "insubstantial"
+        ]
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Target may not become Insubstantial for 30 seconds."
+    },
+    {
+      "id": "e3",
+      "kind": "enchantment.remove",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "scope": "auto-insubstantial-only"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "N1"
+      ],
+      "note": "While Planar Grounding is in effect, Enchantments that automatically render their bearer Insubstantial (such as Gift of Air) fail and are removed if they activate."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "N1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Gift of Air",
+      "relation": "counters",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Named as an example: fails and is removed if it activates while Planar Grounding is in effect."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "May be cast on players who are not currently Insubstantial (to prevent them becoming Insubstantial).",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "Enchantments that automatically make their bearer Insubstantial, such as Gift of Air, fail and are removed if they activate while Planar Grounding is in effect.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "control",
+    "anti-magic"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "N1 'fail': does the rest of the failing Enchantment's activation (e.g. Gift of Air ignoring the triggering hit) also not happen? The plain reading is that the whole activation fails."
+  ]
+}

@@ -1,0 +1,647 @@
+<title>Amtgard Interaction Chords</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one working screen. Controls row on top, the chord circle on the left, a reading panel on the right;
+   they stack at phone width. Line colors follow the request: blue shares, green works, red blocked. */
+:root {
+  --bg: #fcfcfb;
+  --panel: #f4f4f1;
+  --ink: #0b0b0b;
+  --ink2: #52514e;
+  --muted: #6a6961;
+  --hair: #e2e1dc;
+  --arc: #dcdbd5;
+  --arc2: #cfcec7;
+  --arc-on: #0b0b0b;
+  --blue: #2a78d6;
+  --green: #0ca30c;
+  --red: #d03b3b;
+  --green-t: #067406;
+  --red-t: #b32d2d;
+  --focus: #2a78d6;
+  --font: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1a19; --panel: #232321; --ink: #f4f3ef; --ink2: #c3c2b7; --muted: #99988f; --hair: #33332f;
+    --arc: #363633; --arc2: #444440; --arc-on: #f4f3ef; --blue: #3987e5; --focus: #3987e5; --green-t: #2fc42f; --red-t: #ec7a7a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1a19; --panel: #232321; --ink: #f4f3ef; --ink2: #c3c2b7; --muted: #99988f; --hair: #33332f;
+  --arc: #363633; --arc2: #444440; --arc-on: #f4f3ef; --blue: #3987e5; --focus: #3987e5; --green-t: #2fc42f; --red-t: #ec7a7a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.45; margin: 0;
+       padding-inline: 16px; padding-block: 18px 28px; }
+.wrap { max-width: 1320px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { color: var(--ink2); margin: 4px 0 0; max-width: 72ch; }
+.edition { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.group > .lbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+button, input, select { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.chip { border: 1px solid var(--hair); background: transparent; border-radius: 999px; padding: 4px 11px; cursor: pointer;
+        font-size: 13px; line-height: 1.3; }
+.chip:hover { background: var(--panel); }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip.imm::after { content: ""; }
+.seg { display: inline-flex; border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 5px 11px; cursor: pointer; font-size: 13px; }
+.seg button + button { border-left: 1px solid var(--hair); }
+.seg button[aria-checked="true"] { background: var(--ink); color: var(--bg); }
+.seg button:disabled { opacity: 0.4; cursor: default; }
+.search { border: 1px solid var(--hair); background: var(--bg); border-radius: 8px; padding: 5px 10px; width: 210px; max-width: 100%; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px; }
+.key { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--hair); background: transparent; border-radius: 8px;
+       padding: 4px 10px 4px 8px; cursor: pointer; }
+.key svg { width: 34px; height: 8px; flex: none; }
+.key .n { font-family: var(--mono); font-size: 12px; color: var(--ink2); }
+.key[aria-pressed="false"] { opacity: 0.45; }
+.key[aria-pressed="false"] .t { text-decoration: line-through; }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
+.chart { position: relative; min-width: 0; }
+.chart svg.main { width: 100%; height: auto; display: block; aspect-ratio: 1 / 1; max-height: calc(100vh - 150px); min-height: 360px;
+                  margin: 0 auto; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.chart svg.main.drag { cursor: grabbing; }
+.zoom { position: absolute; right: 0; top: 0; display: flex; flex-direction: column; gap: 4px; }
+.zoom button { width: 30px; height: 30px; border: 1px solid var(--hair); background: var(--bg); border-radius: 8px; cursor: pointer; font-size: 16px; line-height: 1; }
+.zoom button:hover { background: var(--panel); }
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--ink); color: var(--bg); border-radius: 8px; padding: 7px 10px;
+       font-size: 12px; max-width: 260px; line-height: 1.35; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+.tip b { font-weight: 600; font-size: 13px; display: block; }
+.tip .m { opacity: 0.8; }
+.tip[hidden] { display: none; }
+
+.panel { background: var(--panel); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0;
+         max-height: calc(100vh - 150px); min-height: 420px; overflow: auto; }
+.panel h2 { margin: 0; font-size: 18px; line-height: 1.2; font-weight: 700; }
+.panel h3 { margin: 4px 0 0; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.panel p { margin: 0; color: var(--ink2); }
+.meta { font-family: var(--mono); font-size: 12px; color: var(--ink2); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { border: 1px solid var(--hair); border-radius: 6px; padding: 1px 7px; font-size: 12px; background: var(--bg); }
+.tag.red { border-color: var(--red-t); }
+.quote { font-style: italic; color: var(--ink); border-left: 2px solid var(--hair); padding-left: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 500; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); padding: 4px 6px 4px 0; border-bottom: 1px solid var(--hair); }
+td { padding: 5px 6px 5px 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+table.eff td:first-child { white-space: nowrap; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.mark { display: inline-block; width: 1.3em; font-weight: 700; }
+.mark.g { color: var(--green-t); } .mark.r { color: var(--red-t); } .mark.n { color: var(--muted); }
+.link { background: none; border: 0; padding: 0; text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 3px; cursor: pointer; text-align: left; }
+.link:hover { text-decoration-color: currentColor; }
+.foot { color: var(--muted); font-size: 12px; max-width: 110ch; }
+.foot ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* chart internals */
+.arc { fill: var(--arc); cursor: pointer; }
+.arc.magic { fill: var(--arc2); }
+.arc:hover { fill: var(--muted); }
+.arc.on, .arc.on:hover { fill: var(--arc-on); }
+.cl { fill: var(--ink); font-size: 18px; font-weight: 600; cursor: pointer; }
+.cl .s { font-size: 12.5px; font-weight: 400; fill: var(--muted); }
+.cl.on { text-decoration: underline; text-underline-offset: 3px; }
+.zoomed .cl { visibility: hidden; }
+.nd { fill: var(--ink2); stroke: var(--bg); stroke-width: 2; cursor: pointer; transition: opacity .12s; }
+.nd.hollow { fill: var(--bg); stroke: var(--ink2); stroke-width: 1.4; }
+.nd.dim { opacity: 0.22; }
+.nd.hit { stroke: var(--ink); stroke-width: 2.5; }
+.nd.pin { fill: var(--ink); stroke: var(--bg); stroke-width: 2; }
+.nlab { font-size: 6.6px; fill: var(--ink); display: none; pointer-events: none; }
+.zoomed .nlab, .nlab.show { display: block; }
+.nlab.dim { opacity: 0.25; }
+.e { fill: none; pointer-events: none; stroke-linecap: round; }
+.e.b { stroke: var(--blue); stroke-dasharray: 0.1 5.2; }
+.e.g { stroke: var(--green); }
+.e.r { stroke: var(--red); stroke-dasharray: 6 3.5; stroke-linecap: butt; }
+.eh { fill: none; stroke: transparent; stroke-width: 9; pointer-events: stroke; }
+.axis { fill: none; stroke: var(--hair); stroke-width: 1; }
+
+@media (max-width: 980px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+  .panel { max-height: none; min-height: 0; }
+  .chart svg.main { max-height: none; min-height: 0; }
+}
+@media (max-width: 700px) { .cl { font-size: 30px; } .cl .s { display: none; } }
+@media (prefers-reduced-motion: reduce) { .nd { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Amtgard Interaction Chords</h1>
+    <p class="sub">Every ability and spell a 6th-level class can use, and what it does to each of the twelve classes. Pick a class or an ability; scroll to zoom and drag to pan. <span class="edition">Rulebook __EDITION__</span></p>
+  </header>
+
+  <section class="controls" aria-label="Controls">
+    <div class="group" id="classChips" role="group" aria-label="Class"><span class="lbl">Class</span></div>
+    <div class="group" id="modeGroup" role="radiogroup" aria-label="Direction">
+      <span class="lbl">Show</span>
+      <div class="seg">
+        <button type="button" role="radio" id="modeOnto" aria-checked="true">Hits this class</button>
+        <button type="button" role="radio" id="modeFrom" aria-checked="false">This class hits</button>
+      </div>
+    </div>
+    <div class="group" id="condGroup" role="radiogroup" aria-label="Line detail">
+      <span class="lbl">Lines</span>
+      <div class="seg">
+        <button type="button" role="radio" id="condOn" aria-checked="true">Condensed</button>
+        <button type="button" role="radio" id="condOff" aria-checked="false">Every ability</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="lbl">Ability</span>
+      <input class="search" id="q" type="search" list="abilityList" placeholder="Search abilities" autocomplete="off" aria-label="Search abilities and spells">
+      <datalist id="abilityList"></datalist>
+      <button type="button" class="chip" id="clear">Show all shared</button>
+    </div>
+  </section>
+
+  <div class="legend" id="legend" role="group" aria-label="Line types, click to show or hide"></div>
+
+  <div class="stage">
+    <div class="chart" id="chart">
+      <svg class="main" id="svg" viewBox="-600 -600 1200 1200" role="img" aria-label="Chord diagram of class abilities" aria-describedby="svgDesc">
+        <desc id="svgDesc">Each dot is one ability or spell, grouped by class around the circle. Blue dotted lines join the same ability on two classes. Green lines reach a class the ability works on. Red dashed lines reach a class that is immune. The panel beside the chart lists the same results as text.</desc>
+        <g id="vp">
+          <circle class="axis" r="386" />
+          <g id="edges"></g>
+          <g id="arcs"></g>
+          <g id="nodes"></g>
+          <g id="labels"></g>
+          <g id="classLabels"></g>
+        </g>
+      </svg>
+      <div class="zoom">
+        <button type="button" id="zin" aria-label="Zoom in">+</button>
+        <button type="button" id="zout" aria-label="Zoom out">&minus;</button>
+        <button type="button" id="zreset" aria-label="Reset view" title="Reset view">&#8634;</button>
+      </div>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+
+  <div class="foot">
+    <strong>How this is worked out.</strong> Every class is treated as 6th level with every ability on its list, spells included.
+    <ul>
+      <li>Archetypes, spell points and purchase limits are ignored, and the Equipment traits are left out.</li>
+      <li>A green or red line starts at an ability that can affect another player (a Verbal or Enchantment with a range of Other, Touch, 20&#8242;, 50&#8242; or Unlimited, or a Magic Ball or Specialty Arrow). Self-only abilities and Traits get no green or red lines, so they show as hollow dots.</li>
+      <li>Red means the player cannot be affected. That comes from class Immunities to a School (Anti-Paladin, Barbarian, Paladin) and from the Monk&#8217;s Enlightened Soul, which stops Verbal Magical abilities used beyond Touch (a Monk is still affected at Touch, and (ex) abilities always affect a Monk). Martial abilities count as Magical only when the class table marks them (m).</li>
+      <li>Enchantments ignore Immunities (Enchantments rule 3), so Poison, Flame Blade and similar show green on immune classes. Abilities they grant do not: Undead Minion on a Paladin, and Poison Arrow on a Paladin, are red because part of the effect is stopped (see the tooltip).</li>
+      <li>Immunities and Enlightened Soul protect the player, not their equipment. Pyrotechnics, Destroy Armor and Shatter Weapon therefore show green on immune classes, Heat Weapon is green on a Monk, and Fireball and Lightning Bolt are red on an Anti-Paladin even though their equipment is still hit.</li>
+      <li>Touch and Other range abilities also need a willing, dead, stunned, frozen or Insubstantial target, and temporary defenses such as Rage or Sanctuary are not counted. Both apply to every class alike.</li>
+      <li>Blue joins the same ability when it appears on more than one class.</li>
+      <li>Condensed merges all the green lines between two classes into one ribbon whose width shows how many abilities it carries. Red and blue lines stay one per ability, and choosing Every ability draws them all.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var D = __DATA__;
+  var CL = D.classes, N = D.nodes, NS = "http://www.w3.org/2000/svg";
+  var ci = {}; CL.forEach(function (c, i) { ci[c.name] = i; });
+  N.forEach(function (n, i) { n.id = i; n.c = ci[n.cls]; });
+  var bySlug = {}; N.forEach(function (n) { (bySlug[n.slug] = bySlug[n.slug] || []).push(n); });
+
+  /* ---------- geometry ---------- */
+  var R_DOT = 402, R_IN = 384, R_A0 = 412, R_A1 = 419, R_LAB = 430, GAP = 2.4, PAD = 0.9;
+  var counts = CL.map(function (c, i) { return N.filter(function (n) { return n.c === i; }).length; });
+  var weight = counts.map(function (n) { return Math.max(n, 13); });
+  var wsum = weight.reduce(function (a, b) { return a + b; }, 0);
+  var usable = 360 - GAP * CL.length, arc = [], cur = 0;
+  CL.forEach(function (c, i) {
+    var span = usable * weight[i] / wsum;
+    arc.push({ a0: cur, a1: cur + span, mid: cur + span / 2 }); cur += span + GAP;
+  });
+  CL.forEach(function (c, i) {
+    var list = N.filter(function (n) { return n.c === i; }), a = arc[i], w = a.a1 - a.a0 - 2 * PAD;
+    list.forEach(function (n, k) { n.ang = a.a0 + PAD + (k + 0.5) / list.length * w; });
+  });
+  function P(r, deg) { var t = deg * Math.PI / 180; return [r * Math.sin(t), -r * Math.cos(t)]; }
+  function f(x) { return Math.round(x * 10) / 10; }
+  function annulus(a0, a1, r0, r1) {
+    var p1 = P(r1, a0), p2 = P(r1, a1), p3 = P(r0, a1), p4 = P(r0, a0), big = (a1 - a0) > 180 ? 1 : 0;
+    return "M" + f(p1[0]) + " " + f(p1[1]) + "A" + r1 + " " + r1 + " 0 " + big + " 1 " + f(p2[0]) + " " + f(p2[1]) +
+           "L" + f(p3[0]) + " " + f(p3[1]) + "A" + r0 + " " + r0 + " 0 " + big + " 0 " + f(p4[0]) + " " + f(p4[1]) + "Z";
+  }
+  function chord(p, q, sepDeg) {
+    var mx = (p[0] + q[0]) / 2, my = (q[1] + p[1]) / 2, k = 0.85 - 0.65 * Math.min(1, sepDeg / 150);
+    return "M" + f(p[0]) + " " + f(p[1]) + "Q" + f(mx * k) + " " + f(my * k) + " " + f(q[0]) + " " + f(q[1]);
+  }
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e); return e;
+  }
+
+  /* ---------- static drawing ---------- */
+  var svg = document.getElementById("svg"), vp = document.getElementById("vp");
+  var gArcs = document.getElementById("arcs"), gNodes = document.getElementById("nodes"),
+      gLabels = document.getElementById("labels"), gCL = document.getElementById("classLabels"),
+      gEdges = document.getElementById("edges");
+  var arcEl = [], clEl = [];
+  CL.forEach(function (c, i) {
+    var a = el("path", { d: annulus(arc[i].a0, arc[i].a1, R_A0, R_A1), "class": "arc" + (c.kind === "magic" ? " magic" : ""), "data-c": i }, gArcs);
+    arcEl.push(a);
+    var pos = P(R_LAB + 8, arc[i].mid), right = pos[0] >= 0;
+    var t = el("text", { x: f(pos[0]), y: f(pos[1]), "text-anchor": right ? "start" : "end", "class": "cl", "data-c": i }, gCL);
+    var l1 = el("tspan", { x: f(pos[0]), dy: c.immune.length ? "-0.2em" : "0.35em" }, t); l1.textContent = c.name;
+    if (c.immune.length) { var l2 = el("tspan", { x: f(pos[0]), dy: "1.25em", "class": "s" }, t); l2.textContent = "immune: " + c.immune.join(", "); }
+    clEl.push(t);
+  });
+  var ndEl = [], lbEl = [];
+  N.forEach(function (n) {
+    var p = P(R_DOT, n.ang);
+    var c = el("circle", { cx: f(p[0]), cy: f(p[1]), r: n.target ? 3.6 : 3.1, "class": "nd" + (n.target ? "" : " hollow"), "data-n": n.id, tabindex: -1 }, gNodes);
+    ndEl.push(c);
+    var q = P(R_DOT + 9, n.ang), flip = n.ang > 180, rot = flip ? n.ang - 90 + 180 : n.ang - 90;
+    var t = el("text", { x: 0, y: 0, transform: "translate(" + f(q[0]) + " " + f(q[1]) + ") rotate(" + f(rot) + ")", "text-anchor": flip ? "end" : "start", dy: "0.35em", "class": "nlab" }, gLabels);
+    t.textContent = n.name; lbEl.push(t);
+  });
+
+  /* ---------- state ---------- */
+  var S = { cls: ci["Druid"], node: null, mode: "from", cond: true, show: { b: true, g: true, r: true }, q: "", hover: null };
+  var bundleList = [];
+  var view = { x: -600, y: -600, w: 1200, h: 1200 }, BASE = 1200;
+  var edges = [];
+
+  function siblings(n) { return bySlug[n.slug].filter(function (m) { return m.id !== n.id; }); }
+  function pushBlue(list, n) { siblings(n).forEach(function (m) { if (m.c !== n.c || true) list.push({ k: "b", a: n, b: m }); }); }
+
+  function computeEdges(focusNode) {
+    var out = [], seen = {}, n = focusNode !== null ? N[focusNode] : null;
+    function blue(a, b) { var key = Math.min(a.id, b.id) + "-" + Math.max(a.id, b.id); if (!seen[key]) { seen[key] = 1; out.push({ k: "b", a: a, b: b }); } }
+    function verdict(src, t) { var v = src.v[CL[t].name]; if (v) out.push({ k: v[0] ? "g" : "r", a: src, t: t, why: v[1], part: v[2] || "" }); }
+    if (n) {
+      siblings(n).forEach(function (m) { blue(n, m); });
+      if (n.target) CL.forEach(function (c, t) { verdict(n, t); });
+    } else if (S.cls !== null) {
+      var mine = N.filter(function (x) { return x.c === S.cls; });
+      mine.forEach(function (x) { siblings(x).forEach(function (m) { blue(x, m); }); });
+      if (S.mode === "from") mine.forEach(function (x) { if (x.target) CL.forEach(function (c, t) { verdict(x, t); }); });
+      else N.forEach(function (x) { if (x.target) verdict(x, S.cls); });
+    } else {
+      Object.keys(bySlug).forEach(function (s) { var g = bySlug[s]; for (var i = 0; i < g.length; i++) for (var j = i + 1; j < g.length; j++) blue(g[i], g[j]); });
+    }
+    return out;
+  }
+
+  function currentFocus() { return S.hover !== null ? S.hover : S.node; }
+
+  // Hover redraws only the chart; a selection change also rebuilds the legend, controls and reading panel,
+  // so hovering never resets the panel's scroll position, keyboard focus or screen-reader output.
+  function render() { renderChart(); renderSide(); }
+  function renderSide() {
+    var sel = computeEdges(S.node);
+    renderLegend(sel); renderControls(); renderPanel(sel);
+  }
+  function renderChart() {
+    var focus = currentFocus();
+    edges = computeEdges(focus);
+    var visible = edges.filter(function (e) { return S.show[e.k]; });
+
+    // Condensed class view: every green line between the same two classes becomes one ribbon (width = how many
+    // abilities); blocked (red) and shared (blue) lines stay one per ability so they stand out.
+    var cond = S.cond && focus === null && S.cls !== null, groups = {}, redBy = {};
+    bundleList = [];
+    var drawn = visible;
+    if (cond) {
+      edges.forEach(function (e) { if (e.k === "r") { var key = e.a.c + ">" + e.t; (redBy[key] = redBy[key] || []).push(e.a.name); } });
+      visible.forEach(function (e) {
+        if (e.k !== "g") return;
+        var key = e.a.c + ">" + e.t, g = groups[key] || (groups[key] = { sc: e.a.c, t: e.t, n: 0, red: redBy[key] || [] });
+        g.n++;
+      });
+      bundleList = Object.keys(groups).map(function (k) { return groups[k]; });
+      drawn = visible.filter(function (e) { return e.k !== "g"; });
+    }
+
+    // anchor slots on target class arcs: sources sorted by angle, mapped in reverse so fans do not cross
+    var byT = {};
+    drawn.forEach(function (e) { if (e.t !== undefined) (byT[e.t] = byT[e.t] || []).push(e); });
+    Object.keys(byT).forEach(function (t) {
+      var list = byT[t].sort(function (a, b) { return a.a.ang - b.a.ang; }), m = list.length, a = arc[t];
+      list.forEach(function (e, k) { e.tang = a.a0 + PAD + (m - 1 - k + 0.5) / m * (a.a1 - a.a0 - 2 * PAD); });
+    });
+
+    var single = focus !== null, sw = single ? 1.7 : (cond ? 1.4 : (visible.length > 400 ? 0.7 : 1.05)), op = single ? 0.95 : (cond ? 0.85 : (visible.length > 400 ? 0.42 : 0.6));
+    var order = { g: 0, b: 1, r: 2 }, hitOk = drawn.length <= 700;
+    var html = [], hit = [];
+    bundleList.forEach(function (g, bi) {                    // ribbons first, so individual lines sit on top
+      var a1 = arc[g.sc], a2 = arc[g.t], p1, q1, sep;
+      if (g.sc === g.t) { p1 = P(R_IN, a1.a0 + (a1.a1 - a1.a0) * 0.3); q1 = P(R_IN, a1.a0 + (a1.a1 - a1.a0) * 0.7); sep = 20; }
+      else { p1 = P(R_IN, a1.mid); q1 = P(R_IN, a2.mid); sep = Math.abs(((a1.mid - a2.mid + 540) % 360) - 180); }
+      var d = chord(p1, q1, sep), w = Math.min(26, 2 + 2.4 * Math.sqrt(g.n));
+      html.push('<path class="e g" d="' + d + '" stroke-width="' + f(w) + '" opacity="0.5" stroke-linecap="round"/>');
+      hit.push('<path class="eh" d="' + d + '" data-b="' + bi + '" style="stroke-width:' + f(Math.max(10, w)) + 'px"/>');
+    });
+    drawn.slice().sort(function (x, y) { return order[x.k] - order[y.k]; }).forEach(function (e) {
+      var p = P(R_IN, e.a.ang), q, sep;
+      if (e.t !== undefined) { q = P(R_IN, e.tang); sep = Math.abs(((e.a.ang - e.tang + 540) % 360) - 180); }
+      else { q = P(R_IN, e.b.ang); sep = Math.abs(((e.a.ang - e.b.ang + 540) % 360) - 180); }
+      var d = chord(p, q, sep), idx = edges.indexOf(e);
+      var w = e.k === "b" ? (single ? 3.4 : 2.4) : (e.k === "r" && cond ? 2 : sw);
+      html.push('<path class="e ' + e.k + '" d="' + d + '" stroke-width="' + f(w) + '" opacity="' + op + '"/>');
+      if (hitOk) hit.push('<path class="eh" d="' + d + '" data-e="' + idx + '"/>');
+    });
+    gEdges.innerHTML = html.join("") + hit.join("");
+
+    // nodes: who is in play
+    var active = {};
+    if (focus !== null) { active[focus] = 1; visible.forEach(function (e) { active[e.a.id] = 1; if (e.b) active[e.b.id] = 1; }); }
+    else if (S.cls !== null) { N.forEach(function (n) { if (n.c === S.cls) active[n.id] = 1; });
+      visible.forEach(function (e) { active[e.a.id] = 1; if (e.b) active[e.b.id] = 1; }); }
+    var qq = S.q.trim().toLowerCase(), any = focus !== null || S.cls !== null;
+    N.forEach(function (n, i) {
+      var match = !qq || n.name.toLowerCase().indexOf(qq) >= 0 || n.cls.toLowerCase().indexOf(qq) >= 0;
+      var dim = (any && !active[i]) || !match;
+      ndEl[i].setAttribute("class", "nd" + (n.target ? "" : " hollow") + (dim ? " dim" : "") + (S.node === i ? " pin" : "") + (focus === i ? " hit" : ""));
+      var showLab = (focus === i) || (qq && match);
+      lbEl[i].setAttribute("class", "nlab" + (showLab ? " show" : "") + (dim ? " dim" : ""));
+    });
+    arcEl.forEach(function (a, i) { a.setAttribute("class", "arc" + (CL[i].kind === "magic" ? " magic" : "") + ((S.cls === i && S.node === null) || (S.node !== null && N[S.node].c === i) ? " on" : "")); });
+    clEl.forEach(function (t, i) { t.setAttribute("class", "cl" + (S.cls === i && S.node === null ? " on" : "")); });
+  }
+
+  /* ---------- legend + controls ---------- */
+  var legend = document.getElementById("legend");
+  var KEYS = [
+    { k: "b", label: "Shares the ability", dash: "0.1 5", cap: "round", color: "var(--blue)", w: 3 },
+    { k: "g", label: "Works on the class", dash: "", cap: "round", color: "var(--green)", w: 2 },
+    { k: "r", label: "Blocked by immunity", dash: "6 3.5", cap: "butt", color: "var(--red)", w: 2 }
+  ];
+  function renderLegend(list) {
+    var cnt = { b: 0, g: 0, r: 0 }; list.forEach(function (e) { cnt[e.k]++; });
+    legend.textContent = "";
+    KEYS.forEach(function (K) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "key"; b.setAttribute("aria-pressed", S.show[K.k] ? "true" : "false");
+      var s = el("svg", { viewBox: "0 0 34 8", "aria-hidden": "true" });
+      el("line", { x1: 2, y1: 4, x2: 32, y2: 4, stroke: K.color, "stroke-width": K.w, "stroke-dasharray": K.dash, "stroke-linecap": K.cap }, s);
+      b.appendChild(s);
+      var t = document.createElement("span"); t.className = "t"; t.textContent = K.label; b.appendChild(t);
+      var n = document.createElement("span"); n.className = "n"; n.textContent = String(cnt[K.k]); b.appendChild(n);
+      b.setAttribute("aria-label", K.label + ", " + cnt[K.k] + " lines");
+      b.addEventListener("click", function () { S.show[K.k] = !S.show[K.k]; S.refocus = K.k; render(); });
+      legend.appendChild(b);
+      if (S.refocus === K.k) { S.refocus = null; b.focus(); }
+    });
+  }
+  var condOn = document.getElementById("condOn"), condOff = document.getElementById("condOff");
+  condOn.addEventListener("click", function () { S.cond = true; render(); });
+  condOff.addEventListener("click", function () { S.cond = false; render(); });
+  var chips = document.getElementById("classChips"), modeOnto = document.getElementById("modeOnto"), modeFrom = document.getElementById("modeFrom");
+  var chipEl = [];
+  CL.forEach(function (c, i) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = c.name;
+    b.addEventListener("click", function () { selectClass(i); }); chips.appendChild(b); chipEl.push(b);
+  });
+  function renderControls() {
+    chipEl.forEach(function (b, i) { b.setAttribute("aria-pressed", S.cls === i && S.node === null ? "true" : "false"); });
+    var dis = S.node !== null || S.cls === null;
+    modeOnto.disabled = modeFrom.disabled = dis;
+    condOn.disabled = condOff.disabled = dis;
+    condOn.setAttribute("aria-checked", S.cond ? "true" : "false");
+    condOff.setAttribute("aria-checked", S.cond ? "false" : "true");
+    modeOnto.setAttribute("aria-checked", S.mode === "onto" ? "true" : "false");
+    modeFrom.setAttribute("aria-checked", S.mode === "from" ? "true" : "false");
+  }
+  modeOnto.addEventListener("click", function () { S.mode = "onto"; render(); });
+  modeFrom.addEventListener("click", function () { S.mode = "from"; render(); });
+  document.getElementById("clear").addEventListener("click", function () { S.cls = null; S.node = null; S.hover = null; S.q = ""; q.value = ""; render(); });
+
+  function selectClass(i) { S.cls = i; S.node = null; S.hover = null; render(); }
+  function selectNode(i) { S.node = i; S.cls = N[i].c; S.hover = null; S.q = ""; q.value = ""; render(); }
+
+  /* ---------- search ---------- */
+  var q = document.getElementById("q"), dl = document.getElementById("abilityList");
+  N.slice().sort(function (a, b) { return a.name.localeCompare(b.name) || a.cls.localeCompare(b.cls); }).forEach(function (n) {
+    var o = document.createElement("option"); o.value = n.name + " (" + n.cls + ")"; dl.appendChild(o);
+  });
+  q.addEventListener("input", function () {
+    var v = q.value, m = /^(.*) \((.*)\)$/.exec(v);
+    if (m) { var hit = N.filter(function (n) { return n.name === m[1] && n.cls === m[2]; })[0]; if (hit) { S.q = ""; selectNode(hit.id); return; } }
+    S.q = v; render();
+  });
+  q.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    var v = q.value.trim().toLowerCase(); if (!v) return;
+    var hit = N.filter(function (n) { return n.name.toLowerCase().indexOf(v) >= 0; })[0]; if (hit) { S.q = ""; q.value = ""; selectNode(hit.id); }
+  });
+
+  /* ---------- panel ---------- */
+  var panel = document.getElementById("panel");
+  function T(tag, cls, text, parent) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; if (parent) parent.appendChild(e); return e; }
+  function tagsRow(items, cls) { var d = T("div", "tags"); items.forEach(function (t) { T("span", "tag" + (cls ? " " + cls : ""), t, d); }); return d; }
+  function linkBtn(text, fn, parent) { var b = T("button", "link", text, parent); b.type = "button"; b.addEventListener("click", fn); return b; }
+
+  function renderPanel(list) {
+    panel.textContent = "";
+    var n = S.node !== null ? N[S.node] : null;
+    if (n) return nodePanel(n);
+    if (S.cls !== null) return classPanel(S.cls, list);
+    var h = T("h2", "", "All shared abilities", panel);
+    T("p", "", "Blue lines join an ability that appears on more than one class. " + Object.keys(bySlug).filter(function (s) { return bySlug[s].length > 1; }).length +
+       " of the " + Object.keys(bySlug).length + " abilities are shared. Pick a class or an ability to see what it does to the other classes.", panel);
+    T("h3", "", "Most widely shared", panel);
+    var tb = T("table", "", undefined, panel), tr = T("tr", "", undefined, T("thead", "", undefined, tb));
+    T("th", "", "Ability", tr); T("th", "num", "Classes", tr);
+    var body = T("tbody", "", undefined, tb);
+    Object.keys(bySlug).map(function (s) { return bySlug[s]; }).sort(function (a, b) { return b.length - a.length || a[0].name.localeCompare(b[0].name); }).slice(0, 12).forEach(function (g) {
+      var r = T("tr", "", undefined, body), td = T("td", "", undefined, r);
+      linkBtn(g[0].name, function () { selectNode(g[0].id); }, td);
+      T("td", "num", String(g.length), r);
+    });
+  }
+
+  function shortWhy(e) {
+    return e.why.replace(/^Enlightened Soul:.*/, "Enlightened Soul").replace(/^Immune to (\w+)\..*/, "Immune to $1") + (e.part ? " (partly: " + e.part + ")" : "");
+  }
+  function classPanel(ci_, list) {
+    var c = CL[ci_], mine = N.filter(function (x) { return x.c === ci_; });
+    T("h2", "", c.name, panel);
+    T("div", "meta", (c.kind === "magic" ? "Magic User" : "Martial") + " · " + mine.length + " abilities · " + mine.filter(function (x) { return x.target; }).length + " can target other players", panel);
+    if (c.immune.length) { T("h3", "", "Immunities", panel); panel.appendChild(tagsRow(c.immune.map(function (s) { return "Immune to " + s; }), "red")); }
+    else if (c.name === "Monk") { T("h3", "", "Defense", panel); panel.appendChild(tagsRow(["Enlightened Soul"], "red")); T("p", "", D.monkNote, panel); }
+    else { T("p", "", "No Immunities. Every targeting ability works on this class.", panel); }
+
+    if (S.mode === "onto") {
+      var reds = list.filter(function (e) { return e.k === "r"; }), greens = list.filter(function (e) { return e.k === "g"; });
+      T("p", "", "Across all classes there are " + (reds.length + greens.length) + " targeting entries (an ability counts once for each class that lists it). " + greens.length + " work on the " + c.name + " and " + reds.length + " are stopped.", panel);
+      if (reds.length) {
+        T("h3", "", "Stopped (" + reds.length + ")", panel);
+        var tb = T("table", "", undefined, panel), hr = T("tr", "", undefined, T("thead", "", undefined, tb));
+        T("th", "", "Ability", hr); T("th", "", "From", hr); T("th", "", "Why", hr);
+        var bd = T("tbody", "", undefined, tb);
+        reds.slice().sort(function (a, b) { return a.why.localeCompare(b.why) || a.a.name.localeCompare(b.a.name); }).forEach(function (e) {
+          var r = T("tr", "", undefined, bd); linkBtn(e.a.name, function () { selectNode(e.a.id); }, T("td", "", undefined, r));
+          T("td", "", CL[e.a.c].code, r); T("td", "", shortWhy(e), r);
+        });
+      }
+    } else {
+      T("p", "", "Each row counts this class's targeting abilities against one target class.", panel);
+      var tb2 = T("table", "", undefined, panel), h2 = T("tr", "", undefined, T("thead", "", undefined, tb2));
+      T("th", "", "Target", h2); T("th", "num", "Works", h2); T("th", "num", "Blocked", h2);
+      var b2 = T("tbody", "", undefined, tb2), tg = mine.filter(function (x) { return x.target; });
+      CL.forEach(function (t, ti) {
+        var g = 0, r = 0; tg.forEach(function (x) { var v = x.v[t.name]; if (v) { if (v[0]) g++; else r++; } });
+        var row = T("tr", "", undefined, b2); linkBtn(t.name, function () { selectClass(ti); S.mode = "onto"; render(); }, T("td", "", undefined, row));
+        T("td", "num", String(g), row); var rc = T("td", "num", String(r), row); if (r) rc.style.color = "var(--red-t)";
+      });
+    }
+    if (S.mode === "from") {
+      var stopped = list.filter(function (e) { return e.k === "r"; });
+      if (stopped.length) {
+        T("h3", "", "Stopped (" + stopped.length + ")", panel);
+        var tb3 = T("table", "", undefined, panel), h3r = T("tr", "", undefined, T("thead", "", undefined, tb3));
+        T("th", "", "Ability", h3r); T("th", "", "Stopped by", h3r); T("th", "", "Why", h3r);
+        var b3 = T("tbody", "", undefined, tb3);
+        stopped.slice().sort(function (a, b) { return CL[a.t].name.localeCompare(CL[b.t].name) || a.a.name.localeCompare(b.a.name); }).forEach(function (e) {
+          var r3 = T("tr", "", undefined, b3); linkBtn(e.a.name, function () { selectNode(e.a.id); }, T("td", "", undefined, r3));
+          linkBtn(CL[e.t].name, function () { selectClass(e.t); S.mode = "onto"; render(); }, T("td", "", undefined, r3));
+          T("td", "", shortWhy(e), r3);
+        });
+      }
+    }
+    var sh = mine.filter(function (x) { return siblings(x).length; });
+    T("h3", "", "Shared with other classes (" + sh.length + ")", panel);
+    var d = T("div", "tags", undefined, panel);
+    sh.forEach(function (x) { var b = T("button", "tag", x.name, d); b.type = "button"; b.style.cursor = "pointer"; b.addEventListener("click", function () { selectNode(x.id); }); });
+    T("h3", "", "All abilities", panel);
+    var d2 = T("div", "tags", undefined, panel);
+    mine.forEach(function (x) { var b = T("button", "tag", x.name, d2); b.type = "button"; b.style.cursor = "pointer"; b.addEventListener("click", function () { selectNode(x.id); }); });
+  }
+
+  function nodePanel(n) {
+    T("h2", "", n.name, panel);
+    T("div", "meta", n.cls + (n.lv ? " · " + n.lv + " level" : "") + " · " + [n.type, n.school, n.range].filter(Boolean).join(" · ") + (n.freq ? " · " + n.freq : "") + (n.magical ? " · Magical" : ""), panel);
+    if (n.inc) T("p", "quote", n.inc, panel);
+    if (n.eff) T("p", "", n.eff, panel);
+    var sib = siblings(n);
+    T("h3", "", "Also on", panel);
+    if (sib.length) { var d = T("div", "tags", undefined, panel); sib.forEach(function (m) { var b = T("button", "tag", m.cls, d); b.type = "button"; b.style.cursor = "pointer"; b.addEventListener("click", function () { selectNode(m.id); }); }); }
+    else T("p", "", "Only " + n.cls + " has this ability.", panel);
+    if (n.target) {
+      var stoppers = CL.filter(function (c) { return n.v[c.name] && !n.v[c.name][0]; });
+      T("h3", "", "Stopped by", panel);
+      if (stoppers.length) panel.appendChild(tagsRow(stoppers.map(function (c) { return c.name + (n.v[c.name][2] ? " (partly)" : ""); }), "red"));
+      else T("p", "", "No class. It works on all twelve.", panel);
+    }
+    T("h3", "", "Effect on each class", panel);
+    if (!n.target) { T("p", "", "This ability only affects its own caster, so it has no green or red lines. It can still connect in blue.", panel); return; }
+    var tb = T("table", "eff", undefined, panel), bd = T("tbody", "", undefined, tb);
+    CL.forEach(function (t, ti) {
+      var v = n.v[t.name], r = T("tr", "", undefined, bd), td = T("td", "", undefined, r);
+      var mk = T("span", "mark " + (v && v[0] ? "g" : "r"), v && v[0] ? "✓" : (v && v[2] ? "◐" : "✕"), td); mk.setAttribute("role", "img"); mk.setAttribute("aria-label", v && v[0] ? "Works" : (v && v[2] ? "Partly blocked" : "Blocked"));
+      linkBtn(t.name, function () { selectClass(ti); }, td);
+      T("td", "", v && v[0] ? "Works" + (v[1] ? ": " + v[1] : "") : (v ? (v[2] ? "Partly blocked (" + v[2] + "). " + v[1] : v[1]) : ""), r);
+    });
+    if (n.type !== "Enchantment" && n.type !== "Verbal") T("p", "meta", "Monks can block Magic Balls and arrows with Missile Block, but it needs an active block, so it stays green.", panel);
+  }
+
+  /* ---------- tooltips ---------- */
+  var tip = document.getElementById("tip"), chartBox = document.getElementById("chart");
+  function place(ev) {
+    var r = chartBox.getBoundingClientRect(), x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
+    tip.style.left = Math.min(x, r.width - 270) + "px"; tip.style.top = y + "px";
+  }
+  function showTip(ev, title, lines) {
+    tip.textContent = ""; T("b", "", title, tip); lines.forEach(function (l) { T("span", "m", l, tip); tip.appendChild(document.createElement("br")); });
+    tip.hidden = false; place(ev);
+  }
+  function hideTip() { tip.hidden = true; }
+  function attrOf(t, name) { var e = t && t.closest ? t.closest("[" + name + "]") : null; return e ? e.getAttribute(name) : null; }
+  svg.addEventListener("pointermove", function (ev) {
+    if (dragging) return;
+    var t = ev.target, nid = attrOf(t, "data-n"), eid = attrOf(t, "data-e"), cid = attrOf(t, "data-c"), bid = attrOf(t, "data-b");
+    if (nid !== null) {
+      var n = N[+nid];
+      if (S.hover !== n.id) { S.hover = n.id; renderChart(); }
+      var blocked = n.target ? CL.filter(function (c) { return n.v[c.name] && !n.v[c.name][0]; }).map(function (c) { return c.name + (n.v[c.name][2] ? " (partly)" : ""); }) : [];
+      var ln = [[n.type, n.school, n.range].filter(Boolean).join(" · ")];
+      if (n.target) ln.push(blocked.length ? "Blocked on: " + blocked.join(", ") : "Works on every class"); else ln.push("Self only: no green or red lines");
+      var sh = siblings(n); if (sh.length) ln.push("Also on: " + sh.map(function (m) { return m.cls; }).join(", "));
+      showTip(ev, n.name + " · " + n.cls, ln);
+    } else {
+      if (S.hover !== null && eid === null && bid === null) { S.hover = null; renderChart(); }
+      if (bid !== null) {
+        var g = bundleList[+bid], tl = [g.n + " abilit" + (g.n === 1 ? "y" : "ies") + " work" + (g.n === 1 ? "s" : "")];
+        if (g.red.length) tl.push(g.red.length + " blocked: " + g.red.join(", "));
+        tl.push("Switch Lines to \u201cEvery ability\u201d to see each one");
+        showTip(ev, CL[g.sc].name + " \u2192 " + CL[g.t].name, tl);
+      } else if (eid !== null) {
+        var e = edges[+eid];
+        if (e.k === "b") showTip(ev, e.a.name, ["Shared: " + e.a.cls + " and " + e.b.cls]);
+        else showTip(ev, e.a.name + " (" + e.a.cls + ") → " + CL[e.t].name, [e.k === "g" ? "Works" + (e.why ? ": " + e.why : "") : (e.part ? "Partly blocked (" + e.part + "): " : "Blocked: ") + e.why]);
+      } else if (cid !== null) { var c = CL[+cid]; showTip(ev, c.name, [counts[+cid] + " abilities" + (c.immune.length ? " · immune: " + c.immune.join(", ") : "")]); }
+      else hideTip();
+    }
+  });
+  svg.addEventListener("pointerleave", function () { hideTip(); if (S.hover !== null) { S.hover = null; renderChart(); } });
+
+  /* ---------- click, zoom, pan ---------- */
+  var dragging = false, moved = 0, sx = 0, sy = 0, sv = null;
+  function setView() {
+    svg.setAttribute("viewBox", f(view.x) + " " + f(view.y) + " " + f(view.w) + " " + f(view.h));
+    svg.classList.toggle("zoomed", BASE / view.w >= 2.4);
+  }
+  function zoomAt(k, cx, cy) {
+    var nw = Math.max(BASE / 9, Math.min(BASE, view.w / k)), s = nw / view.w;
+    view.x = cx - (cx - view.x) * s; view.y = cy - (cy - view.y) * s; view.w = view.h = nw; clamp(); setView();
+  }
+  function clamp() { var m = BASE / 2 - view.w / 2 + 120; view.x = Math.max(-BASE / 2 - 60, Math.min(BASE / 2 + 60 - view.w, view.x)); view.y = Math.max(-BASE / 2 - 60, Math.min(BASE / 2 + 60 - view.h, view.y)); }
+  function toSvg(ev) { var r = svg.getBoundingClientRect(), side = Math.min(r.width, r.height), ox = r.left + (r.width - side) / 2, oy = r.top + (r.height - side) / 2;
+    return [view.x + (ev.clientX - ox) / side * view.w, view.y + (ev.clientY - oy) / side * view.h]; }
+  svg.addEventListener("wheel", function (ev) {
+    ev.preventDefault(); var p = toSvg(ev);
+    var dy = ev.deltaY * (ev.deltaMode === 1 ? 33 : ev.deltaMode === 2 ? 400 : 1);
+    zoomAt(Math.exp(-Math.max(-120, Math.min(120, dy)) * 0.004), p[0], p[1]);
+  }, { passive: false });
+  var ptrs = {}, pinch = 0;
+  function nPtrs() { return Object.keys(ptrs).length; }
+  function endDrag() { dragging = false; svg.classList.remove("drag"); }
+  svg.addEventListener("pointerdown", function (ev) {
+    if (ev.pointerType === "mouse" && ev.button !== 0) return;
+    ptrs[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+    if (nPtrs() === 2) { var a = Object.keys(ptrs).map(function (k) { return ptrs[k]; }); pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); endDrag(); moved = 99; return; }
+    dragging = true; moved = 0; sx = ev.clientX; sy = ev.clientY; sv = { x: view.x, y: view.y };
+  });
+  window.addEventListener("pointermove", function (ev) {
+    if (ptrs[ev.pointerId]) ptrs[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+    if (nPtrs() === 2) {                                   // two fingers: pinch to zoom
+      var a = Object.keys(ptrs).map(function (k) { return ptrs[k]; }), d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+      if (pinch > 0 && d > 0) { var c = toSvg({ clientX: (a[0].x + a[1].x) / 2, clientY: (a[0].y + a[1].y) / 2 }); zoomAt(d / pinch, c[0], c[1]); }
+      pinch = d; return;
+    }
+    if (!dragging) return;
+    if (ev.pointerType === "mouse" && ev.buttons === 0) { endDrag(); return; }
+    var dx = ev.clientX - sx, dy = ev.clientY - sy; moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
+    if (moved > 5) { svg.classList.add("drag"); var r = svg.getBoundingClientRect(), side = Math.min(r.width, r.height); view.x = sv.x - dx / side * view.w; view.y = sv.y - dy / side * view.h; clamp(); setView(); hideTip(); }
+  });
+  function lift(ev) { delete ptrs[ev.pointerId]; if (nPtrs() < 2) pinch = 0; }
+  window.addEventListener("pointercancel", function (ev) { lift(ev); endDrag(); });
+  window.addEventListener("pointerup", function (ev) {
+    lift(ev);
+    if (!dragging) return; endDrag();
+    if (moved > 5) return;
+    var t = ev.target, nid = attrOf(t, "data-n"), cid = attrOf(t, "data-c");
+    if (nid !== null) selectNode(+nid); else if (cid !== null) selectClass(+cid);
+  });
+  document.getElementById("zin").addEventListener("click", function () { zoomAt(1.5, view.x + view.w / 2, view.y + view.h / 2); });
+  document.getElementById("zout").addEventListener("click", function () { zoomAt(1 / 1.5, view.x + view.w / 2, view.y + view.h / 2); });
+  document.getElementById("zreset").addEventListener("click", function () { view = { x: -600, y: -600, w: 1200, h: 1200 }; setView(); });
+
+  setView(); render();
+})();
+</script>

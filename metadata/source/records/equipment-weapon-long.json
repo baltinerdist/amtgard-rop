@@ -1,0 +1,71 @@
+{
+  "slug": "equipment-weapon-long",
+  "summary": "May wield one Long weapon at a time per instance purchased, and may carry extras.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "long-weapon",
+        "per_instance": "yes"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "One Long weapon wielded at a time for each instance purchased."
+    },
+    {
+      "id": "e2",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "carry-extras"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May carry extra Long weapons beyond the number that may be wielded."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Trait."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

@@ -1,0 +1,74 @@
+{
+  "slug": "blessing-against-harm",
+  "summary": "Bearer is Resistant to the next source that would wound, kill, apply a State or cause another negative effect; not their own effects.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.resistance",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "to": "next-source",
+        "covers_equipment": "no"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "All effects of the next source that would inflict a wound, death, a State, or other negative effect. Does not trigger against effects cast by the bearer."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "not-against-own-effects",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Does not trigger against effects cast by the bearer."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "activates-once",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Resistant to the next source only. The general Enchantment rules (mechanics-and-definitions, Enchantments 5) name Blessing Against Harm as an Enchantment with a definite number of uses, removed when its last use is expended even if ineffective."
+    }
+  ],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Covers everything from the source: wounds, death, States and any other negative effect.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "Does not trigger against effects cast by the bearer themselves.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

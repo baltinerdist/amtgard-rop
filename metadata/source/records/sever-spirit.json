@@ -1,0 +1,161 @@
+{
+  "slug": "sever-spirit",
+  "summary": "Curses a dead player within 20' and removes all their Enchantments, regardless of Traits, States, Immunities or Enchantments.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "until-respawn"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "No duration given; per the Cursed State it persists after death and is removed on respawn."
+    },
+    {
+      "id": "e2",
+      "kind": "enchantment.remove",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "scope": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "Always removes Enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects or Enchantments (E3)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-dead",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-dead-at-start",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-traits",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The Enchantment removal only."
+    },
+    {
+      "kind": "bypass-states",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The Enchantment removal only."
+    },
+    {
+      "kind": "bypass-immunities",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The Enchantment removal only."
+    },
+    {
+      "kind": "bypass-ongoing-effects",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The Enchantment removal only."
+    },
+    {
+      "kind": "bypass-enchantments",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The Enchantment removal only: the player's own Enchantments cannot stop it."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "If Sever Spirit is successfully cast on a valid target it always removes Enchantments, whatever the player's Traits, States, Immunities, Ongoing Effects or Enchantments.",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "debuff",
+    "anti-magic"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "E3's 'regardless of ...' guarantee is stated only for removing Enchantments, not for the Curse; the bypass properties are noted as applying to the removal only."
+  ]
+}

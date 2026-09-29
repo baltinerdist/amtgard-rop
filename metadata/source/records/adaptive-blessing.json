@@ -1,0 +1,125 @@
+{
+  "slug": "adaptive-blessing",
+  "summary": "Bearer is Resistant to one School chosen at casting (Death, Flame, Subdual, Command or Sorcery); outside the Enchantment limit; no other (m) Protection Enchantments.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.resistance",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "to": "chosen-school",
+        "options": [
+          "Death",
+          "Flame",
+          "Subdual",
+          "Command",
+          "Sorcery"
+        ],
+        "covers_equipment": "no"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Resistant: unaffected by the next ability from the chosen School."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "no-other-protection-enchantments",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Unless the other Protection Enchantment is (ex)."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "activates-once",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Resistant means unaffected by the next effect of the type (Resistant definition); the text does not say the strip is removed."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "School chosen at the time of casting from Death, Flame, Subdual, Command, Sorcery."
+    },
+    {
+      "kind": "exempt-from-enchantment-limit",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The School is chosen at the time of casting.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "May be worn alongside Protection School Enchantments that are (ex), but not with (m) ones.",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E2 does not say who chooses the School (caster or bearer); 'at the time of casting' suggests the caster.",
+    "Whether the Enchantment is removed once the Resistance is used is not stated in the text."
+  ]
+}

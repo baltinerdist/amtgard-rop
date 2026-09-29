@@ -1,0 +1,76 @@
+{
+  "slug": "sleight-of-mind",
+  "summary": "The bearer's other Enchantments cannot be removed by Dispel Magic or similar abilities; Sleight of Mind does not count towards the Enchantment limit.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "enchantment.protect",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Covers Enchantments worn by the bearer other than Sleight of Mind itself; against Dispel Magic or similar abilities."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "exempt-from-enchantment-limit",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Does not count towards the bearer's Enchantment Limit."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Dispel Magic",
+      "relation": "protects-against",
+      "evidence": [
+        "E1"
+      ],
+      "note": "And similar abilities."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Sleight of Mind itself is not protected: Dispel Magic or similar abilities can still remove it.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "anti-magic"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "'Similar abilities' is undefined; presumably other Enchantment-removing abilities (e.g. Naturalize Magic's Dispel Magic), but the text does not list them."
+  ]
+}

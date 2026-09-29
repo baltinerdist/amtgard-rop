@@ -1,0 +1,336 @@
+{
+  "slug": "artificer",
+  "summary": "Archer archetype: may wield a Small shield; gains Greater Mend; Mend 2/Life Charge x3, free on weapons/shields; fixed Pinning, Phase, Suppression Arrow allotment.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "small-shield"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Greater Mend",
+        "how": "gains",
+        "frequency": "2/Refresh Charge x10 (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Mend",
+        "change": "becomes 2/Life Charge x3 (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "The Archer's Mend (2nd level) is 1/Life Charge x5 (ex)."
+    },
+    {
+      "id": "e4",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Mend",
+        "change": "charge-x3"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Mend becomes 2/Life Charge x3 (ex); the Archer's Mend is 1/Life Charge x5 (ex)."
+    },
+    {
+      "id": "e11",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Mend",
+        "change": "double-uses"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Mend goes from 1/Life to 2/Life (together with Charge x3)."
+    },
+    {
+      "id": "e5",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Mend",
+        "change": "casting Mend on weapons or shields does not consume a use of Mend (a use must still remain)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E4",
+        "N1"
+      ]
+    },
+    {
+      "id": "e6",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "scope": "Archer Specialty Arrows",
+        "change": "other"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "The normal amount of Specialty Arrows for an Archer is replaced by the fixed allotment in L2-L4."
+    },
+    {
+      "id": "e7",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Pinning Arrow",
+        "how": "gains",
+        "frequency": "3 Arrows / Unlimited (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1",
+        "L2"
+      ]
+    },
+    {
+      "id": "e8",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Phase Arrow",
+        "how": "gains",
+        "frequency": "2 Arrows / Unlimited (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1",
+        "L3"
+      ]
+    },
+    {
+      "id": "e9",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Suppression Arrow",
+        "how": "gains",
+        "frequency": "2 Arrows / Unlimited (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1",
+        "L4"
+      ]
+    },
+    {
+      "id": "e10",
+      "kind": "class.look-the-part",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Pinning Arrow",
+        "how": "extra-use-of"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L5"
+      ],
+      "note": "Look the Part becomes a fourth Pinning Arrow (the Archer's Look The Part is normally a pick of Destruction, Poison or Pinning Arrow)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "needs-remaining-use",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Mend may only be cast on weapons or shields while a use of Mend remains, even though doing so does not consume it."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Greater Mend",
+      "relation": "grants",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Mend",
+      "relation": "modifies",
+      "evidence": [
+        "E3",
+        "E4",
+        "N1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Pinning Arrow",
+      "relation": "grants",
+      "evidence": [
+        "L2",
+        "L5"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Phase Arrow",
+      "relation": "grants",
+      "evidence": [
+        "L3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Suppression Arrow",
+      "relation": "grants",
+      "evidence": [
+        "L4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "specialty-arrows",
+      "relation": "modifies",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "look-the-part",
+      "relation": "modifies",
+      "evidence": [
+        "L5"
+      ],
+      "note": "Look the Part is changed into a fourth Pinning Arrow."
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E4",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E4",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment",
+    "resource",
+    "control",
+    "offense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "L1 replaces 'the normal amount of Specialty Arrows for an Archer' without naming what is lost. The Archer normally picks two of Destruction, Pinning and Poison Arrow at 1st, 3rd and 5th and gains Suppression Arrow (4th) and Phase Arrow (6th); read literally, Destruction and Poison Arrow are no longer available, but the text does not name them."
+  ]
+}

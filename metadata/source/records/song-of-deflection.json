@@ -1,0 +1,116 @@
+{
+  "slug": "song-of-deflection",
+  "summary": "While chanting, the bearer is unaffected by projectiles other than Magic Balls and their Engulfing effects; equipment can still be affected.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.unaffected",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "by": "projectiles-except-magic-balls"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "defense.negate-engulfing",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Only Engulfing effects from projectiles other than Magic Balls (for example Pinning Arrow)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Must follow all Chant rules; the Enchantment ends when the Chant stops."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E3",
+        "E4"
+      ],
+      "note": "Chant \"Song of Deflection\" or sing a song of their acrobatic prowess."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Pinning Arrow",
+      "relation": "protects-against",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Named as an Engulfing projectile effect that does not affect the bearer."
+    },
+    {
+      "target": "mechanic",
+      "name": "engulfing",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Magic Balls are not blocked."
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E3",
+        "E4"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "text": "The bearer's equipment can still be affected by projectiles and their Engulfing effects.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "N1 'Equipment can still be affected by the above' is read as the bearer's own equipment; the text does not say whose equipment."
+  ]
+}

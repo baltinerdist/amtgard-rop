@@ -1,0 +1,104 @@
+{
+  "slug": "rogue",
+  "summary": "Assassin archetype: regains a use of Coup de Grace when killing an enemy with a thrown weapon; may not wield Bows or Long weapons.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.restore-uses",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one",
+        "ability": "Coup de Grace"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-kill",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Only when the kill is made with a thrown weapon. Not described as a Kill Trigger.",
+      "conditions": [
+        "killed-with-thrown-weapon"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wield-bows"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not wield Bows."
+    },
+    {
+      "id": "e3",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wield-long-weapons"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not wield Long weapons."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Coup de Grace",
+      "relation": "modifies",
+      "evidence": [
+        "E1"
+      ],
+      "note": "A use is regained on a thrown-weapon kill."
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Thrown weapon (E1); Bows and Long weapons (L1)."
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "resource",
+    "offense",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

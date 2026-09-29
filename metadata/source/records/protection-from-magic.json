@@ -1,0 +1,87 @@
+{
+  "slug": "protection-from-magic",
+  "summary": "Bearer is unaffected by Magical abilities of every School; when the bearer dies they are Cursed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.unaffected",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "by": "magical-abilities"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Magical abilities from any School; the text does not limit this to harmful abilities."
+    },
+    {
+      "id": "e2",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "until-respawn"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Drawback: upon death the bearer is Cursed (Cursed persists after death and is removed on respawn)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Protection from Magic does not interact with the other Enchantments the bearer wears (it does not block or remove them).",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "anti-magic"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E1 read literally blocks beneficial Magical abilities too (healing, revival, other Magical Enchantments cast later); the text does not say 'hostile'.",
+    "N1 'does not interact with other Enchantments worn by the bearer' is read as: Enchantments already worn keep working and are not blocked; the text does not say whether new Magical Enchantments can be placed on the bearer."
+  ]
+}

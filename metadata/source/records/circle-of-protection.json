@@ -1,0 +1,256 @@
+{
+  "slug": "circle-of-protection",
+  "summary": "The caster and up to five willing players in Touch lose States and Ongoing Effects and become Insubstantial in place, safe from most Forced Movement.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "group",
+      "polarity": "benefit",
+      "params": {
+        "what": "all-states-and-effects"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Caster and up to five willing players within Touch range: all States and Ongoing Effects removed, then they become Insubstantial. Caster plus up to five willing players (max_targets counts the other players).",
+      "max_targets": 5
+    },
+    {
+      "id": "e2",
+      "kind": "state.apply",
+      "subject": "group",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "max_targets": 5,
+      "note": "Caster plus up to five willing players (max_targets counts the other players)."
+    },
+    {
+      "id": "e3",
+      "kind": "action.restrict",
+      "subject": "group",
+      "polarity": "harm",
+      "params": {
+        "what": "move-from-start"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "max_targets": 5,
+      "note": "Caster plus up to five willing players (max_targets counts the other players)."
+    },
+    {
+      "id": "e4",
+      "kind": "defense.unaffected",
+      "subject": "group",
+      "polarity": "benefit",
+      "params": {
+        "by": "blink"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "max_targets": 5,
+      "note": "Caster plus up to five willing players (max_targets counts the other players)."
+    },
+    {
+      "id": "e5",
+      "kind": "defense.unaffected",
+      "subject": "group",
+      "polarity": "benefit",
+      "params": {
+        "by": "forced-movement-except-banish"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "max_targets": 5,
+      "note": "Caster plus up to five willing players (max_targets counts the other players)."
+    },
+    {
+      "id": "e6",
+      "kind": "ability.cast-while-insubstantial",
+      "subject": "group",
+      "polarity": "benefit",
+      "params": {
+        "on": "same-casting-targets"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "max_targets": 5,
+      "evidence": [
+        "E2",
+        "E4"
+      ],
+      "note": "Any abilities, on players (and their carried equipment) made Insubstantial by the same casting, as though they were not Insubstantial. Caster plus up to five willing players (max_targets counts the other players)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-willing",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The other players must be willing."
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "limited-targets",
+      "evidence": [
+        "E1"
+      ],
+      "n": 5,
+      "note": "Caster plus up to five willing players within Touch range of the caster."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "E2",
+        "E5"
+      ],
+      "note": "Each target may end this Insubstantial State with the exit incantation for Insubstantial."
+    },
+    {
+      "kind": "caster-ends-for-all",
+      "evidence": [
+        "E6"
+      ],
+      "note": "If the caster exits with the incantation, it ends for all targets."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "E7"
+      ],
+      "note": "When a target's Insubstantial State ends, the Ongoing Effects of Circle of Protection no longer apply to them."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "affects-caster-and-target",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "N1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Blink",
+      "relation": "protects-against",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Banish",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Banish still affects the targets (the exception to Forced Movement immunity)."
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "protects-against",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Targets are unaffected by Forced Movement effects other than Banish."
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E5",
+        "E6"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E7"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Touch range of the caster."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "A player who is prevented from becoming Insubstantial is unaffected by Circle of Protection entirely.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "team"
+  ],
+  "beneficiary": "team",
+  "open_questions": [
+    "E1 removes all States and Ongoing Effects before applying Insubstantial; whether Enchantments count as Ongoing Effects here is not stated.",
+    "N1 implies a player prevented from Insubstantial also keeps their States/Ongoing Effects (unaffected entirely); encoded as a clarification only."
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "slug": "lightning-bolt",
+  "summary": "Magic Ball: wounds the hit location and Stops the player struck for 60 seconds; Weapon Destroying and Armor Breaking; Engulfing.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "weapon-destroying",
+        "on": "this-magic-ball"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "armor-breaking",
+        "on": "this-magic-ball"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "wound.inflict",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "location": "struck"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e4",
+      "kind": "state.apply",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "state": "stopped"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 60
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "engulfing",
+      "evidence": [
+        "E4"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "weapon-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "engulfing",
+      "relation": "mentions",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "offense",
+    "control",
+    "equipment"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

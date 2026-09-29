@@ -1,0 +1,122 @@
+{
+  "slug": "summoner",
+  "summary": "Druid archetype: purchased Enchantments give double the uses; may not purchase 20' or 50' Verbals or equipment beyond 2nd level.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "each Enchantment purchased",
+        "change": "double-uses"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Example: 1/Life Charge x3 becomes 2/Life Charge x3; 2/Life becomes 4/Life."
+    },
+    {
+      "id": "e2",
+      "kind": "economy.purchase-restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "Verbals with a range of 20' or 50'"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not purchase Verbals with a range of 20' or 50'."
+    },
+    {
+      "id": "e3",
+      "kind": "economy.purchase-restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "equipment beyond 2nd level"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Drawback: may not purchase equipment beyond 2nd level."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Ranges 20' and 50'."
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Worked example of doubling: 1/Life Charge x3 becomes 2/Life Charge x3, and 2/Life becomes 4/Life.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "class-modifier",
+    "resource",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

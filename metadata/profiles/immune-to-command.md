@@ -1,0 +1,91 @@
+---
+title: "Immune to Command"
+section: Ability Metadata
+rulebook_version: V8.08 "Spongy"
+generated_by: scripts/meta_build.py
+---
+
+# Immune to Command
+
+> Anti-Paladin, Barbarian and Paladin Trait: unaffected by Command School abilities; does not protect equipment or remove existing effects, and may still be targeted.
+
+| | |
+| --- | --- |
+| Type | Trait (trait) |
+| School | Command |
+| Range | - |
+| Incantation | none |
+| Materials | none |
+| Magical | no |
+| Roles | defense · for: self |
+| Capabilities | protects |
+| Rule text | rules/magic-states-effects/mechanics-and-definitions.md#immune |
+
+## Who has it
+
+| Class | Level | Cost | Max | Frequency | Uses | Per | Charge | (m)/(ex) | Range | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Anti-Paladin | 1st | - | - | - | - | - | - | - | - | - |
+| Barbarian | 1st | - | - | - | - | - | - | - | - | - |
+| Paladin | 1st | - | - | - | - | - | - | - | - | - |
+
+## What it does
+
+| # | Effect | On | For them | Details | From |
+| --- | --- | --- | --- | --- | --- |
+| e1 | **Immune to Command** | bearer | benefit | permanent; continuously while it is worn, chanted or in effect — The generic Immune rule 'a given School' is Command for this Trait. Covers the bearing player or object only (N2). | E1 |
+
+## Clarifications in the text
+
+- A Trait Immunity does not stop the player using their own class abilities (including ones of the same School). *(N1)*
+- Immunities do not extend beyond the player or object that has them unless noted. *(N2)*
+- Immunities do not extend beyond the player or object that has them unless noted (example: armor still destroyed by Fireball for Immunity to Flame). *(N3)*
+- If the player is Immune to an effect that would remove a State or Ongoing Effect, that State or Ongoing Effect is not removed (example: Immune to Sorcery cannot be Released from Frozen). *(N4, N5)*
+- Immune players may still be targeted by abilities of that School. *(N6)*
+- Immune players may still be targeted; their equipment is not protected (example given is Pyrotechnics against Immunity to Flame). *(N7)*
+- Becoming Immune to the source of an existing State or Ongoing Effect does not remove it (example: a player Stopped by Hold Person who casts Song of Determination stays Stopped). *(N8, N9)*
+
+## Names in the text
+
+- mechanic **immune**: mentions *(E1, N1, N2, N4, N6, N8)*
+- mechanic **traits**: mentions *(N1)*
+- mechanic **school**: mentions *(E1, N6, N5)*
+- mechanic **ongoing-effects**: mentions *(N4, N8)*
+- mechanic **armor**: mentions *(N3)*
+- ability **[Fireball](fireball.md)**: example *(N3)*
+- ability **[Release](release.md)**: example *(N5)*
+- ability **[Pyrotechnics](pyrotechnics.md)**: example *(N7)*
+- ability **[Hold Person](hold-person.md)**: example *(N9)*
+- ability **[Song of Determination](song-of-determination.md)**: example *(N9)*
+- state **frozen**: mentions *(N5)*
+- state **stopped**: mentions *(N9)*
+
+## Similar abilities
+
+| Relation | Ability | Differences |
+| --- | --- | --- |
+| overlap | [Song of Determination](song-of-determination.md) | Immune to Command: permanent vs while chanting; ends when only in Song of Determination: chant-stops; property only in Song of Determination: chant; delivery: trait vs enchantment; school: Command vs Protection; range: - vs Self |
+
+## Open questions
+
+- The rule text is the generic Immune mechanic; its examples name Flame and Sorcery, not Command.
+
+## Rule text, sentence by sentence
+
+Every sentence and the items that cite it.
+
+| Id | Sentence | Captured as |
+| --- | --- | --- |
+| E1 | The bearing player or object is unaffected by abilities from a given School. | effect e1 (Immune to Command); names immune; names school |
+| N1 | Immunity granted as a Trait does not prevent players from making use of their own class abilities. | names immune; names traits; clarification |
+| N2 | Unless otherwise noted, Immunities do not extend beyond the player or object that has them. | names immune; clarification |
+| N3 | Example: A player with Immunity to Flame can still have their armor destroyed by a Fireball. | names armor; names Fireball; clarification |
+| N4 | If a player is Immune to an effect which would remove a State or Ongoing Effect, the State/Ongoing Effect is not removed. | names immune; names ongoing-effects; clarification |
+| N5 | Example: A player who is Immune to Sorcery cannot be Released from Frozen, as they cannot be affected by Release, a Sorcery School ability. | names school; names Release; names frozen; clarification |
+| N6 | Players with Immunities may still be targeted by abilities of the given School. | names immune; names school; clarification |
+| N7 | Example: A player with Immunity to Flame can still be the target of Pyrotechnics which would still destroy their equipment (as Immunities do not extend to equipment unless noted). | names Pyrotechnics; clarification |
+| N8 | A target becoming Immune to the source of an Ongoing Effect or State while it is applied does not remove Ongoing Effects or States currently affecting the target. | names immune; names ongoing-effects; clarification |
+| N9 | Example: If a player who is Stopped by Hold Person casts Song of Determination on themselves, that player remains Stopped. | names Hold Person; names Song of Determination; names stopped; clarification |
+
+---
+*Generated by `scripts/meta_build.py` from `metadata/source/records/immune-to-command.json` and the V8.08 "Spongy" rules.*

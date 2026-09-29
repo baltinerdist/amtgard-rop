@@ -1,0 +1,178 @@
+{
+  "slug": "immune-to-death",
+  "summary": "Paladin Trait: unaffected by Death School abilities; does not protect equipment or remove existing effects, and may still be targeted.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Death"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The generic Immune rule 'a given School' is Death for this Trait."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1",
+        "N2",
+        "N4",
+        "N6",
+        "N8"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N6",
+        "N5"
+      ],
+      "note": "N5 names the Sorcery School."
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "N4",
+        "N8"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Fireball",
+      "relation": "example",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Release",
+      "relation": "example",
+      "evidence": [
+        "N5"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Pyrotechnics",
+      "relation": "example",
+      "evidence": [
+        "N7"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Hold Person",
+      "relation": "example",
+      "evidence": [
+        "N9"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Song of Determination",
+      "relation": "example",
+      "evidence": [
+        "N9"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "N5"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "N9"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "A Trait Immunity does not stop the player using their own class abilities.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "Immunities do not extend beyond the player or object that has them unless noted (equipment is not protected).",
+      "evidence": [
+        "N2",
+        "N3",
+        "N7"
+      ]
+    },
+    {
+      "text": "If the player is Immune to an effect that would remove a State or Ongoing Effect, that State or Ongoing Effect is not removed.",
+      "evidence": [
+        "N4",
+        "N5"
+      ]
+    },
+    {
+      "text": "Immune players may still be targeted by abilities of that School.",
+      "evidence": [
+        "N6",
+        "N7"
+      ]
+    },
+    {
+      "text": "Becoming Immune to the source of an existing State or Ongoing Effect does not remove it.",
+      "evidence": [
+        "N8",
+        "N9"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "The rule text is the generic Immune mechanic; examples name Flame and Sorcery, not Death."
+  ]
+}

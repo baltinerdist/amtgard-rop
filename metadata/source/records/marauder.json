@@ -1,0 +1,216 @@
+{
+  "slug": "marauder",
+  "summary": "Warrior archetype: gains Momentum Unlimited (Ambulant); Insult becomes 1/Life Charge x5; armor max 4pts; no Large shields; Ancestral Armor not chargeable.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Momentum",
+        "how": "gains",
+        "frequency": "Unlimited (ex)",
+        "meta": "Ambulant"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Insult",
+        "change": "becomes 1/Life Charge x5 (m) (Ambulant)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Warrior's Insult is normally 1/Life (m) (Ambulant) (rules/classes/warrior.md); this adds Charge x5."
+    },
+    {
+      "id": "e3",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Insult",
+        "change": "charge-x5"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Insult becomes 1/Life Charge x5 (m) (Ambulant)."
+    },
+    {
+      "id": "e4",
+      "kind": "armor.limit",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "points": 4,
+        "change": "set"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: maximum armor becomes 4pts (Warrior normally 6pts)."
+    },
+    {
+      "id": "e5",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wield-large-shields"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Drawback: may not wield Large shields."
+    },
+    {
+      "id": "e6",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Ancestral Armor",
+        "change": "is no longer chargeable"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L3"
+      ],
+      "note": "Drawback: Warrior's Ancestral Armor is normally (Self) 3/Refresh Charge x10 (ex) (Swift) (rules/classes/warrior.md)."
+    },
+    {
+      "id": "e7",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "Ancestral Armor",
+        "change": "other"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L3"
+      ],
+      "note": "Drawback: Ancestral Armor is no longer chargeable (loses its Charge)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Momentum",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Ambulant",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "The granted Momentum and the modified Insult are cast with Ambulant."
+    },
+    {
+      "target": "ability",
+      "name": "Insult",
+      "relation": "modifies",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Ancestral Armor",
+      "relation": "modifies",
+      "evidence": [
+        "L3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "L3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "modifies",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Class maximum armor limit set to 4pts."
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "L2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "resource",
+    "equipment",
+    "control"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

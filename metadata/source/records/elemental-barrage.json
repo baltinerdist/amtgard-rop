@@ -1,0 +1,122 @@
+{
+  "slug": "elemental-barrage",
+  "summary": "Caster may throw Magic Balls they carry by declaring the ball's name instead of incanting, until picking up more balls or casting new magic.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.declare-instead",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "what": "Magic Balls the caster is currently carrying: declare the ball's name immediately before throwing, in place of the incantation"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "picks-up-magic-balls",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "kind": "casts-new-magic",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Declare the name of the Magic Ball immediately before throwing it, in place of the incantation."
+    },
+    {
+      "kind": "declaration-not-incantation",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "kind": "works-while-suppressed",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Applies to the declared Magic Balls, not to casting Elemental Barrage itself."
+    },
+    {
+      "kind": "castable-while-moving",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Applies to the declared Magic Balls, not to casting Elemental Barrage itself."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "suppressed",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The declaration is not an incantation: not stopped by Suppressed, and may be used while moving, etc.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "offense",
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "'Currently carrying' could mean balls held at casting time only; balls picked up later end the effect anyway (L1)."
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "slug": "ancestral-armor",
+  "summary": "Ignores Magic Ball, projectile and melee hits on the bearer's armor while that location has points; the armor loses one point instead. Reusable.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.negate-hit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "from": "hits-on-worn-armor",
+        "except_effects": [
+          "phasing"
+        ]
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1",
+        "E3",
+        "N2"
+      ],
+      "conditions": [
+        "armor-has-points"
+      ],
+      "note": "Magic Ball, projectile weapon or melee weapon striking worn armor is ignored, even if the object would not otherwise affect the armor. Phasing equipment is not ignored (N2). Not expended after use."
+    },
+    {
+      "id": "e2",
+      "kind": "armor.damage",
+      "subject": "bearer-equipment",
+      "polarity": "harm",
+      "params": {
+        "points": 1
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "conditions": [
+        "armor-has-points"
+      ],
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "The armor loses one point of value in the location struck (the cost of each ignored hit)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "reusable",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Not expended after use; continues until removed with Dispel Magic or similar abilities."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Dispel Magic",
+      "relation": "countered-by",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Or similar abilities."
+    },
+    {
+      "target": "special-effect",
+      "name": "phasing",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Exception: Phasing equipment interacts with the armor as though Ancestral Armor were not present."
+    },
+    {
+      "target": "mechanic",
+      "name": "engulfing",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "ability-order",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Does not trigger if the armor has no points left in the location struck.",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "text": "Not expended after use; keeps protecting until removed by Dispel Magic or similar abilities.",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "text": "Engulfing effects that do not strike the armor, abilities that ignore armor entirely, and abilities entirely negated by Ability Order do not trigger it.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "Phasing equipment interacts with the bearer's armor as though Ancestral Armor were not present.",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

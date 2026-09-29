@@ -1,0 +1,87 @@
+{
+  "slug": "equipment-shield-medium",
+  "summary": "May wield up to a Medium shield, and may carry extras.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "medium-shield"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Up to a Medium shield."
+    },
+    {
+      "id": "e2",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "small-shield"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "'Up to a Medium shield' includes a Small shield."
+    },
+    {
+      "id": "e3",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "carry-extras"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Trait."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment",
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

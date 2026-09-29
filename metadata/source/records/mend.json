@@ -1,0 +1,90 @@
+{
+  "slug": "mend",
+  "summary": "By touch, repairs a destroyed or damaged item, or repairs one point of armor in one location.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.repair",
+      "subject": "target-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "one-item"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 1: a destroyed or damaged item is repaired."
+    },
+    {
+      "id": "e2",
+      "kind": "armor.repair",
+      "subject": "hit-location",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one-point-one-location"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 2: one point of armor in one location is repaired."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Repair an item or one point of armor."
+    },
+    {
+      "kind": "targets-equipment",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 1 targets an item."
+    },
+    {
+      "kind": "targets-player-affects-equipment",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 2 repairs a player's worn armor."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

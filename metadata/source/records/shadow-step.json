@@ -1,0 +1,78 @@
+{
+  "slug": "shadow-step",
+  "summary": "Caster becomes Insubstantial in place, even while moving, until they use the Insubstantial exit incantation.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "No duration is given; the State lasts until the caster exits it (N1) or it is removed. The text grants no movement, so the general Insubstantial rule (may not move from the starting location) applies."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "N1"
+      ],
+      "note": "By using the exit incantation for Insubstantial (\"I return to the physical world\" x2)."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "castable-while-moving",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Casting while moving is an explicit exception to the usual requirement to stand still while incanting.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "No duration or movement allowance is stated: the caster stays Insubstantial in place until they exit or the State is removed."
+  ]
+}

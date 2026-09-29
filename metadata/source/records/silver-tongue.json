@@ -1,0 +1,106 @@
+{
+  "slug": "silver-tongue",
+  "summary": "Bearer gains Swift 1/Refresh Charge x3 (m) without using purchased Swift, but may not use other sources of Swift while it is worn.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Swift",
+        "how": "gains",
+        "frequency": "1/Refresh Charge x3 (m)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Does not use up any purchased instances of Swift (N1)."
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "use-other-sources-of-ability"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Drawback: other sources of Swift (including purchased Swift) may not be utilized while Silver Tongue is worn."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "excludes-other-sources",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Other sources of Swift may not be utilized while Silver Tongue is worn."
+    }
+  ],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Swift",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ],
+      "note": "1/Refresh Charge x3 (m)."
+    },
+    {
+      "target": "ability",
+      "name": "Swift",
+      "relation": "excludes",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "note": "Other sources of Swift may not be used while worn; purchased instances are not used up."
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Silver Tongue does not use up any purchased instances of Swift.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "utility",
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

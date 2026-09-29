@@ -1,0 +1,136 @@
+{
+  "slug": "flame-blade",
+  "summary": "Bearer's wielded melee weapons are Armor Breaking and Shield Crushing; bearer and their wielded weapons are Immune to Flame.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "armor-breaking",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "special-effect.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "effect": "shield-crushing",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Flame"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e4",
+      "kind": "defense.immunity",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "school": "Flame"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The bearer's wielded weapons (all wielded weapons, not only melee) are also Immune to Flame."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "shield-crushing",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Immune to Flame",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Text states bearer and wielded weapons are Immune to Flame."
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The Flame Immunity extends to the bearer's wielded weapons, not only the bearer.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "offense",
+    "equipment",
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

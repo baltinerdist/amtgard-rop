@@ -1,0 +1,104 @@
+{
+  "slug": "heat-weapon",
+  "summary": "A targeted weapon within 20' cannot be wielded for 30 seconds, except by players Immune to Flame.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.disable",
+      "subject": "target-equipment",
+      "polarity": "harm",
+      "params": {
+        "what": "weapon"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "N1"
+      ],
+      "note": "Players who are Immune to Flame may continue to wield the weapon (E2)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-is-equipment",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "targets-equipment",
+      "evidence": [
+        "N1",
+        "N2"
+      ],
+      "note": "Only the weapon needs to be within range and visible."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Immune to Flame",
+      "relation": "countered-by",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Players Immune to Flame may still wield the heated weapon."
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Players who are Immune to Flame may keep wielding the weapon.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "The weapon, not its wielder, is the target; only the weapon needs to be in range and visible.",
+      "evidence": [
+        "N1",
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "equipment",
+    "control"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "E2 names players Immune to Flame; unclear whether other Flame protections (e.g. Resistance to Flame) also let the weapon be wielded."
+  ]
+}

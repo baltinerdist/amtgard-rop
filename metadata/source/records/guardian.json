@@ -1,0 +1,168 @@
+{
+  "slug": "guardian",
+  "summary": "Paladin archetype: gains Imbue (Touch) 1/Life and Martyr (Other) 2/Life Charge x3; one Imbue active at a time; loses Protection from Evil and Magic.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Imbue",
+        "how": "gains",
+        "frequency": "(Touch) 1/Life (m)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Martyr",
+        "how": "gains",
+        "frequency": "(Other) 2/Life Charge x3 (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Protection from Evil"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Protection from Evil."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Protection from Magic"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Protection from Magic."
+    },
+    {
+      "id": "e5",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Imbue",
+        "change": "only one instance of Imbue may be active at a time"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Limit on the granted Imbue."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "one-active-per-caster",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Only one instance of Imbue may be active at a time."
+    }
+  ],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Imbue",
+      "relation": "grants",
+      "evidence": [
+        "E1",
+        "L2"
+      ],
+      "note": "Granted (E1); only one instance may be active at a time (L2)."
+    },
+    {
+      "target": "ability",
+      "name": "Martyr",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Protection from Evil",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Protection from Magic",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment",
+    "defense",
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

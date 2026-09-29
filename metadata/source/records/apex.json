@@ -1,0 +1,156 @@
+{
+  "slug": "apex",
+  "summary": "Scout archetype: gains Mend 1/Life and Sleight of Mind (Self) 1/Life; loses Evolution, Hold Person and Pinning Arrow.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Mend",
+        "how": "gains",
+        "frequency": "1/Life (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Sleight of Mind",
+        "how": "gains",
+        "frequency": "(Self) 1/Life (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Evolution"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Evolution."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Hold Person"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Hold Person."
+    },
+    {
+      "id": "e5",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Pinning Arrow"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Pinning Arrow."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Mend",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Sleight of Mind",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Evolution",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Hold Person",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Pinning Arrow",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment",
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

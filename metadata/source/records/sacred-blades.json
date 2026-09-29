@@ -1,0 +1,129 @@
+{
+  "slug": "sacred-blades",
+  "summary": "Bearer's wielded weapons are Hardened, and their melee weapons (and Special Effects they deliver) ignore Magic Armor and wound-preventing Resistances.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Harden",
+        "how": "as-per"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Bearer's wielded weapons are affected as per Harden."
+    },
+    {
+      "id": "e2",
+      "kind": "weapon.ignore-protections",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "against": "magic-armor"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Bearer's wielded melee weapons and any Special Effects delivered by them ignore Magic Armor."
+    },
+    {
+      "id": "e3",
+      "kind": "weapon.ignore-protections",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "against": "wound-resistances"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Bearer's wielded melee weapons and any Special Effects delivered by them ignore Resistances that prevent wounds."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-magic-armor",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Wielded melee weapons and any Special Effects they deliver ignore Magic Armor."
+    },
+    {
+      "kind": "bypass-resistances",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Only Resistances that prevent wounds; applies to wielded melee weapons and the Special Effects they deliver."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Harden",
+      "relation": "as-per",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The bypass covers any Special Effects delivered by the bearer's wielded melee weapons, not only the wounds they cause.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "offense",
+    "equipment",
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E1 applies Harden to all 'wielded weapons' while E2 limits the bypass to melee weapons; the text does not say whether thrown weapons are Hardened too (plainer reading: yes)."
+  ]
+}

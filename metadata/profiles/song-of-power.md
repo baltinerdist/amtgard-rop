@@ -1,0 +1,89 @@
+---
+title: "Song of Power"
+section: Ability Metadata
+rulebook_version: V8.08 "Spongy"
+generated_by: scripts/meta_build.py
+---
+
+# Song of Power
+
+> While chanting, friendly players within 20' halve their Charge Incantation repetitions (rounded down, minimum 1); the bearer is Stopped.
+
+| | |
+| --- | --- |
+| Type | Enchantment (enchantment) |
+| School | Protection |
+| Range | Self |
+| Incantation | "I sing to inspire my comrades-in-arms" |
+| Materials | none |
+| Magical | yes, (m) for at least one class |
+| Roles | team, resource · for: team |
+| Capabilities | changes-frequency, has-drawback, more-uses |
+| Rule text | [rules/magic-and-abilities/song-of-power.md](../../rules/magic-and-abilities/song-of-power.md) · [interoperability](../../interoperability/abilities/song-of-power.md) |
+
+## Who has it
+
+| Class | Level | Cost | Max | Frequency | Uses | Per | Charge | (m)/(ex) | Range | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Bard | 4th | 1 | 1 | Unlimited | - | unlimited | - | (m) | Self | - |
+
+## What it does
+
+| # | Effect | On | For them | Details | From |
+| --- | --- | --- | --- | --- | --- |
+| e1 | **Speeds up Charging** | friendly-players | benefit | factor Charge Incantation repetitions divided by 2, rounded down, to a minimum of 1; while chanting; continuously while it is worn, chanted or in effect — Friendly players within 20' of the bearer. | E1 |
+| e2 | **Stops** | bearer | harm | while chanting; continuously while it is worn, chanted or in effect — Drawback on the bearer. | E2 |
+
+**Drawbacks:** Stops (bearer)
+
+## Restrictions
+
+- **players-benefit-once**: a player benefits from only one instance at a time — Players can only benefit from one instance of Song of Power at a time. *(L1)*
+
+## How it ends early
+
+- **chant-stops**: ends if the Chant stops — Must follow all Chant rules; the Enchantment ends when the Chant stops. *(E4)*
+- **moves-from-start**: ends if the bearer moves from their starting location — Song of Power ends if the bearer moves from their starting location. *(L2)*
+
+## Properties
+
+- **chant**: requires a Chant — Chant "Song of Power" or sing an inspiring song. *(E3, E4)*
+
+## Clarifications in the text
+
+- Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song). *(E4)*
+
+## Names in the text
+
+- state **stopped**: mentions *(E2)*
+- mechanic **charge**: mentions *(E1)*
+- mechanic **incantation**: mentions *(E1)*
+- mechanic **chant**: mentions *(E3, E4)*
+
+## Similar abilities
+
+| Relation | Ability | Differences |
+| --- | --- | --- |
+| overlap | [Entangle](entangle.md) | only Song of Power: Speeds up Charging (friendly-players, while chanting); only Song of Power: Stops (bearer, while chanting); only Entangle: Stops (struck-player, 60 s); restriction only in Song of Power: players-benefit-once; ends when only in Song of Power: chant-stops, moves-from-start; property only in Song of Power: chant; property only in Entangle: engulfing; delivery: enchantment vs magic-ball |
+| overlap | [Hold Person](hold-person.md) | only Song of Power: Speeds up Charging (friendly-players, while chanting); only Song of Power: Stops (bearer, while chanting); only Hold Person: Stops (target, 30 s); restriction only in Song of Power: players-benefit-once; ends when only in Song of Power: chant-stops, moves-from-start; property only in Song of Power: chant; delivery: enchantment vs verbal; school: Protection vs Command |
+| overlap | [Pinning Arrow](pinning-arrow.md) | only Song of Power: Speeds up Charging (friendly-players, while chanting); only Song of Power: Stops (bearer, while chanting); only Pinning Arrow: Stops (struck-player, 30 s); restriction only in Song of Power: players-benefit-once; ends when only in Song of Power: chant-stops, moves-from-start; property only in Song of Power: chant; property only in Pinning Arrow: engulfing; delivery: enchantment vs specialty-arrow |
+
+## Open questions
+
+- E1 'friendly players within 20' of the bearer': the text does not say whether the bearer counts as one of them.
+
+## Rule text, sentence by sentence
+
+Every sentence and the items that cite it.
+
+| Id | Sentence | Captured as |
+| --- | --- | --- |
+| E1 | Friendly players within 20' of the bearer have their Charge Incantation repetitions divided by 2, rounded down, to a minimum of 1. | effect e1 (Speeds up Charging); names charge; names incantation |
+| E2 | Bearer is Stopped. | effect e2 (Stops); names stopped |
+| E3 | Bearer must Chant "Song of Power" or sing an inspiring song. | property chant; names chant |
+| E4 | Singing in place of the normal Chant is still a Chant and must follow all Chant rules. | ends when chant-stops; property chant; names chant; clarification |
+| L1 | Players can only benefit from one instance of Song of Power at a time. | restriction players-benefit-once |
+| L2 | Song of Power ends if the bearer moves from their starting location. | ends when moves-from-start |
+
+---
+*Generated by `scripts/meta_build.py` from `metadata/source/records/song-of-power.json` and the V8.08 "Spongy" rules.*

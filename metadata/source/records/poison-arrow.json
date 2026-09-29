@@ -1,0 +1,51 @@
+{
+  "slug": "poison-arrow",
+  "summary": "Specialty Arrow with Wounds Kill: a player it wounds dies.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "wounds-kill",
+        "on": "this-arrow"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "wounds-kill",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "specialty-arrows",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "offense"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

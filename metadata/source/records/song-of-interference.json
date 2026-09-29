@@ -1,0 +1,78 @@
+{
+  "slug": "song-of-interference",
+  "summary": "While chanting, works as Enlightened Soul: the bearer is unaffected by Verbal Magical abilities used from beyond Touch.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Enlightened Soul",
+        "how": "as-per"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Enlightened Soul: bearer is unaffected by Verbal Magical abilities used at a Range greater than Touch, beneficial and harmful alike."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Must follow all Chant rules; the Enchantment ends when the Chant stops."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "Chant \"Song of Interference\" or sing a song about defeating/resisting the forces of magic."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Enlightened Soul",
+      "relation": "as-per",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "anti-magic"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

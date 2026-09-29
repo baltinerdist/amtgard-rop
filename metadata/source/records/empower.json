@@ -1,0 +1,80 @@
+{
+  "slug": "empower",
+  "summary": "Another player regains one use of an expended per-life ability, up to its maximum; not Empower, Confidence or Restoration.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.restore-uses",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "One use of any per-life ability the target has expended; cannot exceed the ability's maximum uses (N1)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "not-on-certain-abilities",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Does not function on Empower, Confidence, or Restoration."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Empower",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Cannot be used to regain Empower."
+    },
+    {
+      "target": "ability",
+      "name": "Confidence",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Cannot be used to regain Confidence."
+    },
+    {
+      "target": "ability",
+      "name": "Restoration",
+      "relation": "excludes",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Cannot be used to regain Restoration."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Does not allow a player to have more than their maximum uses of an ability.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E1 does not say who chooses which expended per-life ability regains a use (caster or target)."
+  ]
+}

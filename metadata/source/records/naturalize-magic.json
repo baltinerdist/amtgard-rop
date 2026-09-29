@@ -1,0 +1,114 @@
+{
+  "slug": "naturalize-magic",
+  "summary": "Self Enchantment with three strips: bearer may cast Dispel Magic (m) by incanting and removing a strip; removed with the last strip.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.cast-via-strips",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Dispel Magic"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Cast as (m) by incanting \"<Player> thou art dispelled\" and removing an enchantment strip. Three red strips."
+    },
+    {
+      "id": "e2",
+      "kind": "enchantment.spend-strip",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "n": 1
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-strip",
+      "evidence": [
+        "E1"
+      ],
+      "note": "One strip removed per Dispel Magic cast."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "last-strip",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Enchantment is removed when the last strip is removed."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "uses-strips",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Three red strips."
+    },
+    {
+      "kind": "materials-required",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Three red strips; one removed per Dispel Magic."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Dispel Magic",
+      "relation": "casts-via-strips",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Cast as Magical (m)."
+    },
+    {
+      "target": "mechanic",
+      "name": "strips",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Incantation \"<Player> thou art dispelled\" replaces Dispel Magic's own."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "anti-magic"
+  ],
+  "beneficiary": "any",
+  "open_questions": [
+    "E1 does not state the range of the Dispel Magic cast via strips; presumably Dispel Magic's own 20'."
+  ]
+}

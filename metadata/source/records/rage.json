@@ -1,0 +1,145 @@
+{
+  "slug": "rage",
+  "summary": "For seven seconds, counted aloud, caster is unaffected by Verbals and their melee weapons are Shield Crushing and Armor Breaking.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.unaffected",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "by": "verbal-abilities"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 7
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "note": "Seven seconds, counted aloud; ends early on failure to count or starting an Incantation."
+    },
+    {
+      "id": "e2",
+      "kind": "special-effect.grant",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "effect": "shield-crushing",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 7
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "note": "Caster's wielded melee weapons."
+    },
+    {
+      "id": "e3",
+      "kind": "special-effect.grant",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "effect": "armor-breaking",
+        "on": "bearer-melee-weapons"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 7
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "note": "Caster's wielded melee weapons."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "fails-to-count",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Failure to count ends the effect."
+    },
+    {
+      "kind": "begins-incantation",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Starting an Incantation ends the effect."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "count-aloud",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Caster counts the seven seconds out loud, audible to 50'."
+    }
+  ],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "shield-crushing",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "protects-against",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "offense",
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

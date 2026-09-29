@@ -1,0 +1,119 @@
+{
+  "slug": "discordia",
+  "summary": "Self Enchantment with five strips: bearer may cast Break Concentration (m) by incanting and removing a strip; removed with the last strip.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.cast-via-strips",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Break Concentration"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Cast as (m) by incanting \"<Player> thou art suppressed\" and removing an enchantment strip. Five red strips."
+    },
+    {
+      "id": "e2",
+      "kind": "enchantment.spend-strip",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "n": 1
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-strip",
+      "evidence": [
+        "E1"
+      ],
+      "note": "One strip removed per Break Concentration cast."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "last-strip",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "kind": "uses-strips",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Five red strips."
+    },
+    {
+      "kind": "materials-required",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Five red strips; one is removed per cast."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Break Concentration",
+      "relation": "casts-via-strips",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Cast as Magical (m)."
+    },
+    {
+      "target": "state",
+      "name": "suppressed",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Named in the incantation; Break Concentration Suppresses its target."
+    },
+    {
+      "target": "mechanic",
+      "name": "strips",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "control",
+    "anti-magic"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

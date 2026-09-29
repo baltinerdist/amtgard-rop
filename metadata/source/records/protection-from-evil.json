@@ -1,0 +1,91 @@
+{
+  "slug": "protection-from-evil",
+  "summary": "Bearer is Immune to the Death School; Persistent and stays active while the bearer is dead; one active per caster.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Death"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "one-active-per-caster",
+      "evidence": [
+        "L1"
+      ],
+      "note": "The caster may only have one instance of Protection from Evil active at a time."
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "persistent",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Returns with the bearer after respawn."
+    },
+    {
+      "kind": "active-while-dead",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Unlike normal Enchantments, it keeps working while the bearer is dead."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Death School."
+    },
+    {
+      "target": "mechanic",
+      "name": "persistent",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The Persistent rule for Enchantments, not the Meta-Magic."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}
