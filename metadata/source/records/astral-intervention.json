@@ -1,0 +1,100 @@
+{
+ "slug": "astral-intervention",
+ "summary": "A player within 20' (or the caster) becomes Insubstantial for 30 seconds; if self-cast, the caster may exit at any time.",
+ "effects": [
+  {
+   "id": "e1",
+   "kind": "state.apply",
+   "subject": "target",
+   "polarity": "depends",
+   "params": {
+    "state": "insubstantial"
+   },
+   "duration": {
+    "type": "timed",
+    "seconds": 30
+   },
+   "timing": "on-cast",
+   "evidence": [
+    "E1"
+   ],
+   "note": "When cast on another player: Insubstantial for 30 seconds with no early exit. May also be used to protect an ally.",
+   "conditions": [
+    "cast-on-other"
+   ]
+  },
+  {
+   "id": "e2",
+   "kind": "state.apply",
+   "subject": "caster",
+   "polarity": "benefit",
+   "params": {
+    "state": "insubstantial"
+   },
+   "duration": {
+    "type": "timed",
+    "seconds": 30
+   },
+   "timing": "on-cast",
+   "conditions": [
+    "cast-on-self"
+   ],
+   "evidence": [
+    "E1",
+    "N1"
+   ],
+   "note": "When cast on self; may end it at any time with the Insubstantial exit incantation."
+  }
+ ],
+ "requirements": [],
+ "restrictions": [],
+ "termination": [
+  {
+   "kind": "exit-at-will",
+   "evidence": [
+    "N1"
+   ],
+   "note": "Only if cast on self: the caster may end the Insubstantial State at any time with the exit incantation for Insubstantial.",
+   "conditions": [
+    "cast-on-self"
+   ]
+  }
+ ],
+ "properties": [],
+ "references": [
+  {
+   "target": "state",
+   "name": "insubstantial",
+   "relation": "mentions",
+   "evidence": [
+    "E1",
+    "N1"
+   ]
+  },
+  {
+   "target": "mechanic",
+   "name": "incantation",
+   "relation": "mentions",
+   "evidence": [
+    "N1"
+   ],
+   "note": "The exit incantation for Insubstantial."
+  }
+ ],
+ "clarifications": [
+  {
+   "text": "When cast on self, the caster may end the Insubstantial State early using the Insubstantial exit incantation.",
+   "evidence": [
+    "N1"
+   ]
+  }
+ ],
+ "roles": [
+  "control",
+  "defense"
+ ],
+ "beneficiary": "any",
+ "open_questions": [
+  "N1 only grants early exit when self-cast; a target other than the caster apparently may not exit early even if willing (Insubstantial's general exit rule needs them to have caused it)."
+ ]
+}

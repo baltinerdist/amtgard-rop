@@ -1,0 +1,291 @@
+{
+  "slug": "hunter",
+  "summary": "Scout archetype: Great weapons and Javelins; Hold Person 1/Life Charge x3 or Pinning Arrow 2 Arrows/Unlimited (whichever taken at 4th); no shields; loses Evolution, Release.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "great-weapon"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "equipment.permit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "javelins"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Hold Person",
+        "change": "becomes 1/Life Charge x3 (m)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2",
+        "E3",
+        "N1"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "note": "Option 1; only if Hold Person was chosen at level 4. Scout's Hold Person is normally 1/Life (m)."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Pinning Arrow",
+        "change": "becomes 2 Arrows / Unlimited (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2",
+        "E4",
+        "N1"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2; only if Pinning Arrow was chosen at level 4. Scout's Pinning Arrow is normally 1 Arrow / Unlimited (ex)."
+    },
+    {
+      "id": "e5",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wield-shields"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not wield shields."
+    },
+    {
+      "id": "e6",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Evolution"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Drawback: loses all instances of Evolution."
+    },
+    {
+      "id": "e7",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Release"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Drawback: loses all instances of Release."
+    },
+    {
+      "id": "e8",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Hold Person",
+        "change": "charge-x3"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "evidence": [
+        "E2",
+        "E3",
+        "N1"
+      ],
+      "note": "Option 1: Hold Person becomes 1/Life Charge x3 (m); only if Hold Person was chosen at level 4."
+    },
+    {
+      "id": "e9",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Pinning Arrow",
+        "change": "double-uses"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E2",
+        "E4",
+        "N1"
+      ],
+      "note": "Option 2: Pinning Arrow becomes 2 Arrows / Unlimited (ex) (Scout's 4th-level Pinning Arrow is 1 Arrow / Unlimited); only if Pinning Arrow was chosen at level 4."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "chose-ability-at-level",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The benefit of an option applies only if that ability (Hold Person or Pinning Arrow) was chosen at level 4."
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "only-one-option",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Pick one of the two frequency upgrades."
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Choose Hold Person or Pinning Arrow upgrade."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Hold Person",
+      "relation": "modifies",
+      "evidence": [
+        "E3",
+        "N1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Pinning Arrow",
+      "relation": "modifies",
+      "evidence": [
+        "E4",
+        "N1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Evolution",
+      "relation": "removes",
+      "evidence": [
+        "L2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Release",
+      "relation": "removes",
+      "evidence": [
+        "L2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment",
+    "resource",
+    "control"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

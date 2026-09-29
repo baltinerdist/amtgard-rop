@@ -1,0 +1,156 @@
+{
+  "slug": "vampirism",
+  "summary": "Bearer gains Adrenaline Unlimited (ex), usable through Cursed, and Immunity to Death, but is Cursed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Adrenaline",
+        "how": "gains",
+        "frequency": "Unlimited (ex)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Death"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Drawback on the bearer."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Adrenaline",
+        "change": "the bearer's Adrenaline works through their Cursed State"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-cursed",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Applies to the bearer's Adrenaline ability, which works despite the bearer being Cursed."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Adrenaline",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Adrenaline",
+      "relation": "modifies",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Works through the bearer's Cursed State."
+    },
+    {
+      "target": "ability",
+      "name": "Immune to Death",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Text states the bearer is Immune to Death (same effect as the class Trait of that name)."
+    },
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Death School."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The Cursed State from Vampirism does not stop the bearer's Adrenaline ability from working.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "healing",
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E2 says 'Bearer's Adrenaline ability' generally; unclear whether it covers only the granted Adrenaline or also an Adrenaline the bearer has from another source. Encoded as applying to the bearer's Adrenaline."
+  ]
+}

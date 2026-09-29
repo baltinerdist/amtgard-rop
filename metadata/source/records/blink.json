@@ -1,0 +1,145 @@
+{
+  "slug": "blink",
+  "summary": "Caster becomes Insubstantial and may move within 50' of their start; cannot end it within 10' of a living enemy; fails if Stopped.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "move.free",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "feet": 50
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "note": "While Insubstantial in this way, may move as they wish within 50' of their starting point; ends with the Insubstantial State (N1)."
+    },
+    {
+      "id": "e3",
+      "kind": "action.restrict",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "what": "exit-early"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: only while within 10' of a living enemy, the caster may not end the Insubstantial State."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "caster-not-stopped",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Blink fails if the caster is Stopped."
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "no-exit-near-enemy",
+      "n": 10,
+      "evidence": [
+        "L1"
+      ],
+      "note": "Caster may not end the Insubstantial State within 10' of a living enemy."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Caster may end the Insubstantial State at any time with the Insubstantial exit incantation, but not within 10' of a living enemy (L1)."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If the Insubstantial State is ended, the movement allowance also ends."
+    }
+  ],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "L1",
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Blink fails if the caster is Stopped."
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Caster may not end the Insubstantial State while within 10' of a living enemy.",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "text": "Ending the Insubstantial State ends the rest of the effect too.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "mobility"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

@@ -1,0 +1,358 @@
+{
+  "slug": "gift-of-air",
+  "summary": "Ignores a weapon or arrow hit on the bearer, who becomes Insubstantial in place or returning to base; bearer may not wield weapons or Shields.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.negate-hit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "from": "weapons-and-arrows",
+        "except_effects": [
+          "siege",
+          "armor-breaking",
+          "armor-destroying",
+          "shield-crushing",
+          "shield-destroying"
+        ]
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1",
+        "E2",
+        "E7"
+      ],
+      "note": "The effects of any weapon or arrow that just struck the bearer are ignored. Melee weapons with Siege, Armor Breaking, Armor Destroying, Shield Crushing or Shield Destroying affect the bearer as normal and do not trigger it (E7). Worn armor is still affected as normal (E2)."
+    },
+    {
+      "id": "e2",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E1",
+        "E3",
+        "E4"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "note": "Option 1: Insubstantial in place; may exit at any time with the Insubstantial exit incantation."
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E1",
+        "E3",
+        "E5",
+        "E6"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2: Insubstantial while returning to base; may not exit early (E5); must exit immediately on reaching base (E6)."
+    },
+    {
+      "id": "e4",
+      "kind": "move.to-base",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E3",
+        "E5"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2 (chosen by the bearer): must return to their base as a Forced Movement effect."
+    },
+    {
+      "id": "e7",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "exit-early"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-choice",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E5"
+      ],
+      "note": "Option 2: may not exit Insubstantial early. Contradicted by N2 (may end at any time); see open questions."
+    },
+    {
+      "id": "e5",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wield-weapons"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: bearer may not wield weapons."
+    },
+    {
+      "id": "e6",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wield-shields"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: bearer may not wield Shields."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "no-exit-early",
+      "evidence": [
+        "E5"
+      ],
+      "note": "Option 2 only (return to base). N2 says the bearer may end this Insubstantial State at any time; see open questions."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "E4",
+        "N2"
+      ],
+      "note": "Option 1 (E4); N2 says the bearer may end this Insubstantial State at any time with the Insubstantial exit incantation, which conflicts with E5 for option 2."
+    },
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E6"
+      ],
+      "note": "Option 2: must exit Insubstantial immediately on reaching base."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If the Insubstantial State is ended, the player no longer has to continue returning to base."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Declares \"Gift of Air\" when it activates."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Immediately after activating, bearer chooses option 1 (in place) or option 2 (return to base)."
+    },
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "E5"
+      ],
+      "note": "The return to base in option 2 is a Forced Movement effect."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E4",
+        "E5",
+        "E6",
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "siege",
+      "relation": "mentions",
+      "evidence": [
+        "E7"
+      ],
+      "note": "Melee weapons with it affect the bearer as normal and do not trigger Gift of Air (bypasses it)."
+    },
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "mentions",
+      "evidence": [
+        "E7"
+      ],
+      "note": "Melee weapons with it bypass Gift of Air."
+    },
+    {
+      "target": "special-effect",
+      "name": "armor-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E7"
+      ],
+      "note": "Melee weapons with it bypass Gift of Air."
+    },
+    {
+      "target": "special-effect",
+      "name": "shield-crushing",
+      "relation": "mentions",
+      "evidence": [
+        "E7"
+      ],
+      "note": "Melee weapons with it bypass Gift of Air."
+    },
+    {
+      "target": "special-effect",
+      "name": "shield-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E7"
+      ],
+      "note": "Melee weapons with it bypass Gift of Air."
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "E5",
+        "E6",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "E5"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E4",
+        "N2"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E7",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Armor worn by the bearer is still affected by the hit as normal, in addition to triggering Gift of Air.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "Melee weapons with Siege, Armor Breaking, Armor Destroying, Shield Crushing or Shield Destroying affect the bearer normally and do not trigger Gift of Air.",
+      "evidence": [
+        "E7"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "mobility",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "The text never says whether Gift of Air is removed (expended) after it activates; the negation is recorded as an instant effect but the Enchantment's end is unstated.",
+    "Contradiction: E5 says option 2 may not exit early, but N2 says the bearer may end this Insubstantial State at any time. Both encoded (restriction no-exit-early for option 2, termination exit-at-will citing N2).",
+    "E7 limits the exception to melee weapons; arrows or thrown weapons carrying those Special Effects appear to still trigger Gift of Air."
+  ]
+}

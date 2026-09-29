@@ -1,0 +1,106 @@
+{
+  "slug": "insult",
+  "summary": "For 30 seconds or until either dies, a target within 20' may attack or cast Magic only at the caster, unless others attack them.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "action.restrict",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "attack-anyone-but-caster"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "May attack only the caster or the caster's carried equipment. Per E2, anyone other than the caster who attacks the target or casts Magical abilities on the target or their carried equipment may also be attacked, at the target's choice."
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "cast-at-anyone-but-caster"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Magical abilities only; may cast only at the caster or their carried equipment. Charging and throwing Magic Balls at the caster remain allowed (N1)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "either-dies",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Ends if the caster or the target dies."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Once attacked or cast on by someone other than the caster, the target may choose to attack that offending party as well."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The target may still charge (N1)."
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "If someone other than the caster attacks the target or casts Magical abilities on them or their carried equipment, the target may choose to attack that offending party as well.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "The target may still charge and throw Magic Balls at the caster.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "control"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "E2 lets the target 'attack' the offending party; it does not say whether the target may also cast Magical abilities at them. Encoded literally (attack only).",
+    "N1 'charge' may mean the Charge incantation or physically charging at the caster; referenced the charge mechanic.",
+    "E1 restricts only Magical abilities; Extraordinary abilities cast at others are not restricted, literally."
+  ]
+}

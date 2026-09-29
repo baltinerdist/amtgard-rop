@@ -1,0 +1,138 @@
+{
+  "slug": "martyr",
+  "summary": "Takes a single State off a willing player by touch; the caster then suffers that State for 10 seconds. Not castable while Cursed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "what": "one-state-or-effect"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "A single State only (the text does not cover Ongoing Effects). The text does not say who chooses the State."
+    },
+    {
+      "id": "e2",
+      "kind": "state.transfer",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "timed",
+        "seconds": 10
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2",
+        "L2"
+      ],
+      "note": "Drawback: the caster gains the removed State with a new duration of 10 seconds. If that State is Insubstantial the caster may not remove themselves from it (L2)."
+    },
+    {
+      "id": "e3",
+      "kind": "action.restrict",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "what": "exit-early"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 10
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Drawback: only when the transferred State is Insubstantial, the caster may not remove themselves from it."
+    },
+    {
+      "id": "e4",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "state": "insubstantial"
+      },
+      "evidence": [
+        "E2",
+        "L2"
+      ],
+      "note": "Only when the State taken on is Insubstantial; the caster may not end it early (L2).",
+      "duration": {
+        "type": "timed",
+        "seconds": 10
+      },
+      "timing": "on-cast"
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-willing",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "caster-not-cursed",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "no-exit-early",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Caster may not remove themselves from Insubstantial States gained through Martyr."
+    }
+  ],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Caster may not cast Martyr while Cursed."
+    },
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Caster may not exit an Insubstantial State gained through Martyr."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The caster may not remove themselves from an Insubstantial State gained through Martyr (it lasts its 10 seconds).",
+      "evidence": [
+        "L2"
+      ]
+    }
+  ],
+  "roles": [
+    "anti-magic",
+    "utility"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E1 does not say who chooses which State is removed when the target has several; presumably the caster."
+  ]
+}

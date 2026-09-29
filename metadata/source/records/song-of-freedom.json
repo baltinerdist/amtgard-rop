@@ -1,0 +1,121 @@
+{
+  "slug": "song-of-freedom",
+  "summary": "While chanting, the bearer cannot be made Stopped, Frozen or Insubstantial, except by themselves or their own other Enchantments.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.prevent",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "states": [
+          "stopped",
+          "frozen",
+          "insubstantial"
+        ]
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Does not prevent these States when caused by the bearer or by other Enchantments the bearer carries."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "not-against-own-effects",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Stopped, Frozen or Insubstantial caused by the bearer or by other Enchantments the bearer carries are not prevented."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Must follow all Chant rules; the Enchantment ends when the Chant stops."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "Chant \"Song of Freedom\" or sing a song of roving or rambling."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "States from the bearer's other Enchantments are not prevented."
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "text": "Stopped, Frozen or Insubstantial caused by the bearer themselves or by other Enchantments they carry still apply.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E1 says 'cannot receive': read as prevention of new States only; the text does not say whether a State already held when the song starts is removed."
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "slug": "raider",
+  "summary": "Barbarian archetype: gains Bear Strength (Self) 1/Life; Look the Part becomes an extra use of Brutal Strike; loses all Rage.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Bear Strength",
+        "how": "gains",
+        "frequency": "(Self) 1/Life (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "class.look-the-part",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Brutal Strike",
+        "how": "extra-use-of"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The class Look the Part bonus becomes an additional use of Brutal Strike."
+    },
+    {
+      "id": "e3",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Brutal Strike",
+        "change": "gains an additional use, in place of Look the Part"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e4",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Brutal Strike",
+        "change": "other"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "One additional use of Brutal Strike (from Look the Part)."
+    },
+    {
+      "id": "e5",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Rage"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Loses all instances of Rage."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Bear Strength",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Brutal Strike",
+      "relation": "modifies",
+      "evidence": [
+        "E2"
+      ],
+      "note": "An additional use, in place of Look the Part."
+    },
+    {
+      "target": "ability",
+      "name": "Rage",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "look-the-part",
+      "relation": "modifies",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Look the Part is changed into an additional use of Brutal Strike."
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "equipment",
+    "control",
+    "debuff"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

@@ -1,0 +1,101 @@
+---
+title: "Terror"
+section: Ability Metadata
+rulebook_version: V8.08 "Spongy"
+generated_by: scripts/meta_build.py
+---
+
+# Terror
+
+> For 30 seconds a target within 20' may not attack or cast Magical abilities at the caster or their equipment and must stay 50' away.
+
+| | |
+| --- | --- |
+| Type | Verbal (verbal) |
+| School | Death |
+| Range | 20' |
+| Incantation | "Death makes thee terrified" x3 |
+| Materials | none |
+| Magical | yes, (m) for at least one class |
+| Roles | control, defense · for: enemy |
+| Capabilities | moves-others, restricts-others |
+| Rule text | [rules/magic-and-abilities/terror.md](../../rules/magic-and-abilities/terror.md) · [interoperability](../../interoperability/abilities/terror.md) |
+
+## Who has it
+
+| Class | Level | Cost | Max | Frequency | Uses | Per | Charge | (m)/(ex) | Range | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Anti-Paladin | 5th | - | - | 1/Life | 1 | life | - | (m) | 20' | - |
+| Bard | 4th | 1 | - | 1/Refresh | 1 | refresh | - | (m) | 20' | - |
+| Anti-Paladin | 1st | - | - | - | - | - | - | - | - | Look The Part |
+
+## What it does
+
+| # | Effect | On | For them | Details | From |
+| --- | --- | --- | --- | --- | --- |
+| e1 | **May not attack caster** | target | harm | what attack-caster; 30 s — Includes the caster's carried equipment. | E1, E3 |
+| e2 | **May not cast at caster** | target | harm | what cast-at-caster; 30 s — Magical abilities only; includes the caster's carried equipment. | E1, E3 |
+| e3 | **Must keep away** | target | harm | feet 50; from caster; except other-forced-movement; 30 s — Unless forced within 50' by another Forced Movement effect. | E2, E3, N2 |
+
+## How it ends early
+
+- **caster-attacks-or-casts-at-target**: ends if the caster attacks or casts at the target — Caster attacks the target, or begins casting another Magical ability at the target or their carried equipment. *(N1)*
+- **caster-dies**: ends if the caster dies *(N1)*
+
+## Properties
+
+- **forced-movement**: the text says it is a Forced Movement effect *(N2)*
+
+## Clarifications in the text
+
+- Another Forced Movement effect may bring the target within 50' of the caster without violating Terror. *(E2)*
+
+## Names in the text
+
+- mechanic **forced-movement**: mentions *(E2, N2)*
+
+## What can stop or blunt it
+
+Derived from the other records: abilities and traits that make their bearer immune, resistant or unaffected in a way that covers this ability.
+
+| Protection | How | Who has it |
+| --- | --- | --- |
+| [Golem](golem.md) | Immune | Druid |
+| [Immune to Death](immune-to-death.md) | Immune | Paladin |
+| [Protection from Evil](protection-from-evil.md) | Immune | Paladin |
+| [Vampirism](vampirism.md) | Immune | Wizard |
+| [Adaptive Protection](adaptive-protection.md) | Immune (chosen School) | Healer, Scout |
+| [Adaptive Blessing](adaptive-blessing.md) | Resistant (chosen School, next ability) | Healer |
+| [Blessed Aura](blessed-aura.md) | Resistant to the next source | Healer |
+| [Blessing Against Harm](blessing-against-harm.md) | Resistant to the next source | Healer, Wizard |
+| [Sanctuary](sanctuary.md) | Unaffected by hostile actions within 20ft | Monk |
+| [Protection from Magic](protection-from-magic.md) | Unaffected by magical abilities | Healer, Paladin, Wizard |
+| [Void Touched](void-touched.md) | Unaffected by schools | Anti-Paladin, Wizard |
+| [Rage](rage.md) | Unaffected by verbal abilities | Barbarian |
+| [Enlightened Soul](enlightened-soul.md) | Unaffected by verbal magical beyond touch | Healer, Monk |
+| [Enlightened Soul](enlightened-soul.md) | Unaffected by verbal magical beyond touch | Healer, Monk |
+
+## Similar abilities
+
+| Relation | Ability | Differences |
+| --- | --- | --- |
+| same-effects-different-numbers | [Awe](awe.md) | Must keep away: feet 50, 30 s vs feet 20, 30 s; school: Death vs Command |
+
+## Open questions
+
+- E1 blocks only Magical abilities cast at the caster; Extraordinary abilities are not restricted, literally.
+
+## Rule text, sentence by sentence
+
+Every sentence and the items that cite it.
+
+| Id | Sentence | Captured as |
+| --- | --- | --- |
+| E1 | Target may not attack or cast Magical abilities at the caster or their carried equipment. | effect e1 (May not attack caster); effect e2 (May not cast at caster) |
+| E2 | Target must remain at least 50' away from the caster unless forced there by another Forced Movement effect. | effect e3 (Must keep away); names forced-movement; clarification |
+| E3 | Lasts 30 seconds. | effect e1 (May not attack caster); effect e2 (May not cast at caster); effect e3 (Must keep away) |
+| N1 | If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated. | ends when caster-attacks-or-casts-at-target; ends when caster-dies |
+| N2 | This is a Forced Movement effect. | effect e3 (Must keep away); property forced-movement; names forced-movement |
+
+---
+*Generated by `scripts/meta_build.py` from `metadata/source/records/terror.json` and the V8.08 "Spongy" rules.*

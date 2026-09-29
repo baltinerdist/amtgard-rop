@@ -1,0 +1,77 @@
+{
+  "slug": "adaptive-protection",
+  "summary": "Bearer is Immune to one School chosen at casting: Death, Flame, Subdual, Command or Sorcery.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "choice",
+        "options": [
+          "Death",
+          "Flame",
+          "Subdual",
+          "Command",
+          "Sorcery"
+        ]
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "School chosen at the time of casting."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The School is chosen at the time of casting.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E2 does not say who chooses the School (caster or bearer); 'at the time of casting' suggests the caster."
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "slug": "true-grit",
+  "summary": "Said immediately after dying: the caster returns to life with wounds healed but is Frozen for 30 seconds; Enchantments are kept.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "life.revive",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "wound.heal",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "harm",
+      "params": {
+        "state": "frozen"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Drawback: immediately Frozen on returning to life."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "after-dying",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Incantation is said immediately after dying."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Enchantments on the caster are retained when True Grit returns them to life.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "revival",
+    "healing"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

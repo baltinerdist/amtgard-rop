@@ -1,0 +1,93 @@
+{
+  "slug": "song-of-determination",
+  "summary": "While chanting, the bearer is Immune to the Command School.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Command"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Must follow all Chant rules; the Enchantment ends when the Chant stops."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E2",
+        "E3"
+      ],
+      "note": "Chant \"Song of Determination\" or sing a song regarding their determination."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Immune to Command",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The text 'Immune to Command' matches the class Trait's title; the song gives the same Immunity to the Command School while chanting."
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Command School."
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

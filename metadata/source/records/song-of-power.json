@@ -1,0 +1,128 @@
+{
+  "slug": "song-of-power",
+  "summary": "While chanting, friendly players within 20' halve their Charge Incantation repetitions (rounded down, minimum 1); the bearer is Stopped.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.charge-faster",
+      "subject": "friendly-players",
+      "polarity": "benefit",
+      "params": {
+        "factor": "Charge Incantation repetitions divided by 2, rounded down, to a minimum of 1"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Friendly players within 20' of the bearer."
+    },
+    {
+      "id": "e2",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "stopped"
+      },
+      "duration": {
+        "type": "while-chanting"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Drawback on the bearer."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "players-benefit-once",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Players can only benefit from one instance of Song of Power at a time."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E4"
+      ],
+      "note": "Must follow all Chant rules; the Enchantment ends when the Chant stops."
+    },
+    {
+      "kind": "moves-from-start",
+      "evidence": [
+        "L2"
+      ],
+      "note": "Song of Power ends if the bearer moves from their starting location."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E3",
+        "E4"
+      ],
+      "note": "Chant \"Song of Power\" or sing an inspiring song."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The Charge Incantation."
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E3",
+        "E4"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules (stopping the Chant ends the song).",
+      "evidence": [
+        "E4"
+      ]
+    }
+  ],
+  "roles": [
+    "team",
+    "resource"
+  ],
+  "beneficiary": "team",
+  "open_questions": [
+    "E1 'friendly players within 20' of the bearer': the text does not say whether the bearer counts as one of them."
+  ]
+}

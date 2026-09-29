@@ -1,0 +1,118 @@
+{
+  "slug": "terror",
+  "summary": "For 30 seconds a target within 20' may not attack or cast Magical abilities at the caster or their equipment and must stay 50' away.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "action.restrict",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "attack-caster"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E3"
+      ],
+      "note": "Includes the caster's carried equipment."
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "cast-at-caster"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E3"
+      ],
+      "note": "Magical abilities only; includes the caster's carried equipment."
+    },
+    {
+      "id": "e3",
+      "kind": "move.keep-away",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "feet": 50,
+        "from": "caster",
+        "except": "other-forced-movement"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2",
+        "E3",
+        "N2"
+      ],
+      "note": "Unless forced within 50' by another Forced Movement effect."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "caster-attacks-or-casts-at-target",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Caster attacks the target, or begins casting another Magical ability at the target or their carried equipment."
+    },
+    {
+      "kind": "caster-dies",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "N2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Another Forced Movement effect may bring the target within 50' of the caster without violating Terror.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "control",
+    "defense"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "E1 blocks only Magical abilities cast at the caster; Extraordinary abilities are not restricted, literally."
+  ]
+}

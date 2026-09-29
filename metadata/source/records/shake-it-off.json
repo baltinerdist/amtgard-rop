@@ -1,0 +1,110 @@
+{
+  "slug": "shake-it-off",
+  "summary": "10 seconds after casting, the caster may remove any States or Ongoing Effects they choose from themselves; castable even while Stunned or Suppressed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "what": "chosen-states-and-effects"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "after-delay",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "delay_seconds": 10,
+      "note": "Any number of States or Ongoing Effects of the caster's choice, removed 10 seconds after casting."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "caster-alive",
+      "evidence": [
+        "E2"
+      ],
+      "note": "May be cast at any time the caster is alive, even while Stunned, Suppressed or similarly prevented from casting."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "works-while-suppressed",
+      "evidence": [
+        "E2"
+      ],
+      "note": "May be cast at any time the caster is alive, even while Stunned, Suppressed or similarly prevented from casting."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Caster chooses which States or Ongoing Effects (any number) to remove."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "stunned",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Does not prevent casting Shake It Off."
+    },
+    {
+      "target": "state",
+      "name": "suppressed",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Does not prevent casting Shake It Off."
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Shake It Off can be cast whenever the caster is alive, even while Stunned, Suppressed or otherwise prevented from casting.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "Immunity to Shake It Off matters only when it is cast, not when the removal happens 10 seconds later.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "anti-magic",
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "'Any number of States' literally includes Cursed, but Shake It Off is Spirit and a Cursed caster is Immune to Spirit when casting (N1: immunity matters at cast time); bypass-cursed was not recorded."
+  ]
+}

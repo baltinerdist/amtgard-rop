@@ -1,0 +1,83 @@
+{
+  "slug": "shatter-weapon",
+  "summary": "Destroys a targeted weapon within 20'; only the weapon, not its wielder, needs to be in range and visible.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.destroy",
+      "subject": "target-equipment",
+      "polarity": "harm",
+      "params": {
+        "what": "weapon"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-is-equipment",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "The weapon, not the person, is the target."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "targets-equipment",
+      "evidence": [
+        "N1",
+        "N2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Only the equipment must be within range and visible."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The equipment, not the person carrying it, is the target of Shatter Weapon.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "Only the weapon has to be within range and visible for Shatter Weapon to affect it; the wielder need not be.",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "equipment"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "The text does not say whether protections on the wielder (Immunities, Enchantments) protect the targeted weapon; since the weapon, not the person, is the target, the plainer reading is that the wielder's personal protections do not apply."
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "slug": "lost",
+  "summary": "Target within 20' becomes Insubstantial and must go directly to their base, ending the State on arrival; a Forced Movement effect.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "N1"
+      ],
+      "note": "Insubstantial while travelling to base; must end it immediately on arrival as per Insubstantial (E2).",
+      "conditions": [
+        "cast-on-other"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "move.to-base",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1",
+        "N3"
+      ],
+      "note": "Must move directly to their base; a Forced Movement effect (N3). Ends if the Insubstantial State ends first (N1).",
+      "conditions": [
+        "cast-on-other"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N2"
+      ],
+      "conditions": [
+        "cast-on-self"
+      ],
+      "note": "When cast on self: the caster is Insubstantial on the way to base and may end it at any time with the Insubstantial exit incantation (N2)."
+    },
+    {
+      "id": "e4",
+      "kind": "move.to-base",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N2",
+        "N3"
+      ],
+      "conditions": [
+        "cast-on-self"
+      ],
+      "note": "When cast on self: the caster travels directly to their base (Forced Movement)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E2"
+      ],
+      "note": "On arriving at base the player must immediately end the effect as per Insubstantial."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If the Insubstantial State ends before reaching base, the rest of the effect (the travel to base) ends too."
+    },
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Only when Lost was cast on self: the caster may end the Insubstantial State at any time with the Insubstantial exit incantation.",
+      "conditions": [
+        "cast-on-self"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "N3"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Ending the Insubstantial State early also ends the requirement to keep travelling to base.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "Lost may be cast on self; then the caster may leave the Insubstantial State whenever they choose using its exit incantation.",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "control",
+    "mobility"
+  ],
+  "beneficiary": "any",
+  "open_questions": []
+}

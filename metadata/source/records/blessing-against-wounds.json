@@ -1,0 +1,100 @@
+{
+  "slug": "blessing-against-wounds",
+  "summary": "Bearer is Resistant to wounds (the next wound); outside the Enchantment limit; not with other (m) Protection Enchantments.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.resistance",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "to": "wounds",
+        "covers_equipment": "no"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Resistant to wounds: does not receive the next wound that would otherwise be inflicted."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "no-other-protection-enchantments",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Unless the other Protection Enchantment is (ex)."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "activates-once",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Resistant means unaffected by the next wound (Resistant definition); the text does not say the strip is removed."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "exempt-from-enchantment-limit",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "May be worn alongside Protection School Enchantments that are (ex), but not with (m) ones.",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "Whether the Enchantment is removed once the Resistance is used is not stated in its own text; the general rule that Enchantments with a definite number of uses are removed when the last use is expended (it names Blessing Against Harm) probably applies."
+  ]
+}

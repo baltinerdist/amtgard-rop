@@ -1,0 +1,80 @@
+{
+  "slug": "inquisitor",
+  "summary": "Paladin archetype: gains Sacred Blades (Self) 1/Life; loses Greater Resurrect.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Sacred Blades",
+        "how": "gains",
+        "frequency": "(Self) 1/Life (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Greater Resurrect"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Greater Resurrect."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Sacred Blades",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Greater Resurrect",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "offense",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

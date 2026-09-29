@@ -1,0 +1,119 @@
+{
+  "slug": "priest",
+  "summary": "Healer archetype: Meta-Magic only on Spirit abilities; purchased Meta-Magics become 1/Life Charge x3; Heal costs zero points.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "group": "Meta-Magic",
+        "change": "may only be used on Spirit abilities"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Drawback: Meta-Magic is limited to Spirit abilities."
+    },
+    {
+      "id": "e2",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "scope": "all Meta-Magics purchased",
+        "change": "charge-x3"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Every purchased Meta-Magic becomes exactly 1/Life Charge x3."
+    },
+    {
+      "id": "e3",
+      "kind": "economy.cost",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Heal",
+        "change": "zero"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Heal costs zero points."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Heal",
+      "relation": "modifies",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Costs zero points."
+    },
+    {
+      "target": "mechanic",
+      "name": "meta-magic",
+      "relation": "modifies",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "school",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Spirit abilities."
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E2 sets the frequency to '1/Life Charge x3' rather than adding Charge x3; a Meta-Magic bought at a different frequency (for example 1/Refresh) could gain or lose uses. Recorded as charge-x3 with polarity neutral and the full frequency in the note."
+  ]
+}

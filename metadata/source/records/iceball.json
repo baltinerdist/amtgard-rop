@@ -1,0 +1,66 @@
+{
+  "slug": "iceball",
+  "summary": "Engulfing Magic Ball: the player struck is Frozen for 60 seconds.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "state": "frozen"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 60
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "engulfing",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "engulfing",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "control"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

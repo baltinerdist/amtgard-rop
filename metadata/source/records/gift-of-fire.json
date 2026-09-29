@@ -1,0 +1,97 @@
+{
+  "slug": "gift-of-fire",
+  "summary": "Bearer gains Heat Weapon 1/Refresh Charge x3 (m) and is Immune to Flame.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Heat Weapon",
+        "how": "gains",
+        "frequency": "1/Refresh Charge x3 (m)"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "defense.immunity",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "school": "Flame"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Heat Weapon",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Immune to Flame",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Text states the bearer is Immune to Flame."
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense",
+    "control",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "The granted Heat Weapon has no Range given; presumably Heat Weapon's own range applies."
+  ]
+}

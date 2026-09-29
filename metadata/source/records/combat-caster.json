@@ -1,0 +1,52 @@
+{
+  "slug": "combat-caster",
+  "summary": "Bard archetype: does not need an empty hand to cast abilities.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "casting.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "change": "does not require an empty hand to cast abilities"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "empty-hand",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The empty-hand casting requirement no longer applies."
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

@@ -1,0 +1,57 @@
+{
+  "slug": "coup-de-grace",
+  "summary": "Kills a target within 20' who was wounded when the Incantation began, even if healed before it ends.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "death.cause",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-wounded",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Checked when the caster begins the Incantation (N1: still dies if healed by the end)."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "L1",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The target still dies even if they have no wounds by the end of the Incantation.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "offense"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

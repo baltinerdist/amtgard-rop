@@ -1,0 +1,69 @@
+{
+  "slug": "extension",
+  "summary": "Meta-Magic: the next 20' Verbal has its range extended to 50'.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "meta.modify-next",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "mode": "extend-range-to-50ft"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The Verbal's range becomes 50'."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "only-verbals-20ft",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "meta-magic",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Meta-Magic."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

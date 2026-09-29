@@ -1,0 +1,186 @@
+{
+  "slug": "juggernaut",
+  "summary": "Warrior archetype: gains Harden Armor (Self) 1/Life and Phoenix Tears (Self) 3/Refresh (Swift); Harden becomes Greater Harden; loses Ancestral Armor and True Grit.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Harden Armor",
+        "how": "gains",
+        "frequency": "(Self) 1/Life (ex)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Phoenix Tears",
+        "how": "gains",
+        "frequency": "(Self) 3/Refresh (ex)",
+        "meta": "Swift"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "ability.replace",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Harden",
+        "with": "Greater Harden",
+        "note": "Greater Harden (Self) (ex) at the same frequency as the replaced Harden"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The Warrior class table lists Harden as (Self) 1/Life (ex), so Greater Harden becomes (Self) 1/Life (ex)."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Ancestral Armor"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of Ancestral Armor."
+    },
+    {
+      "id": "e5",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "True Grit"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: loses all instances of True Grit."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Harden Armor",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Phoenix Tears",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Swift",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Meta-Magic tag on the granted Phoenix Tears."
+    },
+    {
+      "target": "ability",
+      "name": "Harden",
+      "relation": "removes",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Replaced by Greater Harden."
+    },
+    {
+      "target": "ability",
+      "name": "Greater Harden",
+      "relation": "grants",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Replaces Harden at the same frequency."
+    },
+    {
+      "target": "ability",
+      "name": "Ancestral Armor",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "True Grit",
+      "relation": "removes",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

@@ -1,0 +1,141 @@
+{
+  "slug": "experienced",
+  "summary": "Trait: one chosen per-life Verbal (4th level or lower) also gains Charge x5, or one per-refresh Verbal gains Charge x10.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "a single purchased per-life Verbal of 4th level or lower",
+        "change": "charge-x5"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "evidence": [
+        "E1",
+        "E2",
+        "L1"
+      ],
+      "note": "In addition to the Verbal's normal frequency."
+    },
+    {
+      "id": "e2",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "a single purchased per-refresh Verbal of 4th level or lower",
+        "change": "charge-x10"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E1",
+        "E2",
+        "L1"
+      ],
+      "note": "In addition to the Verbal's normal frequency."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "only-4th-level-or-lower",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "kind": "chosen-before-game",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The Verbal is determined before the game begins and cannot be changed."
+    }
+  ],
+  "restrictions": [
+    {
+      "kind": "only-one-option",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Either the per-life option (Charge x5) OR the per-refresh option (Charge x10), for a single Verbal."
+    },
+    {
+      "kind": "must-still-purchase",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The Verbal must be one the player purchased."
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Choose one per-life Verbal (Charge x5) or one per-refresh Verbal (Charge x10) before the game."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "refresh",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Trait."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "Max 2 per class: whether a second instance may pick the other option or another Verbal is not stated; each instance is read as its own single Verbal."
+  ]
+}

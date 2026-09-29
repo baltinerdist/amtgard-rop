@@ -1,0 +1,73 @@
+{
+  "slug": "missile-block",
+  "summary": "Bearer may block projectiles, including Magic Balls, with hands or wielded melee or thrown weapons; blocked projectiles are nullified.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.block-projectiles",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Projectiles including Magic Balls; with the hands and with wielded melee or thrown weapons."
+    },
+    {
+      "id": "e2",
+      "kind": "defense.negate-hit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "from": "blocked-projectiles"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Any projectile (including Magic Balls) touched by the bearer's hands or wielded melee/thrown weapons is nullified."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "A projectile the bearer touches with their hands or wielded weapons is nullified (has no effect).",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

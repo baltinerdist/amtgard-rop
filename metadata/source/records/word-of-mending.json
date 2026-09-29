@@ -1,0 +1,74 @@
+{
+  "slug": "word-of-mending",
+  "summary": "Repairs all equipment a touched player carries and restores all their worn armor to full; not within 20' of a living enemy.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.repair",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "what": "all-carried-equipment"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "armor.repair",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all-armor"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2"
+      ],
+      "note": "All worn armor restored to full value."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "no-enemy-within-20ft",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "targets-player-affects-equipment",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

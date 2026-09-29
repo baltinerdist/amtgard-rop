@@ -1,0 +1,188 @@
+{
+  "slug": "sphere-of-annihilation",
+  "summary": "Magic Ball ignoring armor and Enchantments: the player hit dies and is Cursed; Weapon and Shield Destroying.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "weapon-destroying",
+        "on": "this-magic-ball"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "special-effect.grant",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "effect": "shield-destroying",
+        "on": "this-magic-ball"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Enchantments do not help: an Imbued Shield is still destroyed (N1)."
+    },
+    {
+      "id": "e3",
+      "kind": "death.cause",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "note": "Enchantments do not help: a player with Phoenix Tears stays dead (N1)."
+    },
+    {
+      "id": "e4",
+      "kind": "state.apply",
+      "subject": "struck-player",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "until-respawn"
+      },
+      "timing": "on-struck",
+      "evidence": [
+        "E2"
+      ],
+      "note": "No duration given; per the Cursed State it persists after death and is removed on respawn."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-armor",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "bypass-enchantments",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "e.g. Phoenix Tears does not save the player and an Imbued Shield is still destroyed (N1)."
+    }
+  ],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "weapon-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "special-effect",
+      "name": "shield-destroying",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Phoenix Tears",
+      "relation": "example",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Ignored: a player enchanted with Phoenix Tears remains dead."
+    },
+    {
+      "target": "ability",
+      "name": "Imbue",
+      "relation": "example",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Ignored: an Imbued Shield is still destroyed."
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Because it ignores Enchantments, a player enchanted with Phoenix Tears stays dead and an Imbued Shield is still destroyed.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "offense",
+    "equipment",
+    "debuff"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "'Ignores armor' does not say whether Magic Armor from a Trait (not an Enchantment) is ignored; bypass-magic-armor was not recorded."
+  ]
+}

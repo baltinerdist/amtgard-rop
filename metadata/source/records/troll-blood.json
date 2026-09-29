@@ -1,0 +1,155 @@
+{
+  "slug": "troll-blood",
+  "summary": "When the bearer would die they ignore it, lose one of three strips and are Frozen 30 seconds; bearer also has Regeneration.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "death.prevent",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "instead": "frozen"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Repeats each time while strips remain; each save removes a strip and Freezes the bearer for 30 seconds."
+    },
+    {
+      "id": "e2",
+      "kind": "defense.negate-hit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "from": "lethal-event"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The triggering effect is ignored as though it had not occurred."
+    },
+    {
+      "id": "e3",
+      "kind": "enchantment.spend-strip",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "n": 1
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e4",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "state": "frozen"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Part of the save; the bearer is out of action for 30 seconds."
+    },
+    {
+      "id": "e5",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Regeneration",
+        "how": "as-per"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Treated as though they have the effects of Regeneration in addition to the death save."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "last-strip",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Troll Blood is removed when the last strip is removed."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "uses-strips",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "note": "Three white strips; one is removed each time it prevents death."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Regeneration",
+      "relation": "as-per",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "strips",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "When the bearer would die, the triggering effect is ignored as though it had not occurred.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

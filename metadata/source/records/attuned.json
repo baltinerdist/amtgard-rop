@@ -1,0 +1,103 @@
+{
+  "slug": "attuned",
+  "summary": "Lets another player wear one additional Enchantment; Attuned itself does not count towards their Enchantment limit.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "enchantment.extra-slot",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "count": 1,
+        "only": "any"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "May wear one additional Enchantment."
+    },
+    {
+      "id": "e2",
+      "kind": "enchantment.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "chosen-to-meet-limit"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-removal",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If Attuned is removed, the bearer chooses which (m) Enchantments to lose to meet the new Enchantment limit, if necessary."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "not-with-itself-or-similar",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not be used in conjunction with itself or any other similar abilities."
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "exempt-from-enchantment-limit",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Attuned does not count towards the bearer's Enchantment limit."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "N1"
+      ],
+      "note": "On removal, the bearer chooses which (m) Enchantments to lose."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "If Attuned is removed, the bearer chooses which Magical Enchantments to lose to meet their new Enchantment limit, if necessary.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "L1 'any other similar abilities' is not defined; Essence Graft (same wording) and Phoenix Tears (which excludes Attuned) are the likely candidates, but Evolution N1 says Evolution does work with Attuned."
+  ]
+}

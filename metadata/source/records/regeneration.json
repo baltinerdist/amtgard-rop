@@ -1,0 +1,107 @@
+{
+  "slug": "regeneration",
+  "summary": "Bearer gains Heal (Self) Unlimited (m) with Swift, usable only with no living enemy within 10'.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Heal",
+        "how": "gains",
+        "frequency": "(Self) Unlimited (m)",
+        "meta": "Swift"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "The bearer must state Swift normally (N1)."
+    },
+    {
+      "id": "e2",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Heal",
+        "change": "the Heal granted by Regeneration may not be used within 10' of a living enemy",
+        "requirement": "no-enemy-within-10ft"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Limitation on the granted Heal."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Bearer must state \"Swift\" normally when using the granted Heal."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Heal",
+      "relation": "grants",
+      "evidence": [
+        "E1"
+      ],
+      "note": "(Self) Unlimited (m) (Swift)."
+    },
+    {
+      "target": "ability",
+      "name": "Heal",
+      "relation": "modifies",
+      "evidence": [
+        "L1"
+      ],
+      "note": "The granted Heal may not be used within 10' of a living enemy."
+    },
+    {
+      "target": "ability",
+      "name": "Swift",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "The granted Heal is cast with Swift, which must be stated normally."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The bearer must state Swift normally when using the granted Heal.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "The Heal granted by Regeneration may not be used within 10' of a living enemy; Regeneration itself has no such limit.",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "roles": [
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

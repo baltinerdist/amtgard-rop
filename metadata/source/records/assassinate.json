@@ -1,0 +1,75 @@
+{
+  "slug": "assassinate",
+  "summary": "Immediately after killing an enemy, Curses that dead enemy (within 50'); no verbal targeting needed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "until-respawn"
+      },
+      "timing": "on-kill",
+      "evidence": [
+        "E1",
+        "L1",
+        "N1"
+      ],
+      "note": "Targets the enemy just killed. No duration is given; per the Cursed State rules it persists after death and is removed on respawn."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "immediately-after-kill",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "kind": "target-dead",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Targets the killed enemy."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "no-verbal-targeting",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Assassinate automatically targets the enemy just killed; the caster does not need to verbally target them.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "debuff"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "L1 says 'immediately upon killing an enemy' but does not call it a Kill Trigger; no kill-trigger property recorded (Kill Trigger rules such as 30 seconds and 10' from enemies are not stated). Timing on-kill used."
+  ]
+}

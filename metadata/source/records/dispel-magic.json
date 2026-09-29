@@ -1,0 +1,135 @@
+{
+  "slug": "dispel-magic",
+  "summary": "Removes all Enchantments from a target within 20', regardless of Traits, States, Immunities or Enchantments, except Sleight of Mind; not on Invulnerable players.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "enchantment.remove",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "scope": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Polarity 'harm' for the usual use against an enemy; it can also be used to strip a friendly player's Enchantments."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-not-invulnerable",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-traits",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "kind": "bypass-states",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "kind": "bypass-immunities",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "kind": "bypass-enchantments",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Regardless of the target's Enchantments, except Sleight of Mind."
+    },
+    {
+      "kind": "bypass-ongoing-effects",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Sleight of Mind",
+      "relation": "countered-by",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The one exception to 'always removes Enchantments'."
+    },
+    {
+      "target": "state",
+      "name": "invulnerable",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "If successfully cast on a valid target it always removes Enchantments, whatever the player's Traits, States, Immunities, Ongoing Effects or Enchantments, except Sleight of Mind.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "anti-magic"
+  ],
+  "beneficiary": "any",
+  "open_questions": [
+    "E2 says it works regardless of the target's States, but N1 says it does not affect Invulnerable players (Invulnerable is a State); encoded N1 as the requirement target-not-invulnerable as the specific exception.",
+    "E2 'valid target' is not defined further."
+  ]
+}

@@ -1,0 +1,297 @@
+{
+  "slug": "song-of-survival",
+  "summary": "While chanting, when the bearer would die they ignore it and become Insubstantial, in place or returning to base; once per life.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "death.prevent",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "instead": "insubstantial"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Activates once: the song then ends immediately and the bearer stops their Chant (E3); only while the song is worn."
+    },
+    {
+      "id": "e2",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E1",
+        "E4",
+        "E5"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "note": "Option 1: Insubstantial in place; may exit at any time with the Insubstantial exit incantation."
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E1",
+        "E4",
+        "E6",
+        "E7"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2: may not exit early; must exit immediately on reaching base."
+    },
+    {
+      "id": "e4",
+      "kind": "move.to-base",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-choice",
+      "evidence": [
+        "E4",
+        "E6"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2 (chosen by the bearer): return to base as a Forced Movement effect."
+    },
+    {
+      "id": "e5",
+      "kind": "defense.negate-hit",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "from": "lethal-event"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-death",
+      "evidence": [
+        "E2"
+      ],
+      "note": "The triggering event has no effect on the bearer other than triggering Song of Survival."
+    },
+    {
+      "id": "e6",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "exit-early"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-choice",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E6"
+      ],
+      "note": "Option 2: may not exit Insubstantial early (contradicted by N1; see open questions)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "once-per-life",
+      "evidence": [
+        "L1"
+      ],
+      "note": "After it activates it may not be cast nor activated again on the same life."
+    },
+    {
+      "kind": "no-exit-early",
+      "evidence": [
+        "E6"
+      ],
+      "note": "Option 2 only: may not exit Insubstantial before reaching base (N1 says the bearer may end it at any time; see open questions)."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "activates-once",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Song of Survival immediately ends when it activates, and the bearer must stop their Chant."
+    },
+    {
+      "kind": "chant-stops",
+      "evidence": [
+        "E9"
+      ],
+      "note": "Must follow all Chant rules (stopping the Chant ends it)."
+    },
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "E5",
+        "N1"
+      ],
+      "note": "Option 1 (E5): exit Insubstantial at any time with the Insubstantial exit incantation. N1 says the bearer may end it at any time with the standard incantation, which conflicts with E6 for option 2."
+    },
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E7"
+      ],
+      "note": "Option 2: must exit Insubstantial immediately on reaching base."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "N2"
+      ],
+      "note": "If the Insubstantial State ends by any means before reaching base, the rest of the effect ends."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "chant",
+      "evidence": [
+        "E8",
+        "E9"
+      ],
+      "note": "Chant \"Song of Survival\" or sing a song about many escapes from certain doom."
+    },
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Declares \"Song of Survival\" when it activates."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "E6"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E5",
+        "E6",
+        "E7",
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "chant",
+      "relation": "mentions",
+      "evidence": [
+        "E3",
+        "E8",
+        "E9"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "E6"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "base",
+      "relation": "mentions",
+      "evidence": [
+        "E6",
+        "E7",
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "E5",
+        "N1"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The triggering event is treated as having had no effect on the bearer other than triggering Song of Survival.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "Singing a song in place of the normal Chant still counts as a Chant and follows all Chant rules.",
+      "evidence": [
+        "E9"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "mobility"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "N1 lets the bearer end the Insubstantial State at any time, but E6 says option 2 may not exit early.",
+    "E2 says 'The caster' while the rest says 'bearer'; same person (Self range)."
+  ]
+}

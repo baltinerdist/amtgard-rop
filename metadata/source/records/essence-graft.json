@@ -1,0 +1,134 @@
+{
+  "slug": "essence-graft",
+  "summary": "Lets another player wear up to three additional Enchantments, but all their Magical Enchantments must come from the caster of Essence Graft.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "enchantment.extra-slot",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "count": 3,
+        "only": "magical-from-this-caster"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Up to three additional Enchantments (E1). Per L1 every (m) Enchantment the bearer wears must come from the caster of Essence Graft; (ex) Enchantments are not limited by L1."
+    },
+    {
+      "id": "e2",
+      "kind": "action.restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "what": "wear-others-magical-enchantments"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: the bearer may not wear (m) Enchantments from anyone other than the caster of Essence Graft."
+    },
+    {
+      "id": "e3",
+      "kind": "enchantment.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "chosen-to-meet-limit"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-removal",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If Essence Graft is removed, the bearer chooses which (m) Enchantments to lose to meet the new Enchantment limit, if necessary."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "not-with-itself-or-similar",
+      "evidence": [
+        "L2"
+      ],
+      "note": "May not be used in conjunction with itself or any other similar abilities."
+    },
+    {
+      "kind": "magical-enchantments-only-from-caster",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "exempt-from-enchantment-limit",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Essence Graft does not count towards the bearer's Enchantment limit."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "N1"
+      ],
+      "note": "On removal, the bearer chooses which (m) Enchantments to lose."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "enchantment-limit",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1",
+        "N1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "All Magical Enchantments the bearer wears must come from the caster of Essence Graft.",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "text": "If Essence Graft is removed, the bearer chooses which Magical Enchantments to lose to meet their new Enchantment limit, if necessary.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "L2 'any other similar abilities' is not defined (Attuned presumably; Evolution N1 says Evolution does work with Essence Graft)."
+  ]
+}

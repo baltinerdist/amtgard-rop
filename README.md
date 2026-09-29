@@ -71,9 +71,20 @@ This repository restructures the Amtgard Rules of Play (V8.08 "Spongy") into mar
 
 - [`viewer/amtgard-rules-viewer.html`](viewer/amtgard-rules-viewer.html) — the whole rulebook as a single offline, cross-linked page: 253 pages, 3,172 inline links, search, deep links and both themes. See [`viewer/README.md`](viewer/README.md).
 
+## Interoperability
+
+- [`interoperability/`](interoperability/README.md) — per-ability and per-class reference: who has each ability at what level, who it works on or is blocked by (immunities), shared abilities, and which abilities name it. Built for "what if we move this ability from 4th to 6th level" questions. [Ability × class matrix](interoperability/MATRIX.md).
+- [`viewer/ability-chords.html`](viewer/ability-chords.html) — chord diagram of the same data (blue = shared, green = works, red = blocked).
+
+## Ability metadata
+
+- [`metadata/`](metadata/README.md) — a structured description of every ability, spell, trait, archetype, Meta-Magic and Equipment trait: each effect with who it lands on, for how long and under what conditions, requirements, limits, how it ends, properties and the names it references, with every rule sentence tied to a fact. Derived capabilities (causes death, holds in place, has a drawback ...), what can stop each ability, look-alikes and a per-class [duplicate check](metadata/dedupe/). Query with `scripts/meta_query.py`; tested against a [40-question acceptance battery](metadata/ACCEPTANCE.md).
+- [`viewer/ability-explorer.html`](viewer/ability-explorer.html) — interactive explorer for the same data (filters, look-alikes, side-by-side compare).
+
 ## Regenerating
 
 - `scripts/gen_abilities.py --write` — regenerate the 179 ability files from the PDF.
+- `scripts/gen_interop.py` — regenerate `interoperability/`; `scripts/build_chord.py` — rebuild the chord diagram; `scripts/meta_check.py`, `scripts/meta_build.py`, `scripts/meta_acceptance.py` and `scripts/build_meta_explorer.py` — validate, rebuild, test and view `metadata/` (see [`metadata/README.md`](metadata/README.md)).
 - `scripts/gen_indexes.py` — regenerate this README and the ability index.
 - `scripts/verify_abilities.py` — check the ability files against the PDF (body text, class availability, spell-table completeness, counts).
 - `scripts/verify_prose.py` — token-multiset check of the prose and class files.

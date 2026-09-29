@@ -1,0 +1,111 @@
+{
+  "slug": "greater-mend",
+  "summary": "By touch, restores all armor points in one location, one armor point in every location, or repairs a damaged or broken item.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "armor.repair",
+      "subject": "hit-location",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all-points-one-location"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 1: restore all armor points in one location."
+    },
+    {
+      "id": "e2",
+      "kind": "armor.repair",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one-point-each-location"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 2: repair one armor point in each location."
+    },
+    {
+      "id": "e3",
+      "kind": "equipment.repair",
+      "subject": "target-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "one-item"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "choice": {
+        "group": "g1",
+        "option": "3"
+      },
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 3: repair a damaged or broken item."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Caster chooses one of three repairs."
+    },
+    {
+      "kind": "targets-equipment",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Option 3 targets an item."
+    },
+    {
+      "kind": "targets-player-affects-equipment",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Options 1 and 2 restore a player's worn armor."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

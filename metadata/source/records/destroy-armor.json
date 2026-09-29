@@ -1,0 +1,157 @@
+{
+  "slug": "destroy-armor",
+  "summary": "Removes all armor points from a named hit location on a target within 20'; only armor-specific protections like Blessed Aura stop it.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "armor.destroy",
+      "subject": "hit-location",
+      "polarity": "harm",
+      "params": {
+        "scope": "one-location"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "The caster names the hit location in the Incantation."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "targets-player-affects-equipment",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Targets the player but affects the armor on the hit location."
+    },
+    {
+      "kind": "personal-protections-do-not-cover-equipment",
+      "evidence": [
+        "N3",
+        "N4",
+        "N5"
+      ],
+      "note": "Immunities, Resistances and other protections only protect the armor if they specifically extend to it (e.g. Blessed Aura)."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Blessed Aura",
+      "relation": "countered-by",
+      "evidence": [
+        "N3"
+      ],
+      "note": "Example of a protection that extends to armor and so protects it."
+    },
+    {
+      "target": "ability",
+      "name": "Enlightened Soul",
+      "relation": "mentions",
+      "evidence": [
+        "N4"
+      ],
+      "note": "Does not extend to armor; cannot protect against Destroy Armor."
+    },
+    {
+      "target": "ability",
+      "name": "Protection from Magic",
+      "relation": "mentions",
+      "evidence": [
+        "N4"
+      ],
+      "note": "Does not extend to armor; cannot protect against Destroy Armor."
+    },
+    {
+      "target": "ability",
+      "name": "Adaptive Protection",
+      "relation": "mentions",
+      "evidence": [
+        "N4"
+      ],
+      "note": "Adaptive Protection (Death) does not extend to armor; cannot protect against Destroy Armor."
+    },
+    {
+      "target": "ability",
+      "name": "Ancestral Armor",
+      "relation": "mentions",
+      "evidence": [
+        "N5"
+      ],
+      "note": "Does not protect against verbal magic; cannot protect against Destroy Armor."
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "N5"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Visibility (line of sight) may be drawn to any part of the target player, not only the chosen hit location.",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "text": "Immunities, Resistances and other protections protect the armor only if they specifically extend to armor, such as Blessed Aura.",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "text": "Enlightened Soul, Protection from Magic and Adaptive Protection (Death) do not extend to armor and cannot protect against it.",
+      "evidence": [
+        "N4"
+      ]
+    },
+    {
+      "text": "Ancestral Armor does not protect against verbal magic, so it cannot protect against Destroy Armor.",
+      "evidence": [
+        "N5"
+      ]
+    }
+  ],
+  "roles": [
+    "equipment",
+    "debuff"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": []
+}

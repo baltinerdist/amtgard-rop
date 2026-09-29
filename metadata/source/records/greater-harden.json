@@ -1,0 +1,79 @@
+{
+  "slug": "greater-harden",
+  "summary": "Shields and weapons wielded by the bearer are affected as per Harden (both, not one or the other).",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.grant",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Harden",
+        "how": "as-per"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Applies to both the shields and the weapons the bearer wields (Harden alone covers only one or the other)."
+    },
+    {
+      "id": "e2",
+      "kind": "equipment.protect",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "weapons-and-shields",
+        "degree": "except-object-destroying-abilities"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "As per Harden, but covers both shields and weapons."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Harden",
+      "relation": "as-per",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

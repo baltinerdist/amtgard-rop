@@ -1,0 +1,1030 @@
+{
+ "about": "Acceptance battery for the Ability Metadata Platform. Expected answers were built by four independent agents from the rule text alone, then corrected where a later review of the rule text showed the tester was wrong (each correction is listed with its reason). Q35 is omitted: the tester's answer was not a list. Run: python3 scripts/meta_acceptance.py",
+ "questions": [
+  {
+   "id": 1,
+   "question": "Every ability that causes death (the target dies).",
+   "query": "--cap causes-death --include-granted",
+   "expected": [
+    "call-lightning",
+    "coup-de-grace",
+    "dimensional-rift",
+    "dragged-below",
+    "finger-of-death",
+    "fireball",
+    "infernal",
+    "shatter",
+    "sphere-of-annihilation"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 2,
+   "question": "Every ability that can kill in any way: causes death, makes wounds lethal (Wounds Kill), makes the target Fragile, or Siege.",
+   "query": "--cap can-be-lethal --include-granted",
+   "expected": [
+    "call-lightning",
+    "contagion",
+    "coup-de-grace",
+    "dimensional-rift",
+    "dragged-below",
+    "finger-of-death",
+    "fireball",
+    "infernal",
+    "poison",
+    "poison-arrow",
+    "poison-glands",
+    "ravage",
+    "shatter",
+    "sphere-of-annihilation",
+    "toxic-blades"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 3,
+   "question": "Every ability that holds another player in place (Frozen, Stopped or Stunned, or otherwise unable to move from where they are).",
+   "query": "--cap holds-in-place --include-granted",
+   "expected": [
+    "abeyance",
+    "artificer",
+    "circle-of-protection",
+    "entangle",
+    "hold-person",
+    "iceball",
+    "icy-blast",
+    "lightning-bolt",
+    "pinning-arrow",
+    "snaring-vines",
+    "stun"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 4,
+   "question": "Every ability that stops another player from casting (Suppressed, Stunned or Frozen).",
+   "query": "--cap silences --include-granted",
+   "expected": [
+    "abeyance",
+    "artificer",
+    "break-concentration",
+    "brutal-strike",
+    "discordia",
+    "iceball",
+    "icy-blast",
+    "mystic",
+    "raise-dead",
+    "stun",
+    "suppress-aura",
+    "suppression-arrow",
+    "suppression-bolt",
+    "undead-minion"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 5,
+   "question": "Every ability that can make a player Insubstantial (self or another).",
+   "query": "--cap makes-insubstantial --include-granted",
+   "expected": [
+    "astral-intervention",
+    "blink",
+    "circle-of-protection",
+    "corruptor",
+    "gift-of-air",
+    "guardian",
+    "lost",
+    "martyr",
+    "shadow-step",
+    "song-of-survival",
+    "teleport",
+    "void-touched"
+   ],
+   "corrections": [
+    {
+     "change": "add",
+     "slug": "guardian",
+     "reason": "Guardian gains Martyr, and Martyr can leave the caster Insubstantial (Martyr L2; record fixed after the test)."
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "question": "Every ability that makes a player Invulnerable.",
+   "query": "--facet \"Applies State=invulnerable\"",
+   "expected": [
+    "reload",
+    "song-of-visit"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 7,
+   "question": "Every ability that Curses a player (including drawbacks on the bearer).",
+   "query": "--facet \"Applies State=cursed\" --include-granted",
+   "expected": [
+    "assassinate",
+    "brutal-strike",
+    "corruptor",
+    "golem",
+    "medium",
+    "protection-from-magic",
+    "raise-dead",
+    "sever-spirit",
+    "sphere-of-annihilation",
+    "steal-life-essence",
+    "undead-minion",
+    "vampirism",
+    "void-touched"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 8,
+   "question": "Every ability that heals wounds (one or all).",
+   "query": "--cap heals --include-granted",
+   "expected": [
+    "adrenaline",
+    "battlefield-triage",
+    "corruptor",
+    "gift-of-water",
+    "golem",
+    "greater-heal",
+    "greater-resurrect",
+    "heal",
+    "juggernaut",
+    "mass-healing",
+    "phoenix-tears",
+    "raise-dead",
+    "regeneration",
+    "resurrect",
+    "steal-life-essence",
+    "troll-blood",
+    "true-grit",
+    "undead-minion",
+    "vampirism",
+    "void-touched"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 9,
+   "question": "Every ability that returns a dead player to life.",
+   "query": "--cap revives --include-granted",
+   "expected": [
+    "greater-resurrect",
+    "raise-dead",
+    "resurrect",
+    "true-grit",
+    "undead-minion"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 10,
+   "question": "Every ability that prevents the bearer from dying (they survive a killing effect).",
+   "query": "--cap survives-death --include-granted",
+   "expected": [
+    "juggernaut",
+    "phoenix-tears",
+    "song-of-survival",
+    "troll-blood"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 11,
+   "question": "Every ability that removes Enchantments from a player.",
+   "query": "--effect \"Removes Enchantments\" --include-granted",
+   "expected": [
+    "attuned",
+    "dispel-magic",
+    "essence-graft",
+    "juggernaut",
+    "medium",
+    "naturalize-magic",
+    "phoenix-tears",
+    "planar-grounding",
+    "raise-dead",
+    "resurrect",
+    "sever-spirit",
+    "undead-minion"
+   ],
+   "corrections": [
+    {
+     "change": "add",
+     "slug": "juggernaut",
+     "reason": "Gains Phoenix Tears, which removes the bearer's other non-persistent Enchantments."
+    },
+    {
+     "change": "add",
+     "slug": "medium",
+     "reason": "Gains Sever Spirit, which removes Enchantments from the dead target."
+    },
+    {
+     "change": "add",
+     "slug": "undead-minion",
+     "reason": "Gains Raise Dead, which removes the target's Enchantments."
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "question": "Every ability that removes a State or Ongoing Effect.",
+   "query": "--cap cleanses",
+   "expected": [
+    "circle-of-protection",
+    "greater-release",
+    "greater-resurrect",
+    "martyr",
+    "phoenix-tears",
+    "planar-grounding",
+    "release",
+    "shake-it-off",
+    "tracking",
+    "trickery"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 13,
+   "question": "Every ability that moves another player (pushes, sends to base, teleports, summons, keeps away).",
+   "query": "--cap moves-others",
+   "expected": [
+    "agoraphobia",
+    "awe",
+    "banish",
+    "lost",
+    "shove",
+    "summon-dead",
+    "teleport",
+    "terror",
+    "throw"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 14,
+   "question": "Every ability that lets the user or an ally move while protected or to a location.",
+   "query": "--cap \"moves-self|moves-ally\"",
+   "expected": [
+    "banish",
+    "blink",
+    "gift-of-air",
+    "lost",
+    "reload",
+    "sanctuary",
+    "shove",
+    "song-of-survival",
+    "song-of-visit",
+    "summon-dead",
+    "teleport",
+    "throw"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 15,
+   "question": "Every ability that requires a willing target.",
+   "query": "--facet Requirement=target-willing",
+   "expected": [
+    "circle-of-protection",
+    "greater-resurrect",
+    "martyr",
+    "raise-dead",
+    "resurrect",
+    "summon-dead",
+    "teleport"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 16,
+   "question": "Every ability that only works on (or targets) a dead player.",
+   "query": "--facet Requirement=target-dead",
+   "expected": [
+    "assassinate",
+    "greater-resurrect",
+    "raise-dead",
+    "resurrect",
+    "sever-spirit",
+    "steal-life-essence",
+    "summon-dead"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 17,
+   "question": "Every ability that only works on a target in a particular State (Frozen, Stopped, Insubstantial) or wounded.",
+   "query": "--facet \"Requirement=target-frozen|target-stopped|target-insubstantial|target-wounded|immediately-after-wound\"",
+   "expected": [
+    "banish",
+    "brutal-strike",
+    "coup-de-grace",
+    "dimensional-rift",
+    "dragged-below",
+    "shatter",
+    "tracking"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 18,
+   "question": "Every ability with a drawback for its own user or bearer (something bad that happens to them).",
+   "query": "--cap has-drawback",
+   "expected": [
+    "adaptive-blessing",
+    "amplification",
+    "ancestral-armor",
+    "apex",
+    "attuned",
+    "battlemage",
+    "berserker",
+    "blessing-against-wounds",
+    "blink",
+    "circle-of-protection",
+    "contagion",
+    "corruptor",
+    "dervish",
+    "enlightened-soul",
+    "essence-graft",
+    "evoker",
+    "gift-of-air",
+    "golem",
+    "guardian",
+    "heart-of-the-swarm",
+    "hunter",
+    "infernal",
+    "inquisitor",
+    "ironskin",
+    "juggernaut",
+    "legend",
+    "marauder",
+    "martyr",
+    "medium",
+    "mystic",
+    "necromancer",
+    "phoenix-tears",
+    "priest",
+    "protection-from-magic",
+    "raider",
+    "raise-dead",
+    "ranger",
+    "regeneration",
+    "reload",
+    "resurrect",
+    "rogue",
+    "sanctuary",
+    "silver-tongue",
+    "sniper",
+    "song-of-interference",
+    "song-of-power",
+    "song-of-survival",
+    "song-of-visit",
+    "spy",
+    "stoneskin",
+    "summoner",
+    "troll-blood",
+    "true-grit",
+    "undead-minion",
+    "vampirism",
+    "void-touched",
+    "warder",
+    "warlock"
+   ],
+   "corrections": [
+    {
+     "change": "add",
+     "slug": "ironskin",
+     "reason": "Works as per Ancestral Armor, whose armor loses a point per blocked hit; Ancestral Armor itself is in the answer."
+    },
+    {
+     "change": "add",
+     "slug": "stoneskin",
+     "reason": "Same as Ironskin."
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "question": "Every ability whose effect ends early if the caster attacks the target, casts at them, or dies.",
+   "query": "--facet \"Ends when=caster-dies|caster-attacks-or-casts-at-target\"",
+   "expected": [
+    "awe",
+    "insult",
+    "terror"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 20,
+   "question": "Every ability that requires a Chant.",
+   "query": "--facet Property=chant",
+   "expected": [
+    "sanctuary",
+    "song-of-battle",
+    "song-of-deflection",
+    "song-of-determination",
+    "song-of-freedom",
+    "song-of-interference",
+    "song-of-power",
+    "song-of-survival",
+    "song-of-visit"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 21,
+   "question": "Every ability that the text calls a Forced Movement effect.",
+   "query": "--facet Property=forced-movement",
+   "expected": [
+    "agoraphobia",
+    "awe",
+    "banish",
+    "gift-of-air",
+    "lost",
+    "shove",
+    "song-of-survival",
+    "song-of-visit",
+    "teleport",
+    "terror",
+    "throw"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 22,
+   "question": "Every ability with a Kill Trigger or a Wound Trigger.",
+   "query": "--facet \"Property=kill-trigger|wound-trigger\"",
+   "expected": [
+    "adrenaline",
+    "blood-and-thunder",
+    "brutal-strike",
+    "momentum",
+    "scavenge"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 23,
+   "question": "Every ability that grants Magic Armor, with how many points.",
+   "query": "--effect \"Grants Magic Armor\"",
+   "expected": [
+    "barkskin",
+    "gift-of-earth",
+    "gift-of-water",
+    "ironskin",
+    "lycanthropy",
+    "stoneskin"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 24,
+   "question": "Every ability that gives weapons, balls or arrows Armor Breaking or Armor Destroying, or otherwise defeats or ignores armor.",
+   "query": "--cap defeats-armor --include-granted",
+   "expected": [
+    "abeyance",
+    "berserk",
+    "corrosive-mist",
+    "corruptor",
+    "destroy-armor",
+    "destruction-arrow",
+    "fireball",
+    "flame-blade",
+    "force-bolt",
+    "infernal",
+    "inquisitor",
+    "lightning-bolt",
+    "mystic",
+    "phase-bolt",
+    "rage",
+    "sacred-blades",
+    "song-of-battle",
+    "sphere-of-annihilation",
+    "void-touched"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 25,
+   "question": "Every ability that destroys, damages or disables weapons or shields.",
+   "query": "--cap attacks-equipment --include-granted",
+   "expected": [
+    "bear-strength",
+    "destruction-arrow",
+    "fireball",
+    "flame-blade",
+    "force-bolt",
+    "gift-of-fire",
+    "heat-weapon",
+    "infernal",
+    "lightning-bolt",
+    "lycanthropy",
+    "mystic",
+    "phase-bolt",
+    "pyrotechnics",
+    "rage",
+    "raider",
+    "shatter-weapon",
+    "sphere-of-annihilation"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 26,
+   "question": "Every ability that repairs armor or equipment.",
+   "query": "--cap repairs --include-granted",
+   "expected": [
+    "apex",
+    "artificer",
+    "greater-mend",
+    "juggernaut",
+    "mend",
+    "phoenix-tears",
+    "scavenge",
+    "sniper",
+    "word-of-mending"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 27,
+   "question": "Every ability that grants Immunity to a School, and which School.",
+   "query": "\"immune\"",
+   "expected": [
+    "adaptive-protection",
+    "flame-blade",
+    "gift-of-fire",
+    "golem",
+    "immune-to-command",
+    "immune-to-death",
+    "immune-to-flame",
+    "immune-to-subdual",
+    "ironskin",
+    "lycanthropy",
+    "protection-from-evil",
+    "song-of-determination",
+    "vampirism"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 28,
+   "question": "Every ability that makes the bearer Resistant (to what).",
+   "query": "--cap resists --include-granted",
+   "expected": [
+    "adaptive-blessing",
+    "blessed-aura",
+    "blessing-against-harm",
+    "blessing-against-wounds",
+    "blood-and-thunder",
+    "medium"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 29,
+   "question": "Every ability that does not count towards the Enchantment limit, or lets the bearer wear extra Enchantments.",
+   "query": "--cap extra-enchantments --include-granted",
+   "expected": [
+    "adaptive-blessing",
+    "apex",
+    "attuned",
+    "blessing-against-wounds",
+    "blood-and-thunder",
+    "essence-graft",
+    "evolution",
+    "juggernaut",
+    "medium",
+    "phoenix-tears",
+    "sleight-of-mind"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 30,
+   "question": "Every Enchantment that lets the bearer cast another ability by removing strips, and which ability.",
+   "query": "--facet \"Casts from strips=*\"",
+   "expected": [
+    "battlefield-triage",
+    "corrosive-mist",
+    "discordia",
+    "mass-healing",
+    "naturalize-magic",
+    "snaring-vines"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 31,
+   "question": "Every ability that can be cast or used while moving.",
+   "query": "--cap castable-while-moving --include-granted",
+   "expected": [
+    "ambulant",
+    "artificer",
+    "assassinate",
+    "berserker",
+    "blink",
+    "brutal-strike",
+    "corruptor",
+    "destruction-arrow",
+    "elemental-barrage",
+    "insult",
+    "marauder",
+    "mass-healing",
+    "phase-arrow",
+    "pinning-arrow",
+    "poison-arrow",
+    "rage",
+    "sanctuary",
+    "shadow-step",
+    "sniper",
+    "suppression-arrow",
+    "tracking",
+    "void-touched"
+   ],
+   "corrections": [
+    {
+     "change": "remove",
+     "slug": "momentum",
+     "reason": "Momentum is castable while moving only as granted by Berserker, Marauder and Sniper (Ambulant), which are counted."
+    },
+    {
+     "change": "add",
+     "slug": "artificer",
+     "reason": "Gains Pinning, Phase and Suppression Arrows; Specialty Arrows are shot while moving."
+    },
+    {
+     "change": "add",
+     "slug": "corruptor",
+     "reason": "Gains Void Touched, which gains Shadow Step (may be cast while moving)."
+    }
+   ]
+  },
+  {
+   "id": 32,
+   "question": "Every ability that cannot be used within 10' or 20' of a living enemy.",
+   "query": "--facet \"Limit on use=no-enemy-within-10ft|no-enemy-within-20ft\"",
+   "expected": [
+    "confidence",
+    "regeneration",
+    "troll-blood",
+    "word-of-mending"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 33,
+   "question": "Every ability that charges another ability instantly or restores used abilities.",
+   "query": "--effect \"Instantly Charges an ability\" --effect \"Restores used abilities\"",
+   "expected": [
+    "confidence",
+    "empower",
+    "innate",
+    "momentum",
+    "restoration",
+    "rogue",
+    "steal-life-essence"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 34,
+   "question": "Every ability that makes a player a respawn point or Alternate Base.",
+   "query": "--cap team-base",
+   "expected": [
+    "golem",
+    "heart-of-the-swarm",
+    "undead-minion"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 36,
+   "question": "Every archetype that forbids wearing armor or wielding a type of weapon or shield.",
+   "query": "--facet Delivery=archetype --facet \"Drawback=May not wear armor|May not wield weapons|May not wield shields|May not wield great weapons|May not wield javelins|May not wield large shields|May not wield heavy thrown|May not wield bows|May not wield long weapons\"",
+   "expected": [
+    "berserker",
+    "corruptor",
+    "hunter",
+    "infernal",
+    "marauder",
+    "medium",
+    "mystic",
+    "rogue",
+    "spy"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 37,
+   "question": "Every archetype or ability that doubles uses or changes the frequency or Charge of other abilities.",
+   "query": "--cap changes-frequency --include-granted",
+   "expected": [
+    "artificer",
+    "battlemage",
+    "corruptor",
+    "dervish",
+    "evoker",
+    "experienced",
+    "hunter",
+    "infernal",
+    "legend",
+    "marauder",
+    "medium",
+    "necromancer",
+    "priest",
+    "raider",
+    "sniper",
+    "song-of-power",
+    "spy",
+    "summoner",
+    "warder",
+    "warlock"
+   ],
+   "corrections": [
+    {
+     "change": "add",
+     "slug": "raider",
+     "reason": "Look the Part becomes an additional use of Brutal Strike: a change in how often Brutal Strike can be used."
+    }
+   ]
+  },
+  {
+   "id": 38,
+   "question": "Every ability that says it works regardless of Immunities, Traits, States or Enchantments, or that ignores Enchantments or Resistances.",
+   "query": "--facet \"Property=bypass-states|bypass-enchantments|bypass-immunities|bypass-traits|bypass-resistances\"",
+   "expected": [
+    "dispel-magic",
+    "greater-resurrect",
+    "sacred-blades",
+    "sever-spirit",
+    "shove",
+    "sphere-of-annihilation",
+    "steal-life-essence",
+    "throw"
+   ],
+   "corrections": [
+    {
+     "change": "add",
+     "slug": "shove",
+     "reason": "\"Works on Stopped and Stunned players\" (E2), recorded as bypass-states."
+    },
+    {
+     "change": "add",
+     "slug": "throw",
+     "reason": "Same as Shove."
+    }
+   ]
+  },
+  {
+   "id": 39,
+   "question": "Every ability that names Heal, and how (grants it, casts it, modifies it).",
+   "query": "--facet \"Names ability=Heal\"",
+   "expected": [
+    "battlefield-triage",
+    "gift-of-water",
+    "mass-healing",
+    "priest",
+    "regeneration"
+   ],
+   "corrections": []
+  },
+  {
+   "id": 40,
+   "question": "Which Druid spells do the same thing as another spell, trait or ability anywhere in the rulebook (or strictly less/more)? List pairs.",
+   "pairs": [
+    {
+     "a": "call-lightning",
+     "relation": "identical",
+     "b": "finger-of-death"
+    },
+    {
+     "a": "innate",
+     "relation": "same-effects|identical",
+     "b": "momentum"
+    },
+    {
+     "a": "attuned",
+     "relation": "any",
+     "b": "evolution"
+    },
+    {
+     "a": "naturalize-magic",
+     "relation": "provides",
+     "b": "dispel-magic"
+    },
+    {
+     "a": "snaring-vines",
+     "relation": "provides",
+     "b": "hold-person"
+    },
+    {
+     "a": "corrosive-mist",
+     "relation": "provides",
+     "b": "destroy-armor"
+    },
+    {
+     "a": "poison-glands",
+     "relation": "provides",
+     "b": "poison"
+    },
+    {
+     "a": "gift-of-fire",
+     "relation": "provides",
+     "b": "heat-weapon"
+    },
+    {
+     "a": "stoneskin",
+     "relation": "subset",
+     "b": "ironskin"
+    },
+    {
+     "a": "barkskin",
+     "relation": "subset",
+     "b": "ironskin"
+    },
+    {
+     "a": "barkskin",
+     "relation": "subset",
+     "b": "stoneskin"
+    },
+    {
+     "a": "barkskin",
+     "relation": "subset",
+     "b": "gift-of-earth"
+    },
+    {
+     "a": "barkskin",
+     "relation": "subset",
+     "b": "gift-of-water"
+    },
+    {
+     "a": "bear-strength",
+     "relation": "subset",
+     "b": "flame-blade"
+    },
+    {
+     "a": "berserk",
+     "relation": "subset",
+     "b": "flame-blade"
+    },
+    {
+     "a": "bear-strength",
+     "relation": "subset",
+     "b": "lycanthropy"
+    },
+    {
+     "a": "barkskin",
+     "relation": "subset",
+     "b": "lycanthropy"
+    },
+    {
+     "a": "poison",
+     "relation": "any",
+     "b": "toxic-blades"
+    },
+    {
+     "a": "contagion",
+     "relation": "plus-drawback",
+     "b": "toxic-blades"
+    },
+    {
+     "a": "mend",
+     "relation": "any",
+     "b": "greater-mend"
+    },
+    {
+     "a": "greater-mend",
+     "relation": "any",
+     "b": "word-of-mending"
+    },
+    {
+     "a": "mend",
+     "relation": "any",
+     "b": "scavenge"
+    },
+    {
+     "a": "heal",
+     "relation": "any",
+     "b": "greater-heal"
+    },
+    {
+     "a": "heal",
+     "relation": "any",
+     "b": "adrenaline"
+    },
+    {
+     "a": "resurrect",
+     "relation": "subset",
+     "b": "greater-resurrect"
+    },
+    {
+     "a": "release",
+     "relation": "any",
+     "b": "greater-release"
+    },
+    {
+     "a": "icy-blast",
+     "relation": "any",
+     "b": "iceball"
+    },
+    {
+     "a": "entangle",
+     "relation": "any",
+     "b": "hold-person"
+    },
+    {
+     "a": "entangle",
+     "relation": "any",
+     "b": "pinning-arrow"
+    },
+    {
+     "a": "entangle",
+     "relation": "subset",
+     "b": "lightning-bolt"
+    },
+    {
+     "a": "force-bolt",
+     "relation": "subset",
+     "b": "phase-bolt"
+    },
+    {
+     "a": "force-bolt",
+     "relation": "subset",
+     "b": "lightning-bolt"
+    },
+    {
+     "a": "regeneration",
+     "relation": "any",
+     "b": "gift-of-water"
+    },
+    {
+     "a": "regeneration",
+     "relation": "subset",
+     "b": "troll-blood"
+    },
+    {
+     "a": "troll-blood",
+     "relation": "any",
+     "b": "phoenix-tears",
+     "known_gap": "Both prevent death, Freeze the bearer and spend a strip, but those are 3 of 14 distinct effect keys between them (overlap score 0.21, threshold 0.5)."
+    },
+    {
+     "a": "stoneform",
+     "relation": "any",
+     "b": "force-barrier"
+    },
+    {
+     "a": "gift-of-air",
+     "relation": "any",
+     "b": "song-of-survival"
+    },
+    {
+     "a": "teleport",
+     "relation": "any",
+     "b": "lost"
+    },
+    {
+     "a": "teleport",
+     "relation": "any",
+     "b": "banish"
+    }
+   ],
+   "forbidden": [
+    {
+     "a": "toxic-blades",
+     "relation": "subset",
+     "b": "contagion",
+     "reason": "Contagion only adds a Fragile drawback on its own bearer."
+    },
+    {
+     "a": "resurrect",
+     "relation": "subset",
+     "b": "raise-dead",
+     "reason": "Raise Dead adds only harm to the revived ally."
+    },
+    {
+     "a": "heal",
+     "relation": "subset",
+     "b": "resurrect",
+     "reason": "Resurrect needs a dead target; Heal works on the living."
+    },
+    {
+     "a": "heal",
+     "relation": "subset",
+     "b": "greater-resurrect",
+     "reason": "Same."
+    },
+    {
+     "a": "dispel-magic",
+     "relation": "subset",
+     "b": "sever-spirit",
+     "reason": "Sever Spirit needs a dead target."
+    }
+   ],
+   "note": "Druid list and its neighbours. 'subset' means a does less than b; 'plus-drawback' means a is b plus a cost to its own side; 'provides' means a gives its user b; 'any' accepts any relation."
+  }
+ ]
+}

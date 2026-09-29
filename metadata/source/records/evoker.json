@@ -1,0 +1,124 @@
+{
+  "slug": "evoker",
+  "summary": "Wizard archetype: Elemental Barrage becomes Charge x10 (must still be purchased); may not purchase 20' or 50' Verbals.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Elemental Barrage",
+        "change": "becomes Charge x10"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Wizard's Elemental Barrage is normally 1/Refresh. Must still be purchased (N1)."
+    },
+    {
+      "id": "e2",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Elemental Barrage",
+        "change": "charge-x10"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Elemental Barrage must still be purchased (N1)."
+    },
+    {
+      "id": "e3",
+      "kind": "economy.purchase-restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "Verbals with a range of 20' or 50'"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Drawback: may not purchase Verbals with a range of 20' or 50'."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "must-still-purchase",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Elemental Barrage must still be purchased to benefit."
+    }
+  ],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Elemental Barrage",
+      "relation": "modifies",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "class-modifier",
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

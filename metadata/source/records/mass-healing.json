@@ -1,0 +1,192 @@
+{
+  "slug": "mass-healing",
+  "summary": "Self Enchantment with five strips: caster may Heal (m) a player at Touch by declaring \"I grant thee healing\" and removing a strip.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.cast-via-strips",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Heal"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Text says 'Caster'; range is Self so caster and bearer are the same player. Heal (m) a player at Touch by removing an enchantment strip. Five yellow strips."
+    },
+    {
+      "id": "e2",
+      "kind": "ability.declare-instead",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "what": "Heal (m) at Touch, by declaring \"I grant thee healing\""
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "The declaration is not an incantation: not stopped by Suppressed, usable while moving, etc."
+    },
+    {
+      "id": "e3",
+      "kind": "enchantment.spend-strip",
+      "subject": "bearer",
+      "polarity": "neutral",
+      "params": {
+        "n": 1
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-strip",
+      "evidence": [
+        "E1"
+      ],
+      "note": "One strip removed per Heal."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "last-strip",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Enchantment is removed when the last strip is removed."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "uses-strips",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Five yellow strips."
+    },
+    {
+      "kind": "declaration-not-incantation",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "\"I grant thee healing\" is a declaration, not an incantation."
+    },
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E1"
+      ],
+      "note": "\"I grant thee healing\"."
+    },
+    {
+      "kind": "works-while-suppressed",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The declaration is not stopped by being Suppressed."
+    },
+    {
+      "kind": "castable-while-moving",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The declaration may be used while moving."
+    },
+    {
+      "kind": "materials-required",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Five yellow strips; one removed per Heal."
+    }
+  ],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Heal",
+      "relation": "casts-via-strips",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Heal (m) a player at Touch."
+    },
+    {
+      "target": "state",
+      "name": "suppressed",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "strips",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "range",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Touch."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The declaration is not an incantation, so it is not stopped by being Suppressed and may be used while moving, etc.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "N1 ends with 'etc.': other incantation rules (e.g. the empty-hand requirement) presumably do not apply either, but the text does not list them."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "slug": "tracking",
+  "summary": "Immediately ends the Insubstantial State of a player within 20'.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.remove",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "what": "specific-state",
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The target's Insubstantial effect ends immediately."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-insubstantial",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "requires",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Target must be Insubstantial; the State is then ended."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "control",
+    "anti-magic"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "Polarity is 'harm' for the usual use against an enemy; Tracking could also free an ally from an unwanted Insubstantial State."
+  ]
+}

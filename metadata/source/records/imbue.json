@@ -1,0 +1,157 @@
+{
+  "slug": "imbue",
+  "summary": "Bearer chooses shield or weapons: wielded equipment of that type cannot be destroyed or damaged and ignores Engulfing effects.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.protect",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "shield",
+        "degree": "indestructible"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "note": "Option 1: wielded shield cannot be destroyed nor damaged."
+    },
+    {
+      "id": "e2",
+      "kind": "defense.negate-engulfing",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E3"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "note": "Option 1: Engulfing effects hitting the wielded shield are ignored."
+    },
+    {
+      "id": "e3",
+      "kind": "equipment.protect",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "weapons",
+        "degree": "indestructible"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2: wielded weapons cannot be destroyed nor damaged."
+    },
+    {
+      "id": "e4",
+      "kind": "defense.negate-engulfing",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E3"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "Option 2: Engulfing effects hitting wielded weapons are ignored."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "only-one-option",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Shield or weapons, not both."
+    }
+  ],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The bearer chooses shield or weapons."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "engulfing",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "shield",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "weapon",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Only wielded equipment of the chosen type is protected.",
+      "evidence": [
+        "E2",
+        "E3"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E1 does not say when the bearer chooses (at casting or later), or whether the choice can change."
+  ]
+}

@@ -1,0 +1,943 @@
+{
+ "abeyance": {
+  "E1": "This Magic Ball ignores armor.",
+  "E2": "Player hit is Stunned for 60 seconds."
+ },
+ "adaptive-blessing": {
+  "E1": "Bearer becomes Resistant to one of the following Schools: Death, Flame, Subdual, Command, Sorcery.",
+  "E2": "School is chosen at the time of casting.",
+  "E3": "Does not count towards the bearer's Enchantment limit.",
+  "L1": "May not be worn with any other Enchantments from the Protection School unless the other Enchantment is (ex)."
+ },
+ "adaptive-protection": {
+  "E1": "Bearer becomes Immune to one of the following Schools: Death, Flame, Subdual, Command, Sorcery.",
+  "E2": "School is chosen at the time of casting."
+ },
+ "adrenaline": {
+  "E1": "Caster heals a wound.",
+  "L1": "Kill Trigger."
+ },
+ "agoraphobia": {
+  "E1": "Target must remain at least 20' away from all other living players unless forced there by another Forced Movement effect.",
+  "E2": "Lasts 30 seconds.",
+  "N1": "This is a Forced Movement effect."
+ },
+ "ambulant": {
+  "E1": "The next Enchantment, Magic Ball, or Verbal may be cast while moving.",
+  "N1": "Using Ambulant allows both the target indication and Ambulant to be said while moving, but not other Meta-Magics."
+ },
+ "amplification": {
+  "E1": "Bearer gains Extension 1/Refresh Charge x3 (m).",
+  "E2": "Other sources of Extension may not be utilized while Amplification is worn.",
+  "N1": "Does not use up any purchased instances of Extension."
+ },
+ "ancestral-armor": {
+  "E1": "The effects of a Magic Ball, projectile weapon, or melee weapon which just struck armor worn by the player are ignored, even if the object would not otherwise affect the armor.",
+  "E2": "The armor loses one point of value in the location struck.",
+  "E3": "This effect will not trigger if the armor has no points left in the location struck.",
+  "E4": "Ancestral Armor is not expended after use and will continue to provide protection until removed with Dispel Magic or similar abilities.",
+  "N1": "Engulfing Effects that do not strike the bearer's armor, abilities that ignore armor entirely, and abilities that have been entirely negated due to Ability Order do not trigger Ancestral Armor.",
+  "N2": "Phasing equipment interacts with armor worn by the bearer as though Ancestral Armor was not present."
+ },
+ "apex": {
+  "E1": "Gain Mend 1/Life (ex) and Sleight of Mind (Self) 1/Life (ex).",
+  "L1": "Lose all instances of Evolution, Hold Person, and Pinning Arrow"
+ },
+ "artificer": {
+  "E1": "May wield a Small shield.",
+  "E2": "Gain Greater Mend 2/Refresh Charge x10 (ex).",
+  "E3": "Mend becomes 2/Life Charge x3 (ex).",
+  "E4": "Casting Mend on weapons or shields does not consume a use of Mend.",
+  "L1": "Rather than the normal amount of Specialty Arrows for an Archer, gain:",
+  "L2": "- Pinning Arrow 3 Arrows / Unlimited (ex)",
+  "L3": "- Phase Arrow 2 Arrows / Unlimited (ex)",
+  "L4": "- Suppression Arrow 2 Arrows / Unlimited (ex)",
+  "L5": "Look the Part becomes a fourth Pinning Arrow.",
+  "N1": "Must still have a use of Mend remaining to cast on weapons or shields."
+ },
+ "assassinate": {
+  "E1": "The target is Cursed.",
+  "L1": "May only be used immediately upon killing an enemy.",
+  "N1": "Assassinate targets the killed enemy and does not require verbal targeting."
+ },
+ "astral-intervention": {
+  "E1": "Target player becomes Insubstantial for 30 seconds.",
+  "N1": "If cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial."
+ },
+ "attuned": {
+  "E1": "May wear an additional Enchantment.",
+  "E2": "Attuned does not count towards the bearer's Enchantment limit.",
+  "L1": "This ability may not be used in conjunction with itself or any other similar abilities.",
+  "N1": "If Attuned is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary."
+ },
+ "avatar-of-nature": {
+  "E1": "All the caster's Enchantments of level 4 and below are now range Self instead of their previous range.",
+  "E2": "Does not apply to Golem."
+ },
+ "awe": {
+  "E1": "Target may not attack or cast Magical abilities at the caster or their carried equipment.",
+  "E2": "Target must remain at least 20' away from the caster unless forced there by another Forced Movement effect.",
+  "E3": "Lasts 30 seconds.",
+  "N1": "If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated.",
+  "N2": "This is a Forced Movement effect."
+ },
+ "banish": {
+  "E1": "Target Insubstantial player must return to their base.",
+  "E2": "Upon arrival, they must immediately end the effect as per Insubstantial.",
+  "N1": "The target's Insubstantial State is replaced with a new Insubstantial State from Banish.",
+  "N2": "If the Insubstantial State is ended before reaching the base, the rest of the effect is ended as well.",
+  "N3": "If Banish is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.",
+  "N4": "This is a Forced Movement effect."
+ },
+ "barkskin": {
+  "E1": "Bearer gains one point of Magic Armor."
+ },
+ "battlefield-triage": {
+  "E1": "Bearer may cast Heal (m) by incanting \"Thou art made whole\" and removing an enchantment strip.",
+  "E2": "Enchantment is removed when the last strip is removed."
+ },
+ "battlemage": {
+  "E1": "Use of Ambulant becomes unlimited.",
+  "L1": "May not purchase Enchantments or Magic Balls."
+ },
+ "bear-strength": {
+  "E1": "Bearer's wielded melee weapons are Shield Crushing."
+ },
+ "berserk": {
+  "E1": "Bearer's wielded melee weapons are Armor Breaking."
+ },
+ "berserker": {
+  "E1": "Gain Momentum Unlimited (ex) (Ambulant).",
+  "L1": "May not wear Armor, and lose all instances of Blood and Thunder."
+ },
+ "blessed-aura": {
+  "E1": "Bearer is resistant to all effects from the next source which would inflict a wound, death, State, or negatively affect them or their carried equipment.",
+  "E2": "Does not trigger against effects cast by the bearer."
+ },
+ "blessing-against-harm": {
+  "E1": "Bearer is resistant to all effects from the next source which would inflict a wound, death, State, or other negative effect.",
+  "E2": "Does not trigger against effects cast by the bearer."
+ },
+ "blessing-against-wounds": {
+  "E1": "Bearer is resistant to wounds.",
+  "E2": "Does not count towards the bearer's Enchantment limit.",
+  "L1": "May not be worn with any other Enchantments from the Protection School unless the other Enchantment is (ex)."
+ },
+ "blink": {
+  "E1": "Caster becomes Insubstantial.",
+  "E2": "While Insubstantial in this way, caster can move as they wish as long as they remain within 50' from their starting point.",
+  "L1": "Caster may not end State within 10' of a living enemy.",
+  "L2": "Blink fails if the caster is Stopped.",
+  "N1": "If the Insubstantial State is ended, the rest of the effect is ended as well.",
+  "N2": "Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial."
+ },
+ "blood-and-thunder": {
+  "E1": "Caster gains Blessing Against Wounds (ex).",
+  "L1": "Kill Trigger.",
+  "N1": "Caster must still wear a white strip to denote Blessing Against Wounds."
+ },
+ "break-concentration": {
+  "E1": "Target player is Suppressed for 10 seconds."
+ },
+ "brutal-strike": {
+  "E1": "Target player is Cursed indefinitely.",
+  "E2": "Target player is also Suppressed for 30 seconds.",
+  "L1": "Wound Trigger.",
+  "N1": "Brutal Strike targets the wounded or dead player and does not require verbal targeting."
+ },
+ "call-lightning": {
+  "E1": "Target player dies."
+ },
+ "circle-of-protection": {
+  "E1": "The caster and up to five willing players within Touch range of the caster immediately have all States and Ongoing Effects removed and then become Insubstantial.",
+  "E2": "All targets:",
+  "E3": "- May not move from their starting location, and are unaffected by Blink and by Forced Movement effects other than Banish.",
+  "E4": "- May use abilities on players and their carried equipment who became Insubstantial due to the same casting of Circle of Protection as though they were not Insubstantial.",
+  "E5": "- May end this Insubstantial State at any time by using the exit incantation for Insubstantial.",
+  "E6": "If the caster ends Circle of Protection by using the exit incantation for Insubstantial, the effect ends for all targets.",
+  "E7": "If the Insubstantial State is ended for a target, the Ongoing Effects of Circle of Protection no longer apply to that player.",
+  "N1": "If a player is prevented from becoming Insubstantial, they are unaffected by Circle of Protection."
+ },
+ "combat-caster": {
+  "E1": "Does not require an empty hand to cast abilities."
+ },
+ "confidence": {
+  "E1": "Target player may instantly Charge a single ability.",
+  "L1": "May not be used within 20' of a living enemy."
+ },
+ "contagion": {
+  "E1": "Bearers wielded melee weapons are Wounds Kill.",
+  "E2": "Bearer is Fragile."
+ },
+ "corrosive-mist": {
+  "E1": "Bearer may cast Destroy Armor (m) by incanting \"`<Player>` the mists of corrosion destroy thine `<armor location>` armor\" and removing an enchantment strip.",
+  "E2": "Enchantment is removed when the last strip is removed."
+ },
+ "corruptor": {
+  "E1": "Gain Void Touched (Self) 2/Refresh (m).",
+  "E2": "All uses of Terror become 1/Life Charge x10 (m).",
+  "L1": "May not wield Great Weapons or Javelins and lose all instances of Flame Blade."
+ },
+ "coup-de-grace": {
+  "E1": "Target player dies.",
+  "L1": "Target must be wounded when the caster begins the Incantation.",
+  "N1": "Even if the target has no wounds at the end of the Incantation they will still die."
+ },
+ "dervish": {
+  "E1": "Equipment costs are doubled.",
+  "E2": "Each Verbal purchased gives double the uses.",
+  "E3": "Example: 1/Life Charge x3 becomes 2/Life Charge x3, 2/Life becomes 4/Life, 1/Refresh becomes 2/Refresh."
+ },
+ "destroy-armor": {
+  "E1": "Remove all armor points from target hit location.",
+  "N1": "Destroy Armor targets the player but affects the hit location.",
+  "N2": "Visibility can be drawn to any part of the player, not just the desired hit location.",
+  "N3": "Immunities, resistances, and other protections will only protect the armor from Destroy Armor if they specifically extend to the armor, such as Blessed Aura.",
+  "N4": "Abilities like Enlightened Soul, Protection from Magic, and Adaptive Protection (Death) do not extend to armor and thus cannot protect against Destroy Armor.",
+  "N5": "Ancestral Armor does not protect against verbal magic and thus cannot protect against Destroy Armor."
+ },
+ "destruction-arrow": {
+  "E1": "This arrow is Armor Destroying and Shield Destroying.",
+  "E2": "Armor Destroying and Shield Destroying are applied after the normal effect of being hit with an arrow is applied."
+ },
+ "dimensional-rift": {
+  "E1": "Target Insubstantial player dies."
+ },
+ "discordia": {
+  "E1": "Bearer may cast Break Concentration (m) by incanting \"`<Player>` thou art suppressed\" and removing an enchantment strip.",
+  "E2": "Enchantment is removed when the last strip is removed."
+ },
+ "dispel-magic": {
+  "E1": "All Enchantments on target are removed.",
+  "E2": "Will always remove Enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects, or Enchantments (except Sleight of Mind).",
+  "N1": "Does not affect Invulnerable players."
+ },
+ "dragged-below": {
+  "E1": "Target Stopped player dies."
+ },
+ "elemental-barrage": {
+  "E1": "Caster may use Magic Balls they are currently carrying by declaring the name of the Magic Ball immediately prior to throwing the ball in place of the incantation.",
+  "L1": "This magic ends if the caster picks up any additional Magic Balls or begins casting any new Magical abilities.",
+  "N1": "The declaration is not an incantation, and so is not stopped by being Suppressed, and may be used while moving, etc."
+ },
+ "empower": {
+  "E1": "Target player regains one use of any per-life ability they have expended.",
+  "L1": "Does not function on Empower, Confidence, or Restoration.",
+  "N1": "Does not allow a player to have more than their maximum uses of an ability."
+ },
+ "enlightened-soul": {
+  "E1": "Bearer is unaffected by Verbal Magical abilities used at a Range greater than Touch.",
+  "L1": "Affects beneficial as well as harmful Magical abilities.",
+  "N1": "Does not affect (ex) abilities, abilities with a Range of Touch, nor abilities whose Range is greater than Touch but are used at a Range of Touch anyway."
+ },
+ "entangle": {
+  "E1": "Player struck is Stopped for 60 seconds.",
+  "E2": "Engulfing."
+ },
+ "equipment-armor-1-point": {
+  "E1": "Your class maximum armor limit increases one additional point."
+ },
+ "equipment-shield-medium": {
+  "E1": "May wield up to a Medium shield (but may carry extras)."
+ },
+ "equipment-shield-small": {
+  "E1": "May wield a Small shield (but may carry extras)."
+ },
+ "equipment-weapon-great": {
+  "E1": "May wield one Great weapon at a time for each instance purchased (but may carry extras)."
+ },
+ "equipment-weapon-hinged": {
+  "E1": "May wield one Hinged weapon at a time for each instance purchased (but may carry extras)."
+ },
+ "equipment-weapon-long": {
+  "E1": "May wield one Long weapon at a time for each instance purchased (but may carry extras)."
+ },
+ "equipment-weapon-short": {
+  "E1": "May wield one Short weapon at a time for each instance purchased (but may carry extras)."
+ },
+ "essence-graft": {
+  "E1": "Bearer may wear up to three additional Enchantments.",
+  "E2": "Essence Graft does not count towards the bearer's Enchantment limit.",
+  "L1": "Bearer may only wear (m) Enchantments from the caster of Essence Graft.",
+  "L2": "This ability may not be used in conjunction with itself or any other similar abilities.",
+  "N1": "If Essence Graft is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary."
+ },
+ "evoker": {
+  "E1": "Elemental Barrage becomes Charge x10.",
+  "L1": "May not purchase Verbals with a range of 20' or 50'.",
+  "N1": "Elemental Barrage must still be purchased."
+ },
+ "evolution": {
+  "E1": "May wear an additional Enchantment.",
+  "E2": "Evolution does not count towards the bearer's Enchantment limit.",
+  "N1": "This ability does work in conjunction with Attuned, Essence Graft, or Phoenix Tears so long as the other limitations of those Enchantments are followed."
+ },
+ "experienced": {
+  "E1": "A single per-life Verbal purchased becomes Charge x5 in addition to the normal frequency OR a single per-refresh Verbal purchased becomes Charge x10 in addition to the normal frequency.",
+  "E2": "This Verbal must be determined before the game begins and cannot be changed.",
+  "L1": "Verbal must be 4th level or lower."
+ },
+ "extension": {
+  "E1": "Verbal becomes 50'.",
+  "E2": "Only works on Verbals with a range of 20'."
+ },
+ "finger-of-death": {
+  "E1": "Target player dies."
+ },
+ "fireball": {
+  "E1": "This Magic Ball is Weapon Destroying, Armor Destroying, and Shield Destroying.",
+  "E2": "Player hit dies."
+ },
+ "flame-blade": {
+  "E1": "Bearer's wielded melee weapons are Armor Breaking and Shield Crushing.",
+  "E2": "Bearer and their wielded weapons are Immune to Flame."
+ },
+ "force-barrier": {
+  "E1": "Caster is Frozen for 10 seconds."
+ },
+ "force-bolt": {
+  "E1": "This Magic Ball is Weapon Destroying and Armor Breaking.",
+  "E2": "Player hit receives a wound to that hit location."
+ },
+ "gift-of-air": {
+  "E1": "The effects of any weapon or arrow which just struck the bearer are ignored, instead the bearer declares \"Gift of Air\" and becomes Insubstantial.",
+  "E2": "If the bearer is wearing armor it is affected as normal in addition to triggering Gift of Air.",
+  "E3": "Immediately after Gift of Air activates, bearer must choose one of the following:",
+  "E4": "1. Bearer becomes Insubstantial in place, but may exit Insubstantial at any time using the exit incantation for Insubstantial.",
+  "E5": "2. Bearer becomes Insubstantial and must return to their base as a Forced Movement effect, but may not exit early.",
+  "E6": "They must exit Insubstantial immediately upon reaching their base",
+  "E7": "Melee weapons with the Siege, Armor Breaking, Armor Destroying, Shield Crushing, or Shield Destroying Special Effects will affect the bearer as normal and do not trigger Gift of Air.",
+  "L1": "Bearer may not wield weapons or Shields.",
+  "N1": "If the Insubstantial State is ended, the player is not required to continue returning to base.",
+  "N2": "Bearer may end this Insubstantial State at any time by using the exit incantation for Insubstantial."
+ },
+ "gift-of-earth": {
+  "E1": "Bearer gains one point of Magic Armor and is affected as per Harden."
+ },
+ "gift-of-fire": {
+  "E1": "Bearer gains Heat Weapon 1/Refresh Charge x3 (m) and is Immune to Flame."
+ },
+ "gift-of-water": {
+  "E1": "Bearer gains one point of Magic Armor and Heal (Self) Unlimited (m)."
+ },
+ "golem": {
+  "E1": "Bearer is Immune to Death.",
+  "E2": "Bearer is Cursed.",
+  "E3": "Bearer can remove a wound via Mend.",
+  "E4": "Bearer may use the caster as an alternate respawn point while the caster is alive.",
+  "E5": "Bearer may treat the caster as an Alternate Base.",
+  "E6": "All Enchantments worn by the Bearer, including Golem, are Persistent while Golem is worn.",
+  "E7": "Golem remains active while the bearer is dead.",
+  "L1": "A caster may only have a single Golem Enchantment at a time and may not use Alternate Bases.",
+  "L2": "Bearer may not be treated as an Alternate Base.",
+  "N1": "Greater Mend and Word of Mending will not remove a wound."
+ },
+ "greater-harden": {
+  "E1": "Shields and weapons wielded by the bearer are affected as per Harden."
+ },
+ "greater-heal": {
+  "E1": "All wounds are healed.",
+  "E2": "Ignores the Cursed State."
+ },
+ "greater-mend": {
+  "E1": "Will restore all armor points in one location, repair one armor point in each location, or repair a damaged or broken item."
+ },
+ "greater-release": {
+  "E1": "All Ongoing Effects and States are removed from the target.",
+  "E2": "The caster may choose to leave some States or Effects in place.",
+  "E3": "Greater Release may target Dead players.",
+  "N1": "When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended."
+ },
+ "greater-resurrect": {
+  "E1": "Target willing dead player who has not moved more than 5' from where they died is returned to life.",
+  "E2": "Any wounds on the player are healed.",
+  "E3": "Works regardless of any States on the target, and removes Cursed if present.",
+  "N1": "Enchantments on the player are retained."
+ },
+ "guardian": {
+  "E1": "Gain Imbue (Touch) 1/Life (m) and Martyr (Other) 2/Life Charge x3 (ex).",
+  "L1": "Lose all instances of Protection from Evil and Protection from Magic.",
+  "L2": "May only have one instance of Imbue active at a time."
+ },
+ "harden": {
+  "E1": "Bearer's wielded weapons or shield may only be destroyed or damaged by Magic Balls/Verbals which destroy objects e.g. Fireball or Pyrotechnics.",
+  "L1": "Will only affect either the weapons or the shield of the bearer, not both."
+ },
+ "harden-armor": {
+  "E1": "Armor Breaking strikes to the bearer's armor are treated as regular strikes.",
+  "L1": "Does not apply to Magic Armor."
+ },
+ "heal": {
+  "E1": "Target player heals a wound."
+ },
+ "heart-of-the-swarm": {
+  "E1": "Bearer is Stopped.",
+  "E2": "Friendly players may use the bearer as their respawn point as per the normal game rules.",
+  "E3": "Players respawning at the caster do so by declaring \"My life for the swarm.\"",
+  "E4": "Friendly players may treat the caster as an Alternate Base.",
+  "L1": "Players cannot respawn at the bearer if there are living enemy players or game objectives within 20' of the bearer."
+ },
+ "heat-weapon": {
+  "E1": "Target weapon may not be wielded for 30 seconds.",
+  "E2": "Players who are Immune to Flame may continue to wield the weapon.",
+  "N1": "The equipment, not the person, is the target of Heat Weapon.",
+  "N2": "The equipment is the only thing required to be within range and visible for this ability to affect it."
+ },
+ "hold-person": {
+  "E1": "Target player becomes Stopped for 30 seconds."
+ },
+ "hunter": {
+  "E1": "May wield Great weapons and Javelins.",
+  "E2": "Pick one:",
+  "E3": "- Hold Person becomes 1/Life Charge x3 (m).",
+  "E4": "- Pinning Arrow becomes 2 Arrows / Unlimited (ex)",
+  "L1": "May not wield shields.",
+  "L2": "Lose all instances of Evolution and Release.",
+  "N1": "Gain the benefit of an option only if that ability was chosen at level 4."
+ },
+ "iceball": {
+  "E1": "Player struck is Frozen for 60 seconds.",
+  "E2": "Engulfing."
+ },
+ "icy-blast": {
+  "E1": "Target player becomes Frozen for 30 seconds."
+ },
+ "imbue": {
+  "E1": "Bearer chooses either shield or weapons.",
+  "E2": "Wielded equipment of the chosen type cannot be destroyed nor damaged.",
+  "E3": "Engulfing effects hitting wielded equipment of the chosen type are ignored."
+ },
+ "immune-to-command": {
+  "E1": "The bearing player or object is unaffected by abilities from a given School.",
+  "N1": "Immunity granted as a Trait does not prevent players from making use of their own class abilities.",
+  "N2": "Unless otherwise noted, Immunities do not extend beyond the player or object that has them.",
+  "N3": "Example: A player with Immunity to Flame can still have their armor destroyed by a Fireball.",
+  "N4": "If a player is Immune to an effect which would remove a State or Ongoing Effect, the State/Ongoing Effect is not removed.",
+  "N5": "Example: A player who is Immune to Sorcery cannot be Released from Frozen, as they cannot be affected by Release, a Sorcery School ability.",
+  "N6": "Players with Immunities may still be targeted by abilities of the given School.",
+  "N7": "Example: A player with Immunity to Flame can still be the target of Pyrotechnics which would still destroy their equipment (as Immunities do not extend to equipment unless noted).",
+  "N8": "A target becoming Immune to the source of an Ongoing Effect or State while it is applied does not remove Ongoing Effects or States currently affecting the target.",
+  "N9": "Example: If a player who is Stopped by Hold Person casts Song of Determination on themselves, that player remains Stopped."
+ },
+ "immune-to-death": {
+  "E1": "The bearing player or object is unaffected by abilities from a given School.",
+  "N1": "Immunity granted as a Trait does not prevent players from making use of their own class abilities.",
+  "N2": "Unless otherwise noted, Immunities do not extend beyond the player or object that has them.",
+  "N3": "Example: A player with Immunity to Flame can still have their armor destroyed by a Fireball.",
+  "N4": "If a player is Immune to an effect which would remove a State or Ongoing Effect, the State/Ongoing Effect is not removed.",
+  "N5": "Example: A player who is Immune to Sorcery cannot be Released from Frozen, as they cannot be affected by Release, a Sorcery School ability.",
+  "N6": "Players with Immunities may still be targeted by abilities of the given School.",
+  "N7": "Example: A player with Immunity to Flame can still be the target of Pyrotechnics which would still destroy their equipment (as Immunities do not extend to equipment unless noted).",
+  "N8": "A target becoming Immune to the source of an Ongoing Effect or State while it is applied does not remove Ongoing Effects or States currently affecting the target.",
+  "N9": "Example: If a player who is Stopped by Hold Person casts Song of Determination on themselves, that player remains Stopped."
+ },
+ "immune-to-flame": {
+  "E1": "The bearing player or object is unaffected by abilities from a given School.",
+  "N1": "Immunity granted as a Trait does not prevent players from making use of their own class abilities.",
+  "N2": "Unless otherwise noted, Immunities do not extend beyond the player or object that has them.",
+  "N3": "Example: A player with Immunity to Flame can still have their armor destroyed by a Fireball.",
+  "N4": "If a player is Immune to an effect which would remove a State or Ongoing Effect, the State/Ongoing Effect is not removed.",
+  "N5": "Example: A player who is Immune to Sorcery cannot be Released from Frozen, as they cannot be affected by Release, a Sorcery School ability.",
+  "N6": "Players with Immunities may still be targeted by abilities of the given School.",
+  "N7": "Example: A player with Immunity to Flame can still be the target of Pyrotechnics which would still destroy their equipment (as Immunities do not extend to equipment unless noted).",
+  "N8": "A target becoming Immune to the source of an Ongoing Effect or State while it is applied does not remove Ongoing Effects or States currently affecting the target.",
+  "N9": "Example: If a player who is Stopped by Hold Person casts Song of Determination on themselves, that player remains Stopped."
+ },
+ "immune-to-subdual": {
+  "E1": "The bearing player or object is unaffected by abilities from a given School.",
+  "N1": "Immunity granted as a Trait does not prevent players from making use of their own class abilities.",
+  "N2": "Unless otherwise noted, Immunities do not extend beyond the player or object that has them.",
+  "N3": "Example: A player with Immunity to Flame can still have their armor destroyed by a Fireball.",
+  "N4": "If a player is Immune to an effect which would remove a State or Ongoing Effect, the State/Ongoing Effect is not removed.",
+  "N5": "Example: A player who is Immune to Sorcery cannot be Released from Frozen, as they cannot be affected by Release, a Sorcery School ability.",
+  "N6": "Players with Immunities may still be targeted by abilities of the given School.",
+  "N7": "Example: A player with Immunity to Flame can still be the target of Pyrotechnics which would still destroy their equipment (as Immunities do not extend to equipment unless noted).",
+  "N8": "A target becoming Immune to the source of an Ongoing Effect or State while it is applied does not remove Ongoing Effects or States currently affecting the target.",
+  "N9": "Example: If a player who is Stopped by Hold Person casts Song of Determination on themselves, that player remains Stopped."
+ },
+ "infernal": {
+  "E1": "Gain Fireball 2 Balls / Unlimited (m).",
+  "E2": "Flame Blade becomes (Self) 2/Refresh Charge x5.",
+  "L1": "May not wield shields and lose all instances of Steal Life Essence."
+ },
+ "innate": {
+  "E1": "May be used to instantly Charge a single ability by stating its name."
+ },
+ "inquisitor": {
+  "E1": "Gain Sacred Blades (Self) 1/Life (ex)",
+  "L1": "Lose all instances of Greater Resurrect."
+ },
+ "insult": {
+  "E1": "Target is unable to attack or cast Magical abilities at anyone other than the caster or their carried equipment for 30 seconds, or until either party dies.",
+  "E2": "If the target of Insult is attacked or has Magical abilities cast on them or their carried equipment by someone other than the caster, the target of Insult becomes able to choose to attack the offending party as well.",
+  "N1": "The target may still charge and throw Magic Balls at the caster."
+ },
+ "ironskin": {
+  "E1": "Bearer is Immune to Flame and gains two points Magic Armor affected as per Ancestral Armor."
+ },
+ "juggernaut": {
+  "E1": "Gain Harden Armor (Self) 1/Life (ex) and Phoenix Tears (Self) 3/Refresh (ex) (Swift).",
+  "E2": "Replace Harden with Greater Harden (Self) (ex) at the same frequency.",
+  "L1": "Lose all instances of Ancestral Armor and True Grit."
+ },
+ "legend": {
+  "E1": "Each Extension purchased gives double the uses.",
+  "E2": "Example: 1/Life becomes 2/Life.",
+  "E3": "Swift may not be purchased or used."
+ },
+ "lightning-bolt": {
+  "E1": "This Magic Ball is Weapon Destroying and Armor Breaking.",
+  "E2": "Player hit receives a wound to that hit location.",
+  "E3": "Player struck is Stopped for 60 seconds.",
+  "E4": "Engulfing."
+ },
+ "lost": {
+  "E1": "Target player becomes Insubstantial, must move directly to their base.",
+  "E2": "Upon arrival, they must immediately end the effect as per Insubstantial.",
+  "N1": "If the Insubstantial State is ended before reaching the base, the rest of the effect is ended as well.",
+  "N2": "If Lost is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.",
+  "N3": "This is a Forced Movement effect."
+ },
+ "lycanthropy": {
+  "E1": "Bearer gains two points of magic armor.",
+  "E2": "Bearer's wielded melee weapons are Shield Crushing.",
+  "E3": "Bearer is Immune to Command."
+ },
+ "marauder": {
+  "E1": "Gain Momentum Unlimited (ex) (Ambulant).",
+  "E2": "Insult becomes 1/Life Charge x5 (m) (Ambulant).",
+  "L1": "Maximum Armor becomes 4pts.",
+  "L2": "May not wield Large shields.",
+  "L3": "Ancestral Armor is no longer chargeable."
+ },
+ "martyr": {
+  "E1": "A single State is removed from target willing player.",
+  "E2": "The caster gains the removed State with a new duration of 10 seconds.",
+  "L1": "Cannot be cast while Cursed.",
+  "L2": "Caster may not remove themselves from Insubstantial states gained this way."
+ },
+ "mass-healing": {
+  "E1": "Caster may Heal (m) a player at Touch by declaring \"I grant thee healing\" and removing an enchantment strip.",
+  "E2": "Enchantment is removed when the last strip is removed.",
+  "N1": "The declaration is not an incantation, and so is not stopped by being Suppressed, and may be used while moving, etc."
+ },
+ "medium": {
+  "E1": "Gain Blessing Against Wounds (Touch) 1/Life (ex), Sever Spirit 1/Life Charge x3 (ex), and Swift 2/Life (ex).",
+  "E2": "Abilities in the Spirit school become Charge x3.",
+  "L1": "May not wear Armor nor wield Great weapons."
+ },
+ "mend": {
+  "E1": "Destroyed or damaged item is repaired, or one point of armor in one location is repaired."
+ },
+ "missile-block": {
+  "E1": "Bearer may block projectiles, including Magic Balls, with their hands and with wielded melee or thrown weapons.",
+  "E2": "Any projectile touched in this way is nullified."
+ },
+ "momentum": {
+  "E1": "May be used to instantly Charge a single ability by stating its name.",
+  "L1": "Kill Trigger"
+ },
+ "mystic": {
+  "E1": "Gain Force Bolt 3 Balls / Unlimited (m), Phase Bolt 1 Ball / Unlimited (m), and Suppression Bolt 2 Balls / Unlimited (m).",
+  "L1": "May not wield Heavy Thrown.",
+  "L2": "Lose all instances of Resurrect."
+ },
+ "naturalize-magic": {
+  "E1": "Bearer may cast Dispel Magic (m) by incanting\"`<Player>` thou art dispelled\" and removing an enchantment strip.",
+  "E2": "Enchantment is removed when the last strip is removed."
+ },
+ "necromancer": {
+  "E1": "All abilities purchased in the Death School become Charge x3.",
+  "E2": "Bearer may have a combined total of five Undead Minion Enchantments.",
+  "L1": "Bearer may not purchase any abilities from the Protection School."
+ },
+ "persistent": {
+  "E1": "Enchantment returns with the user after respawning until it has been otherwise removed.",
+  "N1": "Persistent is a Meta-Magic; it must be used before another incantation, and affects the next ability cast by that same caster.",
+  "N2": "Persistent does not retroactively make an enchantment already on a player Persistent.",
+  "N3": "Persistent Enchantments with limited uses (Mass Healing, Corrosive Mist, etc.) will retain the number of uses they had remaining.",
+  "N4": "Persistent Magic Armor behaves like normal armor: it will be repaired upon respawning or retain any prior damage if the bearer is returned to life by some other method, such as Resurrect."
+ },
+ "phase-arrow": {
+  "E1": "This arrow is Phasing."
+ },
+ "phase-bolt": {
+  "E1": "This Magic Ball is Phasing, Weapon Destroying, and Armor Breaking.",
+  "E2": "Player hit receives a wound to that hit location."
+ },
+ "phoenix-tears": {
+  "E1": "Bearer does not die as normal.",
+  "E2": "When the bearer would otherwise die they instead remove all wounds and become Frozen for 30 seconds.",
+  "E3": "If the bearer is still enchanted when the Frozen State elapses or is removed:",
+  "E4": "1. Remove the Cursed state, if Cursed",
+  "E5": "2. Repair all carried equipment.",
+  "E6": "3. Remove all non-persistent enchantments other than Phoenix Tears.",
+  "E7": "4. Remove a strip.",
+  "E8": "Additionally, Phoenix Tears allows the bearer to wear an extra Enchantment from the Protection School.",
+  "E9": "This extra enchantment is considered Persistent as long as Phoenix Tears is present.",
+  "E10": "The additional Enchantment is not removed once Phoenix Tears is removed.",
+  "L1": "May not be worn with Attuned or Essence Graft.",
+  "N1": "Phoenix Tears is removed when the last strip is removed If Phoenix Tears is removed, the bearer chooses which (m) Enchantments to lose to meet their new Enchantment limit, if necessary."
+ },
+ "pinning-arrow": {
+  "E1": "A player struck by this arrow is Stopped for 30 seconds.",
+  "E2": "Engulfing."
+ },
+ "planar-grounding": {
+  "E1": "Target player has their Insubstantial State removed and may not become Insubstantial for 30 seconds.",
+  "E2": "May be cast on players who are not currently Insubstantial.",
+  "N1": "Planar Grounding causes Enchantments that automatically render their bearer Insubstantial, such as Gift of Air, to fail and be removed if they activate while Planar Grounding is in effect."
+ },
+ "poison": {
+  "E1": "The next wound dealt by the bearer with a wielded melee weapon is Wounds Kill.",
+  "N1": "If the target does not actually receive a wound, e.g. by a Resistance, Poison is not expended."
+ },
+ "poison-arrow": {
+  "E1": "This arrow is Wounds Kill."
+ },
+ "poison-glands": {
+  "E1": "Bearer gains Poison (Self) 1/Refresh Charge x3 (ex)."
+ },
+ "priest": {
+  "E1": "Meta-Magic may only be used on Spirit abilities.",
+  "E2": "All Meta-Magics purchased become 1/Life Charge x3.",
+  "E3": "Heal costs zero points."
+ },
+ "protection-from-evil": {
+  "E1": "Bearer is Immune to the Death School.",
+  "E2": "This enchantment is Persistent and remains active while the bearer is dead.",
+  "L1": "The caster may only have one instance of Protection from Evil active at a time"
+ },
+ "protection-from-magic": {
+  "E1": "Bearer is unaffected by Magical abilities from any school.",
+  "E2": "Upon death the bearer is Cursed.",
+  "N1": "This effect does not interact with other Enchantments worn by the bearer."
+ },
+ "protection-from-projectiles": {
+  "E1": "Bearer is unaffected by projectiles other than Magic Balls.",
+  "E2": "Engulfing effects from those projectiles, such as Pinning Arrow, do not affect the bearer.",
+  "N1": "Equipment can still be affected by the above."
+ },
+ "pyrotechnics": {
+  "E1": "All shields and weapons carried by the target player are destroyed.",
+  "L1": "Only affects shields and weapons carried when the Verbal is completed.",
+  "N1": "Pyrotechnics targets the player but affects their equipment.",
+  "N2": "Immunities, resistances, and other protections will only protect the equipment from Pyrotechnics if they specifically extend to the equipment, such as Blessed Aura or Flame Blade.",
+  "N3": "Abilities like Enlightened Soul, Protection from Magic, and Adaptive Protection (Flame) do not extend to equipment and thus cannot protect from Pyrotechnics."
+ },
+ "rage": {
+  "E1": "Caster is unaffected by Verbal abilities and their wielded melee weapons are Shield Crushing and Armor Breaking for seven seconds.",
+  "E2": "Caster must count this time out loud, audible to 50'.",
+  "E3": "Failure to count or starting an Incantation ends the effect."
+ },
+ "raider": {
+  "E1": "Gain Bear Strength (Self) 1/Life (ex).",
+  "E2": "Look the Part becomes an additional use of Brutal Strike.",
+  "L1": "Lose all instances of Rage."
+ },
+ "raise-dead": {
+  "E1": "Target willing dead player who has not moved more than 5' from where they died is returned to life and is Cursed.",
+  "E2": "Target is also Suppressed for 30 seconds.",
+  "E3": "Non-Persistent Enchantments on the player are removed before the player returns to life.",
+  "E4": "Any wounds on the player are healed."
+ },
+ "ranger": {
+  "E1": "May use Bows.",
+  "E2": "The cost of all available Equipment is reduced to zero points.",
+  "E3": "Enchantment costs are doubled."
+ },
+ "ravage": {
+  "E1": "Target player is Fragile."
+ },
+ "regeneration": {
+  "E1": "Bearer gains Heal (Self) Unlimited (m) (Swift).",
+  "L1": "The Heal granted by Regeneration may not be used within 10' of a living enemy.",
+  "N1": "Bearer must state Swift normally."
+ },
+ "release": {
+  "E1": "A single Ongoing Effect or State is removed from the target.",
+  "E2": "Casters choice.",
+  "L1": "Cannot remove Cursed.",
+  "L2": "When used to end a State or Ongoing Effect imposed by an ability with multiple effects, all other States and Ongoing Effects from the same source are also ended."
+ },
+ "reload": {
+  "E1": "Caster becomes Invulnerable and may move about the field retrieving their arrows.",
+  "E2": "Caster may remove their Invulnerable State in the location they started or at base by declaring, \"I return with a full quiver\" x3.",
+  "L1": "Must stay at least 10' away from combat at all times.",
+  "N1": "A player may not exit Reload at an Alternate Base.",
+  "N2": "May ask reeve for assistance in retrieving arrows that are within 10' of other players."
+ },
+ "restoration": {
+  "E1": "Target player has all uses of their per-life abilities restored.",
+  "L1": "Does not function on Empower, Confidence, or Restoration."
+ },
+ "resurrect": {
+  "E1": "Target willing dead player who has not moved more than 5' from where they died is returned to life.",
+  "E2": "Non-Persistent Enchantments on the player are removed before the player returns to life.",
+  "E3": "Any wounds on the player are healed."
+ },
+ "rogue": {
+  "E1": "Regain a use of Coup de Grace upon killing an enemy with a thrown weapon.",
+  "L1": "May not wield Bows nor Long weapons."
+ },
+ "sacred-blades": {
+  "E1": "Bearer's wielded weapons are affected as per Harden.",
+  "E2": "Bearer's wielded melee weapons and any special effects delivered by them ignore magic armor and resistances that prevent wounds."
+ },
+ "sanctuary": {
+  "E1": "Caster and their carried equipment are unaffected by hostile actions originating from within 20'.",
+  "E2": "Must Chant \"sanctuary\".",
+  "E3": "Caster may end Sanctuary at any time by ceasing to chant and declaring \"No longer in sanctuary\".",
+  "L1": "Caster may not come within 20' of an unfriendly base, interact with game items nor game objectives, nor impede the play of other people in any manner, and must immediately move to avoid such situations.",
+  "L2": "If the caster voluntarily carries or touches a weapon in any fashion (other than blocking) at any point during Sanctuary, they may only voluntarily end Sanctuary at base and must continue chanting until there.",
+  "N1": "The exit declaration must be audible out to 20 feet."
+ },
+ "scavenge": {
+  "E1": "A destroyed or damaged item carried by the caster is repaired, or one point of armor in one of the caster's hit locations is repaired.",
+  "L1": "Kill Trigger."
+ },
+ "sever-spirit": {
+  "E1": "Target dead player is Cursed.",
+  "E2": "Any Enchantments on the player are removed.",
+  "E3": "Will always remove enchantments if successfully cast on a valid target, regardless of the player's Traits, States, Immunities, Ongoing Effects, or Enchantments.",
+  "L1": "Target must be dead when the caster begins the Incantation."
+ },
+ "shadow-step": {
+  "E1": "Caster becomes Insubstantial.",
+  "E2": "Shadow Step may be cast while moving.",
+  "N1": "Caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial."
+ },
+ "shake-it-off": {
+  "E1": "10 seconds after casting Shake It Off the caster may remove from themselves any number of States or Ongoing Effects of their choice.",
+  "E2": "Shake It Off may be cast at any time the caster is alive, even while the caster would otherwise be prevented from casting abilities by Stunned, Suppressed, or similar.",
+  "N1": "Immunity to Shake It Off only matters when the ability is cast, not after 10 seconds."
+ },
+ "shatter": {
+  "E1": "Target Frozen player dies."
+ },
+ "shatter-weapon": {
+  "E1": "Target weapon is destroyed.",
+  "N1": "The equipment, not the person, is the target of Shatter Weapon.",
+  "N2": "The equipment is the only thing required to be within range and visible for this ability to affect it."
+ },
+ "shove": {
+  "E1": "Target player is moved back 20' in a straight line away from the caster.",
+  "E2": "Works on Stopped and Stunned players.",
+  "E3": "If the caster is the target, the caster may choose the direction they move.",
+  "N1": "This is a Forced Movement effect.",
+  "N2": "This effect is ended if the target is affected by another Forced Movement effect or becomes Frozen, Insubstantial, Invulnerable, or Stunned."
+ },
+ "silver-tongue": {
+  "E1": "Bearer gains Swift 1/Refresh Charge x3 (m).",
+  "E2": "Other sources of Swift may not be utilized while Silver Tongue is worn.",
+  "N1": "Does not use up any purchased instances of Swift."
+ },
+ "sleight-of-mind": {
+  "E1": "Enchantments worn by the bearer, other than Sleight of Mind, are not removed by Dispel Magic or similar abilities.",
+  "E2": "Does not count towards the bearer's Enchantment Limit."
+ },
+ "snaring-vines": {
+  "E1": "Bearer may cast Hold Person (m) by incanting \"`<Player>` stop at my command\" and removing an enchantment strip.",
+  "E2": "Enchantment is removed when the last strip is removed."
+ },
+ "sniper": {
+  "E1": "May physically carry any number of Specialty Arrows of each type.",
+  "E2": "The frequency of each type of Specialty Arrow ability becomes 1 Arrow / Life Charge x3.",
+  "E3": "Gain Momentum Unlimited (ex) (Ambulant).",
+  "E4": "Look the Part becomes Mend 1/Life (ex).",
+  "L1": "May not fire normal arrows."
+ },
+ "song-of-battle": {
+  "E1": "Bearer's wielded melee weapons are Armor Breaking.",
+  "E2": "Bearer must Chant \"Song of Battle\" or sing a song regarding their martial prowess.",
+  "E3": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules."
+ },
+ "song-of-deflection": {
+  "E1": "Bearer is unaffected by projectiles other than Magic Balls.",
+  "E2": "Engulfing effects from those projectiles, such as Pinning Arrow, do not affect the bearer.",
+  "E3": "Bearer must Chant \"Song of Deflection\" or sing a song of their acrobatic prowess.",
+  "E4": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules.",
+  "N1": "Equipment can still be affected by the above."
+ },
+ "song-of-determination": {
+  "E1": "Bearer is Immune to Command.",
+  "E2": "Bearer must Chant \"Song of Determination\" or sing a song regarding their determination.",
+  "E3": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules."
+ },
+ "song-of-freedom": {
+  "E1": "Bearer cannot receive the States Stopped, Frozen, or Insubstantial unless caused by the bearer or other enchantments they carry.",
+  "E2": "Bearer must Chant \"Song of Freedom\" or sing a song of roving or rambling.",
+  "E3": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules."
+ },
+ "song-of-interference": {
+  "E1": "As per Enlightened Soul.",
+  "E2": "Bearer must Chant \"Song of Interference\" or sing a song about defeating/resisting the forces of magic.",
+  "E3": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules."
+ },
+ "song-of-power": {
+  "E1": "Friendly players within 20' of the bearer have their Charge Incantation repetitions divided by 2, rounded down, to a minimum of 1.",
+  "E2": "Bearer is Stopped.",
+  "E3": "Bearer must Chant \"Song of Power\" or sing an inspiring song.",
+  "E4": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules.",
+  "L1": "Players can only benefit from one instance of Song of Power at a time.",
+  "L2": "Song of Power ends if the bearer moves from their starting location."
+ },
+ "song-of-survival": {
+  "E1": "When the bearer would otherwise die, they instead declare \"Song of Survival\" and become Insubstantial.",
+  "E2": "The caster treats the triggering event as though it had no effect on them other than triggering Song of Survival.",
+  "E3": "Song of Survival immediately ends and bearer must stop their Chant.",
+  "E4": "Immediately after Song of Survival activates, bearer must choose one of the following:",
+  "E5": "1. Bearer becomes Insubstantial in place, but may exit Insubstantial at any time using the exit incantation for Insubstantial.",
+  "E6": "2. Bearer becomes Insubstantial and must return to their base as a Forced Movement effect, but may not exit early.",
+  "E7": "They must exit Insubstantial immediately upon reaching their base.",
+  "E8": "Bearer must Chant \"Song of Survival\" or sing a song regarding their many escapes from certain doom.",
+  "E9": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules.",
+  "L1": "Once Song of Survival has activated to protect the bearer it may not be cast nor activated again on the same life.",
+  "N1": "Bearer may end the Insubstantial State caused by Song of Survival at any time with the standard incantation.",
+  "N2": "If the Insubstantial State is ended by any means before reaching the base, the rest of the effect is ended as well."
+ },
+ "song-of-visit": {
+  "E1": "Bearer is Stopped and Invulnerable.",
+  "E2": "Bearer must Chant \"Song of Visit\" or sing a song regarding their general good nature and friendly disposition.",
+  "E3": "Singing in place of the normal Chant is still a Chant and must follow all Chant rules.",
+  "E4": "Immediately when Song of Visit is removed, the bearer becomes Invulnerable and must move directly to their base as a Forced Movement effect.",
+  "E5": "Upon arrival, bearer must declare \"I return from my visit,\" at which point the Invulnerable state is removed and the Forced Movement effect ends.",
+  "L1": "Bearer may not impede play."
+ },
+ "sphere-of-annihilation": {
+  "E1": "This Magic Ball is Weapon Destroying, Shield Destroying, and ignores armor and Enchantments.",
+  "E2": "Player hit dies and is Cursed.",
+  "N1": "Because Sphere of Annihilation ignores Enchantments, a player enchanted with Phoenix Tears would remain dead after being killed, and an Imbued Shield would still be destroyed."
+ },
+ "spy": {
+  "E1": "Blink and Shadow Step become Charge x3 (ex).",
+  "L1": "May not wear Armor."
+ },
+ "steal-life-essence": {
+  "E1": "Target dead player is Cursed.",
+  "E2": "Caster may heal a wound or instantly Charge an ability.",
+  "L1": "Does not work on Cursed players.",
+  "N1": "Caster will always benefit if successfully cast on a valid target, regardless of the caster's Traits, States, Immunities, Ongoing Effects, or Enchantments.",
+  "N2": "In order to charge an ability, the name of the ability being charged must still be stated immediately after the incantation."
+ },
+ "stoneform": {
+  "E1": "Caster is Frozen.",
+  "E2": "May end this State at any time by saying \"The earth release me\" x2."
+ },
+ "stoneskin": {
+  "E1": "Bearer gains 2 points of Magic Armor affected as per Ancestral Armor."
+ },
+ "stun": {
+  "E1": "Target player is Stunned for 30 seconds."
+ },
+ "summon-dead": {
+  "E1": "Target willing dead player must go directly to the caster.",
+  "E2": "Upon reaching the caster, Summon Dead immediately ends.",
+  "E3": "Wherever the player is when Summon Dead ends is treated as where the player died.",
+  "L1": "May be used on a dead player who has not moved more than 5' from where they died or who is at their respawn."
+ },
+ "summoner": {
+  "E1": "Each Enchantment purchased gives double the uses.",
+  "E2": "Example: 1/Life Charge x3 becomes 2/Life Charge x3, 2/Life becomes 4/Life.",
+  "L1": "May not purchase Verbals with a range of 20' or 50'.",
+  "L2": "May not purchase equipment beyond 2nd level."
+ },
+ "suppress-aura": {
+  "E1": "Target is Suppressed for 30 seconds."
+ },
+ "suppression-arrow": {
+  "E1": "A player struck by this arrow is Suppressed for 30 seconds.",
+  "E2": "Engulfing."
+ },
+ "suppression-bolt": {
+  "E1": "Player struck is Suppressed for 60 seconds.",
+  "E2": "Engulfing."
+ },
+ "swift": {
+  "E1": "Abilities require only a single iteration of the incantation.",
+  "E2": "For multi-line Incantations use the last line.",
+  "L1": "May only be used on abilities at a range of Touch, Other, Self, or on Magic Balls.",
+  "L2": "May not be used on the Charge Incantation."
+ },
+ "teleport": {
+  "E1": "Target willing player becomes Insubstantial and moves directly to a chosen location chosen by the caster at the time of casting.",
+  "E2": "This must be a fixed location (not relative to a player or to a moveable object).",
+  "E3": "Upon arrival, they must immediately end the effect as per Insubstantial.",
+  "N1": "If the player's Insubstantial State is removed before they have reached their destination, the effects of Teleport end.",
+  "N2": "If Teleport is cast on self, the caster may end this Insubstantial State at any time by using the exit incantation for Insubstantial.",
+  "N3": "This is a Forced Movement effect."
+ },
+ "terror": {
+  "E1": "Target may not attack or cast Magical abilities at the caster or their carried equipment.",
+  "E2": "Target must remain at least 50' away from the caster unless forced there by another Forced Movement effect.",
+  "E3": "Lasts 30 seconds.",
+  "N1": "If the caster attacks the target, begins casting another Magical ability at the target or their carried equipment, or dies, this ability's effect is negated.",
+  "N2": "This is a Forced Movement effect."
+ },
+ "throw": {
+  "E1": "Target player is moved back 50' in a straight line away from the caster.",
+  "E2": "Works on Stopped and Stunned players.",
+  "E3": "If the caster is the target, the caster may choose the direction they move.",
+  "N1": "This is a Forced Movement effect.",
+  "N2": "This effect is ended if the target is affected by another Forced Movement effect or becomes Frozen, Insubstantial, Invulnerable, or Stunned."
+ },
+ "toxic-blades": {
+  "E1": "Bearer's wielded melee weapons are Wounds Kill."
+ },
+ "tracking": {
+  "E1": "Target Insubstantial player immediately has their Insubstantial effect ended."
+ },
+ "trickery": {
+  "E1": "Bearer may cast Blink, Shadow Step, and Teleport on themselves while they are already Insubstantial, provided that they were the cause of the initial Insubstantial State and entered it voluntarily.",
+  "E2": "Doing so removes the original Insubstantial effect."
+ },
+ "troll-blood": {
+  "E1": "Bearer does not die as normal.",
+  "E2": "When the bearer would otherwise die they instead ignore the triggering effect as though it had not occurred, remove a strip, and become Frozen for 30 seconds.",
+  "E3": "The bearer is treated as though they have the effects of Regeneration in addition to the above.",
+  "N1": "Troll Blood is removed when the last strip is removed."
+ },
+ "true-grit": {
+  "E1": "Caster returns to life with their wounds healed and is immediately Frozen for 30 seconds.",
+  "N1": "Enchantments on the caster are retained."
+ },
+ "undead-minion": {
+  "E1": "Bearer is Cursed and cannot Respawn.",
+  "E2": "While the bearer is enchanted, the caster gains Raise Dead (Unlimited) (m) which can only be cast with the bearer as the target, and ignores the requirement for the bearer to have not moved from where they died.",
+  "E3": "Bearer may treat the caster as an Alternate Base.",
+  "E4": "This enchantment is Persistent, and remains active while the bearer is dead.",
+  "L1": "The caster may not have more than three Undead Minion Enchantments and may not use Alternate Bases.",
+  "L2": "Bearer may not be treated as an Alternate Base."
+ },
+ "vampirism": {
+  "E1": "Bearer gains Adrenaline Unlimited (ex), is Immune to Death, and is Cursed.",
+  "E2": "Bearer's Adrenaline ability will work through their Cursed State."
+ },
+ "void-touched": {
+  "E1": "Bearer's wielded melee weapons are Armor Breaking.",
+  "E2": "Bearer gains Shadow Step 1/Refresh Charge x30 (ex), Steal Life Essence Unlimited (ex), and is unaffected by Magical abilities from the Sorcery, Spirit, and Death Schools.",
+  "E3": "Bearer is Cursed.",
+  "N1": "This effect does not interact with other Enchantments worn by the bearer."
+ },
+ "warder": {
+  "E1": "All abilities purchased in the Protection School give double the uses.",
+  "E2": "Example: 1/Life Charge x3 becomes 2/Life Charge x3, 2/Life becomes 4/Life.",
+  "L1": "Player may not purchase any abilities from the Death, Command, or Subdual Schools."
+ },
+ "warlock": {
+  "E1": "Verbals and Magic Balls purchased in the Death and Flame Schools gives double the uses.",
+  "E2": "Example: 1/Life Charge x3 becomes 2/Life Charge x3, 2/Life becomes 4/Life.",
+  "L1": "Player may not purchase Verbals or Magic Balls from any School other than the Death and Flame Schools."
+ },
+ "word-of-mending": {
+  "E1": "All equipment carried by target player is repaired.",
+  "E2": "All armor worn by target player is restored to full value.",
+  "L1": "May not be cast within 20' of a living enemy."
+ },
+ "wounding": {
+  "E1": "Target hit location on target player is wounded.",
+  "L1": "Has no effect on players already wounded.",
+  "N1": "Wounding targets the player but affects the hit location.",
+  "N2": "Visibility can be drawn to any part of the player, not just the desired hit location."
+ }
+}

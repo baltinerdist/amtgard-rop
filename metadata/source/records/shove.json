@@ -1,0 +1,160 @@
+{
+  "slug": "shove",
+  "summary": "Pushes a player within 20' back 20' in a straight line away from the caster, even if Stopped or Stunned; self-cast picks the direction.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "move.push",
+      "subject": "target",
+      "polarity": "harm",
+      "params": {
+        "feet": 20
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "conditions": [
+        "cast-on-other"
+      ],
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Moved back 20' in a straight line away from the caster; a Forced Movement effect."
+    },
+    {
+      "id": "e2",
+      "kind": "move.push",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "feet": 20
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "conditions": [
+        "cast-on-self"
+      ],
+      "evidence": [
+        "E3",
+        "N1"
+      ],
+      "note": "If the caster is the target, they move 20' in a direction of their choice."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "other-forced-movement",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "kind": "subject-gains-state",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Ends if the target becomes Frozen, Insubstantial, Invulnerable or Stunned (a target who is already Stunned when it is cast is still moved, per E2)."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "kind": "bypass-states",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Works on Stopped and Stunned players, an exception to the Forced Movement rule that such effects fail on Stopped players."
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Only when the caster targets themselves: they choose the direction."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "stopped",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Shove works on Stopped players."
+    },
+    {
+      "target": "state",
+      "name": "stunned",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "N2"
+      ],
+      "note": "Shove works on Stunned players, but ends if the target becomes Stunned."
+    },
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Becoming Frozen ends the effect."
+    },
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Becoming Insubstantial ends the effect."
+    },
+    {
+      "target": "state",
+      "name": "invulnerable",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Becoming Invulnerable ends the effect."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Shove works on players who are Stopped or Stunned when it is cast.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "control",
+    "mobility"
+  ],
+  "beneficiary": "any",
+  "open_questions": [
+    "E2 says Shove works on Stunned players while N2 ends it when the target becomes Stunned; read as: already Stunned when cast is moved, becoming Stunned during the movement ends it."
+  ]
+}

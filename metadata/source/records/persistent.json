@@ -1,0 +1,163 @@
+{
+  "slug": "persistent",
+  "summary": "Meta-Magic: the caster's next Enchantment returns with its bearer after respawning until otherwise removed, keeping remaining uses.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "meta.modify-next",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "mode": "persistent-enchantment"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Stated before another incantation; affects the next ability cast by the same caster. The Enchantment then returns after respawn until otherwise removed (E1)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "only-enchantments",
+      "evidence": [
+        "E1"
+      ],
+      "note": "E1 speaks of the Enchantment returning, so the next ability must be an Enchantment."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "meta-magic",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "persistent",
+      "relation": "mentions",
+      "evidence": [
+        "N2",
+        "N3",
+        "N4"
+      ],
+      "note": "Persistent Enchantments (the rule)."
+    },
+    {
+      "target": "mechanic",
+      "name": "respawn",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N2",
+        "N3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "N4"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "N4"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Mass Healing",
+      "relation": "example",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Corrosive Mist",
+      "relation": "example",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Resurrect",
+      "relation": "example",
+      "evidence": [
+        "N4"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The Enchantment keeps returning after each respawn until it is removed some other way.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "Persistent is Meta-Magic: used before another incantation, it affects the next ability cast by the same caster.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "It does not make an Enchantment already on a player Persistent retroactively.",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "text": "Persistent Enchantments with limited uses (Mass Healing, Corrosive Mist, etc.) keep the number of uses they had left.",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "text": "Persistent Magic Armor behaves like normal armor: repaired on respawn, but keeps prior damage if the bearer returns to life another way (e.g. Resurrect).",
+      "evidence": [
+        "N4"
+      ]
+    }
+  ],
+  "roles": [
+    "utility"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "E1 says the Enchantment returns 'with the user'; read as whoever wears the Enchantment (which may be another player), not only the caster of Persistent."
+  ]
+}

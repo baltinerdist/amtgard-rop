@@ -1,0 +1,217 @@
+{
+  "slug": "steal-life-essence",
+  "summary": "Curses a dead, non-Cursed player by Touch; the caster may then heal one wound or instantly Charge an ability.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "until-respawn"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "No duration given; per the Cursed State it persists after death and is removed on respawn."
+    },
+    {
+      "id": "e2",
+      "kind": "wound.heal",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2",
+        "N1"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "note": "Caster heals one of their own wounds."
+    },
+    {
+      "id": "e3",
+      "kind": "ability.charge",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2",
+        "N1",
+        "N2"
+      ],
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "note": "The name of the ability being Charged must be stated immediately after the incantation (N2)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-dead",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-not-cursed",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Caster may heal a wound or instantly Charge an ability."
+    },
+    {
+      "kind": "caster-always-benefits",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If successfully cast on a valid target, regardless of the caster's Traits, States, Immunities, Ongoing Effects or Enchantments."
+    },
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "N2"
+      ],
+      "note": "To Charge, the caster states the name of the ability immediately after the incantation."
+    },
+    {
+      "kind": "bypass-traits",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The caster's benefit is not blocked by their own Traits, States, Immunities, Ongoing Effects or Enchantments."
+    },
+    {
+      "kind": "bypass-immunities",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The caster's benefit is not blocked by their own Traits, States, Immunities, Ongoing Effects or Enchantments."
+    },
+    {
+      "kind": "bypass-enchantments",
+      "evidence": [
+        "N1"
+      ],
+      "note": "The caster's benefit is not blocked by their own Traits, States, Immunities, Ongoing Effects or Enchantments."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E2",
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "traits",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "immune",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "ongoing-effects",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The caster's benefit applies whenever the ability is successfully cast on a valid target, whatever the caster's own Traits, States, Immunities, Ongoing Effects or Enchantments.",
+      "evidence": [
+        "N1"
+      ]
+    },
+    {
+      "text": "Charging via Steal Life Essence still requires naming the ability immediately after the incantation.",
+      "evidence": [
+        "N2"
+      ]
+    }
+  ],
+  "roles": [
+    "debuff",
+    "healing",
+    "resource"
+  ],
+  "beneficiary": "enemy",
+  "open_questions": [
+    "Beneficiary set to 'enemy' (cast on an enemy corpse, per convention 20) although the payoff is to the caster; E1 does not literally restrict the target to enemies."
+  ]
+}

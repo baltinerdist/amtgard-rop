@@ -1,0 +1,43 @@
+{
+  "slug": "force-barrier",
+  "summary": "Caster becomes Frozen for 10 seconds, shielding them from combat and most abilities.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "frozen"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 10
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

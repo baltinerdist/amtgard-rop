@@ -1,0 +1,78 @@
+{
+  "slug": "harden-armor",
+  "summary": "Armor Breaking strikes to the bearer's worn armor count as regular strikes; does not apply to Magic Armor.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "armor.protect",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "against": "armor-breaking"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Armor Breaking strikes to the bearer's armor are treated as regular strikes. Worn armor only, not Magic Armor."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "bearer-wears-armor",
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Worn armor only; does not apply to Magic Armor."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "special-effect",
+      "name": "armor-breaking",
+      "relation": "protects-against",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-armor",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Harden Armor does not apply to Magic Armor."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Does not apply to Magic Armor.",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

@@ -1,0 +1,101 @@
+{
+  "slug": "scavenge",
+  "summary": "Kill Trigger: repairs a destroyed or damaged item the caster carries, or one point of the caster's armor in one location.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "equipment.repair",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "what": "one-item"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-kill",
+      "choice": {
+        "group": "g1",
+        "option": "1"
+      },
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Option 1: a destroyed or damaged item carried by the caster."
+    },
+    {
+      "id": "e2",
+      "kind": "armor.repair",
+      "subject": "bearer-equipment",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one-point-one-location"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-kill",
+      "choice": {
+        "group": "g1",
+        "option": "2"
+      },
+      "evidence": [
+        "E1",
+        "L1"
+      ],
+      "note": "Option 2: one point of armor in one of the caster's hit locations."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "immediately-after-kill",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Kill Trigger."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "kill-trigger",
+      "evidence": [
+        "L1"
+      ]
+    },
+    {
+      "kind": "has-choice",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Repair a carried item or one point of armor."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "trigger",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Kill Trigger."
+    },
+    {
+      "target": "mechanic",
+      "name": "armor",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "equipment"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

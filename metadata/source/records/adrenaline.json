@@ -1,0 +1,58 @@
+{
+  "slug": "adrenaline",
+  "summary": "Kill Trigger: the caster heals one wound.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "wound.heal",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "amount": "one"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-kill",
+      "evidence": [
+        "E1",
+        "L1"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "immediately-after-kill",
+      "evidence": [
+        "L1"
+      ],
+      "note": "Kill Trigger: within 30 seconds of a killing blow, outside 10' of living enemies, one per kill."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "kill-trigger",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "trigger",
+      "relation": "mentions",
+      "evidence": [
+        "L1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "healing"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

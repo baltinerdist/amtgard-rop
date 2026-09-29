@@ -1,0 +1,69 @@
+{
+  "slug": "stoneform",
+  "summary": "Caster Freezes themselves, protected from combat and most abilities, until they end it by saying \"The earth release me\" x2.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "frozen"
+      },
+      "duration": {
+        "type": "until-removed"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Self-imposed Frozen with no stated duration; lasts until the caster ends it (E2) or it is removed."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Caster may end the Frozen State at any time by saying \"The earth release me\" x2."
+    }
+  ],
+  "properties": [
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E2"
+      ],
+      "note": "To end it: \"The earth release me\" x2."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "frozen",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The ending phrase may be spoken although the caster is Frozen (Frozen otherwise prevents speaking).",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E2 lets a Frozen caster speak the release phrase although Frozen prevents speaking; read as a specific exception. The text does not say whether the phrase is an incantation (stopped by Suppressed) or a declaration."
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "slug": "blessed-aura",
+  "summary": "Bearer resists the next source that would wound, kill, apply a State or otherwise harm them or their carried equipment; not their own effects.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.resistance",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "to": "next-source",
+        "covers_equipment": "yes"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "All effects of the next source that would inflict a wound, death, a State, or negatively affect the bearer or their carried equipment. Does not trigger against effects cast by the bearer."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [
+    {
+      "kind": "not-against-own-effects",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Does not trigger against effects cast by the bearer."
+    }
+  ],
+  "termination": [
+    {
+      "kind": "activates-once",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Resistant to the next source only."
+    }
+  ],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "resistant",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Covers everything from the source: wounds, death, States and any negative effect on the bearer or their carried equipment.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "Does not trigger against effects cast by the bearer themselves.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "defense",
+    "equipment"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "Whether the Enchantment is removed once it triggers is not stated in its own text; the general rule that Enchantments with a definite number of uses are removed when the last use is expended (it names Blessing Against Harm) probably applies."
+  ]
+}

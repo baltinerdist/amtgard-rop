@@ -1,0 +1,154 @@
+{
+  "slug": "raise-dead",
+  "summary": "Returns a willing dead player (within 5' of where they died) to life, healed but Cursed, Suppressed 30 seconds, losing non-Persistent Enchantments.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "enchantment.remove",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "scope": "non-persistent"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Removed before the player returns to life."
+    },
+    {
+      "id": "e2",
+      "kind": "life.revive",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "state": "cursed"
+      },
+      "duration": {
+        "type": "until-respawn"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Drawback. No duration given; per the Cursed State it persists after death and is removed on respawn."
+    },
+    {
+      "id": "e4",
+      "kind": "state.apply",
+      "subject": "dead-target",
+      "polarity": "harm",
+      "params": {
+        "state": "suppressed"
+      },
+      "duration": {
+        "type": "timed",
+        "seconds": 30
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "id": "e5",
+      "kind": "wound.heal",
+      "subject": "dead-target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E4"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-willing",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-dead",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "kind": "target-not-moved-5ft",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Has not moved more than 5' from where they died."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "state",
+      "name": "suppressed",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "persistent",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E3"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "revival",
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "Subject after revival is a living player; 'dead-target' used for all effects because the ability targets a dead player."
+  ]
+}

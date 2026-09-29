@@ -1,0 +1,124 @@
+{
+  "slug": "legend",
+  "summary": "Bard archetype: each Extension purchased gives double the uses (1/Life becomes 2/Life); Swift may not be purchased or used.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "economy.frequency",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "scope": "Extension (each purchase)",
+        "change": "double-uses"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Example: 1/Life becomes 2/Life."
+    },
+    {
+      "id": "e2",
+      "kind": "ability.modify",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "ability": "Extension",
+        "change": "each purchase gives double the uses (e.g. 1/Life becomes 2/Life)"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "economy.purchase-restrict",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "scope": "Swift"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Drawback: Swift may not be purchased."
+    },
+    {
+      "id": "e4",
+      "kind": "ability.remove",
+      "subject": "bearer",
+      "polarity": "harm",
+      "params": {
+        "ability": "Swift"
+      },
+      "duration": {
+        "type": "permanent"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Drawback: Swift may not be used (recorded as losing it, whatever its source)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Extension",
+      "relation": "modifies",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "target": "ability",
+      "name": "Swift",
+      "relation": "removes",
+      "evidence": [
+        "E3"
+      ],
+      "note": "May not be purchased or used."
+    },
+    {
+      "target": "mechanic",
+      "name": "archetype",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Archetype."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Example: 1/Life becomes 2/Life.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "class-modifier",
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}

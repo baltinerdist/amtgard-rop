@@ -1,0 +1,69 @@
+{
+  "slug": "innate",
+  "summary": "Meta-Magic: instantly Charges a single ability, named aloud, without the Charge Incantation.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.charge",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "A single ability, chosen by stating its name, is Charged instantly."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "must-declare",
+      "evidence": [
+        "E1"
+      ],
+      "note": "The user states the name of the ability being Charged."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "meta-magic",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Type is Meta-Magic."
+    },
+    {
+      "target": "mechanic",
+      "name": "declaration",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Stating the ability's name."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "self",
+  "open_questions": [
+    "E1 does not say whether the ability must be one with a Charge frequency, nor whether 'stating its name' is part of the incantation or a separate declaration."
+  ]
+}

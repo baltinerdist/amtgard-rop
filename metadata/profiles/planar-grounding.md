@@ -1,0 +1,88 @@
+---
+title: "Planar Grounding"
+section: Ability Metadata
+rulebook_version: V8.08 "Spongy"
+generated_by: scripts/meta_build.py
+---
+
+# Planar Grounding
+
+> Removes a target's Insubstantial State within 20' and prevents it for 30 seconds; auto-Insubstantial Enchantments like Gift of Air fail and are removed.
+
+| | |
+| --- | --- |
+| Type | Verbal (verbal) |
+| School | Sorcery |
+| Range | 20' |
+| Incantation | "My power closes the aether to thee" x3 |
+| Materials | none |
+| Magical | yes, (m) for at least one class |
+| Roles | control, anti-magic · for: enemy |
+| Capabilities | cleanses, dispels, protects |
+| Rule text | [rules/magic-and-abilities/planar-grounding.md](../../rules/magic-and-abilities/planar-grounding.md) · [interoperability](../../interoperability/abilities/planar-grounding.md) |
+
+## Who has it
+
+| Class | Level | Cost | Max | Frequency | Uses | Per | Charge | (m)/(ex) | Range | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Wizard | 2nd | 1 | - | 1/Refresh | 1 | refresh | - | (m) | 20' | - |
+
+## What it does
+
+| # | Effect | On | For them | Details | From |
+| --- | --- | --- | --- | --- | --- |
+| e1 | **Ends Insubstantial** | target | harm | what specific-state; instant; only if the target is Insubstantial — Only happens if the target is currently Insubstantial; the ability may also be cast on players who are not (E2). | E1 |
+| e2 | **Prevents Insubstantial** | target | harm | states insubstantial; 30 s — Target may not become Insubstantial for 30 seconds. | E1, E2 |
+| e3 | **Removes Enchantments** | target | harm | scope auto-insubstantial-only; instant; continuously while it is worn, chanted or in effect — While Planar Grounding is in effect, Enchantments that automatically render their bearer Insubstantial (such as Gift of Air) fail and are removed if they activate. | N1 |
+
+## Clarifications in the text
+
+- May be cast on players who are not currently Insubstantial (to prevent them becoming Insubstantial). *(E2)*
+- Enchantments that automatically make their bearer Insubstantial, such as Gift of Air, fail and are removed if they activate while Planar Grounding is in effect. *(N1)*
+
+## Names in the text
+
+- state **insubstantial**: mentions *(E1, E2, N1)*
+- ability **[Gift of Air](gift-of-air.md)**: counters *(N1)*
+- mechanic **enchantments**: mentions *(N1)*
+
+## What can stop or blunt it
+
+Derived from the other records: abilities and traits that make their bearer immune, resistant or unaffected in a way that covers this ability.
+
+| Protection | How | Who has it |
+| --- | --- | --- |
+| [Sleight of Mind](sleight-of-mind.md) | Enchantments cannot be removed | Bard |
+| [Adaptive Protection](adaptive-protection.md) | Immune (chosen School) | Healer, Scout |
+| [Adaptive Blessing](adaptive-blessing.md) | Resistant (chosen School, next ability) | Healer |
+| [Blessed Aura](blessed-aura.md) | Resistant to the next source | Healer |
+| [Blessing Against Harm](blessing-against-harm.md) | Resistant to the next source | Healer, Wizard |
+| [Sanctuary](sanctuary.md) | Unaffected by hostile actions within 20ft | Monk |
+| [Protection from Magic](protection-from-magic.md) | Unaffected by magical abilities | Healer, Paladin, Wizard |
+| [Void Touched](void-touched.md) | Unaffected by schools | Anti-Paladin, Wizard |
+| [Rage](rage.md) | Unaffected by verbal abilities | Barbarian |
+| [Enlightened Soul](enlightened-soul.md) | Unaffected by verbal magical beyond touch | Healer, Monk |
+| [Enlightened Soul](enlightened-soul.md) | Unaffected by verbal magical beyond touch | Healer, Monk |
+
+## Similar abilities
+
+| Relation | Ability | Differences |
+| --- | --- | --- |
+| does more than | [Tracking](tracking.md) | Ends Insubstantial: instant, if target-insubstantial vs instant; only Planar Grounding: Prevents Insubstantial (target, 30 s); only Planar Grounding: Removes Enchantments (target, instant); requirement only in Tracking: target-insubstantial |
+
+## Open questions
+
+- N1 'fail': does the rest of the failing Enchantment's activation (e.g. Gift of Air ignoring the triggering hit) also not happen? The plain reading is that the whole activation fails.
+
+## Rule text, sentence by sentence
+
+Every sentence and the items that cite it.
+
+| Id | Sentence | Captured as |
+| --- | --- | --- |
+| E1 | Target player has their Insubstantial State removed and may not become Insubstantial for 30 seconds. | effect e1 (Ends Insubstantial); effect e2 (Prevents Insubstantial); names insubstantial |
+| E2 | May be cast on players who are not currently Insubstantial. | effect e2 (Prevents Insubstantial); names insubstantial; clarification |
+| N1 | Planar Grounding causes Enchantments that automatically render their bearer Insubstantial, such as Gift of Air, to fail and be removed if they activate while Planar Grounding is in effect. | effect e3 (Removes Enchantments); names insubstantial; names Gift of Air; names enchantments; clarification |
+
+---
+*Generated by `scripts/meta_build.py` from `metadata/source/records/planar-grounding.json` and the V8.08 "Spongy" rules.*

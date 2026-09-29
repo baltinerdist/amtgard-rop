@@ -1,0 +1,53 @@
+{
+  "slug": "greater-heal",
+  "summary": "Heals all wounds on a touched player, even if they are Cursed.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "wound.heal",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "amount": "all"
+      },
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2"
+      ],
+      "note": "Range Touch: the caster or another player. Works on Cursed players (E2)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "bypass-cursed",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Ignores the Cursed State (which otherwise blocks Spirit healing); does not remove it."
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "cursed",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Greater Heal ignores it."
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "healing"
+  ],
+  "beneficiary": "ally",
+  "open_questions": []
+}

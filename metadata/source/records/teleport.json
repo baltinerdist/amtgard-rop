@@ -1,0 +1,176 @@
+{
+  "slug": "teleport",
+  "summary": "A willing player becomes Insubstantial and travels directly to a fixed location the caster chose, ending it on arrival.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "state.apply",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E3",
+        "N1"
+      ],
+      "note": "Insubstantial while travelling; must end it immediately on arrival as per Insubstantial.",
+      "conditions": [
+        "cast-on-other"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "move.to-location",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "E2",
+        "N3"
+      ],
+      "note": "Moves directly to a location chosen by the caster at the time of casting; it must be fixed, not relative to a player or a moveable object. A Forced Movement effect.",
+      "conditions": [
+        "cast-on-other"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "state.apply",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "state": "insubstantial"
+      },
+      "conditions": [
+        "cast-on-self"
+      ],
+      "evidence": [
+        "E1",
+        "N2"
+      ],
+      "note": "Cast on self: the caster may end the Insubstantial State at any time with its exit incantation.",
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast"
+    },
+    {
+      "id": "e4",
+      "kind": "move.to-location",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {},
+      "conditions": [
+        "cast-on-self"
+      ],
+      "evidence": [
+        "E1",
+        "E2",
+        "N2"
+      ],
+      "duration": {
+        "type": "until-arrival"
+      },
+      "timing": "on-cast"
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "target-willing",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "restrictions": [],
+  "termination": [
+    {
+      "kind": "on-arrival",
+      "evidence": [
+        "E3"
+      ],
+      "note": "Upon arrival they must immediately end the effect as per Insubstantial."
+    },
+    {
+      "kind": "insubstantial-ends",
+      "evidence": [
+        "N1"
+      ],
+      "note": "If the Insubstantial State is removed before the destination is reached, the effects of Teleport end."
+    },
+    {
+      "kind": "exit-at-will",
+      "evidence": [
+        "N2"
+      ],
+      "note": "Only when Teleport is cast on self: the caster may end the Insubstantial State at any time with the Insubstantial exit incantation.",
+      "conditions": [
+        "cast-on-self"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "kind": "forced-movement",
+      "evidence": [
+        "N3"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "target": "state",
+      "name": "insubstantial",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "E3",
+        "N1",
+        "N2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "forced-movement",
+      "relation": "mentions",
+      "evidence": [
+        "N3"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N2"
+      ],
+      "note": "The exit incantation for Insubstantial."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The destination must be a fixed location chosen at the time of casting, not relative to a player or a moveable object.",
+      "evidence": [
+        "E2"
+      ]
+    }
+  ],
+  "roles": [
+    "mobility"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "N2 lets a self-cast Teleport be ended early; the text does not say whether another player who was Teleported may end it before arrival (the general Insubstantial rule would require them to end it as per Teleport, i.e. on arrival)."
+  ]
+}

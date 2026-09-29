@@ -1,0 +1,52 @@
+{
+  "slug": "confidence",
+  "summary": "Another player may instantly Charge one ability; cannot be used within 20' of a living enemy.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "ability.charge",
+      "subject": "target",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "instant"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Target player may instantly Charge a single ability (no Charge Incantation)."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "no-enemy-within-20ft",
+      "evidence": [
+        "L1"
+      ],
+      "note": "May not be used within 20' of a living enemy."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "charge",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "clarifications": [],
+  "roles": [
+    "resource"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "L1 does not say whether the 20' is measured from the caster, the target, or both; recorded with the standard no-enemy-within-20ft requirement (caster).",
+    "E1 does not say whether the target must Charge immediately or may choose later, nor whether the ability must have a listed Charge value."
+  ]
+}

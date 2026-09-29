@@ -1,0 +1,84 @@
+{
+  "slug": "protection-from-projectiles",
+  "summary": "Bearer is unaffected by projectiles other than Magic Balls, including their Engulfing effects such as Pinning Arrow; equipment can still be affected.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "defense.unaffected",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {
+        "by": "projectiles-except-magic-balls"
+      },
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "defense.negate-engulfing",
+      "subject": "bearer",
+      "polarity": "benefit",
+      "params": {},
+      "duration": {
+        "type": "while-worn"
+      },
+      "timing": "while-active",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Only Engulfing effects from projectiles other than Magic Balls (for example Pinning Arrow)."
+    }
+  ],
+  "requirements": [],
+  "restrictions": [],
+  "termination": [],
+  "properties": [],
+  "references": [
+    {
+      "target": "ability",
+      "name": "Pinning Arrow",
+      "relation": "protects-against",
+      "evidence": [
+        "E2"
+      ],
+      "note": "Named as an example of an Engulfing projectile effect that does not affect the bearer."
+    },
+    {
+      "target": "mechanic",
+      "name": "engulfing",
+      "relation": "mentions",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Magic Balls are not blocked."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "The bearer's equipment can still be affected by projectiles and their Engulfing effects.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "defense"
+  ],
+  "beneficiary": "ally",
+  "open_questions": [
+    "N1 'Equipment can still be affected by the above' is read as the bearer's own equipment (e.g. a shield hit by a Specialty Arrow); the text does not say whose equipment."
+  ]
+}

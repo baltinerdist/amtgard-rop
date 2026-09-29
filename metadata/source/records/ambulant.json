@@ -1,0 +1,102 @@
+{
+  "slug": "ambulant",
+  "summary": "Meta-Magic: the next Enchantment, Magic Ball or Verbal may be cast while moving.",
+  "effects": [
+    {
+      "id": "e1",
+      "kind": "meta.modify-next",
+      "subject": "caster",
+      "polarity": "benefit",
+      "params": {
+        "mode": "cast-while-moving"
+      },
+      "duration": {
+        "type": "until-used"
+      },
+      "timing": "on-cast",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Applies only to the next Enchantment, Magic Ball or Verbal. The target indication and 'Ambulant' itself may also be said while moving; other Meta-Magics may not."
+    }
+  ],
+  "requirements": [
+    {
+      "kind": "only-enchantments-balls-verbals",
+      "evidence": [
+        "E1"
+      ],
+      "note": "Only the next Enchantment, Magic Ball or Verbal."
+    }
+  ],
+  "restrictions": [],
+  "termination": [],
+  "properties": [
+    {
+      "kind": "castable-while-moving",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Ambulant itself and the target indication may be said while moving (not other Meta-Magics)."
+    }
+  ],
+  "references": [
+    {
+      "target": "mechanic",
+      "name": "meta-magic",
+      "relation": "mentions",
+      "evidence": [
+        "E1",
+        "N1"
+      ],
+      "note": "Type is Meta-Magic; N1 excludes other Meta-Magics from being said while moving."
+    },
+    {
+      "target": "mechanic",
+      "name": "enchantments",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "magic-balls",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "verbal",
+      "relation": "mentions",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "target": "mechanic",
+      "name": "incantation",
+      "relation": "mentions",
+      "evidence": [
+        "N1"
+      ],
+      "note": "Target indication and the Meta-Magic word are said while moving."
+    }
+  ],
+  "clarifications": [
+    {
+      "text": "Both the target indication and 'Ambulant' may be said while moving, but other Meta-Magics used with it may not.",
+      "evidence": [
+        "N1"
+      ]
+    }
+  ],
+  "roles": [
+    "utility"
+  ],
+  "beneficiary": "self",
+  "open_questions": []
+}
