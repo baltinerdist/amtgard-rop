@@ -1,0 +1,197 @@
+{
+  "_about": "How Magic Users build their spell lists: a caster picks a plan (a doctrine) and buys toward it, instead of buying whatever scores well on its own. Each doctrine has a stance (what it is for on the field), a play style (how the simulator plays it), a core list bought first in order, spells it leans toward or away from, and set-up-and-finish combos. Archetype doctrines exist only at 6th level: the Archetype is bought first and the list is built around what it allows. Doctrine choice: below 6th level a caster picks a base doctrine by `share`; at 6th level each Archetype doctrine is taken by `share_at_6` of that class's players (0.4 in total per class) and the rest pick a base doctrine by `share`. Everything in this file except slugs, costs and Archetype rules is an ASSUMPTION about how real players build: the shares especially. Please correct it.",
+  "stances": {
+    "offense": "Gets kills itself: Magic Balls and lethal Verbals.",
+    "control": "Takes enemies out of the fight so teammates can kill them or survive: Stopped, Frozen, Stunned, Suppressed, forced movement, disarming.",
+    "support": "Makes teammates better: weapon Enchantments that arm fighters, armor and protection Enchantments that keep them alive, tempo abilities that refill their uses.",
+    "sustain": "Undoes losses: heals, revives, repairs, removes States.",
+    "hybrid": "Fights in the line with weapons and self-buffs, casting when there is a moment."
+  },
+  "play_styles": {
+    "striker": "Stays behind the line and throws or casts at whoever can be killed.",
+    "controller": "Stays behind the line and locks down the enemy most dangerous to a teammate: one engaged with an ally first, then the strongest fighter in range. Kills only when nothing needs locking down.",
+    "enchanter": "Enchants teammates before the fight and at base, re-enchants between fights, then heals and cleanses. Casts at enemies last.",
+    "medic": "Heals and revives teammates from just behind the line; never walks into melee to do it.",
+    "battle": "Fights in melee like a fighter, keeps self-buffs up, and casts only when free.",
+    "archer": "Shoots, and casts between shots."
+  },
+  "classes": {
+    "Wizard": [
+      {
+        "id": "artillery", "name": "Artillery", "stance": "offense", "play": "striker", "share": 0.35,
+        "core": [["force-bolt", 3], ["lightning-bolt", 2], ["fireball", 2], ["phase-bolt", 1], ["sphere-of-annihilation", 1], ["elemental-barrage", 1]],
+        "prefer": ["swift", "iceball", "entangle", "force-barrier", "mend"],
+        "avoid": ["contagion", "vampirism", "void-touched", "persistent", "word-of-mending"],
+        "why": "The kill-it-yourself Wizard: carries as many Magic Balls as the points allow and throws them from behind the line."
+      },
+      {
+        "id": "controller", "name": "Battlefield controller", "stance": "control", "play": "controller", "share": 0.3,
+        "core": [["entangle", 2], ["hold-person", 1], ["iceball", 2], ["suppression-bolt", 1], ["break-concentration", 1], ["icy-blast", 1], ["suppress-aura", 1], ["throw", 1]],
+        "prefer": ["extension", "heat-weapon", "shatter-weapon", "pyrotechnics", "destroy-armor", "shove", "planar-grounding", "force-bolt", "astral-intervention"],
+        "avoid": ["sphere-of-annihilation", "finger-of-death", "contagion"],
+        "why": "Stops, Freezes and Suppresses the enemies fighting its teammates. It rarely gets the kill; the fighter next to the target does."
+      },
+      {
+        "id": "lockdown-killer", "name": "Lock-down and finish", "stance": "offense", "play": "striker", "share": 0.25,
+        "core": [["hold-person", 1], ["entangle", 1], ["dragged-below", 1], ["iceball", 1], ["shatter", 1], ["ravage", 1], ["lightning-bolt", 1], ["icy-blast", 1], ["wounding", 1], ["finger-of-death", 1]],
+        "prefer": ["force-bolt", "astral-intervention", "dimensional-rift", "extension", "swift"],
+        "avoid": ["contagion", "vampirism", "void-touched", "persistent"],
+        "combos": [["hold-person", "dragged-below"], ["entangle", "dragged-below"], ["lightning-bolt", "dragged-below"], ["iceball", "shatter"], ["icy-blast", "shatter"], ["astral-intervention", "dimensional-rift"], ["ravage", "force-bolt"], ["ravage", "wounding"]],
+        "why": "Uses its own control spell to set up its own kill: Stop then Dragged Below, Freeze then Shatter, Fragile then any wound."
+      },
+      {
+        "id": "armorer", "name": "Armorer", "stance": "support", "play": "enchanter", "share": 0.1,
+        "core": [["mend", 1], ["contagion", 1], ["vampirism", 1], ["blessing-against-harm", 2], ["void-touched", 1], ["protection-from-magic", 1], ["persistent", 1], ["greater-mend", 1], ["word-of-mending", 1]],
+        "prefer": ["dispel-magic", "release", "force-bolt", "entangle"],
+        "avoid": ["sphere-of-annihilation", "finger-of-death", "dragged-below", "shatter"],
+        "why": "Arms and protects one or two fighters (Contagion or Void Touched on the best fighter, Blessing Against Harm on the front line) and keeps their gear working."
+      },
+      {
+        "id": "battlemage", "name": "Battlemage", "stance": "offense", "play": "striker", "archetype": "battlemage", "share_at_6": 0.15,
+        "core": [["ambulant", 1], ["finger-of-death", 1], ["hold-person", 1], ["dragged-below", 1], ["icy-blast", 1], ["shatter", 1], ["wounding", 1], ["ravage", 1], ["suppress-aura", 1], ["destroy-armor", 1]],
+        "prefer": ["pyrotechnics", "dispel-magic", "extension", "throw", "break-concentration"],
+        "combos": [["hold-person", "dragged-below"], ["icy-blast", "shatter"], ["ravage", "wounding"]],
+        "why": "No Enchantments or Magic Balls, but Ambulant becomes unlimited: a Verbal caster who casts while moving, so the lock-down-and-finish chain works on the run."
+      },
+      {
+        "id": "evoker", "name": "Evoker", "stance": "offense", "play": "striker", "archetype": "evoker", "share_at_6": 0.1,
+        "core": [["elemental-barrage", 1], ["force-bolt", 3], ["lightning-bolt", 2], ["fireball", 2], ["phase-bolt", 1], ["sphere-of-annihilation", 1], ["iceball", 1]],
+        "prefer": ["entangle", "suppression-bolt", "swift"],
+        "why": "Elemental Barrage becomes Charge x10 and 20'/50' Verbals are off the table: all points go into Magic Balls thrown without incanting."
+      },
+      {
+        "id": "warlock", "name": "Warlock", "stance": "offense", "play": "striker", "archetype": "warlock", "share_at_6": 0.15,
+        "core": [["lightning-bolt", 2], ["fireball", 2], ["dragged-below", 1], ["finger-of-death", 1], ["ravage", 1], ["wounding", 1], ["destroy-armor", 1]],
+        "prefer": ["pyrotechnics", "heat-weapon", "contagion", "vampirism"],
+        "combos": [["lightning-bolt", "dragged-below"], ["ravage", "wounding"]],
+        "why": "Death and Flame Verbals and Balls give double uses and nothing else may be bought: Lightning Bolt Stops, Dragged Below kills the Stopped, Fireball and Finger of Death kill outright, all twice as often."
+      }
+    ],
+    "Healer": [
+      {
+        "id": "medic", "name": "Field medic", "stance": "sustain", "play": "medic", "share": 0.4,
+        "core": [["heal", 1], ["release", 1], ["raise-dead", 1], ["resurrect", 1], ["greater-heal", 1], ["summon-dead", 1], ["greater-resurrect", 1], ["mass-healing", 1], ["circle-of-protection", 1]],
+        "prefer": ["swift", "extension", "greater-release", "blessing-against-wounds", "mend"],
+        "avoid": ["abeyance", "stun", "sever-spirit"],
+        "why": "Keeps the team's players alive and in the fight: heals, revives and cleanses from just behind the line."
+      },
+      {
+        "id": "protector", "name": "Protector", "stance": "support", "play": "enchanter", "share": 0.3,
+        "core": [["heal", 1], ["blessing-against-wounds", 1], ["harden", 1], ["adaptive-blessing", 1], ["adaptive-protection", 1], ["blessing-against-harm", 2], ["protection-from-projectiles", 1], ["imbue", 1], ["blessed-aura", 1], ["enlightened-soul", 1], ["ancestral-armor", 1], ["phoenix-tears", 1], ["protection-from-magic", 1]],
+        "prefer": ["greater-harden", "persistent", "release", "mend"],
+        "avoid": ["abeyance", "stun", "entangle", "iceball"],
+        "why": "Protects fighters before they get hurt: Resistances, Immunities and equipment protection cast at base on the front line."
+      },
+      {
+        "id": "battle-healer", "name": "Battle healer", "stance": "hybrid", "play": "battle", "share": 0.3,
+        "core": [["heal", 1], ["equipment-shield-small", 1], ["equipment-weapon-short", 1], ["entangle", 1], ["hold-person", 1], ["iceball", 1], ["equipment-shield-medium", 1], ["abeyance", 1], ["stun", 1]],
+        "prefer": ["shove", "astral-intervention", "banish", "release", "greater-heal"],
+        "avoid": ["mass-healing", "summon-dead", "persistent"],
+        "why": "Stands in the line with weapon and shield, heals the fighters beside it, and Stops or Freezes whoever pushes in."
+      },
+      {
+        "id": "warder", "name": "Warder", "stance": "support", "play": "enchanter", "archetype": "warder", "share_at_6": 0.15,
+        "core": [["heal", 1], ["blessing-against-wounds", 1], ["blessing-against-harm", 2], ["protection-from-projectiles", 1], ["imbue", 1], ["blessed-aura", 1], ["enlightened-soul", 1], ["ancestral-armor", 1], ["protection-from-magic", 1], ["circle-of-protection", 1]],
+        "prefer": ["adaptive-blessing", "adaptive-protection", "harden", "greater-harden", "phoenix-tears"],
+        "why": "Protection School abilities give double uses, and Death, Command and Subdual are off the table: the Protector with twice the Enchantments and no control."
+      },
+      {
+        "id": "priest", "name": "Priest", "stance": "sustain", "play": "medic", "archetype": "priest", "share_at_6": 0.15,
+        "core": [["heal", 1], ["swift", 1], ["resurrect", 1], ["greater-heal", 1], ["greater-resurrect", 1], ["mass-healing", 1], ["extension", 1], ["ambulant", 1], ["raise-dead", 1]],
+        "prefer": ["summon-dead", "release", "circle-of-protection", "persistent"],
+        "why": "Heal is free and Meta-Magic becomes 1/Life Charge x3 but only on Spirit abilities: Swift Heals and Resurrects, cast while moving."
+      },
+      {
+        "id": "necromancer", "name": "Necromancer", "stance": "sustain", "play": "medic", "archetype": "necromancer", "share_at_6": 0.1,
+        "core": [["heal", 1], ["undead-minion", 2], ["raise-dead", 1], ["steal-life-essence", 1], ["sever-spirit", 1], ["resurrect", 1]],
+        "prefer": ["summon-dead", "greater-resurrect", "hold-person", "entangle"],
+        "why": "Death School abilities become Charge x3 and up to five Undead Minions: revives the same fighters again and again. No Protection School."
+      }
+    ],
+    "Druid": [
+      {
+        "id": "enchanter", "name": "Enchanter", "stance": "support", "play": "enchanter", "share": 0.4,
+        "core": [["barkskin", 2], ["poison", 1], ["stoneskin", 1], ["bear-strength", 1], ["attuned", 1], ["flame-blade", 1], ["gift-of-earth", 1], ["lycanthropy", 1], ["ironskin", 1], ["troll-blood", 1], ["toxic-blades", 1]],
+        "prefer": ["essence-graft", "poison-glands", "gift-of-water", "golem", "gift-of-air", "harden-armor", "corrosive-mist", "gift-of-fire", "mend", "heal"],
+        "avoid": ["call-lightning", "snaring-vines"],
+        "why": "Turns fighters into better fighters: Magic Armor, Shield Crushing and Wounds Kill weapons, death prevention. Attuned and Essence Graft let one fighter carry more."
+      },
+      {
+        "id": "elementalist", "name": "Elementalist", "stance": "control", "play": "controller", "share": 0.35,
+        "core": [["entangle", 2], ["heat-weapon", 1], ["force-bolt", 2], ["icy-blast", 1], ["iceball", 2], ["call-lightning", 1], ["snaring-vines", 1]],
+        "prefer": ["extension", "swift", "dispel-magic", "heal", "barkskin"],
+        "avoid": ["attuned", "essence-graft", "golem"],
+        "why": "Stops and Freezes enemies with Entangle, Icy Blast and Iceball and disarms them with Heat Weapon; Force Bolt and Call Lightning when there is a kill to take."
+      },
+      {
+        "id": "battle-druid", "name": "Battle druid", "stance": "hybrid", "play": "battle", "share": 0.25,
+        "core": [["equipment-weapon-short", 1], ["heal", 1], ["equipment-shield-small", 1], ["mend", 1], ["entangle", 1], ["equipment-weapon-long", 1], ["heat-weapon", 1], ["stoneform", 1]],
+        "prefer": ["barkskin", "poison", "bear-strength", "force-bolt", "release"],
+        "avoid": ["attuned", "essence-graft", "call-lightning"],
+        "why": "Fights with weapon and shield and supports the line from inside it."
+      },
+      {
+        "id": "summoner", "name": "Summoner", "stance": "support", "play": "enchanter", "archetype": "summoner", "share_at_6": 0.15,
+        "core": [["barkskin", 2], ["stoneskin", 1], ["poison", 1], ["bear-strength", 1], ["flame-blade", 1], ["lycanthropy", 1], ["ironskin", 1], ["toxic-blades", 1], ["troll-blood", 1], ["attuned", 1], ["essence-graft", 1]],
+        "prefer": ["gift-of-earth", "gift-of-water", "golem", "poison-glands", "gift-of-air"],
+        "why": "Each Enchantment gives double uses, no 20'/50' Verbals, no equipment past 2nd level: a pure enchanter with twice the supply."
+      },
+      {
+        "id": "avatar-of-nature", "name": "Avatar of Nature", "stance": "hybrid", "play": "battle", "archetype": "avatar-of-nature", "share_at_6": 0.15,
+        "core": [["equipment-weapon-short", 1], ["equipment-shield-small", 1], ["barkskin", 1], ["stoneskin", 1], ["bear-strength", 1], ["flame-blade", 1], ["lycanthropy", 1], ["poison", 1], ["heal", 1]],
+        "prefer": ["gift-of-earth", "gift-of-water", "harden-armor", "equipment-weapon-long", "mend"],
+        "why": "Its Enchantments of 4th level and below become Self: the Druid enchants itself and fights."
+      },
+      {
+        "id": "ranger", "name": "Ranger", "stance": "offense", "play": "archer", "archetype": "ranger", "share_at_6": 0.1,
+        "core": [["entangle", 1], ["force-bolt", 2], ["icy-blast", 1], ["call-lightning", 1], ["heal", 1], ["heat-weapon", 1]],
+        "prefer": ["iceball", "extension", "swift", "mend"],
+        "avoid": ["attuned", "essence-graft", "golem"],
+        "why": "Uses bows, equipment is free and Enchantments cost double: shoots, and spends its points on Balls and Verbals."
+      }
+    ],
+    "Bard": [
+      {
+        "id": "controller", "name": "Controller", "stance": "control", "play": "controller", "share": 0.35,
+        "core": [["insult", 1], ["break-concentration", 1], ["awe", 1], ["suppress-aura", 1], ["terror", 1], ["agoraphobia", 1], ["stun", 1], ["lost", 1], ["shove", 1]],
+        "prefer": ["extension", "discordia", "greater-release", "song-of-determination"],
+        "avoid": ["song-of-battle", "equipment-weapon-long", "equipment-armor-1-point"],
+        "why": "Insult pulls an enemy off a teammate, Awe and Terror keep attackers off, Stun and Suppress Aura take a fighter or caster out."
+      },
+      {
+        "id": "force-multiplier", "name": "Force multiplier", "stance": "support", "play": "enchanter", "share": 0.3,
+        "core": [["empower", 1], ["confidence", 1], ["release", 1], ["mend", 1], ["battlefield-triage", 1], ["restoration", 1], ["song-of-power", 1], ["amplification", 1], ["sleight-of-mind", 1], ["silver-tongue", 1]],
+        "prefer": ["greater-release", "innate", "extension", "insult"],
+        "avoid": ["song-of-battle", "equipment-weapon-long"],
+        "why": "Refills teammates' abilities (Empower, Restoration, Confidence), speeds their Charges (Song of Power), and heals through Battlefield Triage."
+      },
+      {
+        "id": "skald", "name": "Skald", "stance": "hybrid", "play": "battle", "share": 0.35,
+        "core": [["equipment-weapon-short", 1], ["song-of-determination", 1], ["song-of-battle", 1], ["equipment-armor-1-point", 1], ["equipment-shield-small", 1], ["song-of-freedom", 1], ["equipment-weapon-long", 1], ["song-of-deflection", 1], ["equipment-shield-medium", 1], ["song-of-survival", 1]],
+        "prefer": ["awe", "terror", "insult", "mend"],
+        "avoid": ["confidence", "empower", "restoration"],
+        "why": "Fights in the line while chanting: Song of Battle makes their weapons Armor Breaking; the defensive songs keep them standing."
+      },
+      {
+        "id": "combat-caster", "name": "Combat caster", "stance": "hybrid", "play": "battle", "archetype": "combat-caster", "share_at_6": 0.15,
+        "core": [["equipment-weapon-short", 1], ["equipment-shield-small", 1], ["song-of-battle", 1], ["awe", 1], ["terror", 1], ["stun", 1], ["equipment-armor-1-point", 1], ["equipment-weapon-long", 1], ["insult", 1]],
+        "prefer": ["song-of-freedom", "song-of-survival", "equipment-shield-medium", "break-concentration"],
+        "why": "No empty hand needed to cast: the Skald who Stuns and Awes mid-fight without dropping weapon or shield."
+      },
+      {
+        "id": "dervish", "name": "Dervish", "stance": "control", "play": "controller", "archetype": "dervish", "share_at_6": 0.15,
+        "core": [["insult", 1], ["break-concentration", 1], ["awe", 1], ["suppress-aura", 1], ["terror", 1], ["stun", 1], ["agoraphobia", 1], ["lost", 1]],
+        "prefer": ["shove", "greater-release", "empower", "restoration"],
+        "avoid": ["equipment-weapon-short", "equipment-weapon-long", "equipment-shield-small", "equipment-shield-medium", "equipment-armor-1-point"],
+        "why": "Each Verbal gives double uses and equipment costs double: the Controller with twice the Stuns, Awes and Suppressions."
+      },
+      {
+        "id": "legend", "name": "Legend", "stance": "control", "play": "controller", "archetype": "legend", "share_at_6": 0.1,
+        "core": [["extension", 2], ["stun", 1], ["suppress-aura", 1], ["insult", 1], ["awe", 1], ["terror", 1], ["break-concentration", 1], ["agoraphobia", 1]],
+        "prefer": ["lost", "shove", "greater-release"],
+        "avoid": ["swift", "silver-tongue"],
+        "why": "Each Extension gives double uses and Swift is off the table: 20' control cast from 50'."
+      }
+    ]
+  }
+}
