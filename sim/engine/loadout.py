@@ -3,12 +3,10 @@ from __future__ import annotations
 
 import random
 import re
-from dataclasses import replace
 
 from sim.engine import effects as fx
 from sim.engine.state import LOCATIONS, Player, Uses
 from sim.policies import buy
-from sim.policies.value import value
 from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, ClassAbility, ClassSheet, Rules
 
@@ -93,9 +91,10 @@ def _martial(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random):
     for ca in chosen:
         _add(p, rules, ca.slug, ca.freq, 1, False, ca.range, ca.trait)
     if p.level >= 6:
-        arch = sorted((c for c in sheet.abilities if c.kind == "archetype"), key=lambda c: c.slug)
-        if arch and rng.random() < rules.a("loadout.archetype_share"):
-            _add(p, rules, rng.choice(arch).slug, freqmod.parse(""), 1, False, "")
+        arch = [c.slug for c in sheet.abilities if c.kind == "archetype"]
+        pick = buy.choose_archetype(p, arch, rules, rng) if arch else None   # a policy choice
+        if pick is not None:
+            _add(p, rules, pick, freqmod.parse(""), 1, False, "")
 
 
 def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, ablate: frozenset, ltp: bool):
@@ -105,13 +104,9 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
     if ltp:
         pools[p.level] += 1
     cands = [c for c in sheet.abilities if c.kind in ("spell", "archetype") and c.cost]
-    state = rng.getstate()
-    bought = buy.choose(cands, p.level, p.role, dict(pools), rules, rng, ablate)
-    arch = next((s for s in sorted(bought) if rules.abilities[s].delivery == "archetype"), None)
-    if arch is not None:
-        rebought = _buy_under_archetype(arch, cands, p, pools, rules, rng, state, ablate)
-        if rebought is not None:
-            bought = rebought
+    # the buyer weighs each Archetype under its own purchase rules (costs, forbidden spells)
+    bought = buy.choose(cands, p.level, p.role, pools, rules, rng, ablate,
+                        purchase_rules=lambda arch: _archetype_purchase_rules(rules.abilities[arch], rules))
     for slug, n in sorted(bought.items()):
         c = next(c for c in cands if c.slug == slug)
         _add(p, rules, slug, c.freq, n, True, c.range, purchased=True)
@@ -121,36 +116,6 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
             if eff.kind == "equipment.permit" and size in _SHIELD_ORDER and \
                     _SHIELD_ORDER.index(size) > _SHIELD_ORDER.index(p.shield):
                 p.shield = size
-
-
-def _buy_under_archetype(arch: str, cands: list[ClassAbility], p: Player, pools: dict[int, int], rules: Rules,
-                         rng: random.Random, state: tuple, ablate: frozenset) -> dict[str, int] | None:
-    """An Archetype's purchase rules (economy.purchase-restrict, economy.cost) bind every other
-    purchase. The buyer (sim/policies/buy.py) is replayed from the same random state with forbidden
-    spells excluded and costs changed; every draw happens as before, so it picks the same Archetype.
-    A spell that costs nothing (Priest's Heal) is taken at its Max. None when the rules change
-    nothing (or the buyer chose differently, keeping its first choice)."""
-    cost, allowed = _archetype_purchase_rules(rules.abilities[arch], rules)
-    spells = [c for c in cands if rules.abilities[c.slug].delivery != "archetype"]
-    banned = frozenset(c.slug for c in spells if not allowed(c))
-    free = [c for c in spells if c.slug not in banned and cost(c) == 0]
-    changed = [c for c in spells if cost(c) != c.cost]
-    if not banned and not changed:
-        return None
-    adjusted = [replace(c, cost=cost(c)) if (c in changed and cost(c) > 0) else c for c in cands]
-    after = rng.getstate()
-    rng.setstate(state)
-    rebought = buy.choose(adjusted, p.level, p.role, dict(pools), rules, rng,
-                          ablate | banned | {c.slug for c in free})
-    if not rebought.get(arch):
-        rng.setstate(after)
-        return None
-    cap = rules.a("loadout.magic_user_copy_cap")
-    for c in free:
-        ab = rules.abilities[c.slug]
-        if min(c.levels) <= p.level and c.slug not in ablate and value(ab, p.role) > 0 and buy.effective(ab, rules):
-            rebought[c.slug] = c.max if c.max is not None else cap
-    return rebought
 
 
 def _archetype_purchase_rules(arch: Ability, rules: Rules):
