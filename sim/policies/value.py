@@ -1,6 +1,7 @@
-"""A rough, hand-set usefulness score per ability, used by Magic Users to buy spells and by
-policies to pick which ability to use. Only effects the engine handles score anything, so an
-ability whose effects are all no-ops is never bought or cast deliberately.
+"""A usefulness score per ability, used by Magic Users to buy spells and by policies to pick which
+ability to use. Only effects the engine handles score anything, so an ability whose effects are
+all no-ops is never bought or cast deliberately. Its anchor weights are measured in play where a
+calibration exists (below, "Calibration") and hand-set otherwise.
 
 Benefits add to the score and **drawbacks subtract** from it. A drawback is a harmful effect on
 the user's own side: on the caster or bearer (Gift of Air's "may not wield weapons", Berserker's
@@ -20,10 +21,10 @@ abilities they act on, computed with this same function, so it follows its targe
 | `ability.grant` (as per) | the named ability's value (the bearer is treated as wearing it) |
 | a modifier of the granted ability on the same Enchantment | folded into the grant: "can only be cast with the bearer as the target" makes an Unlimited grant worth one copy (Undead Minion: one player's deaths bound the uses); the others (a waived or added requirement) are left to the grant and the drawbacks |
 | `ability.modify`, `economy.frequency` | the gain on the abilities affected: their value times `frequency_gain` (double uses, Unlimited, Charge), best per ability. A change the engine applies but that is not a frequency (Golem's Mend removing a wound) keeps the flat `UNPRICED_WEIGHT` |
-| `ability.charge` | the value of the ability it refills: the named spent ability when the context gives one (`Ctx.spent`), otherwise the mean over the recipient's chargeable abilities (Empower, Confidence and Restoration excluded, rule text) |
+| `ability.charge` | `refill_factor` of the value of the ability it refills: the named spent ability when the context gives one (`Ctx.spent`), otherwise the mean over the recipient's chargeable abilities (Empower, Confidence and Restoration excluded, rule text) |
 | `ability.restore-uses` | one use: the mean over the recipient's per-life abilities (Empower); all uses: `RESTORE_ALL_USES` of them (Restoration); a named ability: its value (Rogue's Coup de Grace) |
-| `enchantment.extra-slot` | the best Enchantments that could fill the slots, k-th slot times `COPY_DECAY ** k`: for an Enchantment cast on another player, the caster's own Enchantments castable on another (any, Protection school only for Phoenix Tears, the caster's (m) for Essence Graft); for a Self one (Evolution), any teammate's, times the share of classes that are Magic Users (the bearer can't fill it; only a teammate's cast can) |
-| `ability.charge-faster` | Song of Power: the Charge seconds saved on a typical chargeable ability (the mean over every class list's chargeable entries: xN becomes x(N // 2), minimum 1) times `policy.value_per_threat_second` times the chance the teammate is within 20', for one Charge per song. The songs' own exchange rate: a teammate Charging is one threat unit per second (`songs.py`) |
+| `enchantment.extra-slot` | `stack_share` of the best Enchantments that could fill the slots (the filler could usually have gone on another teammate; the slot adds only the stacking), k-th slot times `COPY_DECAY ** k`: for an Enchantment cast on another player, the caster's own Enchantments castable on another (any, Protection school only for Phoenix Tears, the caster's (m) for Essence Graft); for a Self one (Evolution), any teammate's, times the share of classes that are Magic Users (the bearer can't fill it; only a teammate's cast can) |
+| `ability.charge-faster` | Song of Power: the Charge seconds saved on a typical chargeable ability (the mean over every class list's chargeable entries: xN becomes x(N // 2), minimum 1) times `charge_second` (calibrated; else `policy.value_per_threat_second`) times the chance the teammate is within 20', for one Charge per song. The songs' own exchange rate: a teammate Charging is one threat unit per second (`songs.py`) |
 | `meta.modify-next` | Extension: `1 - p(20') / p(50')` (the share of casts it makes possible, as `Game._apply_meta_magic` rolls it) of the mean value of the holder's own 20' Verbals. Swift: the mean incantation seconds it saves on the holder's Touch, Other, Self and Magic Ball abilities, times `policy.value_per_threat_second`. Persistent: `PERSISTENT_SHARE` of the mean value of the holder's non-Persistent Enchantments |
 | `ability.cast-via-strips` | the ability's value times `held_worth(strips)` |
 | a refill offered as a choice (Steal Life Essence: "Caster may heal a wound or instantly Charge an ability") | the better of the two options, not both |
@@ -49,6 +50,33 @@ frequency, role, play, equipment), the spent ability a refill is for, the game t
 ablated abilities. Without it each missing kit is a *typical player of the role*: the abilities on
 the class lists of classes of that role (only those that list the ability, for its holder), each
 once. With it, the actual kit. A Self ability's bearer is its holder.
+
+**Calibration.** The anchor weights (`KIND_WEIGHT`, `STATE_WEIGHT`, `SPECIAL_WEIGHT`,
+`EQUIPMENT_WEIGHT`, `SCALAR_WEIGHT`, `FACTOR`) are built by `sim/policies/calibration.py` from
+`sim/data/value-calibration.json`, which `sim/analyze/calibrate.py` measures: each anchor is given
+to team 0 in paired games and its effect on team 0's result is converted to this scale by one
+reference, a use of Finger of Death per life = `death.cause` = 10. A weight the file doesn't
+measure keeps its hand value (`HAND_*`); `TABLES.sources` says which is which (`python -m
+sim.analyze.calibrate --weights`). A calibration made under other assumptions or another engine
+version raises `calibration.StaleCalibration`. The measured weights are:
+
+| Weight | Anchor (gift to team 0) |
+| --- | --- |
+| `death.cause` | a Finger of Death per life (the reference, 10 by definition) |
+| `wound.heal`, `life.revive`, `death.prevent`, `wound.inflict` | a Heal per life; a Raise Dead per refresh; a death prevented per life (Phoenix Tears' way); a Force Bolt per life (other effects of the ability subtracted at their hand weights) |
+| `STATE_WEIGHT` | the State for 30 s on a random enemy (Stopped keeps its hand weight: no effect without a map; Frozen and Insubstantial keep theirs as a floor) |
+| `SPECIAL_WEIGHT` armor-breaking, wounds-kill | the special on a fighter's weapon, every life |
+| `EQUIPMENT_WEIGHT` shields | a shield for a player carrying none |
+| `armor_point`, `armor_loss_point`, `magic_armor_point` | a point of armor on a fighter; 3 points on a fighter wearing none (per point: what "may not wear armor" takes); Magic Armor 1 on a fighter every life |
+| `charge_second` | a second of Charge saved, per second actually saved (floor: `policy.value_per_threat_second`) |
+| `fighter_heal` | a Heal per life held by a fighter: a wound healed as fighters use it (`direct_benefit` uses it for `wound.heal` held by a fighter; hand: `wound.heal`) |
+| `stack_share` | an extra Enchantment slot on a fighter, over the compositional value of that slot (`extra_slot` scales by it) |
+| `refill_factor` | an instant Charge per life, per Charge made, over the mean value of the recipients' chargeable abilities (`refill` scales an `ability.charge` by it) |
+
+The three factors are measured scores divided by what this module computes compositionally with
+the calibrated direct weights, so they are worked out when first used (`stack_share`,
+`refill_factor`), clamped to [0, 1]. The role multipliers (support ×1.5 on healing, caster ×1.3 on
+offense), `DRAWBACK_WEIGHT`, the frequency factors and the enabler assumptions stay hand-set.
 
 Values are memoized per rules object and context. A loop (Troll Blood as per Regeneration is
 fine; Empower on Empower, an Enchantment filling its own slot) counts as nothing, and a value
@@ -118,13 +146,13 @@ HAND_SCALAR_WEIGHT = {
     "armor_loss_point": 2.0,     # a point of worn armor taken away ("may not wear armor")
     "magic_armor_point": 2.0,    # a point of Magic Armor (armor.magic)
     "charge_second": None,       # a second of Charge incantation saved (Song of Power)
+    "fighter_heal": None,        # a wound healed, to a fighter (None: KIND_WEIGHT["wound.heal"])
 }
 # Factors on compositional values (module docstring, "Calibration").
 HAND_FACTOR = {
     "stack_share": 0.5,          # share of a filler Enchantment an extra slot adds: the filler could
                                  # usually go on another teammate; the slot adds it when none is free
     "refill_factor": 1.0,        # share of the refilled ability an instant Charge is worth
-    "fighter_heal": 1.0,         # share of a Heal's weight a fighter gets from it
 }
 HAND = {"kind": HAND_KIND_WEIGHT, "state": HAND_STATE_WEIGHT, "special": HAND_SPECIAL_WEIGHT,
         "equipment": HAND_EQUIPMENT_WEIGHT, "scalar": HAND_SCALAR_WEIGHT, "factor": HAND_FACTOR}
@@ -509,7 +537,8 @@ class _Eval:
             if eff.kind == "equipment.permit":
                 w = EQUIPMENT_WEIGHT.get(eff.params.get("what", ""), 0.0)
                 if equipment is None or w > equipment[2]:
-                    equipment = (eff.id, f"permit {eff.params.get('what')}", w)
+                    src = TABLES.sources.get(f"equipment.{eff.params.get('what', '')}", "hand")
+                    equipment = (eff.id, f"permit {eff.params.get('what')} [{src}]", w)
                 continue
             if eff.kind in ("ability.modify", "economy.frequency"):
                 if eff.kind == "ability.modify" and str(eff.params.get("ability", "")) in granted:
@@ -564,7 +593,7 @@ class _Eval:
             kit, r = self.recipient(ab, eff, role, ctx)
             v = self.enabled(target, r, _sub(ctx, kit)) * held_worth(ab.strips or 1)
             return f"{target.slug} x{ab.strips or 1} strips", v
-        return k, direct_benefit(ab, eff, role)
+        return f"{k} [{weight_source(eff)}]", direct_benefit(ab, eff, role)
 
     def grant(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
         prm = eff.params
@@ -756,13 +785,15 @@ class _Eval:
                     if other is not None and kit.copies(other.slug):
                         cost += self.enabled(other, r, _sub(ctx, kit)) * held_worth(kit.copies(other.slug))
                 return "the bearer's own copies unusable", cost
-            return f"may not {what}", restrict_cost(what, r, kit)
+            src = {"wear-armor": "scalar.armor_loss_point", "wield-shields": "equipment.small-shield"}.get(what)
+            return f"may not {what} [{TABLES.sources.get(src, 'hand')}]", restrict_cost(what, r, kit)
         if k == "state.apply":
             state = prm.get("state", "")
             if _self_stopped(ab, eff):
                 m = mobility(r, kit)
-                return f"self-imposed Stopped (mobility {m})", STATE_WEIGHT["stopped"] * m
-            return f"state {state}", STATE_WEIGHT.get(state, 1)
+                return f"self-imposed Stopped (mobility {m}) [{TABLES.sources['state.stopped']}]", \
+                    STATE_WEIGHT["stopped"] * m
+            return f"state {state} [{TABLES.sources.get(f'state.{state}', 'hand')}]", STATE_WEIGHT.get(state, 1)
         if k == "enchantment.remove" and eff.timing == "on-removal":
             return "drops Enchantments only when it ends", 0.0
         if k == "life.prevent-respawn":
@@ -842,6 +873,25 @@ class _UsesView:
 
 # ---------------------------------------------------------------- public API
 
+def weight_key(eff: Effect) -> str:
+    """The table entry a direct effect's weight comes from ("kind.death.cause", "state.stunned", ...)."""
+    k = eff.kind
+    if k == "armor.limit" and eff.params.get("change") == "increase":
+        return "scalar.armor_point"
+    if k == "armor.magic":
+        return "scalar.magic_armor_point"
+    if k == "state.apply":
+        return f"state.{eff.params.get('state', '')}"
+    if k == "special-effect.grant":
+        return f"special.{eff.params.get('effect', '')}"
+    return f"kind.{k}"
+
+
+def weight_source(eff: Effect) -> str:
+    """Whether the weight behind a direct effect is calibrated or hand-set (TABLES.sources)."""
+    return TABLES.sources.get(weight_key(eff), "hand")
+
+
 def direct_benefit(ability: Ability, eff: Effect, role: str) -> float:
     """A handled, non-drawback effect's flat contribution (the tables at the top)."""
     if eff.kind == "armor.limit" and eff.params.get("change") == "increase":
@@ -860,8 +910,8 @@ def direct_benefit(ability: Ability, eff: Effect, role: str) -> float:
         w = KIND_WEIGHT.get(eff.kind, UNPRICED_WEIGHT)
     if role == "support" and eff.kind in HEALING:
         w *= 1.5
-    if role == "fighter" and eff.kind == "wound.heal":
-        w *= FACTOR["fighter_heal"]     # how much of a Heal a fighter uses (calibration)
+    if role == "fighter" and eff.kind == "wound.heal" and SCALAR_WEIGHT.get("fighter_heal") is not None:
+        w = SCALAR_WEIGHT["fighter_heal"]   # a Heal as fighters use it (calibration)
     if role == "caster" and eff.kind in OFFENSE:
         w *= 1.3
     return w

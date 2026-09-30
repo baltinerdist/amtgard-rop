@@ -6,6 +6,7 @@ import math
 import pytest
 
 from sim.policies import buy
+from sim.policies import value as value_mod
 from sim.policies.value import Ctx, Held, Kit, breakdown, drawback_cost, stack_share, value
 from sim.rules.compile import build_rules
 
@@ -182,7 +183,22 @@ def test_values_do_not_depend_on_call_order():
     assert first == second
 
 
-def test_direct_offense_and_healing_scores_are_unchanged(fresh):
+def test_direct_offense_and_healing_scores_are_unchanged_with_the_hand_weights():
+    fresh = build_rules()
+    with value_mod.hand_weights():
+        _direct_snapshot(fresh)
+
+
+def test_direct_scores_follow_the_weight_tables_in_use(fresh):
+    # whatever the calibration says, a direct effect scores its table entry
+    assert value(fresh.abilities["finger-of-death"], "fighter", rules=fresh) == \
+        pytest.approx(value_mod.KIND_WEIGHT["death.cause"])
+    assert value(fresh.abilities["stun"], "fighter", rules=fresh) == pytest.approx(value_mod.STATE_WEIGHT["stunned"])
+    assert value(fresh.abilities["barkskin"], "fighter", rules=fresh) == \
+        pytest.approx(value_mod.SCALAR_WEIGHT["magic_armor_point"])
+
+
+def _direct_snapshot(fresh):
     snapshot = {("fireball", "caster"): 18.0, ("heal", "support"): 6.0, ("heal", "caster"): 4.0,
                 ("raise-dead", "support"): 12.5, ("resurrect", "support"): 17.5,
                 ("call-lightning", "caster"): 13.0, ("lightning-bolt", "caster"): 13.5,

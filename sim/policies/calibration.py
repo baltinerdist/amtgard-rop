@@ -130,12 +130,6 @@ def tables(hand: dict, doc: dict | None) -> Tables:
             continue
         weights[table][key] = max(0.0, measured)
         sources[target] = "calibrated (floor)" if flag == "may-understate" else "calibrated"
-    # the fighter's share of a Heal: measured on fighters against the Heal anchor on anyone
-    fh, heal = out.measured.get("factor.fighter_heal"), weights["kind"].get("wound.heal")
-    if fh is not None and heal and sources.get("kind.wound.heal", "").startswith("calibrated"):
-        weights["factor"]["fighter_heal"] = max(0.0, fh / heal)
-    elif "factor.fighter_heal" in sources:
-        sources["factor.fighter_heal"] = "hand"
     return out
 
 

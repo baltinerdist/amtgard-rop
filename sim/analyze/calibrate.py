@@ -58,6 +58,7 @@ import os
 os.environ["SIM_CALIBRATION"] = "off"     # measure under the hand weights (see the docstring)
 
 import argparse                            # noqa: E402
+import gzip                                # noqa: E402
 import json                                # noqa: E402
 import math                                # noqa: E402
 import time                                # noqa: E402
@@ -67,9 +68,10 @@ from multiprocessing import Pool           # noqa: E402
 
 import numpy as np                         # noqa: E402
 
-from sim.paths import DATA                 # noqa: E402
+from sim.paths import DATA, OUT            # noqa: E402
 
 CALIBRATION_JSON = DATA / "value-calibration.json"
+RAW_JSON = OUT / "calibration-raw.json.gz"     # every pair's results, for --from-raw
 SHARE = 0.5
 REFERENCE = "kill"
 REFERENCE_SCORE = 10.0
@@ -139,8 +141,8 @@ ANCHORS: tuple[Anchor, ...] = (
     Anchor("heal", _ab("heal"), "a Heal per life", "kind.wound.heal",
            why="Touch range and standing behind the line are probabilities; the policy heals out of melee."),
     Anchor("heal-fighter", _ab("heal", who="fighter"), "a Heal per life held by a fighter",
-           "factor.fighter_heal",
-           why="How much of a Heal's value a fighter gets, by how fighters use it (step back and heal)."),
+           "scalar.fighter_heal",
+           why="A Heal's value to a fighter, by how fighters use it (step back and heal when not attacked)."),
     Anchor("revive", _ab("raise-dead", "1/Refresh"), "a Raise Dead per refresh (per game in annihilation)",
            "kind.life.revive", residual_of="raise-dead",
            why="Reaching the body is a probability; Raise Dead's heal and drawbacks are subtracted."),
@@ -269,6 +271,21 @@ def run(contexts, anchors, scale: float = 1.0, seed0: int = 1, workers: int | No
     return out
 
 
+def save_raw(raw: dict, path, meta: dict) -> None:
+    rows = [[ctx, name, seed, *v] for (ctx, name), got in sorted(raw.items()) for seed, v in sorted(got.items())]
+    with gzip.open(path, "wt") as fh:
+        json.dump({"meta": meta, "rows": rows}, fh)
+
+
+def load_raw(path) -> tuple[dict, dict]:
+    with gzip.open(path, "rt") as fh:
+        doc = json.load(fh)
+    raw: dict = {}
+    for ctx, name, seed, result, units, roles in doc["rows"]:
+        raw.setdefault((ctx, name), {})[seed] = (result, units, roles)
+    return raw, doc["meta"]
+
+
 # ---------------------------------------------------------------- summarizing
 
 def _ci(samples: np.ndarray) -> tuple[float, float]:
@@ -340,6 +357,11 @@ def summarize(raw: dict, contexts, anchors, boot: int = BOOT, seed: int = 0) -> 
     return out
 
 
+def calibration_fingerprint() -> dict:
+    from sim.policies import calibration
+    return calibration.fingerprint()
+
+
 def _hand() -> dict:
     from sim.policies import value
     return value.HAND
@@ -362,7 +384,8 @@ def residual(anchor: Anchor) -> float:
         return float(sum(c for i, _, c in parts if kinds.get(i) != kind))
 
 
-def assemble(summary: dict, contexts, anchors, meta: dict) -> dict:
+def assemble(summary: dict, contexts, anchors, meta: dict, fingerprint: dict | None = None) -> dict:
+    """The calibration document. `fingerprint`: what the games were played under (default: now)."""
     from sim.policies import calibration
     doc = {
         "about": "Measured value of the usefulness score's anchor weights (sim/analyze/calibrate.py). "
@@ -370,7 +393,7 @@ def assemble(summary: dict, contexts, anchors, meta: dict) -> dict:
                  "same seeds without it; value.py derives its weights from this file "
                  "(sim/policies/calibration.py).",
         "date": time.strftime("%Y-%m-%d"),
-        "fingerprint": calibration.fingerprint(),
+        "fingerprint": fingerprint or calibration.fingerprint(),
         "valuation_during_measurement": "hand weights (SIM_CALIBRATION=off)",
         "reference": {"anchor": REFERENCE, "score": REFERENCE_SCORE, "weight": "kind.death.cause"},
         "recipients": f"{SHARE:.0%} of the eligible players of team 0, rounded up, at least one "
@@ -421,6 +444,9 @@ def main(argv=None) -> int:
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--workers", type=int, default=0)
     ap.add_argument("--out", default=str(CALIBRATION_JSON))
+    ap.add_argument("--raw", default=str(RAW_JSON), help="where the per-pair results are saved")
+    ap.add_argument("--from-raw", action="store_true",
+                    help="summarize the saved per-pair results (--raw) again instead of playing")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--report", default="", help="print the table of an existing calibration file and exit")
     ap.add_argument("--weights", action="store_true",
@@ -440,22 +466,35 @@ def main(argv=None) -> int:
         ap.error(f"unknown: {', '.join(bad)}")
     if REFERENCE not in anchors:
         anchors = [REFERENCE, *anchors]
-    est = estimate_seconds(contexts, anchors, args.scale, args.workers or os.cpu_count() or 1)
-    games = sum(max(20, int(CONTEXTS[c][2] * args.scale)) for c in contexts) * (1 + len(anchors))
-    print(f"{len(anchors)} anchors x {len(contexts)} contexts: {games} games, about {est / 60:.0f} min")
-    if args.dry_run:
-        return 0
-    t0 = time.perf_counter()
-    raw = run(contexts, anchors, args.scale, args.seed, args.workers or None)
-    wall = time.perf_counter() - t0
+    if args.from_raw:
+        raw, meta = load_raw(args.raw)
+        contexts = [c for c in contexts if (c, "") in raw]
+        anchors = [a for a in anchors if all((c, a) in raw for c in contexts)]
+    else:
+        est = estimate_seconds(contexts, anchors, args.scale, args.workers or os.cpu_count() or 1)
+        games = sum(max(20, int(CONTEXTS[c][2] * args.scale)) for c in contexts) * (1 + len(anchors))
+        print(f"{len(anchors)} anchors x {len(contexts)} contexts: {games} games, about {est / 60:.0f} min")
+        if args.dry_run:
+            return 0
+        t0 = time.perf_counter()
+        raw = run(contexts, anchors, args.scale, args.seed, args.workers or None)
+        wall = time.perf_counter() - t0
+        from sim.policies import calibration
+        meta = {"seed": args.seed, "scale": args.scale, "wall_seconds": round(wall), "games": games,
+                "fingerprint": calibration.fingerprint()}
+        OUT.mkdir(parents=True, exist_ok=True)
+        save_raw(raw, args.raw, meta)
+    games, wall = meta["games"], meta["wall_seconds"]
     summary = summarize(raw, contexts, anchors)
-    doc = assemble(summary, contexts, anchors, {"seed": args.seed, "scale": args.scale,
-                                                 "wall_seconds": round(wall), "games": games})
+    doc = assemble(summary, contexts, anchors, {k: meta[k] for k in ("seed", "scale", "wall_seconds", "games")},
+                   meta.get("fingerprint"))
     with open(args.out, "w") as fh:
         json.dump(doc, fh, indent=1, sort_keys=False)
         fh.write("\n")
     print(table(doc))
     print(f"\nwrote {args.out} ({games} games in {wall / 60:.1f} min)")
+    if doc["fingerprint"] != calibration_fingerprint():
+        print("warning: the games were played under another fingerprint than the current one: the file is stale")
     return 0
 
 
