@@ -411,7 +411,9 @@ def test_magic_users_buy_under_their_archetype(rules):
             if arch == "priest" and "heal" in p.uses:
                 seen.add("priest-heal")
             seen.add(arch)
-    assert {"warlock", "priest"} & seen
+    # Archetypes are now chosen by value (sim/policies/buy.py), so which ones appear depends on the
+    # value model; test_buying.py checks Warlock's and Priest's purchase rules directly.
+    assert seen
 
 
 # ---------------------------------------------------------------- equipment.permit

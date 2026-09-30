@@ -237,7 +237,7 @@
       "value": 0.6,
       "unit": "probability",
       "assumption": true,
-      "why": "Share of 6th-level players who take an optional Archetype (chosen uniformly among options)."
+      "why": "Share of 6th-level players who consider an Archetype at all. Which one, if any, is then chosen by value (sim/policies/buy.py): the Archetype is taken only when the build it allows, plus what it adds, beats the build without it. Was a coin flip followed by a uniform pick."
     },
     "magic_user_copy_cap": {
       "value": 3,
@@ -252,10 +252,10 @@
       "why": "Magic Users multiply each spell's usefulness score by a personal taste factor exp(sd x N(0,1)) before buying by score per point (sim/policies/buy.py). Real players of the same class and level buy different lists. Kept narrow so core picks stay near-universal (Heal, Force Bolt); the long tail comes from favorite_spells. With no spread every Healer of a level bought the identical list and a third of the purchasable, modeled abilities were never held in 1,000 games."
     },
     "favorite_spells": {
-      "value": 2,
+      "value": 3,
       "unit": "spells",
       "assumption": true,
-      "why": "Each Magic User buys one copy of this many favorite spells first, drawn uniformly among the spells they can buy that the engine models: the spell a player builds around because they like it. Gives every purchasable spell a real chance of being held (so ablation can measure it) while leaving the rest of the list to usefulness."
+      "why": "Favorite spells a 6th-level Magic User buys one copy of first, drawn uniformly among the spells they can buy that help their side in the engine: the spell a player builds around because they like it, whatever the usefulness score says. Scales with level (one at 1st, round(3 x level / 6) after), because a 1st-level player has five points and few spells to choose from. Gives every purchasable spell a real chance of being held, so ablation can measure it, while the rest of the list follows usefulness."
     },
     "armor_worn_share": {
       "value": 0.8,
@@ -306,6 +306,12 @@
       "unit": "bool",
       "assumption": true,
       "why": "A player attacked in melee mid-incantation or mid-Charge stops and defends unless the incantation completes this second. Standing still and talking while being hit is how a veteran caster gets killed; they break off and fight or back away."
+    },
+    "max_field_charge_seconds": {
+      "value": 30,
+      "unit": "s",
+      "assumption": true,
+      "why": "Longest Charge a caster starts while enemies are on the field (about Charge x3 at 3.5 words/s). Longer ones (Charge x5 is 40 s, x10 is 80 s) wait for a lull with no enemy on the field; fighters and archers Charge only in a lull. Standing still for over a minute mid-battle costs more than the recharged use is worth."
     }
   },
   "game": {
