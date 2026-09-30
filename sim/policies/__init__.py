@@ -145,8 +145,12 @@ def _try_revive(g: "Game", p: Player) -> bool:
     if not dead:
         return False
     for u in revives:
-        q = g.rng.choice(dead)
-        if g.check_requirements(u.ability, p, q, start=True) or not _can_receive(g, u, p, q):
+        # a granted revive may be tied to one player (Undead Minion's Raise Dead: only its bearer)
+        pool = dead if u.only_target is None else [q for q in dead if q.pid == u.only_target]
+        if not pool:
+            continue
+        q = g.rng.choice(pool)
+        if g.check_requirements(u.ability, p, q, start=True, uses=u) or not _can_receive(g, u, p, q):
             continue
         if g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch") and g.start_cast(p, u, q):
             return True
