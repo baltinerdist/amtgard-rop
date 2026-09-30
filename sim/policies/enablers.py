@@ -24,6 +24,7 @@ from __future__ import annotations
 import dataclasses
 from typing import TYPE_CHECKING
 
+from sim.engine.effects import NOT_RESTORED  # Empower/Restoration limitation, kept with the handler
 from sim.policies import songs
 from sim.policies import value as V
 from sim.policies.utility import cached, living, register, utility, value_of
@@ -34,8 +35,6 @@ if TYPE_CHECKING:
     from sim.rules.compile import Ability
 
 REFILLS = ("ability.charge", "ability.restore-uses")
-# Empower, Restoration: "Does not function on Empower, Confidence, or Restoration"
-NOT_RESTORED = frozenset({"empower", "confidence", "restoration"})
 # Undead Minion: deaths per PRIOR_SECONDS assumed before any are seen (hand-set: a line fighter
 # dies about twice as often as a backline player). Each death seen moves the rate toward q's own.
 DEATH_PRIOR = {"line": 1.0, "back": 0.5}

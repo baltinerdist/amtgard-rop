@@ -70,6 +70,20 @@ def test_empower_goes_to_the_most_valuable_spent_use_and_restores_only_it(near_r
     assert bolt.left == 1 and hold.left == 0, "Empower: one use of the ability named, not every use"
 
 
+def test_restoration_skips_empower_confidence_and_restoration(near_rules):
+    """restoration.md: "Does not function on Empower, Confidence, or Restoration." """
+    g = _game(near_rules, [("Bard", 6), ("Bard", 6)], [("Warrior", 1)])
+    bard, q, foe = g.players
+    away(g, foe)
+    give(g, bard, "restoration", rng="Other", per="refresh")
+    bolt = give(g, q, "hold-person", left=0)
+    excluded = [give(g, q, s, rng="Other", left=0) for s in ("empower", "confidence", "restoration")]
+    assert _try_refill(g, bard) and bard.casting.target == q.pid
+    finish(g, bard)
+    assert bolt.left == 1
+    assert all(u.left == 0 for u in excluded)
+
+
 def test_no_refill_for_a_dead_or_locked_down_teammate(near_rules):
     g = _game(near_rules, [("Bard", 6), ("Wizard", 6), ("Wizard", 6), ("Wizard", 6), ("Warrior", 6)],
               [("Warrior", 1)])

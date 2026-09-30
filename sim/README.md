@@ -668,7 +668,8 @@ name", Innate, Steal Life Essence). `Game.name_refill(caster, ability, recipient
 (`enablers.name_refill`: the spent use worth most to the recipient) when the refill resolves. The
 Charge handler Charges that use; the restore handler gives back one use of it for Empower ("regains
 one use of any per-life ability"; before, it restored every per-life use) and, for Restoration,
-still every per-life use. For a refill offered as a choice beside a heal (Steal Life Essence),
+every per-life use except Empower, Confidence and Restoration, which both abilities' Limitations
+exclude. For a refill offered as a choice beside a heal (Steal Life Essence),
 `Game.apply_effects` skips the heal when the caster names an ability. Momentum and the calibration's
 free Charge pick as before (the most valuable spent use).
 

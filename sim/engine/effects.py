@@ -321,6 +321,11 @@ def h_ability_charge(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     return True
 
 
+# Restoration and Empower: "Does not function on Empower, Confidence, or Restoration."
+# (rules/magic-and-abilities/restoration.md, empower.md)
+NOT_RESTORED = frozenset({"empower", "confidence", "restoration"})
+
+
 def h_ability_restore(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     """One use of the per-life ability the caster names (Empower: "regains one use of any per-life
     ability", Game.name_refill), or every per-life use (Restoration)."""
@@ -335,6 +340,8 @@ def h_ability_restore(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         return True
     changed = False
     for u in p.uses.values():
+        if u.slug in NOT_RESTORED:
+            continue
         if u.per == "life" and u.left is not None and u.max and u.left < u.max:
             u.left = u.max
             changed = True
