@@ -167,6 +167,8 @@ def h_wound_heal(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         p.wounds.clear()
     else:
         p.wounds.discard(next(iter(sorted(p.wounds))))
+    if not ctx.ability.effects_of("life.revive"):    # a revive is already counted as one save
+        g.credit_save(ctx.caster, p)
     return True
 
 

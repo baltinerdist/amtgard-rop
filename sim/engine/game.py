@@ -26,6 +26,11 @@ from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, Rules
 
 ARMOR_SPECIALS = ("armor-destroying", "armor-breaking")
+# Assist attribution (per-player results): a control assist is a teammate's kill of an enemy who was
+# under one of these States (or an Awe/Terror/Insult restriction) from this player at the moment of
+# death or within CONTROL_ASSIST_SECONDS before it.
+CONTROL_STATES = ("stunned", "frozen", "stopped", "suppressed", "fragile", "insubstantial")
+CONTROL_ASSIST_SECONDS = 10.0
 GIFT_OF_AIR_EXCEPT = ("siege", "armor-breaking", "armor-destroying", "shield-crushing", "shield-destroying")
 PASSIVE_UNAFFECTED = ("projectiles-except-magic-balls", "magical-abilities", "verbal-abilities",
                       "verbal-magical-beyond-touch")
@@ -721,6 +726,7 @@ class Game:
             if prevent.params.get("instead") == "insubstantial" and self._grounded(p, ench):
                 continue
             caster = self.players[ench.caster]
+            self.credit_save(caster, p)
             for s in list(p.states):
                 if s != "cursed":
                     p.states.pop(s)
@@ -745,6 +751,8 @@ class Game:
                 self.at(thaw, on_thaw)
             self.log("death-prevented", p.pid, ench.ability.slug)
             return
+        if src is not None and src.team != p.team:
+            self._credit_assists(p, src)       # before the victim's States and restrictions end
         p.alive = False
         p.deaths += 1
         p.dead_until = self.t + self.sc.get("respawn_seconds", 150)
@@ -813,7 +821,42 @@ class Game:
     def revive(self, p: Player, src: Player, slug: str) -> None:
         p.alive = True
         p.dead_until = 0.0
+        self.credit_save(src, p)
         self.log("revive", p.pid, src.pid, slug)
+
+    # ------------------------------------------------------------------ assists and saves
+
+    def credit_save(self, src: Player | None, p: Player) -> None:
+        """A save: src prevented a teammate's death, revived them, or healed a wound."""
+        if src is not None and src is not p and src.team == p.team:
+            src.saves += 1
+
+    def _control_sources(self, p: Player) -> set[int]:
+        """Enemies whose control State or restriction is on p right now."""
+        t = self.t
+        out = {pid for s, pid in p.state_src.items() if s in CONTROL_STATES and p.has_state(s, t)}
+        out.update(r.src for r in p.restrictions if r.until > t)
+        return out
+
+    def _mark_control(self, p: Player) -> None:
+        for pid in self._control_sources(p):
+            p.control_seen[pid] = self.t
+
+    def _credit_assists(self, victim: Player, killer: Player) -> None:
+        """Enchant assists to the teammates whose Enchantments the killer wears; control assists to
+        the teammates (other than the killer) who had the victim under control at death or within
+        CONTROL_ASSIST_SECONDS. Each player is credited at most once per kill of each kind."""
+        for pid in sorted({e.caster for e in killer.enchantments if not e.trait and e.caster != killer.pid}):
+            q = self.players[pid]
+            if q.team == killer.team:
+                q.enchant_assists += 1
+        since = self.t - CONTROL_ASSIST_SECONDS
+        ctrl = self._control_sources(victim) | {pid for pid, when in victim.control_seen.items() if when >= since}
+        for pid in sorted(ctrl):
+            q = self.players[pid]
+            if q.team == killer.team and q is not killer:
+                q.control_assists += 1
+        victim.control_seen.clear()
 
     def _persisting(self, p: Player) -> list[Ench]:
         """Enchantments that return with p after respawning: Persistent ones, all of them while Golem
@@ -1372,6 +1415,8 @@ class Game:
                     del p.states[s]
             if p.restrictions:
                 p.restrictions = [r for r in p.restrictions if r.until > t]
+            if p.state_src or p.restrictions:
+                self._mark_control(p)
             if p.buffs:
                 p.buffs = self._buffs(p)
             if not p.alive and not p.out:
@@ -1457,7 +1502,10 @@ class Game:
             "players": [
                 {"pid": p.pid, "team": p.team, "cls": p.cls, "level": p.level, "skill": round(p.skill, 4),
                  "role": p.role, "kills": p.kills, "deaths": p.deaths, "time_dead": p.time_dead,
-                 "won": int(p.team == winner), "doctrine": p.doctrine, "play": p.play} for p in self.players],
+                 "won": int(p.team == winner), "doctrine": p.doctrine, "play": p.play,
+                 "lives": p.deaths + (0 if p.out else 1), "enchant_assists": p.enchant_assists,
+                 "control_assists": p.control_assists, "saves": p.saves,
+                 "bought": ",".join(f"{s}:{n}" for s, n in sorted(p.bought.items()))} for p in self.players],
             "casts": dict(self.casts),
             "applied": {f"{s}|{k}": n for (s, k), n in self.applied.items()},
             "noops": {f"{s}|{k}": n for (s, k), n in self.noops.items()},

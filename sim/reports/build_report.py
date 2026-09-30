@@ -1,7 +1,9 @@
-"""Build sim/out/report.html from sim/out/cut.json (and sim/out/sensitivity.json if present).
+"""Build sim/out/report.html from sim/out/cut.json (and sim/out/sensitivity.json and
+sim/out/doctrines.json if present).
 
     .venv/bin/python -m sim.analyze.cut --games 300
     .venv/bin/python -m sim.analyze.sensitivity            # optional
+    .venv/bin/python -m sim.analyze.doctrines              # optional: the caster doctrine section
     .venv/bin/python -m sim.reports.build_report
 
 The page is sim/reports/report-template.html with the data inlined (the same approach as
@@ -32,12 +34,13 @@ def _clean(x):
     return x
 
 
-def build(cut_path, sens_path, out_path) -> str:
+def build(cut_path, sens_path, out_path, doctrines_path=None) -> str:
     cut = json.load(open(cut_path))
     sens = json.load(open(sens_path)) if sens_path and os.path.exists(sens_path) else None
+    doctrines = json.load(open(doctrines_path)) if doctrines_path and os.path.exists(doctrines_path) else None
     titles = {r["slug"]: r["title"] for r in cx.load_records()}
     data = {
-        "cut": cut, "sensitivity": sens, "titles": titles,
+        "cut": cut, "sensitivity": sens, "doctrines": doctrines, "titles": titles,
         "definitions": {"complexity_weights": cut["meta"].get("complexity_weights", cx.WEIGHTS),
                         "distance_weights": impact.DISTANCE_WEIGHTS,
                         "complexity_doc": (cx.__doc__ or "").strip(), "impact_doc": (impact.__doc__ or "").strip()},
@@ -56,11 +59,12 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Build the cut-analysis HTML report")
     ap.add_argument("--cut", default=str(OUT / "cut.json"))
     ap.add_argument("--sensitivity", default=str(OUT / "sensitivity.json"))
+    ap.add_argument("--doctrines", default=str(OUT / "doctrines.json"))
     ap.add_argument("--out", default=str(OUT / "report.html"))
     args = ap.parse_args(argv)
     if not os.path.exists(args.cut):
         ap.error(f"{args.cut} not found; run python -m sim.analyze.cut first")
-    html = build(args.cut, args.sensitivity, args.out)
+    html = build(args.cut, args.sensitivity, args.out, args.doctrines)
     print(f"wrote {args.out} ({len(html) // 1024} KB)")
     return 0
 

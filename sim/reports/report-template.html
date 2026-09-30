@@ -152,6 +152,40 @@ h += table([
   {h: "Games", n: 1, f: (r) => r.games, v: (r) => r.games},
 ], wr);
 
+// ---------------------------------------------------------------- caster doctrines
+const D = DATA.doctrines;
+h += `<h2>Caster doctrines</h2>`;
+if (!D) {
+  h += `<p class="muted">No doctrine table found. Run <code>python -m sim.analyze.doctrines</code> and rebuild.</p>`;
+} else {
+  h += `<p class="small muted">Magic Users build to a doctrine (<code>sim/data/doctrines.json</code>) and play its style. Run <code>${esc(D.run_id)}</code>, ${D.games} games.
+Win rate with the game-clustered 95% interval. Per life: totals divided by lives played. An <b>enchant assist</b> is a teammate's kill made while wearing
+this player's Enchantment; a <b>control assist</b> a teammate's kill of an enemy under this player's control State or restriction at death or in the 10 s before;
+a <b>save</b> a teammate's death prevented, a revive, or a wound healed. Assist share = assists / (own kills + assists).
+There is no map, so casters cannot keep their distance: read offense against support with that in mind.</p>`;
+  const dcols = [
+    {h: "Class", f: (r) => esc(r.cls), v: (r) => r.cls},
+    {h: "Doctrine", f: (r) => `${esc(r.name)}${r.archetype ? ' <span class="pill">6th</span>' : ""}`, v: (r) => r.doctrine},
+    {h: "Stance", f: (r) => esc(r.stance), v: (r) => r.stance},
+    {h: "Play", f: (r) => esc(r.play), v: (r) => r.play},
+    {h: "Share", n: 1, t: "of the class's player-games", f: (r) => pct(r.share), v: (r) => r.share},
+    {h: "Win rate", n: 1, f: (r) => pct(r.win_rate), v: (r) => r.win_rate},
+    {h: "95% CI", f: (r) => `${pct(r.ci_low)} – ${pct(r.ci_high)}`, v: (r) => r.ci_low},
+    {h: "", sort: false, f: (r) => ciBar(r.win_rate, r.ci_low, r.ci_high, 0.2, 0.8, 0.5)},
+    {h: "Kills/life", n: 1, f: (r) => f(r.kills_per_life, 2), v: (r) => r.kills_per_life},
+    {h: "Enchant assists/life", n: 1, f: (r) => f(r.enchant_assists_per_life, 2), v: (r) => r.enchant_assists_per_life},
+    {h: "Control assists/life", n: 1, f: (r) => f(r.control_assists_per_life, 2), v: (r) => r.control_assists_per_life},
+    {h: "Saves/life", n: 1, f: (r) => f(r.saves_per_life, 2), v: (r) => r.saves_per_life},
+    {h: "Assist share", n: 1, f: (r) => pct(r.assist_share, 0), v: (r) => r.assist_share},
+    {h: "Players", n: 1, f: (r) => r.players, v: (r) => r.players},
+    {h: "Most bought", wrap: 1, sort: false, f: (r) => r.bought.map(([s, c]) => `${name(s)} ${pct(c, 0)}`).join(", ")},
+  ];
+  h += table(dcols, D.all);
+  if (D.level6 && D.level6.length) {
+    h += `<details><summary>6th level only: Archetype doctrines against base doctrines at the same level</summary>` + table(dcols, D.level6) + `</details>`;
+  }
+}
+
 // ---------------------------------------------------------------- ranking
 const lowPresence = (s) => s.games_present < Math.max(30, 0.1 * M.games);
 h += `<h2>Cut ranking</h2>

@@ -110,6 +110,7 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
                                   cls=p.cls)
     if doctrine is not None:
         p.doctrine, p.play, p.combos = doctrine.id, doctrine.play, doctrine.combos
+    p.bought = dict(bought)
     for slug, n in sorted(bought.items()):
         c = next(c for c in cands if c.slug == slug)
         _add(p, rules, slug, c.freq, n, True, c.range, purchased=True)

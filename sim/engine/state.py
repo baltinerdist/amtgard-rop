@@ -118,6 +118,7 @@ class Player:
     doctrine: str = ""          # a Magic User's build plan (sim/data/doctrines.json id); "" for martial classes
     play: str = ""              # the doctrine's play style (sim/policies): striker, controller, enchanter, ...
     combos: tuple = ()          # the doctrine's (set-up, finisher) pairs
+    bought: dict = field(default_factory=dict)   # a Magic User's purchases: slug -> copies
 
     # per-life state
     alive: bool = True
@@ -131,6 +132,7 @@ class Player:
     wounds: set[str] = field(default_factory=set)
     states: dict[str, float] = field(default_factory=dict)     # state -> expiry time (INF = indefinite)
     state_src: dict[str, int] = field(default_factory=dict)    # state -> pid of the enemy who applied it
+    control_seen: dict[int, float] = field(default_factory=dict)  # enemy pid -> last tick p was under their control
     enchantments: list[Ench] = field(default_factory=list)
     resist: list[dict] = field(default_factory=list)
     restrictions: list[Restriction] = field(default_factory=list)
@@ -151,6 +153,9 @@ class Player:
     kills: int = 0
     deaths: int = 0
     time_dead: float = 0.0
+    enchant_assists: int = 0    # teammates' kills made while wearing this player's Enchantment
+    control_assists: int = 0    # teammates' kills of an enemy under this player's control (Game._credit_assists)
+    saves: int = 0              # teammates' deaths prevented, revives, wounds healed
 
     @property
     def backline(self) -> bool:
