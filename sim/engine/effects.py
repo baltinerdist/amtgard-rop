@@ -501,8 +501,8 @@ LOADOUT = frozenset({
 UNAFFECTED_BY = ("projectiles-except-magic-balls", "magical-abilities", "verbal-abilities",
                  "verbal-magical-beyond-touch", "schools", "blink", "forced-movement-except-banish")
 
-# States a worn Enchantment/Trait imposes for as long as it is worn (a Chant is modeled as worn until
-# removed, as for Song of Deflection)
+# States a worn Enchantment/Trait imposes for as long as it is worn (a Chant is worn until it ends:
+# the bearer begins another incantation, dies or can't speak; Game.end_chants)
 PASSIVE_STATE_DURATIONS = ("while-worn", "permanent", "while-chanting")
 
 # Parameter values the passive handlers in Game actually implement; other variants are no-ops.

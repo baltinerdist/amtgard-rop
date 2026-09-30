@@ -140,6 +140,7 @@ class Player:
     exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
     meta_armed: set = field(default_factory=set)                # Meta-Magics stated for the next ability
     prevented: dict[str, float] = field(default_factory=dict)  # States p may not gain until then (Planar Grounding)
+    once_used: set = field(default_factory=set)  # once-per-life abilities already activated this life (Song of Survival)
     barrage: dict[str, int] | None = None   # Elemental Barrage: carried Magic Balls usable by declaration
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
@@ -175,6 +176,10 @@ class Player:
 
     def wearable_enchantments(self) -> int:
         return self.ench_slots
+
+    def chants(self) -> list["Ench"]:
+        """Worn Enchantments sustained by p's own Chant (the Bardic songs)."""
+        return [e for e in self.enchantments if "chant" in e.ability.properties and not e.trait]
 
     def magical_enchantment_count(self) -> int:
         return sum(1 for e in self.enchantments if e.magical and "exempt-from-enchantment-limit" not in e.ability.properties)

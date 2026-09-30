@@ -64,6 +64,8 @@ class Game:
         self.noops: Counter = Counter()
         self.fails: Counter = Counter()
         self.kill_sources: Counter = Counter()
+        self.chants_ended: Counter = Counter()   # (slug, why) -> Chants ended (Game.end_chants)
+        self.policy_cache: dict = {}             # scratch space for policies, cleared every tick
         self._value_cache: dict = {}
         self._bars_cache: dict = {}
         self._as_per_cache: dict = {}
@@ -419,6 +421,8 @@ class Game:
         if state in ("frozen", "stunned", "insubstantial", "invulnerable"):
             self.interrupt(p, state)
             self.disengage(p)
+            if state in ("frozen", "stunned") and p.enchantments:
+                self.end_chants(p, state)       # "may not ... speak" (states.md): the Chant stops
         elif state == "suppressed" and p.casting is not None and p.casting.kind == "charge":
             self.interrupt(p, state)
         return True
@@ -434,6 +438,10 @@ class Game:
 
     def attach_enchantment(self, target: Player, uses: Uses, caster: Player, persistent: bool = False) -> bool:
         ab = uses.ability
+        if "chant" in ab.properties and target is caster and target.enchantments:
+            # "Only one Chant can be maintained at a time": saying this song's incantation already
+            # ended any other (Game._begin_incantation); this covers casts that skip start_cast
+            self.end_chants(target, "incantation")
         exempt = "exempt-from-enchantment-limit" in ab.properties
         if uses.magical and not exempt and target.magical_enchantment_count() >= target.ench_slots:
             self.fails[(ab.slug, "enchantment-limit")] += 1
@@ -611,6 +619,9 @@ class Game:
     def send_to_base(self, p: Player) -> None:
         self.interrupt(p, "moved")
         self.disengage(p)
+        if p.enchantments:
+            # other Chants "may be spoken while moving"; Song of Power "ends if the bearer moves"
+            self.end_chants(p, "moved", only=frozenset({"moves-from-start"}))
         p.at_base_until = self.t + self.rules.a("respawn.rejoin_seconds")
 
     # ------------------------------------------------------------------ hits, wounds, death
@@ -736,6 +747,9 @@ class Game:
             self.interrupt(p, "death-prevented")
             self.disengage(p)
             self.applied[(ench.ability.slug, "death.prevent")] += 1
+            if "once-per-life" in ench.ability.restrictions:
+                # Song of Survival "may not be cast nor activated again on the same life"
+                p.once_used.add(ench.ability.slug)
             ctx = Ctx(ench.ability, caster, p, bearer=p, ench=ench)
             self.apply_effects(ench.ability, ("on-death",), ctx)
             instead = prevent.params.get("instead")
@@ -762,6 +776,8 @@ class Game:
         self._end_restrictions_on_death(p)
         self.interrupt(p, "died")
         self.disengage(p)
+        if p.enchantments:
+            self.end_chants(p, "died")     # the dead don't chant; other Enchantments stay, inactive
         self.log("death", p.pid, src.pid if src else None, slug)
         if src is not None and src.team != p.team:
             src.kills += 1
@@ -905,6 +921,7 @@ class Game:
         p.restrictions.clear()
         p.buffs.clear()
         p.prevented.clear()
+        p.once_used.clear()
         p.barrage = None
         p.exit_lock_until = 0.0
         p.meta_armed.clear()
@@ -933,6 +950,8 @@ class Game:
             reqs = (reqs | uses.extra_reqs) - uses.drop_reqs
         if uses is not None and uses.only_target is not None and (target is None or target.pid != uses.only_target):
             return "only-target"
+        if "once-per-life" in ab.restrictions and ab.slug in (target or caster).once_used:
+            return "once-per-life"
         for req in sorted(reqs):  # sorted: frozenset order varies with the hash seed
             if req in ("target-dead", "target-dead-at-start"):
                 if target is None or target.alive or target.out:
@@ -1151,9 +1170,27 @@ class Game:
         return None
 
     def _begin_incantation(self, p: Player) -> None:
-        """Starting an Incantation ends effects that say so (Rage)."""
+        """Starting an Incantation ends effects that say so (Rage), and any Chant: "Beginning a new
+        incantation interrupts any other Incantations or Chants the player has in progress"
+        (mechanics-and-definitions.md, Casting Abilities). That includes the Charge Incantation
+        (ruling song-of-power#1) and the incantation of another song, so switching songs is ending
+        the current one and then saying the new one's incantation."""
         if p.buffs:
             p.buffs = [b for b in p.buffs if not b.ends_on_incantation]
+        if p.enchantments:
+            self.end_chants(p, "incantation")
+
+    def end_chants(self, p: Player, why: str, only: frozenset | None = None) -> None:
+        """End p's Chants (the Enchantments p sustains by chanting). A Chant must be spoken at least
+        every 5 s, so it ends when p begins another incantation, dies, or can no longer speak
+        (Frozen, Stunned); "Failure to Chant or becoming unable to Chant ends the effect" (Chant).
+        `only`: end only Chants with one of these terminations (Song of Power: moves-from-start)."""
+        for e in p.chants():
+            if only is not None and not (only & e.ability.termination):
+                continue
+            self.chants_ended[(e.ability.slug, why)] += 1
+            self.log("chant-end", p.pid, e.ability.slug, why)
+            self.remove_enchantment(p, e)
 
     def _complete(self, p: Player) -> None:
         c = p.casting
@@ -1474,6 +1511,7 @@ class Game:
 
     def step(self) -> int | None:
         self.t += self.dt
+        self.policy_cache.clear()
         self._upkeep()
         order = list(self.players)
         self.rng.shuffle(order)
