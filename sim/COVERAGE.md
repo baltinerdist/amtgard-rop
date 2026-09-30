@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **380 of 445** (85%)
-- Not handled: **26** no-op, **19** needs-map, **20** out-of-scope
-- Abilities fully handled: **145**, partly: **25**, not at all: **13**, no effects recorded: 0 (of 183)
+- Effect instances handled: **383 of 445** (86%)
+- Not handled: **23** no-op, **19** needs-map, **20** out-of-scope
+- Abilities fully handled: **147**, partly: **24**, not at all: **12**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -28,7 +28,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `wound.heal` | 10 | 10 | 10 | instant 9, passive 1 |
 | `death.cause` | 8 | 8 | 8 | instant 8 |
 | `defense.unaffected` | 8 | 11 | 9 | instant 3, needs-map 2, passive 6 |
-| `enchantment.remove` | 8 | 9 | 8 | instant 8, no-op 1 |
+| `enchantment.remove` | 8 | 9 | 9 | instant 9 |
 | `enchantment.spend-strip` | 8 | 8 | 8 | instant 8 |
 | `economy.purchase-restrict` | 7 | 8 | 8 | loadout 8 |
 | `ability.cast-via-strips` | 6 | 6 | 6 | passive 6 |
@@ -58,7 +58,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `enchantment.make-persistent` | 2 | 2 | 0 | no-op 2 |
 | `equipment.destroy` | 2 | 2 | 2 | instant 2 |
 | `move.push` | 2 | 4 | 4 | instant 4 |
-| `state.prevent` | 2 | 2 | 0 | no-op 2 |
+| `state.prevent` | 2 | 2 | 2 | instant 1, passive 1 |
 | `team.respawn-point` | 2 | 2 | 0 | needs-map 2 |
 | `ability.charge-faster` | 1 | 1 | 0 | no-op 1 |
 | `ability.range-change` | 1 | 1 | 0 | no-op 1 |
@@ -97,10 +97,10 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `trickery`
+`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-visit`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `phoenix-tears` (9/10), `planar-grounding` (1/3), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `sniper` (4/5), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)
+`artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `phoenix-tears` (9/10), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `sniper` (4/5), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)

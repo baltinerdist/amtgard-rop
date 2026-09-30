@@ -130,6 +130,7 @@ class Player:
     buffs: list[Buff] = field(default_factory=list)
     exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
     meta_armed: set = field(default_factory=set)                # Meta-Magics stated for the next ability
+    prevented: dict[str, float] = field(default_factory=dict)  # States p may not gain until then (Planar Grounding)
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
     weapon_ok: bool = True

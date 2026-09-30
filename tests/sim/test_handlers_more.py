@@ -717,6 +717,41 @@ def test_silver_tongue_excludes_other_swifts(rules):
     assert u is not own and u.granted_by is worn(ally, "silver-tongue")
 
 
+# ---------------------------------------------------------------- state.prevent
+
+def test_planar_grounding_prevents_insubstantial(rules):
+    g, wiz, war, _ = trio(rules, a="Wizard", b="Assassin")
+    resolve(g, wiz, "planar-grounding", war)
+    resolve(g, war, "blink", war, magical=False, rng="Self")
+    assert not war.has_state("insubstantial", g.t)
+    assert g.applied[("planar-grounding", "state.prevent")] >= 2   # the cast, then the blocked Blink
+    g.t += 30
+    resolve(g, war, "blink", war, magical=False, rng="Self")
+    assert war.has_state("insubstantial", g.t)
+
+
+def test_planar_grounding_makes_gift_of_air_fail(rules):
+    g, heal, war, ally = trio(rules, a="Healer")
+    ally.armor = {l: 0 for l in LOCATIONS}
+    resolve(g, heal, "gift-of-air", ally)
+    enemy_wiz = war
+    resolve(g, enemy_wiz, "planar-grounding", ally, magical=True)
+    g.hit(ally, war, "melee", location="left_arm")
+    assert ally.wounds == {"left_arm"}, "the hit takes effect (ruling planar-grounding#1)"
+    assert not any(e.ability.slug == "gift-of-air" for e in ally.enchantments)
+    assert g.applied[("planar-grounding", "enchantment.remove")] == 2, "registered at cast, then used"
+
+
+def test_song_of_freedom_blocks_others_states_not_own(rules):
+    g, bard, wiz, _ = trio(rules, b="Wizard")
+    resolve(g, bard, "song-of-freedom", bard, rng="Self")
+    resolve(g, wiz, "hold-person", bard)
+    assert not bard.has_state("stopped", g.t)
+    assert g.applied[("song-of-freedom", "state.prevent")] == 1
+    resolve(g, bard, "blink", bard, magical=False, rng="Self")
+    assert bard.has_state("insubstantial", g.t), "caused by the bearer"
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

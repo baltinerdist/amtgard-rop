@@ -82,17 +82,29 @@ def h_state_apply(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         return False
     if not p.alive and state != "cursed":
         return False
+    # caused by the player themself or by an Enchantment they carry (Song of Freedom's exception)
+    own = p is ctx.caster or (ctx.ench is not None and ctx.bearer is p)
     if eff.duration_type == "timed" and eff.seconds:
-        g.apply_state(p, state, g.t + eff.seconds)
+        until = g.t + eff.seconds
     elif eff.duration_type == "until-arrival" and _returns_to_base(ctx.ability, eff):
         # Insubstantial while returning to base, ended on arrival (Gift of Air / Song of Survival option 2)
-        g.apply_state(p, state, g.arrival_time(p))
+        until = g.arrival_time(p)
     elif state == "insubstantial" and p is ctx.caster and eff.duration_type in ("until-removed", "until-arrival"):
         # self-imposed Insubstantial: the policy ends it after a while (assumption), but not before
         # an exit-early lock (Martyr, Gift of Air option 2) allows it
-        g.apply_state(p, state, max(g.t + g.rules.a("policy.self_insubstantial_seconds"), p.exit_lock_until))
+        until = max(g.t + g.rules.a("policy.self_insubstantial_seconds"), p.exit_lock_until)
     else:
-        g.apply_state(p, state, INF)
+        until = INF
+    return g.apply_state(p, state, until, own=own)
+
+
+def h_state_prevent(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Planar Grounding: the target may not become Insubstantial for 30 seconds."""
+    p = subject(eff, ctx)
+    if p is None or not p.alive or eff.duration_type != "timed":
+        return False
+    for s in eff.params.get("states") or ():
+        p.prevented[s] = max(p.prevented.get(s, -1.0), g.t + (eff.seconds or 0.0))
     return True
 
 
@@ -213,9 +225,13 @@ def h_equipment_destroy(g: "Game", eff: Effect, ctx: Ctx) -> bool:
 
 def h_enchantment_remove(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     p = subject(eff, ctx)
+    scope = eff.params.get("scope", "all")
+    if p is not None and scope == "auto-insubstantial-only":
+        # Planar Grounding: registered with its prevention; Game.hit / Game.kill remove Gift of Air or
+        # Song of Survival if they activate while the target may not become Insubstantial
+        return p.prevented.get("insubstantial", -1.0) > g.t
     if p is None or not p.enchantments:
         return False
-    scope = eff.params.get("scope", "all")
     if scope == "chosen-to-meet-limit":
         # Attuned, Essence Graft, Phoenix Tears removed: the bearer drops (m) Enchantments to meet the
         # new limit, keeping the ones worth most to them (Phoenix Tears' extra one may go, phoenix-tears#2)
@@ -407,6 +423,7 @@ INSTANT: dict[str, Callable] = {
     "ability.grant": h_ability_grant,
     "defense.unaffected": h_buff,
     "equipment.disable": h_equipment_disable,
+    "state.prevent": h_state_prevent,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -795,6 +812,12 @@ MODE_RULES: dict[str, Callable[..., str | None]] = {
     "defense.negate-engulfing": _equipment_mode,
     "weapon.ignore-protections": _equipment_mode,
     "meta.modify-next": _meta_mode,
+    "state.prevent": lambda ab, eff, names=None: (
+        "instant" if eff.timing == "on-cast" and eff.duration_type == "timed"
+        else "passive" if eff.timing == "while-active" and ab.delivery in PASSIVE_DELIVERIES else None),
+    "enchantment.remove": lambda ab, eff, names=None: (
+        "instant" if (eff.timing in INSTANT_TIMINGS or eff.params.get("scope") == "auto-insubstantial-only")
+        else None),
 }
 
 

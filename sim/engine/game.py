@@ -215,6 +215,7 @@ class Game:
         """Ongoing Effects end when their bearer dies or avoids death; some end when their caster dies."""
         p.restrictions.clear()
         p.buffs.clear()
+        p.prevented.clear()
         for q in self.players:
             if q.restrictions:
                 q.restrictions = [r for r in q.restrictions if not (r.ends_on_src_death and r.src == p.pid)]
@@ -379,7 +380,25 @@ class Game:
 
     # ------------------------------------------------------------------ states and enchantments
 
-    def apply_state(self, p: Player, state: str, until: float) -> None:
+    def prevented(self, p: Player, state: str, own: bool = True) -> Ability | str | None:
+        """Why p cannot gain this State now: Planar Grounding ('planar-grounding'), or Song of Freedom
+        (unless the State is caused by p or an Enchantment p carries)."""
+        if p.prevented.get(state, -1.0) > self.t:
+            return "planar-grounding"
+        if not own:
+            for ab, _ in self._passive_sources(p):
+                for eff in ab.effects:
+                    if eff.kind == "state.prevent" and state in (eff.params.get("states") or ()) \
+                            and eff.timing == "while-active":
+                        return ab
+        return None
+
+    def apply_state(self, p: Player, state: str, until: float, own: bool = True) -> bool:
+        why = self.prevented(p, state, own)
+        if why is not None:
+            slug = why if isinstance(why, str) else why.slug
+            self.applied[(slug, "state.prevent")] += 1
+            return False
         p.states[state] = max(p.states.get(state, -1.0), until)
         self.log("state", p.pid, state, until)
         if state in ("frozen", "stunned", "insubstantial", "invulnerable"):
@@ -387,6 +406,16 @@ class Game:
             self.disengage(p)
         elif state == "suppressed" and p.casting is not None and p.casting.kind == "charge":
             self.interrupt(p, state)
+        return True
+
+    def _grounded(self, p: Player, ench: Ench) -> bool:
+        """Planar Grounding: an Enchantment that would make its bearer Insubstantial fails and is
+        removed; the triggering event takes effect normally (ruling planar-grounding#1)."""
+        if p.prevented.get("insubstantial", -1.0) <= self.t:
+            return False
+        self.remove_enchantment(p, ench)
+        self.applied[("planar-grounding", "enchantment.remove")] += 1
+        return True
 
     def attach_enchantment(self, target: Player, uses: Uses, caster: Player, persistent: bool = False) -> bool:
         ab = uses.ability
@@ -586,7 +615,7 @@ class Game:
         # Melee Siege/Armor-/Shield-breaking weapons don't trigger it; arrows always do (gift-of-air#3).
         if kind == "arrow" or (kind == "melee" and not (set(specials) & set(GIFT_OF_AIR_EXCEPT))):
             e = self._enchant_with(p, "defense.negate-hit", **{"from": "weapons-and-arrows"})
-            if e is not None:
+            if e is not None and not self._grounded(p, e):
                 self.applied[(e.ability.slug, "defense.negate-hit")] += 1
                 if worn := p.armor.get(loc, 0):      # worn armor is affected as normal (E2)
                     broken = "armor-destroying" in specials or ("armor-breaking" in specials and worn <= 3)
@@ -674,12 +703,15 @@ class Game:
             prevent = next((e for e in ench.ability.effects if e.kind == "death.prevent"), None)
             if prevent is None:
                 continue
+            if prevent.params.get("instead") == "insubstantial" and self._grounded(p, ench):
+                continue
             caster = self.players[ench.caster]
             for s in list(p.states):
                 if s != "cursed":
                     p.states.pop(s)
             p.restrictions.clear()   # Ongoing Effects end when an ability lets the player avoid death
             p.buffs.clear()
+            p.prevented.clear()
             self.interrupt(p, "death-prevented")
             self.disengage(p)
             self.applied[(ench.ability.slug, "death.prevent")] += 1
@@ -779,6 +811,7 @@ class Game:
         p.states.clear()
         p.restrictions.clear()
         p.buffs.clear()
+        p.prevented.clear()
         p.exit_lock_until = 0.0
         p.meta_armed.clear()
         p.armor = {l: p.armor_max for l in LOCATIONS}
