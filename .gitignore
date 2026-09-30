@@ -16,3 +16,6 @@ viewer/wiki-data.json
 .venv/
 sim/out/
 .pytest_cache/
+
+# agent worktrees
+.claude/worktrees/
