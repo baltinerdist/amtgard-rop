@@ -71,13 +71,15 @@ def test_empower_goes_to_the_most_valuable_spent_use_and_restores_only_it(near_r
 
 
 def test_no_refill_for_a_dead_or_locked_down_teammate(near_rules):
-    g = _game(near_rules, [("Bard", 6), ("Wizard", 6), ("Wizard", 6), ("Wizard", 6)], [("Warrior", 1)])
-    bard, low, stunned, dead, foe = g.players
+    g = _game(near_rules, [("Bard", 6), ("Wizard", 6), ("Wizard", 6), ("Wizard", 6), ("Warrior", 6)],
+              [("Warrior", 1)])
+    bard, low, stunned, dead, void, foe = g.players
     away(g, foe)
     give(g, bard, "restoration", rng="Other", per="refresh")
     give(g, low, "hold-person", left=0)
-    for q in (stunned, dead):
+    for q in (stunned, dead, void):
         give(g, q, "fireball", n=2, left=0)
+    resolve(g, low, "void-touched", void, rng="Other")      # unaffected by Sorcery: Restoration fails on them
     g.apply_state(stunned, "stunned", g.t + 10)
     g.kill(dead, foe, "melee")
     assert U(g, bard, "restoration", stunned) == 0 and U(g, bard, "restoration", dead) == 0
