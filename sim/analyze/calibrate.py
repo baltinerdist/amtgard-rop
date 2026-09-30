@@ -23,7 +23,7 @@ of armor 0.028 ± 0.013 and 0.031 ± 0.006 (2,000 pairs each).
 
 **Contexts.** The value of an anchor depends on the game, so every anchor is measured in six:
 the small, mixed and large presets, each as Mutual Annihilation and as attrition. Each context
-has its own game count (`CONTEXTS`), chosen so the full run takes about 90 minutes on 10 cores.
+has its own game count (`CONTEXTS`), chosen so the full run takes about 2 h 20 min on 10 cores.
 
 **Scale.** A win-probability change is converted to the score's scale by one reference: a use of
 Finger of Death per life (a 20' Verbal whose only effect is `death.cause`) is worth
@@ -80,12 +80,12 @@ BOOT = 2000
 # name -> (preset, game type, games). Game counts balance cost against precision: small games
 # run ~160/s on 10 cores, mixed 23-38/s, large 7-13/s.
 CONTEXTS = {
-    "small-annihilation": ("small", "annihilation", 4000),
-    "small-attrition": ("small", "attrition", 3000),
-    "mixed-annihilation": ("mixed", "annihilation", 1500),
-    "mixed-attrition": ("mixed", "attrition", 1000),
-    "large-annihilation": ("large", "annihilation", 600),
-    "large-attrition": ("large", "attrition", 300),
+    "small-annihilation": ("small", "annihilation", 6000),
+    "small-attrition": ("small", "attrition", 4500),
+    "mixed-annihilation": ("mixed", "annihilation", 2250),
+    "mixed-attrition": ("mixed", "attrition", 1500),
+    "large-annihilation": ("large", "annihilation", 900),
+    "large-attrition": ("large", "attrition", 450),
 }
 GAMES_PER_SECOND = {"small-annihilation": 160, "small-attrition": 90, "mixed-annihilation": 38,
                     "mixed-attrition": 23, "large-annihilation": 13.5, "large-attrition": 6.9}
