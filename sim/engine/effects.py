@@ -99,7 +99,7 @@ def h_state_apply(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         until = max(g.t + g.rules.a("policy.self_insubstantial_seconds"), p.exit_lock_until)
     else:
         until = INF
-    return g.apply_state(p, state, until, own=own)
+    return g.apply_state(p, state, until, own=own, src=ctx.caster)
 
 
 def h_state_prevent(g: "Game", eff: Effect, ctx: Ctx) -> bool:

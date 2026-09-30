@@ -396,13 +396,20 @@ class Game:
                         return ab
         return None
 
-    def apply_state(self, p: Player, state: str, until: float, own: bool = True) -> bool:
+    def apply_state(self, p: Player, state: str, until: float, own: bool = True,
+                    src: Player | None = None) -> bool:
+        """`src` is the player whose ability applied the State; an enemy source is remembered in
+        p.state_src (policies follow their own set-ups; control assists are credited from it)."""
         why = self.prevented(p, state, own)
         if why is not None:
             slug = why if isinstance(why, str) else why.slug
             self.applied[(slug, "state.prevent")] += 1
             return False
         p.states[state] = max(p.states.get(state, -1.0), until)
+        if src is not None and src.team != p.team:
+            p.state_src[state] = src.pid
+        else:
+            p.state_src.pop(state, None)
         self.log("state", p.pid, state, until)
         if state in ("frozen", "stunned", "insubstantial", "invulnerable"):
             self.interrupt(p, state)
@@ -1293,7 +1300,7 @@ class Game:
             if attackers:
                 p.target = self.rng.choice(attackers).pid
                 continue
-            if p.role != "fighter" and not (p.role == "archer" and not p.has_bow):
+            if p.role != "fighter" and p.play != "battle" and not (p.role == "archer" and not p.has_bow):
                 continue
             if self.rng.random() >= p_engage:
                 continue

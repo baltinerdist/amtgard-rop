@@ -130,6 +130,7 @@ class Player:
     magic_armor: dict[str, int] = field(default_factory=dict)
     wounds: set[str] = field(default_factory=set)
     states: dict[str, float] = field(default_factory=dict)     # state -> expiry time (INF = indefinite)
+    state_src: dict[str, int] = field(default_factory=dict)    # state -> pid of the enemy who applied it
     enchantments: list[Ench] = field(default_factory=list)
     resist: list[dict] = field(default_factory=list)
     restrictions: list[Restriction] = field(default_factory=list)
@@ -153,7 +154,7 @@ class Player:
 
     @property
     def backline(self) -> bool:
-        return self.role in ("caster", "support", "archer")
+        return self.role in ("caster", "support", "archer") and self.play != "battle"
 
     def has_state(self, s: str, now: float) -> bool:
         return self.states.get(s, -1.0) > now

@@ -1,15 +1,30 @@
 """Scripted per-role behavior. Called once per tick for each player who is alive, able to act
 and not already incanting. Melee targeting itself happens in Game._engage.
 
-Roles (from sim/engine/loadout.py ROLE_BY_CLASS):
+Martial roles (from sim/engine/loadout.py ROLE_BY_CLASS):
   fighter - closes to melee; buffs self (Rage); sometimes uses an offensive ability first; heals,
             cleanses and mends when free
-  caster  - stays back; buffs self (Elemental Barrage), offensive abilities, then support; shoots
-            if they carry a bow (Ranger)
-  support - stays back; revives, heals, cleanses States, enchants and mends allies, then offense
   archer  - stays back; shoots (Specialty Arrows first), fights with a short weapon if engaged
-Anyone attacked in melee who is not a fighter, or is already wounded, uses an escape (Blink) if
-they have one.
+Magic Users play their doctrine's play style (sim/data/doctrines.json `play_styles`, PLAY_ROUTINES):
+  striker    - stays back; self-buffs, finishers, its own set-ups (combos), then offense; support last
+  controller - stays back; finishers, then locks down the enemy most dangerous to a teammate
+               (`_try_control`: one engaged with an ally first, then the most kill potential in
+               range; never one already locked down or immune); kills only when nothing needs
+               locking down
+  enchanter  - enchants teammates at base and, out of melee, on the field (weapon Enchantments to
+               the best melee fighters, armor and protection to the front line), refills their uses
+               (Empower, Restoration, Confidence), then heals and cleanses; casts at enemies last
+  medic      - revives, heals, cleanses from behind the line (the old support routine)
+  battle     - starts melee like a fighter (Game._engage) and is not treated as backline; keeps
+               self-buffs up and casts when free
+  archer     - shoots with a bow (Ranger) and casts between shots; a striker without a bow
+Every Magic User at base enchants by the same priorities. Anyone attacked in melee who is not a
+fighter (or battle caster), or is already wounded, uses an escape (Blink) if they have one.
+
+Finishers: a caster holding an ability that requires a Stopped, Frozen or Insubstantial target
+(Dragged Below, Shatter, Dimensional Rift), or any wounding ability against a Fragile one, uses it
+on such a target first, preferring one whose State the caster applied (`Player.state_src`). A
+doctrine with combos casts a set-up whose finisher it holds before other offense.
 
 Abilities are recognised by what their effects do, not by name (_kind_of): a self-buff, an
 escape, a cleanse (removes a harmful State), a repair (armor or equipment).
@@ -183,14 +198,50 @@ def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Playe
             and not _crippled(u.ability, q)]
 
 
-def _try_enchant(g: "Game", p: Player, at_base: bool) -> bool:
+def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False, free_only: bool = False) -> bool:
+    """`prioritized`: weapon Enchantments to the best melee fighters, armor and protection to the
+    front line (_enchant_priority); otherwise a random eligible ally. `free_only`: only allies out
+    of melee (an enchanter re-enchants between fights)."""
+    if prioritized and _try_extra_slot(g, p, at_base, free_only):
+        return True
     for u in sorted(_usable(g, p), key=lambda u: -g.value(u.ability, p)):
         if u.ability.delivery != "enchantment" or _is_offensive(u):
             continue
         targets = _enchant_targets(g, p, u, at_base)
+        if free_only:
+            targets = [q for q in targets if q is p or not _engaged(g, q)]
         if not targets:
             continue
-        q = g.rng.choice(targets)
+        q = _enchant_priority(g, u, targets) if prioritized else g.rng.choice(targets)
+        if not at_base and q is not p and g.rng.random() >= g.rules.a("range.p_ally_nearby_for_touch"):
+            continue
+        if g.start_cast(p, u, q):
+            return True
+    return False
+
+
+def _try_extra_slot(g: "Game", p: Player, at_base: bool, free_only: bool) -> bool:
+    """Attuned or Essence Graft on the best melee fighter who lacks it, while the caster holds
+    other Enchantments to fill the slot. The usefulness score puts these below zero (the drawback
+    if they are removed outweighs one slot), so without this rule they are never cast, though they
+    are what a Druid enchanter builds around."""
+    slotters = [u for u in p.uses.values() if u.available() and u.ability.delivery == "enchantment"
+                and u.ability.effects_of("enchantment.extra-slot") and not (u.ability.requirements & TRIGGERED)]
+    if not slotters:
+        return False
+    fillers = [u for u in _usable(g, p) if u.ability.delivery == "enchantment" and not _is_offensive(u)
+               and not u.ability.effects_of("enchantment.extra-slot") and u.range != "Self"]
+    if not fillers:
+        return False
+    for u in slotters:
+        pool = [p] if u.range == "Self" else [q for q in g.allies(p) if q.alive and (q.at_base_until > g.t) == at_base]
+        pool = [q for q in pool if (q.role == "fighter" or q.play == "battle")
+                and all(e.ability.slug != u.slug for e in q.enchantments)
+                and not any(e.ability.effects_of("enchantment.extra-slot") for e in q.enchantments)
+                and (not free_only or q is p or not _engaged(g, q))]
+        if not pool:
+            continue
+        q = max(pool, key=_melee_rank)
         if not at_base and q is not p and g.rng.random() >= g.rules.a("range.p_ally_nearby_for_touch"):
             continue
         if g.start_cast(p, u, q):
@@ -221,7 +272,7 @@ def _try_charge(g: "Game", p: Player) -> bool:
     if _engaged(g, p) or g.rng.random() >= g.rules.a("policy.p_charge_when_safe"):
         return False
     lull = _lull(g, p)
-    if p.role in ("fighter", "archer") and not lull:
+    if (p.role in ("fighter", "archer") or p.play == "battle") and not lull:
         return False
     longest = math.inf if lull else g.rules.a("policy.max_field_charge_seconds")
     spent = [u for u in p.uses.values() if u.charge and u.max and u.left is not None and u.left < u.max
@@ -309,7 +360,7 @@ def _try_self_buff(g: "Game", p: Player) -> bool:
 
 def _try_escape(g: "Game", p: Player) -> bool:
     """Blink out of a fight you are losing: attacked, and either not a fighter or already wounded."""
-    if p.role == "fighter" and not p.wounds:
+    if (p.role == "fighter" or p.play == "battle") and not p.wounds:
         return False
     escapes = _of_kind(g, p, "escape")
     if not escapes or not g.attackers_of(p):
@@ -417,12 +468,326 @@ def keep_casting(g: "Game", p: Player) -> bool:
     return c.remaining <= g.dt or not g.rules.a("policy.abandon_cast_when_attacked")
 
 
+# ---------------------------------------------------------------- doctrine play styles
+
+CONTROL_STATES = ("stunned", "frozen", "stopped", "suppressed", "fragile", "insubstantial")
+_LOCKED = ("stunned", "frozen", "stopped", "insubstantial")       # already out of the fight
+_FINISH_REQ = {"target-stopped": "stopped", "target-frozen": "frozen", "target-insubstantial": "insubstantial"}
+_CONTROL_MOVES = {"move.to-base", "move.push", "move.keep-away", "move.to-location", "move.to-caster"}
+# how likely an enemy is to kill a teammate, by role: fighters most (see _threat)
+ROLE_THREAT = {"fighter": 2.0, "archer": 1.5, "caster": 1.0, "support": 0.5}
+_WEAPON_KINDS = {"weapon.ignore-protections"}
+_ARMOR_KINDS = {"armor.magic", "armor.limit", "armor.protect", "defense.resistance", "defense.immunity",
+                "defense.negate-hit", "defense.unaffected", "defense.negate-engulfing", "death.prevent",
+                "equipment.protect"}
+_SLUG_CACHE: dict[tuple, object] = {}
+
+
+def _cached(tag: str, ab, fn):
+    key = (tag, ab.slug)
+    v = _SLUG_CACHE.get(key)
+    if v is None:
+        v = _SLUG_CACHE[key] = fn(ab)
+    return v
+
+
+def control_states(ab) -> frozenset:
+    """Control States this ability puts on an enemy."""
+    return _cached("states", ab, lambda ab: frozenset(
+        str(e.params.get("state")) for e in ab.effects
+        if e.kind == "state.apply" and e.subject in ("target", "struck-player")
+        and e.params.get("state") in CONTROL_STATES and is_handled(ab, e)))
+
+
+def _is_control(u: Uses) -> bool:
+    """Takes an enemy out of the fight without killing: a control State, a restriction (Awe,
+    Insult), forced movement or a disabled weapon."""
+    def calc(ab) -> bool:
+        if ab.effects_of("death.cause"):
+            return False
+        return any(is_handled(ab, e) and e.subject in ("target", "struck-player", "target-equipment") and (
+            (e.kind == "state.apply" and e.params.get("state") in CONTROL_STATES)
+            or e.kind in ("action.restrict", "equipment.disable") or e.kind in _CONTROL_MOVES) for e in ab.effects)
+    return _is_offensive(u) and _cached("control", u.ability, calc)
+
+
+def finish_states(ab) -> frozenset:
+    """States that make a target this ability's to finish: those its requirements name (Dragged
+    Below: Stopped), or Fragile for anything that wounds or kills with no such requirement."""
+    def calc(ab) -> frozenset:
+        req = {_FINISH_REQ[r] for r in ab.requirements if r in _FINISH_REQ}
+        if req:
+            return frozenset(req)
+        if ab.effects_of("wound.inflict", "death.cause") and not ab.requirements & {"target-dead", "target-dead-at-start"}:
+            return frozenset({"fragile"})
+        return frozenset()
+    return _cached("finish", ab, calc)
+
+
+def _threat(q: Player) -> float:
+    """Kill potential: role (fighters and battle casters first), skill, and kills so far."""
+    role = "fighter" if q.play == "battle" else q.role
+    return ROLE_THREAT.get(role, 1.0) + q.skill + 0.5 * q.kills
+
+
+def _engaged_with_team(g: "Game", p: Player) -> set[int]:
+    """Enemies in melee with one of p's teammates (either side started it)."""
+    mates = {q.pid for q in g.allies(p) if q is not p and q.alive}
+    out = {q.pid for q in g.enemies(p) if q.alive and q.target in mates}
+    out.update(q.target for q in g.allies(p) if q.pid in mates and q.target is not None)
+    return out
+
+
+def _resists(g: "Game", u: Uses, q: Player) -> bool:
+    """q would shrug this off (declared or visible): Immune to its School, unaffected by Magic or
+    Verbals, Void Touched. Mirrors Game.blocked without spending a Resistance."""
+    ab = u.ability
+    if ab.delivery != "enchantment" and "bypass-immunities" not in ab.properties and g.immune(q, ab.school):
+        return True
+    if u.magical and (g.unaffected(q, "magical-abilities") or g.unaffected_by_school(q, ab.school) is not None):
+        return True
+    return ab.delivery == "verbal" and g.unaffected(q, "verbal-abilities")
+
+
+def _can_hit(g: "Game", p: Player, u: Uses, q: Player) -> bool:
+    return (g.check_requirements(u.ability, p, q, start=True, uses=u) is None and g.can_cast_at(p, q, u)
+            and not _resists(g, u, q))
+
+
+def _locked(g: "Game", q: Player, u: Uses) -> bool:
+    """Already locked down, or already under everything this ability would do. Suppressing only
+    matters to someone who casts."""
+    t = g.t
+    states = control_states(u.ability)
+    if states == {"suppressed"}:
+        casts = any(v.magical and v.available() for v in q.uses.values())
+        return not casts or q.has_state("suppressed", t) or q.has_state("stunned", t)
+    if any(q.has_state(s, t) for s in _LOCKED):
+        return True
+    if states and all(q.has_state(s, t) for s in states):
+        return True
+    return any(r.slug == u.slug and r.until > t for r in q.restrictions)
+
+
+def _first_in_range(g: "Game", u: Uses, ranked: list[Player]) -> Player | None:
+    """The first enemy in priority order who turns out to be in range (each rolled independently)."""
+    for q in ranked:
+        if _in_range(g, u):
+            return q
+    return None
+
+
+def _control_order(g: "Game", p: Player, foes: list[Player]) -> list[Player]:
+    """Enemies engaged with a teammate first, then the most kill potential."""
+    fighting = _engaged_with_team(g, p)
+    return sorted(foes, key=lambda q: (q.pid not in fighting, -_threat(q), q.pid))
+
+
+def _may_cast_now(g: "Game", p: Player) -> bool:
+    return not _engaged(g, p) or g.rules.a("casting.engaged_casting_allowed")
+
+
+def _try_control(g: "Game", p: Player) -> bool:
+    """Lock down the enemy most dangerous to a teammate (see the module docstring)."""
+    if not _may_cast_now(g, p):
+        return False
+    options = sorted((u for u in _usable(g, p) if _is_control(u) and u.range != "Self"),
+                     key=lambda u: -g.value(u.ability, p))
+    for u in options:
+        foes = [q for q in g.enemies(p) if g.targetable(q) and not _locked(g, q, u) and _can_hit(g, p, u, q)]
+        q = _first_in_range(g, u, _control_order(g, p, foes)) if foes else None
+        if q is not None and g.start_cast(p, u, q):
+            return True
+    return False
+
+
+def _meets(g: "Game", q: Player, states: frozenset) -> str | None:
+    """The finishing State q is in, if any."""
+    t = g.t
+    for s in states:
+        if not q.has_state(s, t):
+            continue
+        if s == "frozen" and q.alive and q.on_field(t):
+            return s
+        if s == "insubstantial" and q.on_field(t):
+            return s
+        if s in ("stopped", "fragile") and g.targetable(q):
+            return s
+    return None
+
+
+def _try_finish(g: "Game", p: Player) -> bool:
+    """Use a finisher on a target in its State: the caster's own set-up first, then the enemy
+    engaged with a teammate, then the most kill potential."""
+    if not _may_cast_now(g, p):
+        return False
+    options = sorted((u for u in _usable(g, p) if _is_offensive(u) and u.range != "Self" and finish_states(u.ability)),
+                     key=lambda u: -g.value(u.ability, p))
+    fighting = None
+    for u in options:
+        fs = finish_states(u.ability)
+        foes = [(q, s) for q in g.enemies(p) if (s := _meets(g, q, fs)) and _can_hit(g, p, u, q)]
+        if not foes:
+            continue
+        if fighting is None:
+            fighting = _engaged_with_team(g, p)
+        foes.sort(key=lambda qs: (qs[0].state_src.get(qs[1]) != p.pid, qs[0].pid not in fighting,
+                                  -_threat(qs[0]), qs[0].pid))
+        q = _first_in_range(g, u, [q for q, _ in foes])
+        if q is not None and g.start_cast(p, u, q):
+            return True
+    return False
+
+
+def _try_setup(g: "Game", p: Player) -> bool:
+    """A doctrine's combo: cast a set-up whose finisher the caster also holds, on the enemy a
+    controller would pick; _try_finish follows it up."""
+    if not p.combos or not _may_cast_now(g, p):
+        return False
+    held = {}
+    for u in _usable(g, p):
+        held.setdefault(u.slug, u)
+    for setup, finisher in p.combos:
+        su, fu = held.get(setup), held.get(finisher)
+        if su is None or fu is None or su.range == "Self":
+            continue
+        foes = [q for q in g.enemies(p) if g.targetable(q) and not _locked(g, q, su)
+                and _can_hit(g, p, su, q) and not _resists(g, fu, q)]
+        q = _first_in_range(g, su, _control_order(g, p, foes)) if foes else None
+        if q is not None and g.start_cast(p, su, q):
+            return True
+    return False
+
+
+def _enchant_kind(ab) -> str:
+    """'weapon' (arms the bearer's blows: Flame Blade, Poison), 'armor' (armor, Resistances,
+    Immunities, death prevention, equipment protection) or ''."""
+    def calc(ab) -> str:
+        effs = [e for e in ab.effects if is_handled(ab, e) and not is_drawback(ab, e)]
+        if any(e.kind in _WEAPON_KINDS or (e.kind == "special-effect.grant"
+               and e.params.get("on") in ("bearer-melee-weapons", "next-wound")) for e in effs):
+            return "weapon"
+        return "armor" if any(e.kind in _ARMOR_KINDS for e in effs) else ""
+    return _cached("ench", ab, calc)
+
+
+def _melee_rank(q: Player) -> tuple:
+    return (q.role == "fighter" or q.play == "battle", q.skill, -q.pid)
+
+
+def _enchant_priority(g: "Game", u: Uses, targets: list[Player]) -> Player:
+    """The teammate who benefits most: weapon Enchantments to the best melee fighter, armor and
+    protection to the front line (not backline, then skill); anything else to a random one."""
+    kind = _enchant_kind(u.ability)
+    if kind == "weapon":
+        return max(targets, key=_melee_rank)
+    if kind == "armor":
+        return max(targets, key=lambda q: (not q.backline, q.skill, -q.pid))
+    return g.rng.choice(targets)
+
+
+def _refill_need(g: "Game", u: Uses, q: Player) -> float:
+    """Value of what this refill would give back to q: spent per-life uses (Empower, Restoration)
+    or a spent chargeable use (Confidence)."""
+    if u.ability.effects_of("ability.charge"):
+        return max((g.value(v.ability, q) for v in q.uses.values()
+                    if v.charge and v.left is not None and v.max and v.left < v.max), default=0.0)
+    return sum(g.value(v.ability, q) * (v.max - v.left) for v in q.uses.values()
+               if v.per == "life" and v.left is not None and v.max and v.left < v.max)
+
+
+def _try_refill(g: "Game", p: Player) -> bool:
+    """Give a teammate out of melee back the uses they spent, the one who gets most back first."""
+    options = [u for u in _usable(g, p) if u.ability.delivery == "verbal" and u.ability.beneficiary != "enemy"
+               and u.ability.effects_of("ability.restore-uses", "ability.charge")]
+    if not options or _engaged(g, p):
+        return False
+    for u in options:
+        pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and not (q is p and u.range == "Other")
+                and (q is p or not _engaged(g, q)) and _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)]
+        scored = [(n, q) for q in pool if (n := _refill_need(g, u, q)) > 0]
+        if not scored:
+            continue
+        _, q = max(scored, key=lambda nq: (nq[0], -nq[1].pid))
+        if (q is p or _in_reach(g, u)) and g.start_cast(p, u, q):
+            return True
+    return False
+
+
+def _enchant_on_field(g: "Game", p: Player) -> bool:
+    return g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False, prioritized=True)
+
+
+def _play_striker(g: "Game", p: Player) -> None:
+    if _try_self_buff(g, p) or _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p) \
+            or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) \
+            or _try_repair(g, p) or _try_shoot(g, p):
+        return
+    _try_charge(g, p)
+
+
+def _play_controller(g: "Game", p: Player) -> None:
+    if _try_self_buff(g, p) or _try_finish(g, p) or _try_control(g, p) or _try_offense(g, p) \
+            or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) \
+            or _try_repair(g, p) or _try_shoot(g, p):
+        return
+    _try_charge(g, p)
+
+
+def _play_enchanter(g: "Game", p: Player) -> None:
+    if _try_enchant(g, p, False, prioritized=True, free_only=True) or _try_refill(g, p) \
+            or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _try_repair(g, p) \
+            or _try_finish(g, p) or _try_offense(g, p) or _try_shoot(g, p):
+        return
+    _try_charge(g, p)
+
+
+def _play_medic(g: "Game", p: Player) -> None:
+    if g.rules.a("policy.revive_priority") and _try_revive(g, p):
+        return
+    if _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) or _try_repair(g, p) \
+            or _try_offense(g, p) or _try_shoot(g, p):
+        return
+    _try_charge(g, p)
+
+
+def _play_battle(g: "Game", p: Player) -> None:
+    """Like a fighter: self-buffs, then casts only when not in melee."""
+    if _try_self_buff(g, p):
+        return
+    if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
+        if _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p):
+            return
+    if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_cleanse(g, p) or _try_repair(g, p)):
+        return
+    if p.target is None:
+        _try_charge(g, p)
+
+
+def _play_archer(g: "Game", p: Player) -> None:
+    """Shoot; between shots, cast. Without a bow (the Ranger Archetype ablated) play a striker."""
+    if not p.has_bow:
+        _play_striker(g, p)
+        return
+    if _try_shoot(g, p) or _try_finish(g, p) or _try_offense(g, p) or _try_heal(g, p) or _try_cleanse(g, p):
+        return
+    _try_charge(g, p)
+
+
+PLAY_ROUTINES = {"striker": _play_striker, "controller": _play_controller, "enchanter": _play_enchanter,
+                 "medic": _play_medic, "battle": _play_battle, "archer": _play_archer}
+
+
 def decide(g: "Game", p: Player) -> None:
     t = g.t
     if p.at_base_until > t:
-        _try_enchant(g, p, at_base=True)
+        _try_enchant(g, p, at_base=True, prioritized=bool(p.play))
         return
     if _try_escape(g, p):
+        return
+    routine = PLAY_ROUTINES.get(p.play)
+    if routine is not None:
+        routine(g, p)
         return
     if p.role == "support":
         if g.rules.a("policy.revive_priority") and _try_revive(g, p):
