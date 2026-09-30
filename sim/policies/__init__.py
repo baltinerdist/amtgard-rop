@@ -102,18 +102,32 @@ def _try_revive(g: "Game", p: Player) -> bool:
     return False
 
 
+def _being_healed(g: "Game", q: Player, by: Player) -> bool:
+    """Someone other than `by` is already incanting a heal on q."""
+    return any(o is not by and o.casting is not None and o.casting.kind == "cast" and o.casting.uses is not None
+               and o.casting.target == q.pid and _is_heal(o.casting.uses) for o in g.players)
+
+
+def _heal_candidates(g: "Game", p: Player) -> list[Player]:
+    """Wounded allies an experienced healer would start on: themselves, or an ally who is out of
+    melee (Touch range means standing next to them for the whole incantation, so a healer heals
+    behind the line, not in it) and whom no one else is already healing."""
+    return [q for q in g.allies(p) if q.alive and q.wounds and q.on_field(g.t)
+            and (q is p or not _engaged(g, q)) and not _being_healed(g, q, p)]
+
+
 def _try_heal(g: "Game", p: Player) -> bool:
     if _engaged(g, p):
         return False
-    hurt = [q for q in g.allies(p) if q.alive and q.wounds and q.on_field(g.t)]
+    hurt = _heal_candidates(g, p)
     if not hurt:
         return False
     for u in (u for u in _usable(g, p) if _is_heal(u)):
         if u.range == "Self":
-            if p.wounds and g.start_cast(p, u, p):
+            if p in hurt and g.start_cast(p, u, p):
                 return True
             continue
-        q = p if p.wounds else g.rng.choice(hurt)
+        q = p if p in hurt else g.rng.choice(hurt)
         if (q is p or g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch")) and g.start_cast(p, u, q):
             return True
     return False
