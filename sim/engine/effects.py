@@ -33,8 +33,10 @@ class Ctx:
 
 
 # on-wound: Wound Triggers (Game._wound_trigger); on-choice: Gift of Air / Song of Survival options
-# (Game._insubstantial_choice)
-INSTANT_TIMINGS = frozenset({"on-cast", "on-struck", "on-kill", "on-death", "on-expiry", "on-wound", "on-choice"})
+# (Game._insubstantial_choice); on-strip: a strip spent to cast (Game._complete); on-removal: an
+# Enchantment is removed (Game.remove_enchantment)
+INSTANT_TIMINGS = frozenset({"on-cast", "on-struck", "on-kill", "on-death", "on-expiry", "on-wound", "on-choice",
+                             "on-strip", "on-removal"})
 PASSIVE_DELIVERIES = frozenset({"enchantment", "trait", "archetype"})
 
 HARMFUL_STATE_ORDER = ("stunned", "frozen", "stopped", "suppressed", "fragile", "insubstantial", "cursed")
@@ -211,6 +213,18 @@ def h_enchantment_remove(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     if p is None or not p.enchantments:
         return False
     scope = eff.params.get("scope", "all")
+    if scope == "chosen-to-meet-limit":
+        # Attuned, Essence Graft, Phoenix Tears removed: the bearer drops (m) Enchantments to meet the
+        # new limit, keeping the ones worth most to them (Phoenix Tears' extra one may go, phoenix-tears#2)
+        dropped = False
+        while p.magical_enchantment_count() > p.ench_slots:
+            pool = [e for e in p.enchantments if e.magical and not e.trait
+                    and "exempt-from-enchantment-limit" not in e.ability.properties]
+            if not pool:
+                break
+            g.remove_enchantment(p, min(pool, key=lambda e: (g.value(e.ability, p), e.ability.slug)))
+            dropped = True
+        return dropped
     if scope == "all":
         keep = [e for e in p.enchantments if "cannot-be-removed" in e.ability.properties]
     elif scope in ("non-persistent", "non-persistent-others"):

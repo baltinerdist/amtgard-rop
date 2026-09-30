@@ -525,6 +525,36 @@ def test_circle_of_protection_lasts_while_insubstantial(rules):
     assert not g.unaffected(ally, "forced-movement-except-banish")
 
 
+# ---------------------------------------------------------------- enchantment.spend-strip / enchantment.remove
+
+def test_strip_enchantment_spends_a_strip_per_cast(rules):
+    g, dru, war, ally = trio(rules, a="Druid")
+    resolve(g, dru, "corrosive-mist", dru, rng="Touch")
+    ench = next(e for e in dru.enchantments if e.ability.slug == "corrosive-mist")
+    u = dru.uses["destroy-armor"]
+    assert ench.strips == 3 and u.ench is ench
+    for n in (2, 1):
+        dru.casting = Cast(u, war.pid, 0)
+        g._complete(dru)
+        assert ench.strips == n
+    dru.casting = Cast(u, war.pid, 0)
+    g._complete(dru)
+    assert ench not in dru.enchantments and "destroy-armor" not in dru.uses
+    assert g.applied[("corrosive-mist", "enchantment.spend-strip")] == 3
+
+
+def test_removing_attuned_drops_an_enchantment_to_meet_the_limit(rules):
+    g = make_game(rules, [spec("Wizard"), spec("Druid"), spec("Warrior")], [spec("Warrior")])
+    wiz, dru, war, _ = g.players
+    resolve(g, wiz, "attuned", war, rng="Other")
+    resolve(g, dru, "stoneskin", war, rng="Other")
+    resolve(g, dru, "barkskin", war, rng="Other")
+    assert war.magical_enchantment_count() == 2
+    g.remove_enchantment(war, next(e for e in war.enchantments if e.ability.slug == "attuned"))
+    assert war.magical_enchantment_count() == 1 == war.ench_slots
+    assert g.applied[("attuned", "enchantment.remove")] == 1
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

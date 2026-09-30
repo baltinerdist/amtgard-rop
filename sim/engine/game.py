@@ -491,6 +491,9 @@ class Game:
             elif eff.kind == "state.apply" and eff.duration_type in fx.PASSIVE_STATE_DURATIONS and fx.is_handled(ench.ability, eff):
                 p.states.pop(eff.params.get("state", ""), None)
         self._recompute_magic_armor(p)
+        if any(e.timing == "on-removal" for e in ench.ability.effects):
+            self.apply_effects(ench.ability, ("on-removal",),
+                               Ctx(ench.ability, self.players[ench.caster], p, bearer=p, ench=ench))
 
     def _recompute_magic_armor(self, p: Player) -> None:
         best = 0
@@ -878,9 +881,14 @@ class Game:
             return
         uses.spend()
         if uses.ench is not None:
-            uses.ench.strips = (uses.ench.strips or 1) - 1
-            if uses.ench.strips <= 0:
-                self.remove_enchantment(p, uses.ench)
+            # a strip is removed for the cast (the Enchantment's on-strip effect; one if none is recorded)
+            ench = uses.ench
+            if uses.ench.strips is None:
+                uses.ench.strips = 1
+            if not self.apply_effects(ench.ability, ("on-strip",), Ctx(ench.ability, p, p, bearer=p, ench=ench)):
+                ench.strips -= 1
+                if ench.strips <= 0:
+                    self.remove_enchantment(p, ench)
         self.casts[ab.slug] += 1
         if ab.delivery in ("magic-ball", "specialty-arrow"):
             self._projectile(p, uses, target)
