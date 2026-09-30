@@ -22,7 +22,7 @@ them (`FieldSpace._want`). The rules of that step:
 | everyone | nowhere new while incanting or Charging (feet may not move; a Chant may move), while Stopped, Frozen, Stunned or Insubstantial (states.md), dead, or at base |
 | a leg wound | crawls on the knees (`crawl_speed_mps`) with a living enemy within 20'; otherwise hobbles, one step a second (`hobble_speed_mps`) (combat-rules.md, Hit Locations notes 4 and 6) |
 | engaged in melee | stays; steps in if the melee target is beyond the player's reach |
-| line fighters (fighter role, battle play, an archer without a bow) | take a slot in the team's line and walk forward with it; charge at a run when an enemy is within `charge_distance_m`: the enemy they can reach soonest (`_goal`) |
+| line fighters (fighter role, battle play, an archer without a bow) | take a slot in the team's line and walk forward with it; charge at a run when an enemy is within `charge_distance_m`: the enemy they can reach soonest (`_goal`). Nobody starts a melee with a player inside their own base zone (`base_zone_m`) |
 | strikers, controllers | `preferred_distance_m` from the nearest enemy, but at least `behind_line_m` behind their own line |
 | medics | run to the nearest teammate out of melee who is wounded (or dead, holding a revive); otherwise as a striker, farther back |
 | enchanters | run to the nearest free teammate with an open Enchantment slot while they hold an Enchantment for them; otherwise just behind the line |
@@ -54,6 +54,7 @@ FOOT = 0.3048                  # metres; ranges in the rules are in feet
 MODES = ("off", "on")
 INF = math.inf
 _IMMOBILE = ("stopped", "frozen", "stunned", "insubstantial")   # may not move their feet (states.md)
+_LEGS = frozenset(LEGS)
 
 
 def make_space(g: "Game", mode: str | None) -> "Space":
@@ -73,6 +74,7 @@ class Space:
     def __init__(self, g: "Game"):
         self.g = g
         self.tick_seconds = g.rules.a("time.tick_seconds")
+        self.decide_seconds = 1
 
     # --- the proxies (NullSpace draws, FieldSpace measures)
     def roll_in_range(self, p: Player, q: Player, u: Uses) -> bool: ...
@@ -93,6 +95,7 @@ class Space:
     def respawn(self, p: Player) -> None: ...
     def team_wiped(self, team: int) -> None: ...
     def retreating(self, p: Player) -> bool: ...
+    def thinks(self, p: Player) -> bool: ...
     def deploy(self) -> None: ...
     def move(self) -> None: ...
     def engage(self) -> None: ...
@@ -165,6 +168,9 @@ class NullSpace(Space):
 
     def retreating(self, p):
         return False
+
+    def thinks(self, p):
+        return True
 
     def deploy(self):
         pass
@@ -244,6 +250,8 @@ class FieldSpace(Space):
             raise ValueError("the field (space on) has two bases; this scenario has "
                              f"{g.n_teams} teams")
         self.tick_seconds = float(a("tick_seconds"))
+        self.decide_seconds = float(a("decide_seconds"))
+        self._every = max(1, round(self.decide_seconds / self.tick_seconds))
         self.L, self.W = float(a("field_length_m")), float(a("field_width_m"))
         self.walk, self.run = float(a("walk_speed_mps")), float(a("run_speed_mps"))
         self.hobble, self.crawl = float(a("hobble_speed_mps")), float(a("crawl_speed_mps"))
@@ -251,6 +259,7 @@ class FieldSpace(Space):
         self.reach_m = dict(a("reach_m"))
         self.throw_m, self.bow_m = float(a("throw_range_m")), float(a("bow_range_m"))
         self.deploy_m = float(a("deploy_depth_m"))
+        self.base_zone_m = float(a("base_zone_m"))
         self.spacing = float(a("line_spacing_m"))
         self.charge_m = float(a("charge_distance_m"))
         self.retreat_m = float(a("retreat_trigger_m"))
@@ -294,6 +303,10 @@ class FieldSpace(Space):
 
     def x_of(self, u: float, team: int) -> float:
         return u if team == 0 else self.L - u
+
+    def in_base(self, q: Player) -> bool:
+        """Within `base_zone_m` of their own base end, where enemies don't start a melee."""
+        return self.u_of(q.pid, q.team) <= self.base_zone_m
 
     def _matrix(self) -> list:
         d = self._d
@@ -483,7 +496,7 @@ class FieldSpace(Space):
             return 0.0            # "Not move their feet during the incantation" (and the Charge)
         if p.states and any(p.states.get(s, -1.0) > t for s in _IMMOBILE):
             return 0.0
-        if p.wounds and (p.wounds & set(LEGS)):
+        if p.wounds and (p.wounds & _LEGS):
             # kneel (move on the knees) with a living enemy within 20'; else hobble, one step a second
             return self.crawl if self.enemy_within(p, 20) else self.hobble
         return self.run
@@ -497,6 +510,10 @@ class FieldSpace(Space):
     def _threats_near(self, p: Player, m: float) -> list[Player]:
         row = self._matrix()[p.pid]
         return [q for q in self.g.players if q.team != p.team and q.alive and row[q.pid] <= m and self._threat(q)]
+
+    def thinks(self, p):
+        """Whether p's brain (`decide`) runs this tick: every `decide_seconds`, staggered by player."""
+        return (round(self.g.t / self.tick_seconds) + p.pid) % self._every == 0
 
     def retreating(self, p):
         """A non-line player backs off, and starts no incantation, while a free enemy line fighter
@@ -528,7 +545,8 @@ class FieldSpace(Space):
                 continue
             if not mine:
                 continue                                              # pregame, or all walking back
-            foes = [self.u_of(q.pid, team) for q in g.players if q.team != team and q.alive and q.on_field(t)]
+            foes = [self.u_of(q.pid, team) for q in g.players
+                    if q.team != team and q.alive and q.on_field(t) and not self.in_base(q)]
             u = min(self.line_u[team] + self.walk * self.tick_seconds, mine[len(mine) // 2] + 1.0)
             if foes:
                 u = min(u, min(foes) - self.charge_m)
@@ -536,23 +554,45 @@ class FieldSpace(Space):
             fwd = [m for m in mine if m >= mine[-1] - 15.0]
             self.front_u[team] = max(self.line_u[team], fwd[len(fwd) // 2])
 
+    def _tick_context(self) -> None:
+        """What every player's movement looks at this tick, gathered once: who is attacked, each
+        team's line fighters in pid order, the enemies on the field (and outside their base), and
+        how many of each team are on each enemy (fighting it or running at it)."""
+        g = self.g
+        t = g.t
+        players = g.players
+        self._attacked = {q.target for q in players if q.alive and q.target is not None}
+        self._line = [[], []]
+        self._field = [[], []]          # [team] -> living players of that team on the field
+        on = [{}, {}]
+        for q in players:
+            if not q.alive:
+                continue
+            if self.style[q.pid] == "line":
+                self._line[q.team].append(q.pid)
+            if q.on_field(t):
+                self._field[q.team].append(q)
+            k = q.target if q.target is not None else self.goal[q.pid]
+            if k is not None:
+                on[q.team][k] = on[q.team].get(k, 0) + 1
+        self._slot = [{pid: i for i, pid in enumerate(line)} for line in self._line]
+        self._on = on
+        self._chargeable = [[q for q in self._field[team] if not self.in_base(q)] for team in (0, 1)]
+
     def _goal(self, p: Player) -> Player | None:
         """The enemy p can reach soonest: running time, plus `crowd_penalty_seconds` per teammate
         already on them, less `caster_priority_seconds` for a caster, healer or archer."""
         g = self.g
         t = g.t
         row = self._matrix()[p.pid]
-        on = {}
-        for a in g.players:
-            if a.team == p.team and a is not p and a.alive:
-                k = a.target if a.target is not None else self.goal[a.pid]
-                if k is not None:
-                    on[k] = on.get(k, 0) + 1
+        on = self._on[p.team]
+        mine = self.goal[p.pid] if p.target is None else p.target
         best, bs = None, INF
-        for q in g.players:
-            if q.team == p.team or not g.targetable(q) or q.kept_away_until > t or not g.can_attack(p, q):
+        for q in self._chargeable[1 - p.team]:
+            if not g.targetable(q) or q.kept_away_until > t or not g.can_attack(p, q):
                 continue
-            s = row[q.pid] / self.run + self.crowd_s * on.get(q.pid, 0) - (self.caster_s if q.backline else 0.0)
+            n = on.get(q.pid, 0) - (1 if q.pid == mine else 0)
+            s = row[q.pid] / self.run + self.crowd_s * n - (self.caster_s if q.backline else 0.0)
             if s < bs:
                 best, bs = q, s
         return best
@@ -564,8 +604,7 @@ class FieldSpace(Space):
 
     def _keep_distance(self, p: Player, style_: str) -> tuple[float, float, bool] | None:
         """Stand `preferred_distance_m` from the nearest enemy on the field, behind the line."""
-        g = self.g
-        foes = [q for q in g.players if q.team != p.team and q.alive and q.on_field(g.t)]
+        foes = self._field[1 - p.team]
         want = self.pref.get(style_, 5.5)
         if not foes:
             tx = self._behind_line(p, self.x[p.pid] + self.fwd(p.team) * 100, style_)
@@ -590,8 +629,10 @@ class FieldSpace(Space):
                          and "after-dying" not in u.ability.requirements for u in p.uses.values())
             heal = any(u.available() and u.ability.effects_of("wound.heal") and u.range != "Self"
                        for u in p.uses.values())
+            if not heal and not revive:
+                return None
             cands = [q for q in g.players if q.team == p.team and q is not p and (
-                (heal and q.alive and q.wounds and q.on_field(t) and q.target is None and not g.attackers_of(q))
+                (heal and q.alive and q.wounds and q.on_field(t) and q.target is None and q.pid not in self._attacked)
                 or (revive and not q.alive and not q.out))]
         else:
             if not any(u.available() and u.ability.delivery == "enchantment" and u.range not in ("Self", "")
@@ -611,21 +652,19 @@ class FieldSpace(Space):
             if self.distance(p, q) > self.reach[pid]:
                 return self.x[q.pid], self.y[q.pid], True
             return None
-        if g.attackers_of(p):
+        if pid in self._attacked:
             return None
         if s == "line":
-            self.goal[pid] = None
+            goal = None
             if p.kept_away_until <= g.t and not g.barred(p, "wield-weapons") and g.weapon_usable(p):
-                foes = [q for q in g.players if q.team != p.team and q.alive and q.on_field(g.t)]
-                near = self.nearest(p, foes)
+                near = self.nearest(p, self._chargeable[1 - p.team])
                 if near is not None and self.distance(p, near) <= self.charge_m:
-                    q = self._goal(p)
-                    if q is not None:
-                        self.goal[pid] = q.pid
-                        return self.x[q.pid], self.y[q.pid], True
-            mates = [a.pid for a in g.players if a.team == p.team and a.alive and self.style[a.pid] == "line"]
-            i = mates.index(pid)
-            return self.x_of(self.line_u[p.team], p.team), self._slot_y(i, len(mates)), False
+                    goal = self._goal(p)
+            self.goal[pid] = goal.pid if goal is not None else None
+            if goal is not None:
+                return self.x[goal.pid], self.y[goal.pid], True
+            line = self._line[p.team]
+            return self.x_of(self.line_u[p.team], p.team), self._slot_y(self._slot[p.team][pid], len(line)), False
         q = self.nearest(p, self._threats_near(p, self.retreat_m)) if self.retreating(p) else None
         if q is not None:
             d = max(self.distance(p, q), 1e-6)
@@ -646,6 +685,7 @@ class FieldSpace(Space):
         t = g.t
         dt = self.tick_seconds
         self._update_lines()
+        self._tick_context()
         nx, ny = list(self.x), list(self.y)
         for p in g.players:
             if not p.alive or p.at_base_until > t:
@@ -674,7 +714,7 @@ class FieldSpace(Space):
                     del self._respawned[pid]
                     continue
                 row = self._matrix()[pid]
-                if any(q.team != p.team and g.targetable(q) and row[q.pid] <= 50 * FOOT for q in g.players):
+                if any(g.targetable(q) and row[q.pid] <= 50 * FOOT for q in self._field[1 - p.team]):
                     self.rejoins.append(t - since)
                     del self._respawned[pid]
 
@@ -686,32 +726,46 @@ class FieldSpace(Space):
         attacker; a line fighter engages its goal, or else the nearest enemy, within its reach."""
         g = self.g
         t = g.t
-        order = list(g.players)
+        players = g.players
+        by_target: dict[int, set] = {}          # target pid -> pids of living players attacking them
+        for q in players:
+            if q.alive and q.target is not None:
+                by_target.setdefault(q.target, set()).add(q.pid)
+
+        def retarget(p: Player, new: int | None) -> None:
+            if p.target is not None and p.alive:
+                by_target.get(p.target, set()).discard(p.pid)
+            p.target = new
+            if new is not None and p.alive:
+                by_target.setdefault(new, set()).add(p.pid)
+
+        order = list(players)
         g.rng.shuffle(order)
         for p in order:
             if not p.can_act(t) or not p.on_field(t) or g.barred(p, "wield-weapons") or p.weapon_hot_until > t:
-                p.target = None
+                retarget(p, None)
                 continue
             if p.target is not None:
-                q = g.players[p.target]
+                q = players[p.target]
                 if not g.targetable(q) or not g.can_attack(p, q) \
                         or self.distance(p, q) > max(self.reach[p.pid], self.reach[q.pid]) + 0.5:
-                    p.target = None
+                    retarget(p, None)
                 continue
             if p.casting is not None or p.kept_away_until > t:
                 continue
-            attackers = [q for q in g.attackers_of(p) if g.targetable(q) and g.can_attack(p, q)]
+            attackers = [players[a] for a in sorted(by_target.get(p.pid, ()))]
+            attackers = [q for q in attackers if g.targetable(q) and g.can_attack(p, q)]
             if attackers:
-                p.target = self.nearest(p, attackers).pid
+                retarget(p, self.nearest(p, attackers).pid)
                 continue
             if self.style[p.pid] != "line":
                 continue
             row = self._matrix()[p.pid]
             r = self.reach[p.pid]
-            foes = [q for q in g.players if q.team != p.team and row[q.pid] <= r and g.targetable(q)
-                    and q.kept_away_until <= t and g.can_attack(p, q)]
+            foes = [q for q in players if q.team != p.team and row[q.pid] <= r and g.targetable(q)
+                    and q.kept_away_until <= t and g.can_attack(p, q) and not self.in_base(q)]
             if not foes:
                 continue
             goal = self.goal[p.pid]
             pick = next((q for q in foes if q.pid == goal), None) or self.nearest(p, foes)
-            p.target = pick.pid
+            retarget(p, pick.pid)

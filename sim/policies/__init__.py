@@ -67,10 +67,17 @@ TRIGGERED = {"immediately-after-kill", "after-dying", "immediately-after-wound"}
 def _usable(g: "Game", p: Player) -> list[Uses]:
     """Abilities the policy may choose to cast now (triggered ones fire on their own), and worth the
     song their incantation would end (songs.keeps_song). An ability with a utility function
-    (enablers.py) is weighed by it, song included (enablers.time_cost), not by its fixed score."""
-    return [u for u in p.uses.values() if u.available()
+    (enablers.py) is weighed by it, song included (enablers.time_cost), not by its fixed score.
+    Computed once per player and tick: a decision ends at the first cast it starts, and nothing it
+    tries before that spends a use or changes a song. Callers get a copy they may reorder."""
+    key = ("usable", p.pid)
+    got = g.policy_cache.get(key)
+    if got is None:
+        got = g.policy_cache[key] = [
+            u for u in p.uses.values() if u.available()
             and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties
             and (has_utility(u.ability) or (g.value(u.ability, p) > 0 and songs.keeps_song(g, p, u)))]
+    return list(got)
 
 
 def _in_range(g: "Game", p: Player, u: Uses, q: Player) -> bool:
@@ -111,8 +118,8 @@ def _enemy_for(g: "Game", p: Player, u: Uses) -> Player | None:
         foes = [q for q in g.enemies(p) if q.on_field(t) and q.has_state("insubstantial", t)]
     else:
         foes = [q for q in g.enemies(p) if g.targetable(q)]
-    foes = [q for q in foes if g.check_requirements(u.ability, p, q, start=True) is None]
     foes = g.space.in_range_filter(p, foes, u)       # the field: only enemies in range (Phase 1: all)
+    foes = [q for q in foes if g.check_requirements(u.ability, p, q, start=True) is None]
     return g.rng.choice(foes) if foes else None
 
 
@@ -311,7 +318,7 @@ def _try_charge(g: "Game", p: Player) -> bool:
     """Recharge the spent ability with the most value per second of Charging, among those that
     would be used. Standing still for a long Charge is only worth it in a lull; fighters and archers
     would rather fight, so they Charge only in a lull at all."""
-    if _engaged(g, p) or g.rng.random() >= g.p_tick("policy.p_charge_when_safe"):
+    if _engaged(g, p) or g.rng.random() >= g.p_decide("policy.p_charge_when_safe"):
         return False
     lull = _lull(g, p)
     if (p.role in ("fighter", "archer") or p.play == "battle") and not lull:
@@ -650,7 +657,8 @@ def _try_control(g: "Game", p: Player) -> bool:
     options = sorted((u for u in _usable(g, p) if _is_control(u) and u.range != "Self"),
                      key=lambda u: -g.value(u.ability, p))
     for u in options:
-        foes = [q for q in g.enemies(p) if g.targetable(q) and not _locked(g, q, u) and _can_hit(g, p, u, q)]
+        foes = g.space.in_range_filter(p, [q for q in g.enemies(p) if g.targetable(q)], u)
+        foes = [q for q in foes if not _locked(g, q, u) and _can_hit(g, p, u, q)]
         q = _first_in_range(g, p, u, _control_order(g, p, foes)) if foes else None
         if q is not None and g.start_cast(p, u, q):
             return True
@@ -682,7 +690,8 @@ def _try_finish(g: "Game", p: Player) -> bool:
     fighting = None
     for u in options:
         fs = finish_states(u.ability)
-        foes = [(q, s) for q in g.enemies(p) if (s := _meets(g, q, fs)) and _can_hit(g, p, u, q)]
+        foes = [(q, s) for q in g.space.in_range_filter(p, g.enemies(p), u)
+                if (s := _meets(g, q, fs)) and _can_hit(g, p, u, q)]
         if not foes:
             continue
         if fighting is None:
@@ -707,8 +716,8 @@ def _try_setup(g: "Game", p: Player) -> bool:
         su, fu = held.get(setup), held.get(finisher)
         if su is None or fu is None or su.range == "Self":
             continue
-        foes = [q for q in g.enemies(p) if g.targetable(q) and not _locked(g, q, su)
-                and _can_hit(g, p, su, q) and not _resists(g, fu, q)]
+        foes = [q for q in g.space.in_range_filter(p, g.enemies(p), su) if g.targetable(q)
+                and not _locked(g, q, su) and _can_hit(g, p, su, q) and not _resists(g, fu, q)]
         q = _first_in_range(g, p, su, _control_order(g, p, foes)) if foes else None
         if q is not None and g.start_cast(p, su, q):
             return True
@@ -772,7 +781,7 @@ def _try_refill(g: "Game", p: Player) -> bool:
 
 
 def _enchant_on_field(g: "Game", p: Player) -> bool:
-    return g.rng.random() < g.p_tick("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False, prioritized=True)
+    return g.rng.random() < g.p_decide("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False, prioritized=True)
 
 
 def _try_song(g: "Game", p: Player) -> bool:
@@ -818,7 +827,7 @@ def _play_battle(g: "Game", p: Player) -> None:
     only when not in melee."""
     if _try_self_buff(g, p) or _try_song(g, p) or _try_step_back_heal(g, p):
         return
-    if p.target is None and g.rng.random() < g.p_tick("policy.p_use_offensive_ability_when_free"):
+    if p.target is None and g.rng.random() < g.p_decide("policy.p_use_offensive_ability_when_free"):
         if _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p):
             return
     if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_refill(g, p) or _try_cleanse(g, p)
@@ -859,7 +868,7 @@ def decide(g: "Game", p: Player) -> None:
             return
         if _try_heal(g, p) or _try_cleanse(g, p) or _try_refill(g, p):
             return
-        if g.rng.random() < g.p_tick("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
+        if g.rng.random() < g.p_decide("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
         if _try_repair(g, p) or _try_offense(g, p) or _try_shoot(g, p) or _try_charge(g, p):
             return
@@ -867,7 +876,7 @@ def decide(g: "Game", p: Player) -> None:
         if _try_self_buff(g, p) or _try_refill(g, p) or _try_offense(g, p) or _try_revive(g, p) \
                 or _try_heal(g, p) or _try_cleanse(g, p):
             return
-        if g.rng.random() < g.p_tick("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
+        if g.rng.random() < g.p_decide("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
         if _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
             return
@@ -879,7 +888,7 @@ def decide(g: "Game", p: Player) -> None:
     else:
         if _try_self_buff(g, p) or _try_step_back_heal(g, p):
             return
-        if p.target is None and g.rng.random() < g.p_tick("policy.p_use_offensive_ability_when_free"):
+        if p.target is None and g.rng.random() < g.p_decide("policy.p_use_offensive_ability_when_free"):
             if _try_offense(g, p):
                 return
         if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_refill(g, p) or _try_cleanse(g, p)

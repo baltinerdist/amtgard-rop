@@ -129,7 +129,8 @@ def run_cut(cut: dict, grid_settings: list[dict], games: int | None, workers) ->
     for st in todo:
         t = time.perf_counter()
         print(f"setting {_label(st)}: {1 + len(candidates) + len(merges)} runs of {games} games")
-        ev = evaluate(candidates, merges, seeds, meta["config"], workers, {**base_assume, **st}, log=lambda *_: None)
+        ev = evaluate(candidates, merges, seeds, meta["config"], workers, {**base_assume, **st}, log=lambda *_: None,
+                      space=meta.get("space", "off"))
         out = _cut_outcome(ev["singles"], merges, ev["merges"], ctab, meta["metric"], sel_meta, protect)
         rows.append({"setting": st, "label": _label(st), "seconds": time.perf_counter() - t, **out})
     base = rows[0]

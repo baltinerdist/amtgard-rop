@@ -2,6 +2,7 @@
 
     .venv/bin/python -m sim.analyze.validity                  # all checks, pass/fail table
     .venv/bin/python -m sim.analyze.validity --only mirror,skill --scale 2
+    .venv/bin/python -m sim.analyze.validity --space on       # the same checks on the field
 
 Every check uses fixed seeds, so a result replays exactly. Each check states its tolerance: a
 check fails only when the model is clearly on the wrong side of the expectation, not on noise.
@@ -42,12 +43,14 @@ CONTROL_MOVES = {"move.to-base", "move.push", "move.keep-away", "move.to-locatio
 
 _RULES: Rules | None = None
 _OVERRIDES: dict = {}
+_SPACE = "off"
 
 
-def _set_overrides(overrides: dict) -> None:
-    """Assumption overrides ("group.name" -> value) for sensitivity runs; also a Pool initializer."""
-    global _OVERRIDES, _RULES
-    _OVERRIDES, _RULES = dict(overrides), None
+def _set_overrides(overrides: dict, space: str = "off") -> None:
+    """Assumption overrides ("group.name" -> value) for sensitivity runs, and the space mode (off:
+    Phase 1, on: the field); also a Pool initializer."""
+    global _OVERRIDES, _RULES, _SPACE
+    _OVERRIDES, _RULES, _SPACE = dict(overrides), None, space
 
 
 def _rules() -> Rules:
@@ -146,9 +149,9 @@ class _Watched(Game):
         w = super().step()
         for p in self.players:
             if p.casting is not None and p.on_field(self.t):
-                self.cast_seconds += 1
+                self.cast_seconds += self.dt
                 if self.attackers_of(p):
-                    self.cast_seconds_attacked += 1
+                    self.cast_seconds_attacked += self.dt
         return w
 
 
@@ -156,7 +159,7 @@ def play_job(job: tuple) -> dict:
     """(seed, scenario, ablate, mods, watch) -> summary. mods: ((mod, team), ...)."""
     seed, sc, ablate, mods, watch = job
     rules = _rules()
-    g = (_Watched if watch else Game)(rules, sc, seed, frozenset(ablate))
+    g = (_Watched if watch else Game)(rules, sc, seed, frozenset(ablate), space=_SPACE)
     for mod, team in mods:
         _apply_mod(g, mod, team)
     res = g.run()
@@ -207,7 +210,7 @@ class Runner:
         if self.workers == 1 or len(jobs) < 8:
             return [play_job(j) for j in jobs]
         if self._pool is None:
-            self._pool = Pool(self.workers or os.cpu_count() or 1, _set_overrides, (_OVERRIDES,))
+            self._pool = Pool(self.workers or os.cpu_count() or 1, _set_overrides, (_OVERRIDES, _SPACE))
         n = self.workers or os.cpu_count() or 1
         return self._pool.map(play_job, jobs, chunksize=max(1, len(jobs) // (n * 6)))
 
@@ -473,10 +476,15 @@ def main(argv=None) -> int:
     ap.add_argument("--workers", type=int, default=0)
     ap.add_argument("--set", action="append", default=[], metavar="GROUP.NAME=VALUE",
                     help="override an assumption for this run (JSON value), e.g. time.speech_words_per_second=3.5")
+    ap.add_argument("--space", choices=("off", "on"), default="off",
+                    help="off: Phase 1, no map (default); on: the field (sim/engine/space.py)")
     args = ap.parse_args(argv)
-    _set_overrides({k: json.loads(v) for k, v in (s.split("=", 1) for s in args.set)})
+    from sim.run import warn_space
+    warn_space(args.space)
+    _set_overrides({k: json.loads(v) for k, v in (s.split("=", 1) for s in args.set)}, args.space)
     names = {s for s in args.only.split(",") if s} or None
     results = run_checks(names, args.scale, args.workers or None)
+    print(f"space {args.space}")
     print(table(results))
     hard = [r for r in results if not r.passed and not r.known_limit]
     print(f"\n{sum(r.passed for r in results)}/{len(results)} passed"

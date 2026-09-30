@@ -120,9 +120,12 @@ class Game:
             return p_per_second
         return 1.0 - (1.0 - p_per_second) ** self.dt
 
-    def p_tick(self, key: str) -> float:
-        """An assumption given per second (probability/s), as a chance per tick."""
-        return self.per_tick(self.rules.a(key))
+    def p_decide(self, key: str) -> float:
+        """A policy rate given per second (probability/s), as a chance per decision. Players decide
+        once a second in both modes (Space.thinks), so this is the assumption itself."""
+        p = self.rules.a(key)
+        d = self.space.decide_seconds
+        return p if d == 1 else 1.0 - (1.0 - p) ** d
 
     def value(self, ability: Ability, p: Player) -> float:
         """The usefulness score of p's ability (sim/policies/value.py) with this game's rules, in
@@ -143,8 +146,12 @@ class Game:
 
     def targetable(self, q: Player) -> bool:
         """On the field and open to combat and ordinary abilities."""
-        return (q.on_field(self.t) and not q.has_state("frozen", self.t)
-                and not q.has_state("insubstantial", self.t) and not q.has_state("invulnerable", self.t))
+        t = self.t
+        if not q.alive or q.at_base_until > t:
+            return False
+        st = q.states
+        return not st or not (st.get("frozen", -1.0) > t or st.get("insubstantial", -1.0) > t
+                              or st.get("invulnerable", -1.0) > t)
 
     def attackers_of(self, p: Player) -> list[Player]:
         return [q for q in self.players if q.target == p.pid and q.alive]
@@ -1536,6 +1543,8 @@ class Game:
         for p in order:
             if p.alive and p.can_act(self.t):
                 if p.casting is None:
+                    if not self.space.thinks(p):           # the field: once a second, staggered
+                        continue
                     if any(u.ability.slug == "extension" or (u.base_range and u.range != u.base_range)
                            for u in p.uses.values()):
                         self._offer_extension(p)

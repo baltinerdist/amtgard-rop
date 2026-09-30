@@ -168,7 +168,10 @@ class Player:
         return self.states.get(s, -1.0) > now
 
     def can_act(self, now: float) -> bool:
-        return self.alive and not any(self.states.get(s, -1.0) > now for s in NO_ACTION_STATES)
+        if not self.alive:
+            return False
+        st = self.states
+        return not st or not any(st.get(s, -1.0) > now for s in NO_ACTION_STATES)
 
     def on_field(self, now: float) -> bool:
         return self.alive and self.at_base_until <= now

@@ -382,6 +382,12 @@
       "assumption": true,
       "why": "Tick length on the field. Movement at a run covers 2 m a tick, a little more than melee reach, so a charging fighter can't pass through a reach circle between ticks. Incantations and Charges still count in whole seconds; per-second chances (melee hits, policy rates) are converted to per-tick chances."
     },
+    "decide_seconds": {
+      "value": 1.0,
+      "unit": "s",
+      "assumption": true,
+      "why": "How often each player's brain (the policies' decide) chooses what to do on the field: once a second, as in Phase 1, staggered across players so half decide on each tick. Movement, engagement, melee and incantations resolve every tick. Keeps the policies' per-second rates (policy.p_charge_when_safe and the like) as they are, and the run time close to Phase 1's."
+    },
     "field_length_m": {
       "value": 60.0,
       "unit": "m",
@@ -451,6 +457,12 @@
       "unit": "m",
       "assumption": true,
       "why": "Each team forms within this distance of its base end before the game: line fighters on a line at this depth, everyone else behind them."
+    },
+    "base_zone_m": {
+      "value": 5.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Line fighters don't charge or start a melee with a player standing within this distance of their own base end, and a formation line stops short of it (a player attacked there may still strike back). A common battlegame convention against camping a base, and the field's stand-in for Phase 1, where a respawned player was off the field for respawn.rejoin_seconds. Without it, a winning team stood on the losing team's base and killed each player as they respawned."
     },
     "line_spacing_m": {
       "value": 2.0,

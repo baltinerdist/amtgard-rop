@@ -165,18 +165,18 @@ def _impact_row(row: dict) -> dict:
 
 def evaluate(candidates: list[str], merges: list[dict], seeds: list[int], config: dict, workers,
              assume: dict | None = None, log=print, base: list[dict] | None = None,
-             base_seconds: float = 0.0) -> dict:
+             base_seconds: float = 0.0, space: str = "off") -> dict:
     """Baseline (unless given) + one run per candidate and per merge.
     Returns {'base', 'singles', 'merges', 'timing'}."""
     from sim.run import run_games
     t0 = time.perf_counter()
     if base is None:
-        base = run_games(seeds, config, (), workers, assume)
+        base = run_games(seeds, config, (), workers, assume, space=space)
     t_base = time.perf_counter() - t0 + base_seconds
     singles = {}
     t1 = time.perf_counter()
     for i, slug in enumerate(candidates, 1):
-        row = ablate_one(base, seeds, config, workers, (slug,), assume=assume)
+        row = ablate_one(base, seeds, config, workers, (slug,), assume=assume, space=space)
         singles[slug] = _impact_row(row)
         log(f"  [{i}/{len(candidates)}] {slug:30s} D_adj {row['distance_adj']:.3f}  "
             f"holder {row['holder_win_delta']:+.3f}  present {row['games_present']}")
@@ -184,7 +184,7 @@ def evaluate(candidates: list[str], merges: list[dict], seeds: list[int], config
     merged = {}
     t2 = time.perf_counter()
     for i, m in enumerate(merges, 1):
-        row = ablate_one(base, seeds, config, workers, (), {m["remove"]: m["keep"]}, assume)
+        row = ablate_one(base, seeds, config, workers, (), {m["remove"]: m["keep"]}, assume, space)
         merged[f"{m['remove']}>{m['keep']}"] = _impact_row(row)
         log(f"  [merge {i}/{len(merges)}] {m['remove']} -> {m['keep']}: D_adj {row['distance_adj']:.3f}")
     t_merges = time.perf_counter() - t2
@@ -211,7 +211,7 @@ def items_from(singles: dict, merges: list[dict], merged: dict, ctab: dict, metr
 def main(argv=None) -> int:
     from sim.rules.compile import default_rules
     from sim.rules.coverage import compute as coverage_compute
-    from sim.run import apply_assume, parse_assume, run_games
+    from sim.run import add_space_arg, apply_assume, parse_assume, run_games, warn_space
     from sim.scenarios import load_config
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--games", type=int, default=300, help="games per run (baseline, each ablation, combined)")
@@ -230,7 +230,9 @@ def main(argv=None) -> int:
     ap.add_argument("--assume", action="append", default=[], metavar="KEY=VALUE")
     ap.add_argument("--no-combined", action="store_true", help="skip the combined re-simulation")
     ap.add_argument("--out", default=str(OUT / "cut.json"))
+    add_space_arg(ap)
     args = ap.parse_args(argv)
+    warn_space(args.space)
     if not 0 < args.target < 1:
         ap.error("--target must be between 0 and 1")
 
@@ -254,7 +256,7 @@ def main(argv=None) -> int:
     # the baseline decides the candidates: an ability nobody held has no measurable impact
     t_start = time.perf_counter()
     print(f"baseline: {args.games} games ...")
-    base = run_games(seeds, config, (), workers, assume)
+    base = run_games(seeds, config, (), workers, assume, space=args.space)
     t_base = time.perf_counter() - t_start
     held = {s for r in base for s, h in r["holdings"].items() if sum(h)}
     status = {}
@@ -288,7 +290,7 @@ def main(argv=None) -> int:
 
     print(f"evaluating {len(pool)} single ablations and {len(merges)} merges at {args.games} games each "
           f"on {workers} workers")
-    ev = evaluate(pool, merges, seeds, config, workers, assume, base=base, base_seconds=t_base)
+    ev = evaluate(pool, merges, seeds, config, workers, assume, base=base, base_seconds=t_base, space=args.space)
     items = items_from(ev["singles"], merges, ev["merges"], ctab, args.metric)
     ranking = rank([it for it in items if it["kind"] == "cut"])
     if limited:
@@ -303,7 +305,7 @@ def main(argv=None) -> int:
         cuts = tuple(sorted(it["remove"] for it in sel["chosen"] if it["kind"] == "cut"))
         subs = {it["remove"]: it["keep"] for it in sel["chosen"] if it["kind"] == "merge"}
         t = time.perf_counter()
-        var = run_games(seeds, config, cuts, workers, assume, subs or None)
+        var = run_games(seeds, config, cuts, workers, assume, subs or None, args.space)
         row = compare(base, var, list(cuts) + list(subs))
         combined = {**_impact_row(row), "ablate": list(cuts), "substitute": subs,
                     "seconds": time.perf_counter() - t, "summary": run_summary(var),
@@ -322,7 +324,7 @@ def main(argv=None) -> int:
     out = {
         "meta": {"created": time.strftime("%Y-%m-%dT%H:%M:%S"), "commit": _git_commit(), "games": args.games,
                  "seeds": [seeds[0], seeds[-1]], "config": config, "config_name": args.config, "workers": workers,
-                 "assume": assume, "target": args.target, "by": args.by, "protect": protect, "metric": args.metric,
+                 "assume": assume, "space": args.space, "target": args.target, "by": args.by, "protect": protect, "metric": args.metric,
                  "sample": args.sample, "abilities_arg": args.abilities, "limited": limited,
                  "include_unmodeled": args.include_unmodeled, "wall_seconds": wall, "timing": ev["timing"],
                  "full_run_estimate": est,

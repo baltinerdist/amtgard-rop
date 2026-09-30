@@ -4,6 +4,7 @@
     .venv/bin/python -m sim.analyze.ablation --ability heal,mend --together --games 1000   # one set
     .venv/bin/python -m sim.analyze.ablation --merge icy-blast:iceball --games 1000       # B:A substitution
     .venv/bin/python -m sim.analyze.ablation --all --games 300 --csv sim/out/ablation.csv
+    .venv/bin/python -m sim.analyze.ablation --ability heal --games 1000 --space on        # on the field
 
 Common random numbers: each seed fixes the scenario (players, levels, skill, teams) and every
 player's loadout draws, so baseline and ablated games start from the same rosters. The play
@@ -23,12 +24,14 @@ import argparse
 import csv
 
 from sim.analyze.impact import compare, flat
-from sim.run import apply_assume, parse_assume, parse_substitute, run_games
+from sim.run import add_space_arg, apply_assume, parse_assume, parse_substitute, run_games, warn_space
 
 
-def ablate_one(base, seeds, config, workers, removed=(), merge: dict | None = None, assume=None) -> dict:
-    """Run one variant (abilities removed and/or B:A merges) over `seeds` and compare with `base`."""
-    var = run_games(seeds, config, tuple(removed), workers, assume, merge or None)
+def ablate_one(base, seeds, config, workers, removed=(), merge: dict | None = None, assume=None,
+               space: str = "off") -> dict:
+    """Run one variant (abilities removed and/or B:A merges) over `seeds` and compare with `base`
+    (which must have been played with the same `space`)."""
+    var = run_games(seeds, config, tuple(removed), workers, assume, merge or None, space)
     gone = list(removed) + list((merge or {}).keys())
     row = compare(base, var, gone)
     row["ablate"] = ",".join(sorted(removed))
@@ -58,7 +61,9 @@ def main(argv=None) -> int:
     ap.add_argument("--assume", action="append", default=[], metavar="KEY=VALUE")
     ap.add_argument("--workers", type=int, default=0)
     ap.add_argument("--csv", default="")
+    add_space_arg(ap)
     args = ap.parse_args(argv)
+    warn_space(args.space)
     rules = default_rules()
     config = load_config(args.config)
     try:
@@ -69,7 +74,7 @@ def main(argv=None) -> int:
         ap.error(str(exc))
     seeds = list(range(args.seed, args.seed + args.games))
     workers = args.workers or None
-    base = run_games(seeds, config, (), workers, assume)
+    base = run_games(seeds, config, (), workers, assume, space=args.space)
     slugs = sorted({s for r in base for s in r["holdings"]}) if args.all else [s for s in args.ability.split(",") if s]
     bad = [s for s in (*slugs, *merges, *merges.values()) if s not in rules.abilities]
     if bad:
@@ -77,10 +82,10 @@ def main(argv=None) -> int:
     sets = [tuple(slugs)] if args.together and slugs else [(s,) for s in slugs]
     rows = []
     for removed in sets:
-        rows.append(ablate_one(base, seeds, config, workers, removed, assume=assume))
+        rows.append(ablate_one(base, seeds, config, workers, removed, assume=assume, space=args.space))
         print(fmt(rows[-1]))
     for b, a in merges.items():
-        rows.append(ablate_one(base, seeds, config, workers, (), {b: a}, assume))
+        rows.append(ablate_one(base, seeds, config, workers, (), {b: a}, assume, args.space))
         print(fmt(rows[-1]))
     if args.csv and rows:
         flats = [flat(r) for r in rows]

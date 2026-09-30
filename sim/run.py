@@ -5,6 +5,7 @@
     .venv/bin/python -m sim.run --games 500 --assume melee.base_hit_per_second=0.3 \
         --assume "range.p_in_range.20'=0.4"                      # change assumptions for this run only
     .venv/bin/python -m sim.run --games 500 --substitute icy-blast:iceball   # merge: holders of Icy Blast get Iceball
+    .venv/bin/python -m sim.run --games 500 --space on             # on the field (sim/engine/space.py)
 
 Each game is fully determined by its seed (scenario, loadouts and play all derive their own
 random streams from it), so a seed replays exactly and paired runs share scenarios.
@@ -18,9 +19,14 @@ Variants (both change the rules object the workers build, never the files on dis
                         already lists A folds B's entry into A's: A's copy cap becomes the sum of the two
                         and A is buyable from the earlier of the two levels.
 
+--space off|on: Phase 1 (no map; the default) or the field (positions and movement, sim/PHASE2.md
+stage 1). The value calibration was measured with space off; a run with space on warns.
+
 Tables (appended to; one row set per run_id):
-  runs      run_id, started, games, seed, config, ablate, assume, substitute, wall_seconds, workers
+  runs      run_id, started, games, seed, config, ablate, assume, substitute, wall_seconds, workers, space
   games     run_id, seed, game_type, balance, n_players, skill_sd, winner, duration
+            (+ rejoin_n, rejoin_sum with space on: respawns that came back within 50' of an enemy,
+            and the seconds that took in total)
   players   run_id, seed, pid, team, cls, level, skill, role, kills, deaths, time_dead, won,
             doctrine, play (a Magic User's build plan and play style; '' for martial classes)
   abilities run_id, seed, slug, metric, detail, n     (metric: cast / applied / noop / fail / kill)
@@ -149,21 +155,22 @@ def _rules(variant: tuple = NO_VARIANT):
 # ---------------------------------------------------------------- running
 
 def play_seed(args: tuple) -> dict:
-    """Worker entry point: (seed, config, ablate[, variant]) -> result dict with the scenario summary."""
+    """Worker entry point: (seed, config, ablate[, variant[, space]]) -> result dict with the scenario summary."""
     from sim.engine.game import play
     from sim.scenarios import generate
     seed, config, ablate, *rest = args
     rules = _rules(rest[0] if rest else NO_VARIANT)
     sc = generate(seed, config, rules)
-    res = play(rules, sc, seed, frozenset(ablate))
+    res = play(rules, sc, seed, frozenset(ablate), space=rest[1] if len(rest) > 1 else "off")
     res["scenario"] = {k: v for k, v in sc.items() if k != "teams"}
     return res
 
 
 def run_games(seeds: list[int], config: dict, ablate: tuple = (), workers: int | None = None,
-              assume: dict | None = None, substitute: dict | None = None) -> list[dict]:
+              assume: dict | None = None, substitute: dict | None = None, space: str = "off") -> list[dict]:
     variant = make_variant(assume, substitute)
-    jobs = [(s, config, tuple(ablate), variant) for s in seeds]
+    extra = (space,) if space != "off" else ()
+    jobs = [(s, config, tuple(ablate), variant, *extra) for s in seeds]
     workers = workers or os.cpu_count() or 1
     if workers == 1:
         results = [play_seed(j) for j in jobs]
@@ -181,7 +188,9 @@ def frames(results: list[dict], run_id: str):
         sc = r["scenario"]
         games.append({"run_id": run_id, "seed": r["seed"], "game_type": sc["game_type"], "balance": sc["balance"],
                       "n_players": sc["n_players"], "skill_sd": sc["skill_sd"], "winner": r["winner"],
-                      "duration": r["duration"]})
+                      "duration": r["duration"],
+                      **({"rejoin_n": r["space"]["rejoin_n"], "rejoin_sum": r["space"]["rejoin_sum"]}
+                         if "space" in r else {})})
         for p in r["players"]:
             players.append({"run_id": run_id, "seed": r["seed"], **p})
         for slug, n in r["casts"].items():
@@ -228,6 +237,20 @@ def store(results: list[dict], run_meta: dict, db_path) -> None:
     con.close()
 
 
+def add_space_arg(ap) -> None:
+    ap.add_argument("--space", choices=("off", "on"), default="off",
+                    help="off: Phase 1, no map (default); on: the field (sim/engine/space.py)")
+
+
+def warn_space(space: str) -> None:
+    """Print the calibration warning for a run with the field on."""
+    import sys
+    from sim.policies.calibration import space_warning
+    msg = space_warning(space)
+    if msg:
+        print(f"WARNING: {msg}", file=sys.stderr)
+
+
 def parse_substitute(text: str) -> dict:
     """'b1:a1,b2:a2' -> {'b1': 'a1', 'b2': 'a2'} (B is removed, its holders get A)."""
     out = {}
@@ -253,7 +276,9 @@ def main(argv=None) -> int:
                     help="override an assumptions.json value for this run (repeatable)")
     ap.add_argument("--workers", type=int, default=0, help="processes (default: all cores)")
     ap.add_argument("--db", default=str(OUT / "runs.duckdb"))
+    add_space_arg(ap)
     args = ap.parse_args(argv)
+    warn_space(args.space)
 
     config = load_config(args.config)
     ablate = tuple(s for s in args.ablate.split(",") if s)
@@ -272,18 +297,18 @@ def main(argv=None) -> int:
     workers = args.workers or os.cpu_count() or 1
     seeds = list(range(args.seed, args.seed + args.games))
     t0 = time.perf_counter()
-    results = run_games(seeds, config, ablate, workers, assume, subs)
+    results = run_games(seeds, config, ablate, workers, assume, subs, args.space)
     wall = time.perf_counter() - t0
     run_id = uuid.uuid4().hex[:12]
     meta = {"run_id": run_id, "started": time.strftime("%Y-%m-%dT%H:%M:%S"), "games": len(results),
             "seed": args.seed, "config": json.dumps(config, sort_keys=True), "ablate": ",".join(ablate),
             "assume": json.dumps(assume, sort_keys=True) if assume else "",
             "substitute": ",".join(f"{b}:{a}" for b, a in sorted(subs.items())),
-            "wall_seconds": round(wall, 3), "workers": workers}
+            "wall_seconds": round(wall, 3), "workers": workers, "space": args.space}
     store(results, meta, args.db)
     draws = sum(1 for r in results if r["winner"] == -1)
     print(f"run {run_id}: {len(results)} games in {wall:.1f}s on {workers} workers "
-          f"({len(results) / wall:.1f} games/s); draws {draws}; stored in {args.db}")
+          f"({len(results) / wall:.1f} games/s); space {args.space}; draws {draws}; stored in {args.db}")
     return 0
 
 
