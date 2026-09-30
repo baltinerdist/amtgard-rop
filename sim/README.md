@@ -322,6 +322,29 @@ turns into a section of the report.
   and Bards 0.468, against 0.54–0.56 for Warriors, Paladins, Anti-Paladins and Barbarians: the
   melee-over-casters limit below is unchanged by doctrines.
 
+## Deciding casts by situational utility
+
+The fixed usefulness score in `policies/value.py` answers "is this spell good?" once, with no
+context. `policies/utility.py` is the replacement pattern: a per-ability function
+`(game, caster, target) -> utility` registered by slug, which answers "is casting this now, on
+this player, worth it?". Bardic songs are the first abilities decided this way
+(`policies/songs.py`):
+
+- The engine follows the Chant rules: one Chant at a time; beginning any incantation (another
+  spell, a Charge, a new song) ends it; death, Frozen and Stunned end it.
+- Each song's utility counts the threats it answers, weighted by how likely they are to act on the
+  Bard soon: armored enemies in reach (Battle), enemy Stop, Freeze and Insubstantial casters
+  (Freedom), Command threats (Determination), projectiles (Deflection), being wounded or
+  outnumbered (Survival), teammates Charging nearby (Power), enemy Verbal casters (Interference).
+- A Bard switches only when the new song, after its silent incantation, gains at least
+  `policy.song_switch_min_gain` over `policy.song_switch_horizon_seconds`. Another cast must be
+  worth the song time it costs; escapes always go. A Bard turns down a teammate's Enchantment worth
+  less than their song.
+
+In 2,000 mixed games Bards start about 1.6 songs per life. By share of songs started:
+Determination 37%, Battle 34%, Survival 12%, Freedom 7%, Power 6%, Deflection 5%, Interference
+under 1%. No Bard doctrine's win rate moved beyond its interval.
+
 ## Known limitations (from the face-validity suite)
 
 `sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
@@ -386,12 +409,11 @@ side bias that predates doctrines (below). At half scale (`pytest`) no-abilities
   the engine doesn't model them or the usefulness score puts them at zero or below: Ambulant
   (Battlemage, Priest; needs a map), the weapon purchases (battle doctrines; weapon types are out of
   scope), Summon Dead (medic; needs a map), Stoneform (battle druid), Snaring Vines (elementalist),
-  Song of Power (Stopped drawback), Amplification and Silver Tongue (force multiplier; their
-  restriction outweighs the granted Meta-Magic), and Undead Minion (Necromancer; its drawbacks
-  outweigh the Raise Dead it grants). Bardic songs are magical Enchantments, so a Bard wears one at
-  a time and the engine never swaps: the skald's Song of Battle and Song of Freedom are never sung
-  once Song of Determination is on. Battle casters also keep `melee.weak_weapon_logit`, whatever
-  weapon they bought.
+  Amplification and Silver Tongue (force multiplier; their restriction outweighs the granted
+  Meta-Magic), and Undead Minion (Necromancer; its drawbacks outweigh the Raise Dead it grants).
+  The cause is the fixed usefulness score, which scores enablers at a flat 0.5 and charges
+  drawbacks in full whatever the context; see "Deciding casts by situational utility" below.
+  Battle casters also keep `melee.weak_weapon_logit`, whatever weapon they bought.
 - **Healers slipped slightly.** After this round's fixes Healers win 0.430 in the smoke run (0.447
   before; the intervals overlap). It is not the Archetypes (0.427 with none). Likely causes: Raise
   Dead and Phoenix Tears score lower now that their drawbacks count, and Healers spend time
