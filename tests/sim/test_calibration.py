@@ -98,6 +98,7 @@ def _doc(**over) -> dict:
         "state-stopped": {"calibrates": "state.stopped", "map": "needs-map", "weight": {"value": 0.1}, "pooled": {}},
         "state-frozen": {"calibrates": "state.frozen", "map": "may-understate", "weight": {"value": 1.0}, "pooled": {}},
         "state-stunned": {"calibrates": "state.stunned", "map": "fair", "weight": {"value": 2.5}, "pooled": {}},
+        "state-fragile": {"calibrates": "state.fragile", "map": "fair", "weight": {"value": -0.3}, "pooled": {}},
     }}
     doc.update(over)
     return doc
@@ -112,6 +113,9 @@ def test_calibrated_weights_load_and_override():
     assert t.sources["state.stopped"] == "hand (needs map)"
     assert t.weights["state"]["frozen"] == value.HAND_STATE_WEIGHT["frozen"]
     assert t.sources["state.frozen"] == "hand (floor)"
+    # a benefit measured at or below zero keeps a minimum, so its abilities are still used
+    assert t.weights["state"]["fragile"] == calibration.MIN_WEIGHT
+    assert t.sources["state.fragile"] == "calibrated (at the minimum)"
     # anything not calibrated is the hand weight, and says so
     assert t.weights["kind"]["wound.heal"] == value.HAND_KIND_WEIGHT["wound.heal"]
     assert t.sources["kind.wound.heal"] == "hand"

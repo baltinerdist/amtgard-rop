@@ -9,6 +9,7 @@ weight everywhere else. Every weight carries its source (`Tables.sources`):
 - `calibrated (floor)`: measured, used only above the hand weight (map flag `may-understate`)
 - `hand (floor)`: measured below the hand weight, which is kept as a floor
 - `hand (needs map)`: measured, but the engine gives the anchor no effect without a map
+- `calibrated (at the minimum)`: measured at or below `MIN_WEIGHT`, which is used instead
 - `hand`: not calibrated
 
 **Staleness.** A calibration is only valid for the assumptions and the engine it was measured
@@ -37,6 +38,12 @@ from sim.paths import ASSUMPTIONS_JSON, DATA
 
 CALIBRATION_JSON = DATA / "value-calibration.json"
 MODES = ("on", "stale-ok", "off")
+# The least a calibrated per-use weight can be: value.UNPRICED_WEIGHT, what an effect the valuation
+# can't price is worth. A measured weight at or below zero (noise, or a model limit such as wounds
+# costing little) would otherwise make every ability with that effect worthless, and policies never
+# cast an ability worth nothing. Rates (a second of Charge saved) have no minimum.
+MIN_WEIGHT = 0.5
+NO_MINIMUM = frozenset({"scalar.charge_second"})
 
 
 class StaleCalibration(RuntimeError):
@@ -128,8 +135,11 @@ def tables(hand: dict, doc: dict | None) -> Tables:
         if flag == "may-understate" and h is not None and measured < h:
             sources[target] = "hand (floor)"
             continue
-        weights[table][key] = max(0.0, measured)
+        low = 0.0 if target in NO_MINIMUM else MIN_WEIGHT
+        weights[table][key] = max(low, measured)
         sources[target] = "calibrated (floor)" if flag == "may-understate" else "calibrated"
+        if measured < low:
+            sources[target] = "calibrated (at the minimum)"
     return out
 
 
