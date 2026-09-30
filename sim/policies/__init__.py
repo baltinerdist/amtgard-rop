@@ -737,7 +737,7 @@ def _try_refill(g: "Game", p: Player) -> bool:
             pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and not (q is p and u.range == "Other")
                     and (q is p or not _engaged(g, q))]
         pool = [q for q in pool if _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
-                and (q is p or not u.magical or g.unaffected_by_school(q, u.ability.school) is None)  # Void Touched
+                and (q is p or not _resists(g, u, q))     # Void Touched, Rage (unaffected by Verbals), ...
                 and g.check_requirements(u.ability, p, q, start=True, uses=u) is None]
         q, x = enablers.best_target(g, p, u, pool)
         if q is not None and (best is None or x > best[0]):
