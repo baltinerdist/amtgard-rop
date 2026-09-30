@@ -116,3 +116,93 @@ def test_bought_shield_is_carried(rules):
             assert p.shield == "small"
         else:
             assert p.shield == "none"
+
+
+# ---------------------------------------------------------------- doctrines
+
+def _doctrine_builds(rules, cls, level, n):
+    out: dict[str, list] = {}
+    for i in range(n):
+        p = build_player(rules, 0, 0, cls, level, 0.0, random.Random(f"doctrine:{cls}:{level}:{i}"))
+        out.setdefault(p.doctrine, []).append(p)
+    return out
+
+
+def _affordable_core(rules, d, level):
+    """Core entries a player of this doctrine and level can pay for when they skip nothing (the
+    Archetype and earlier entries paid first, from the level pools). No Look the Part point."""
+    from sim.engine.loadout import _archetype_purchase_rules
+    from sim.policies import buy
+    entries = {c.slug: c for c in rules.classes[d.cls].abilities if c.kind in ("spell", "archetype") and c.cost}
+    arch = entries[d.archetype] if d.archetype else None
+    cost, allowed = (_archetype_purchase_rules(rules.abilities[d.archetype], rules) if arch
+                     else ((lambda c: c.cost), (lambda c: True)))
+    core = [(entries[s], n) for s, n in d.core if min(entries[s].levels) <= level and allowed(entries[s])]
+    taste = {s: 1.0 for s in entries}
+    bought, _ = buy._build(arch, [], cost, {lv: 5 for lv in range(1, level + 1)}, "caster", rules, taste,
+                           {s: 0.0 for s in entries}, level, doctrine=d, core=core)
+    return [s for s, _ in d.core if bought.get(s)]
+
+
+def _holds(p, slug) -> bool:
+    return slug in p.uses or any(t.slug == slug for t in p.traits)
+
+
+@pytest.mark.parametrize("cls", ["Wizard", "Healer", "Druid", "Bard"])
+def test_doctrine_core_spells_are_in_most_builds(rules, cls):
+    """Each core entry a doctrine can pay for at a level is held by most of its players there: only
+    a disliked core entry (DOCTRINE_WEIGHTS core_skip_share, 10%) is skipped, and the fill step may
+    buy it back."""
+    low = []
+    for level in (1, 3, 6):
+        builds = _doctrine_builds(rules, cls, level, 400 if level < 6 else 900)
+        for d in rules.doctrines.by_class[cls]:
+            if d.archetype and level < 6:
+                assert d.id not in builds, f"{d.key} drawn below 6th level"
+                continue
+            players = builds.get(d.id, [])
+            assert len(players) >= 20, (d.key, level, len(players))
+            for slug in _affordable_core(rules, d, level):
+                share = sum(_holds(p, slug) for p in players) / len(players)
+                if share < 0.8:
+                    low.append((d.key, level, slug, round(share, 2)))
+    assert not low, f"core entries held by < 80% of their doctrine's builds: {low}"
+
+
+def test_archetype_doctrines_hold_their_archetype(rules):
+    for cls in ("Wizard", "Healer", "Druid", "Bard"):
+        builds = _doctrine_builds(rules, cls, 6, 600)
+        for d in rules.doctrines.by_class[cls]:
+            archetypes = [[t.slug for t in p.traits if t.delivery == "archetype"] for p in builds.get(d.id, [])]
+            if d.archetype:
+                assert archetypes and all(a == [d.archetype] for a in archetypes), d.key
+            else:
+                assert all(a == [] for a in archetypes), d.key
+
+
+def test_doctrine_shares(rules):
+    """Doctrines are drawn by share below 6th level; at 6th, Archetype doctrines by share_at_6."""
+    for level, n in ((3, 3000), (6, 3000)):
+        builds = _doctrine_builds(rules, "Wizard", level, n)
+        docs = rules.doctrines.by_class["Wizard"]
+        at6 = sum(d.share_at_6 for d in docs if d.archetype) if level == 6 else 0.0
+        for d in docs:
+            want = d.share_at_6 if d.archetype else (d.share * (1 - at6) if level == 6 else d.share)
+            if level < 6 and d.archetype:
+                want = 0.0
+            got = len(builds.get(d.id, [])) / n
+            assert abs(got - want) < 0.03, (d.key, level, got, want)
+
+
+def test_ablated_core_spell_keeps_the_doctrine(rules):
+    """Paired ablation: the same doctrine and equipment draws, the core spell gone, its points spent."""
+    moved = 0
+    for i in range(200):
+        a = build_player(rules, 0, 0, "Wizard", 4, 0.0, random.Random(f"abl:{i}"))
+        b = build_player(rules, 0, 0, "Wizard", 4, 0.0, random.Random(f"abl:{i}"), frozenset({"entangle"}))
+        assert a.doctrine == b.doctrine and "entangle" not in b.uses
+        assert (a.armor_max, a.shield, a.ltp) == (b.armor_max, b.shield, b.ltp)
+        if "entangle" in a.uses:
+            spent = lambda p: sum(n for s, n in p.bought.items())
+            moved += spent(b) >= spent(a) - a.bought["entangle"] + 1
+    assert moved > 20, "points freed by an ablated core spell are spent in the fill step"
