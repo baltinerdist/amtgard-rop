@@ -312,6 +312,24 @@
       "unit": "s",
       "assumption": true,
       "why": "Longest Charge a caster starts while enemies are on the field (about Charge x3 at 3.5 words/s). Longer ones (Charge x5 is 40 s, x10 is 80 s) wait for a lull with no enemy on the field; fighters and archers Charge only in a lull. Standing still for over a minute mid-battle costs more than the recharged use is worth."
+    },
+    "song_switch_horizon_seconds": {
+      "value": 20,
+      "unit": "s",
+      "assumption": true,
+      "why": "How far ahead a Bard looks when deciding to switch songs (sim/policies/songs.py): about how long a battlefield situation (an engagement, an enemy caster in range) lasts before it changes. Switching ends the current song and leaves the Bard silent for the new song's incantation (2 s for most), so the new song must win over this horizon after paying for that: U_new x (H - t) > U_now x H. At 20 s a 2 s song must be about 11% better, which stops a Bard flipping between two songs of near-equal use. Shorter horizons make switching rarer."
+    },
+    "song_switch_min_gain": {
+      "value": 1.0,
+      "unit": "value points",
+      "assumption": true,
+      "why": "Least a Bard must gain to start or switch a song (sim/policies/songs.py): over song_switch_horizon_seconds, the new song after its silent incantation must be worth this much more than keeping the current one, in value points (value_per_threat_second converts). About an Insult's worth. Without it a Bard on a large team flipped between songs of utility 0.11 and 0.14 as single enemies stepped in and out of melee (a 27% jump but a 0.2-point gain); 30% of skald switches were undone within 20 s."
+    },
+    "value_per_threat_second": {
+      "value": 0.5,
+      "unit": "value points per threat-unit second",
+      "assumption": true,
+      "why": "Exchange rate between situational utility (sim/policies/utility.py, in threat units) and the fixed usefulness score (sim/policies/value.py), used when a Bard weighs casting another spell against the song its incantation ends. An enemy whose threat a song answers acts about once every 10-20 s, and what it would do is worth about 5-8 points (Stun 6, a wound 5), so one threat unit of song is worth roughly 0.3-0.8 points a second. With a song of utility 1, an 8 s Stun (6 points) costs 5 points of song and is cast; a 3 s Insult (1 point) costs 2.5 and is held."
     }
   },
   "game": {

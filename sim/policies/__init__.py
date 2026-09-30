@@ -28,6 +28,12 @@ doctrine with combos casts a set-up whose finisher it holds before other offense
 
 Abilities are recognised by what their effects do, not by name (_kind_of): a self-buff, an
 escape, a cleanse (removes a harmful State), a repair (armor or equipment).
+
+Bardic songs are chosen by situational utility, not the fixed score (sim/policies/songs.py,
+_try_song): a battle Bard sings first, the other play styles when they have nothing better to cast.
+Any other incantation ends the song, so `_usable`, `_of_kind` (not escapes) and `_try_charge` only
+offer a singing Bard what is worth the song time it costs (songs.keeps_song), and a Bard turns down
+a teammate's Enchantment worth less than a song (songs.declines, in `_enchant_targets`).
 """
 from __future__ import annotations
 
@@ -36,6 +42,7 @@ from typing import TYPE_CHECKING
 
 from sim.engine.effects import is_handled
 from sim.engine.state import Player, Uses
+from sim.policies import songs
 from sim.policies.value import benefit, drawback_cost, is_drawback
 
 if TYPE_CHECKING:
@@ -49,9 +56,11 @@ TRIGGERED = {"immediately-after-kill", "after-dying", "immediately-after-wound"}
 
 
 def _usable(g: "Game", p: Player) -> list[Uses]:
-    """Abilities the policy may choose to cast now (triggered ones fire on their own)."""
+    """Abilities the policy may choose to cast now (triggered ones fire on their own), and worth the
+    song their incantation would end (songs.keeps_song)."""
     return [u for u in p.uses.values() if u.available() and g.value(u.ability, p) > 0
-            and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties]
+            and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties
+            and songs.keeps_song(g, p, u)]
 
 
 def _in_range(g: "Game", u: Uses) -> bool:
@@ -195,7 +204,7 @@ def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Playe
         pool = [q for q in pool if q is not p]
     return [q for q in pool if all(e.ability.slug != u.slug for e in q.enchantments)
             and (not u.magical or q.magical_enchantment_count() < q.ench_slots)
-            and not _crippled(u.ability, q)]
+            and not _crippled(u.ability, q) and (q is p or not songs.declines(g, q, u))]
 
 
 def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False, free_only: bool = False) -> bool:
@@ -205,8 +214,8 @@ def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False,
     if prioritized and _try_extra_slot(g, p, at_base, free_only):
         return True
     for u in sorted(_usable(g, p), key=lambda u: -g.value(u.ability, p)):
-        if u.ability.delivery != "enchantment" or _is_offensive(u):
-            continue
+        if u.ability.delivery != "enchantment" or _is_offensive(u) or songs.is_song(u.ability):
+            continue            # songs are chosen by the situation (_try_song)
         targets = _enchant_targets(g, p, u, at_base)
         if free_only:
             targets = [q for q in targets if q is p or not _engaged(g, q)]
@@ -276,7 +285,8 @@ def _try_charge(g: "Game", p: Player) -> bool:
         return False
     longest = math.inf if lull else g.rules.a("policy.max_field_charge_seconds")
     spent = [u for u in p.uses.values() if u.charge and u.max and u.left is not None and u.left < u.max
-             and g.value(u.ability, p) > 0 and _charge_seconds(g, u) <= longest and _would_use(g, p, u)]
+             and g.value(u.ability, p) > 0 and _charge_seconds(g, u) <= longest and _would_use(g, p, u)
+             and g.value(u.ability, p) >= songs.song_loss(g, p, _charge_seconds(g, u))]
     if not spent:
         return False
     return g.start_charge(p, max(spent, key=lambda u: g.value(u.ability, p) / _charge_seconds(g, u)))
@@ -333,8 +343,10 @@ def _kind_of(ab) -> str:
 
 
 def _of_kind(g: "Game", p: Player, kind: str) -> list[Uses]:
+    """Usable abilities of this kind; an escape is taken whatever song it ends."""
     return [u for u in p.uses.values() if u.available() and _kind_of(u.ability) == kind
-            and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties]
+            and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties
+            and (kind == "escape" or songs.keeps_song(g, p, u))]
 
 
 def _loaded_balls(p: Player) -> int:
@@ -718,10 +730,15 @@ def _enchant_on_field(g: "Game", p: Player) -> bool:
     return g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False, prioritized=True)
 
 
+def _try_song(g: "Game", p: Player) -> bool:
+    """Sing, or switch to, the song the situation needs (sim/policies/songs.py)."""
+    return songs.try_song(g, p)
+
+
 def _play_striker(g: "Game", p: Player) -> None:
     if _try_self_buff(g, p) or _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p) \
             or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) \
-            or _try_repair(g, p) or _try_shoot(g, p):
+            or _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
     _try_charge(g, p)
 
@@ -729,7 +746,7 @@ def _play_striker(g: "Game", p: Player) -> None:
 def _play_controller(g: "Game", p: Player) -> None:
     if _try_self_buff(g, p) or _try_finish(g, p) or _try_control(g, p) or _try_offense(g, p) \
             or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) \
-            or _try_repair(g, p) or _try_shoot(g, p):
+            or _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
     _try_charge(g, p)
 
@@ -737,7 +754,7 @@ def _play_controller(g: "Game", p: Player) -> None:
 def _play_enchanter(g: "Game", p: Player) -> None:
     if _try_enchant(g, p, False, prioritized=True, free_only=True) or _try_refill(g, p) \
             or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _try_repair(g, p) \
-            or _try_finish(g, p) or _try_offense(g, p) or _try_shoot(g, p):
+            or _try_finish(g, p) or _try_offense(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
     _try_charge(g, p)
 
@@ -746,14 +763,14 @@ def _play_medic(g: "Game", p: Player) -> None:
     if g.rules.a("policy.revive_priority") and _try_revive(g, p):
         return
     if _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) or _try_repair(g, p) \
-            or _try_offense(g, p) or _try_shoot(g, p):
+            or _try_offense(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
     _try_charge(g, p)
 
 
 def _play_battle(g: "Game", p: Player) -> None:
-    """Like a fighter: self-buffs, then casts only when not in melee."""
-    if _try_self_buff(g, p):
+    """Like a fighter: self-buffs and its song first, then casts only when not in melee."""
+    if _try_self_buff(g, p) or _try_song(g, p):
         return
     if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
         if _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p):
@@ -769,7 +786,8 @@ def _play_archer(g: "Game", p: Player) -> None:
     if not p.has_bow:
         _play_striker(g, p)
         return
-    if _try_shoot(g, p) or _try_finish(g, p) or _try_offense(g, p) or _try_heal(g, p) or _try_cleanse(g, p):
+    if _try_shoot(g, p) or _try_finish(g, p) or _try_offense(g, p) or _try_heal(g, p) or _try_cleanse(g, p) \
+            or _try_song(g, p):
         return
     _try_charge(g, p)
 
@@ -781,7 +799,7 @@ PLAY_ROUTINES = {"striker": _play_striker, "controller": _play_controller, "ench
 def decide(g: "Game", p: Player) -> None:
     t = g.t
     if p.at_base_until > t:
-        _try_enchant(g, p, at_base=True, prioritized=bool(p.play))
+        _try_enchant(g, p, at_base=True, prioritized=bool(p.play)) or _try_song(g, p)
         return
     if _try_escape(g, p):
         return
@@ -804,7 +822,7 @@ def decide(g: "Game", p: Player) -> None:
             return
         if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
-        if _try_repair(g, p) or _try_shoot(g, p):
+        if _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
             return
         _try_charge(g, p)
     elif p.role == "archer":
