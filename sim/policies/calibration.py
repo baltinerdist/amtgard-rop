@@ -135,6 +135,7 @@ def tables(hand: dict, doc: dict | None) -> Tables:
         if flag == "may-understate" and h is not None and measured < h:
             sources[target] = "hand (floor)"
             continue
+        # (a floor held elsewhere, as charge_second's policy.value_per_threat_second, is applied by value.py)
         low = 0.0 if target in NO_MINIMUM else MIN_WEIGHT
         weights[table][key] = max(low, measured)
         sources[target] = "calibrated (floor)" if flag == "may-understate" else "calibrated"
@@ -149,6 +150,12 @@ def describe(t: Tables) -> str:
         for key in sorted(t.weights[table]):
             h, w = t.hand[table].get(key), t.weights[table][key]
             fmt = lambda x: "   -    " if x is None else f"{x:8.2f}"     # noqa: E731
-            rows.append(f"{table + '.' + key:34s} {fmt(h)} {fmt(w)}  {t.sources.get(f'{table}.{key}', 'hand')}")
+            src = t.sources.get(f"{table}.{key}", "hand")
+            if table == "factor" and src == "calibrated":
+                src = f"calibrated: measured score {t.measured.get(f'factor.{key}', float('nan')):.2f}, factor worked out when used (below)"
+                w = None
+            elif key == "charge_second" and src == "calibrated (floor)":
+                src += ": in use max(this, policy.value_per_threat_second)"
+            rows.append(f"{table + '.' + key:34s} {fmt(h)} {fmt(w)}  {src}")
     return "\n".join(rows)
 

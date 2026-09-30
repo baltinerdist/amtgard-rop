@@ -65,10 +65,10 @@ version raises `calibration.StaleCalibration`. The measured weights are:
 | `death.cause` | a Finger of Death per life (the reference, 10 by definition) |
 | `wound.heal`, `life.revive`, `death.prevent`, `wound.inflict` | a Heal per life; a Raise Dead per refresh; a death prevented per life (Phoenix Tears' way); a Force Bolt per life (other effects of the ability subtracted at their hand weights) |
 | `STATE_WEIGHT` | the State for 30 s on a random enemy (Stopped keeps its hand weight: no effect without a map; Frozen and Insubstantial keep theirs as a floor) |
-| `SPECIAL_WEIGHT` armor-breaking, wounds-kill | the special on a fighter's weapon, every life |
+| `SPECIAL_WEIGHT` armor-breaking, wounds-kill | the special on a fighter's weapon, every life (a special on one ball or arrow keeps its hand weight) |
 | `EQUIPMENT_WEIGHT` shields | a shield for a player carrying none |
 | `armor_point`, `armor_loss_point`, `magic_armor_point` | a point of armor on a fighter; 3 points on a fighter wearing none (per point: what "may not wear armor" takes); Magic Armor 1 on a fighter every life |
-| `charge_second` | a second of Charge saved, per second actually saved (floor: `policy.value_per_threat_second`) |
+| `charge_second` | a second of Charge saved, per second actually saved (`policy.value_per_threat_second` is its floor) |
 | `fighter_heal` | a Heal per life held by a fighter: a wound healed as fighters use it (`direct_benefit` uses it for `wound.heal` held by a fighter; hand: `wound.heal`) |
 | `stack_share` | an extra Enchantment slot on a fighter, over the compositional value of that slot (`extra_slot` scales by it) |
 | `refill_factor` | an instant Charge per life, per Charge made, over the mean value of the recipients' chargeable abilities (`refill` scales an `ability.charge` by it) |
@@ -358,7 +358,13 @@ def restrict_cost(what: str, role: str, p: "Player | Kit | None" = None) -> floa
         return (0.5 if shield == "large" else 0.0) if shield is not None else 0.5
     if what == "wield-great-weapons":
         great = known("great_weapon")
-        return (2.0 if great else 0.0) if great is not None else 1.0
+        # what a Great weapon gives in the engine: Armor Breaking and Shield Crushing on every blow
+        # (priced so once Armor Breaking on a weapon is calibrated; hand: EQUIPMENT_WEIGHT)
+        if TABLES.sources.get("special.armor-breaking", "hand").startswith("calibrated"):
+            full = SPECIAL_WEIGHT["armor-breaking"] + SPECIAL_WEIGHT["shield-crushing"]
+        else:
+            full = EQUIPMENT_WEIGHT["great-weapon"]
+        return (full if great else 0.0) if great is not None else full / 2
     return 1.0
 
 
@@ -785,7 +791,8 @@ class _Eval:
                     if other is not None and kit.copies(other.slug):
                         cost += self.enabled(other, r, _sub(ctx, kit)) * held_worth(kit.copies(other.slug))
                 return "the bearer's own copies unusable", cost
-            src = {"wear-armor": "scalar.armor_loss_point", "wield-shields": "equipment.small-shield"}.get(what)
+            src = {"wear-armor": "scalar.armor_loss_point", "wield-shields": "equipment.small-shield",
+                   "wield-great-weapons": "special.armor-breaking"}.get(what)
             return f"may not {what} [{TABLES.sources.get(src, 'hand')}]", restrict_cost(what, r, kit)
         if k == "state.apply":
             state = prm.get("state", "")
@@ -826,7 +833,10 @@ def mu_share(rules: "Rules") -> float:
 def charge_second(rules: "Rules") -> float:
     """Value of a second of Charge incantation saved: calibrated, else `policy.value_per_threat_second`."""
     w = SCALAR_WEIGHT.get("charge_second")
-    return w if w is not None else rules.a("policy.value_per_threat_second")
+    base = rules.a("policy.value_per_threat_second")
+    if w is None:
+        return base
+    return max(w, base) if TABLES.sources.get("scalar.charge_second") == "calibrated (floor)" else w
 
 
 def _factor(rules: "Rules", name: str, compositional) -> float:
@@ -873,6 +883,9 @@ class _UsesView:
 
 # ---------------------------------------------------------------- public API
 
+ONE_PROJECTILE = ("this-magic-ball", "this-arrow")
+
+
 def weight_key(eff: Effect) -> str:
     """The table entry a direct effect's weight comes from ("kind.death.cause", "state.stunned", ...)."""
     k = eff.kind
@@ -883,6 +896,8 @@ def weight_key(eff: Effect) -> str:
     if k == "state.apply":
         return f"state.{eff.params.get('state', '')}"
     if k == "special-effect.grant":
+        if eff.params.get("on") in ONE_PROJECTILE:
+            return "hand"
         return f"special.{eff.params.get('effect', '')}"
     return f"kind.{k}"
 
@@ -903,7 +918,9 @@ def direct_benefit(ability: Ability, eff: Effect, role: str) -> float:
     elif eff.kind == "armor.magic":
         w = SCALAR_WEIGHT["magic_armor_point"] * int(eff.params.get("points", 1))
     elif eff.kind == "special-effect.grant":
-        w = SPECIAL_WEIGHT.get(eff.params.get("effect", ""), 2)
+        # calibrated on a fighter's weapon for a life; a special on one ball or arrow keeps its hand weight
+        table = HAND_SPECIAL_WEIGHT if eff.params.get("on") in ONE_PROJECTILE else SPECIAL_WEIGHT
+        w = table.get(eff.params.get("effect", ""), 2)
         if eff.params.get("on") == "next-wound":
             w *= 0.5    # one blow, not every blow
     else:

@@ -334,7 +334,9 @@ def test_a_song_that_matters_holds_weak_spells(rules):
     g.policy_cache.clear()
     assert songs.song_utility(g, bard, rules.abilities["song-of-determination"]) == 1.0
     assert not songs.keeps_song(g, bard, _spell(g, bard, "insult")), "1 point < 2.5 points of song"
-    assert songs.keeps_song(g, bard, _spell(g, bard, "stun")), "6 points > 5 points of song"
+    # a kill is worth the incantation (10 points against about 5 of song); the score is calibrated,
+    # so the strong spell is one whose value is anchored: death.cause = 10 by definition
+    assert songs.keeps_song(g, bard, _spell(g, bard, "finger-of-death")), "10 points > 5 points of song"
     for q in enemies:
         q.uses["insult"].left = 0                  # the threat is spent: the song matters little
     g.policy_cache.clear()
@@ -352,10 +354,12 @@ def test_no_teammate_enchants_a_singing_bard(rules):
 
 def test_a_bard_turns_down_an_enchantment_worth_less_than_a_song(rules):
     g, bard, (mate,), foes = _field(rules, foes=("Bard", "Bard"))
-    bark = _spell(g, mate, "barkskin", rng="Other", n=1)
-    assert not songs.declines(g, bard, bark), "nothing to sing for: Barkskin is welcome"
+    # a weak Enchantment (Protection from Magic, 1 point; Barkskin's Magic Armor is calibrated high)
+    weak = _spell(g, mate, "protection-from-magic", rng="Other", n=1)
+    assert 0 < g.value(weak.ability, bard) < 2
+    assert not songs.declines(g, bard, weak), "nothing to sing for: any Enchantment is welcome"
     for q in foes:
         _spell(g, q, "insult")
     g.policy_cache.clear()
-    assert songs.declines(g, bard, bark)
-    assert bard not in _enchant_targets(g, mate, bark, at_base=False)
+    assert songs.declines(g, bard, weak)
+    assert bard not in _enchant_targets(g, mate, weak, at_base=False)

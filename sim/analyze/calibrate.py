@@ -39,8 +39,8 @@ resampled with the same seeds as the baseline and the reference, so their correl
 `SPECIAL_WEIGHT`, `equipment.X` an `EQUIPMENT_WEIGHT`, `scalar.X` a per-unit number (a point of
 armor, a second of Charge), `factor.X` a ratio to what the valuation would say compositionally
 (computed when value.py loads). Where the gift is an ability with other effects too (Raise Dead's
-heal and drawbacks, Force Bolt's Armor Breaking), the other effects are taken at their hand
-weights and subtracted (`residual`).
+heal and drawbacks, the death ward's heal and Frozen), the other effects are subtracted at the
+calibrated weights (`residual`, a second pass), so value.py scores that ability at what was measured.
 
 **Map flags.** Phase 1 has no map, so an anchor whose value comes from position is undervalued
 here. Each anchor carries a flag: `fair`, `may-overstate` (melee wins more games than it would with
@@ -53,22 +53,19 @@ depend on an earlier calibration.
 """
 from __future__ import annotations
 
+import argparse
+import gzip
+import json
+import math
 import os
+import time
+from collections import Counter
+from dataclasses import dataclass, field
+from multiprocessing import Pool
 
-os.environ["SIM_CALIBRATION"] = "off"     # measure under the hand weights (see the docstring)
+import numpy as np
 
-import argparse                            # noqa: E402
-import gzip                                # noqa: E402
-import json                                # noqa: E402
-import math                                # noqa: E402
-import time                                # noqa: E402
-from collections import Counter            # noqa: E402
-from dataclasses import dataclass, field   # noqa: E402
-from multiprocessing import Pool           # noqa: E402
-
-import numpy as np                         # noqa: E402
-
-from sim.paths import DATA, OUT            # noqa: E402
+from sim.paths import DATA, OUT
 
 CALIBRATION_JSON = DATA / "value-calibration.json"
 RAW_JSON = OUT / "calibration-raw.json.gz"     # every pair's results, for --from-raw
@@ -138,18 +135,23 @@ ANCHORS: tuple[Anchor, ...] = (
            "may-overstate", "Blocks blows in melee only."),
     Anchor("shield-large", {"kind": "shield", "size": "large"}, "a large shield", "equipment.large-shield",
            "may-overstate", "Blocks blows in melee only."),
-    Anchor("heal", _ab("heal"), "a Heal per life", "kind.wound.heal",
-           why="Touch range and standing behind the line are probabilities; the policy heals out of melee."),
+    Anchor("heal", _ab("heal"), "a Heal per life", "kind.wound.heal", "may-understate",
+           "Wounds cost little in Phase 1: most of a wound's cost in play is mobility (a leg wound means "
+           "kneeling), which needs a map; an arm wound's lost shield is modeled."),
     Anchor("heal-fighter", _ab("heal", who="fighter"), "a Heal per life held by a fighter",
            "scalar.fighter_heal",
-           why="A Heal's value to a fighter, by how fighters use it (step back and heal when not attacked)."),
+           why="A Heal's value to a fighter, by how fighters use it: they are rarely out of melee while "
+               "wounded (0.04-0.08 casts per life of an Unlimited self-Heal), so this is a use discount "
+               "and is not floored like the Heal anchor."),
     Anchor("revive", _ab("raise-dead", "1/Refresh"), "a Raise Dead per refresh (per game in annihilation)",
            "kind.life.revive", residual_of="raise-dead",
            why="Reaching the body is a probability; Raise Dead's heal and drawbacks are subtracted."),
     Anchor("death-ward", {"kind": "death-ward"}, "one death prevented per life (Phoenix Tears' way)",
            "kind.death.prevent", residual_of="gift-death-ward"),
-    Anchor("wound-ball", _ab("force-bolt"), "a Force Bolt per life", "kind.wound.inflict",
-           residual_of="force-bolt", why="A thrown ball hits at a flat rate; its Armor Breaking is subtracted."),
+    Anchor("wound-ball", _ab("force-bolt"), "a Force Bolt per life", "kind.wound.inflict", "may-understate",
+           "As for Heal: a wound's cost in play is mostly mobility. Force Bolt's specials add nothing to its "
+           "wound in the engine (a ball's Armor Breaking turns a hit on light armor into lost armor, not a "
+           "wound; weapon-destroying from a ball isn't modeled), so its whole score is the wound's."),
     *(Anchor(f"state-{s}", {"kind": "state", "state": s, "seconds": STATE_SECONDS, "window": STATE_WINDOW},
              f"{s} for {STATE_SECONDS} s on a random enemy", f"state.{s}", flag, why)
       for s, flag, why in (
@@ -263,7 +265,7 @@ def run(contexts, anchors, scale: float = 1.0, seed0: int = 1, workers: int | No
             out.setdefault((ctx, name), {})[seed] = (result, units, roles)
             done += 1
             if progress and done % step == 0:
-                progress(f"  {done}/{len(jobs)} games, {time.perf_counter() - t0:.0f} s")
+                progress(f"  {done}/{len(jobs)} games, {time.perf_counter() - t0:.0f} s", flush=True)
     finally:
         if pool is not None:
             pool.close()
@@ -357,6 +359,11 @@ def summarize(raw: dict, contexts, anchors, boot: int = BOOT, seed: int = 0) -> 
     return out
 
 
+def calibration_describe() -> str:
+    from sim.policies import calibration, value
+    return calibration.describe(value.TABLES)
+
+
 def calibration_fingerprint() -> dict:
     from sim.policies import calibration
     return calibration.fingerprint()
@@ -367,9 +374,11 @@ def _hand() -> dict:
     return value.HAND
 
 
-def residual(anchor: Anchor) -> float:
-    """The hand-weight value of the gift ability's effects other than the one calibrated
-    (benefits minus drawbacks, for a fighter so no role multiplier applies)."""
+def residual(anchor: Anchor, doc: dict | None = None) -> float:
+    """The value of the gift ability's effects other than the one calibrated (benefits minus
+    drawbacks, for an archer: no role multiplier or role weight applies), at the weights built from `doc` (a
+    first pass without residuals; None: the hand weights). Subtracting it makes value.py score the
+    anchor's own ability (Raise Dead, the death ward) at what was measured."""
     if anchor.residual_of is None:
         return 0.0
     from sim.engine.gifts import death_ward_ability
@@ -378,8 +387,8 @@ def residual(anchor: Anchor) -> float:
     rules = build_rules()
     ab = death_ward_ability(rules) if anchor.residual_of == "gift-death-ward" else rules.abilities[anchor.residual_of]
     kind = anchor.calibrates.split(".", 1)[1]
-    with value.hand_weights():
-        parts = value.breakdown(ab, "fighter", rules=rules)
+    with value.using(doc):
+        parts = value.breakdown(ab, "archer", rules=rules)
         kinds = {e.id: e.kind for e in ab.effects}
         return float(sum(c for i, _, c in parts if kinds.get(i) != kind))
 
@@ -405,18 +414,22 @@ def assemble(summary: dict, contexts, anchors, meta: dict, fingerprint: dict | N
         **meta,
         "anchors": {},
     }
-    for name in anchors:
-        a = BY_NAME[name]
-        s = summary[name]
-        res = residual(a)
-        pooled = s["pooled"]
-        w = None
-        if a.calibrates and "score" in pooled:
-            w = {"value": pooled["score"] - res, "lo": pooled["score_lo"] - res, "hi": pooled["score_hi"] - res}
-        doc["anchors"][name] = {
-            "gift": gift_of(a), "unit": a.unit, "calibrates": a.calibrates, "map": a.map, "why": a.why,
-            "residual": res, "weight": w, "pooled": pooled, "per_context": s["per_context"],
-        }
+    # two passes: weights with no residual, then each residual at those weights
+    first = None
+    for stage in (0, 1):
+        for name in anchors:
+            a = BY_NAME[name]
+            s = summary[name]
+            res = residual(a, first) if stage else 0.0
+            pooled = s["pooled"]
+            w = None
+            if a.calibrates and "score" in pooled:
+                w = {"value": pooled["score"] - res, "lo": pooled["score_lo"] - res, "hi": pooled["score_hi"] - res}
+            doc["anchors"][name] = {
+                "gift": gift_of(a), "unit": a.unit, "calibrates": a.calibrates, "map": a.map, "why": a.why,
+                "residual": res, "weight": w, "pooled": pooled, "per_context": s["per_context"],
+            }
+        first = json.loads(json.dumps(doc))
     return doc
 
 
@@ -453,8 +466,12 @@ def main(argv=None) -> int:
                     help="print every weight value.py uses (hand, in use, source) with SIM_CALIBRATION=on and exit")
     args = ap.parse_args(argv)
     if args.weights:
-        from sim.policies import calibration
-        print(calibration.describe(calibration.tables(_hand(), calibration.load(how="on"))))
+        from sim.policies import value
+        from sim.rules.compile import default_rules
+        print(calibration_describe())
+        rules = default_rules()
+        print(f"\nfactors in use (measured score over the compositional value, in [0, 1]): "
+              f"stack_share {value.stack_share(rules):.3f}, refill_factor {value.refill_factor(rules):.3f}")
         return 0
     if args.report:
         print(table(json.loads(open(args.report).read())))
@@ -466,6 +483,9 @@ def main(argv=None) -> int:
         ap.error(f"unknown: {', '.join(bad)}")
     if REFERENCE not in anchors:
         anchors = [REFERENCE, *anchors]
+    # measure under the hand weights (module docstring); worker processes inherit the setting.
+    # Set here, not at import, so importing this module changes nothing for anyone else.
+    os.environ["SIM_CALIBRATION"] = "off"
     if args.from_raw:
         raw, meta = load_raw(args.raw)
         contexts = [c for c in contexts if (c, "") in raw]
@@ -473,7 +493,7 @@ def main(argv=None) -> int:
     else:
         est = estimate_seconds(contexts, anchors, args.scale, args.workers or os.cpu_count() or 1)
         games = sum(max(20, int(CONTEXTS[c][2] * args.scale)) for c in contexts) * (1 + len(anchors))
-        print(f"{len(anchors)} anchors x {len(contexts)} contexts: {games} games, about {est / 60:.0f} min")
+        print(f"{len(anchors)} anchors x {len(contexts)} contexts: {games} games, about {est / 60:.0f} min", flush=True)
         if args.dry_run:
             return 0
         t0 = time.perf_counter()
