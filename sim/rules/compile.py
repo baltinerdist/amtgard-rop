@@ -98,6 +98,17 @@ class Rules:
     rulings: rulingsmod.RulingSet
     assumptions: dict
     records: list[dict] = field(repr=False)
+    # caster doctrines (sim/data/doctrines.json), loaded on first use; not an init field, so a
+    # dataclasses.replace() variant (other assumptions or class lists) loads its own copy
+    _doctrines: object = field(default=None, init=False, repr=False, compare=False)
+
+    @property
+    def doctrines(self):
+        """The caster build plans, sim.rules.doctrines.DoctrineBook (validate() checks them)."""
+        if self._doctrines is None:
+            from sim.rules import doctrines
+            self._doctrines = doctrines.load()
+        return self._doctrines
 
     def a(self, key: str):
         """Assumption value by dotted key, e.g. rules.a('melee.base_hit_per_second')."""
