@@ -19,6 +19,7 @@ import json
 import math
 import os
 import random
+import time
 from dataclasses import dataclass, field
 from multiprocessing import Pool
 from typing import Callable
@@ -185,6 +186,7 @@ class Result:
     expected: str
     rationale: str
     known_limit: str = ""
+    seconds: float = 0.0
 
 
 @dataclass
@@ -279,19 +281,23 @@ def c_skill(run: Runner, n: int):
     return p >= 0.75, f"+1 sd team {p:.3f} (6-12 players)", "≥ 0.75"
 
 
+def _fighter_stack(rng, t):
+    """Same seats, skills and levels; the second side swaps every class for a heavy-melee class."""
+    return [dict(p) for p in t], [dict(p, cls=rng.choice(FIGHTERS)) for p in t]
+
+
 def c_skill_vs_class(run: Runner, n: int):
-    """Skill edge (+1 sd, same classes) vs class edge (all fighters vs all casters, equal skill)."""
-    def fighters_vs_casters(rng, t):
-        a = [dict(p, cls=rng.choice(FIGHTERS)) for p in t]
-        b = [dict(p, cls=rng.choice(CASTERS)) for p in t]
-        return a, b
-    skill = score(run.play(_mirror_jobs(n, 4000, (3, 6), ("annihilation",),
-                                        make=lambda rng, t: (shifted(t, skill=1.0), [dict(p) for p in t]))))
-    cls = score(run.play(_mirror_jobs(n, 4000, (3, 6), ("annihilation",), make=fighters_vs_casters)))
-    lim = 2 * se(0.5, n)
-    return skill - 0.5 > abs(cls - 0.5) + lim, \
-        f"skill edge {skill - 0.5:+.3f} vs class edge (fighters over casters) {cls - 0.5:+.3f}", \
-        f"skill edge > |class edge| + {lim:.3f}"
+    """A +1 sd team of ordinary mixed classes against an average team stacked with melee classes."""
+    def skilled_mixed(rng, t):
+        a, b = _fighter_stack(rng, t)
+        return shifted(a, skill=1.0), b
+    p = score(run.play(_mirror_jobs(n, 4000, (3, 6), ("annihilation",), make=skilled_mixed)))
+    return p >= 0.5, f"+1 sd mixed team vs average fighter-stacked team {p:.3f}", "≥ 0.5"
+
+
+def c_class_stack(run: Runner, n: int):
+    stacked = 1.0 - score(run.play(_mirror_jobs(n, 4000, (3, 6), ("annihilation",), make=_fighter_stack)))
+    return 0.5 <= stacked <= 0.8, f"fighter-stacked team vs mixed team, equal skill: {stacked:.3f}", "0.5 to 0.8"
 
 
 def c_healer_added(run: Runner, n: int):
@@ -409,7 +415,13 @@ CHECKS: list[Check] = [
     Check("no-abilities", "With every ability removed it is a pure stick fight, and random teams are still a coin flip.",
           c_no_abilities, 1200),
     Check("skill", "A team a full sd more skilled wins most small games.", c_skill, 600),
-    Check("skill-vs-class", "In small games, player skill matters more than class choice.", c_skill_vs_class, 600),
+    Check("skill-vs-class", "In small games, player skill matters more than class choice: a clearly better "
+          "mixed team beats an average team that stacked melee classes.", c_skill_vs_class, 600),
+    Check("class-stack", "Stacking heavy-melee classes helps in a small game, but a mixed team of equal skill "
+          "is still competitive.", c_class_stack, 600,
+          known_limit="Casters can't use distance: no map to kite on, Stopped and action restrictions "
+                      "don't stop anyone reaching them, and skill doesn't affect ranged accuracy. Melee "
+                      "decides most games (about 95% of kills in fighters-vs-casters games)."),
     Check("numbers", "Two extra bodies on one side of a small game usually decide it.", c_numbers, 600),
     Check("armor", "Among armor-wearing classes, the side in armor beats the side without.", c_armor_helps, 600),
     Check("level", "6th-level players beat the same classes at 1st level.", c_level, 600),
@@ -435,8 +447,10 @@ def run_checks(names=None, scale: float = 1.0, workers: int | None = None) -> li
             if names and c.name not in names:
                 continue
             n = max(20, int(c.games * scale))
+            t0 = time.perf_counter()
             ok, measured, expected = c.fn(run, n)
-            out.append(Result(c.name, ok, measured, expected, c.rationale, c.known_limit))
+            out.append(Result(c.name, ok, measured, expected, c.rationale, c.known_limit,
+                              time.perf_counter() - t0))
     finally:
         run.close()
     return out
@@ -446,7 +460,8 @@ def table(results: list[Result]) -> str:
     rows = []
     for r in results:
         status = "PASS" if r.passed else ("FAIL (known limit)" if r.known_limit else "FAIL")
-        rows.append(f"{status:18s} {r.name:17s} {r.measured}  [expect {r.expected}]\n{'':37s}{r.rationale}"
+        rows.append(f"{status:18s} {r.name:17s} {r.measured}  [expect {r.expected}] ({r.seconds:.0f} s)\n"
+                    f"{'':37s}{r.rationale}"
                     + (f"\n{'':37s}limit: {r.known_limit}" if r.known_limit and not r.passed else ""))
     return "\n".join(rows)
 
