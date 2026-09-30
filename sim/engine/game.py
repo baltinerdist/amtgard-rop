@@ -1328,7 +1328,11 @@ class Game:
         backline = a("engagement.backline_factor")
         caster_w = a("engagement.caster_weight_when_choosing_melee_target")
         p_dis = a("engagement.p_disengage_per_second")
-        for p in self.players:
+        # Shuffled like _melee: walking the roster in order let team 0 always choose targets first
+        # and team 1 always react, which tilted even ability-free games.
+        order = list(self.players)
+        self.rng.shuffle(order)
+        for p in order:
             if not p.can_act(t) or not p.on_field(t) or self.barred(p, "wield-weapons") or p.weapon_hot_until > t:
                 p.target = None
                 continue

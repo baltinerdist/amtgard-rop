@@ -26,15 +26,15 @@
       },
       {
         "id": "controller", "name": "Battlefield controller", "stance": "control", "play": "controller", "share": 0.3,
-        "core": [["entangle", 2], ["hold-person", 1], ["iceball", 2], ["suppression-bolt", 1], ["break-concentration", 1], ["icy-blast", 1], ["suppress-aura", 1], ["throw", 1]],
-        "prefer": ["extension", "heat-weapon", "shatter-weapon", "pyrotechnics", "destroy-armor", "shove", "planar-grounding", "force-bolt", "astral-intervention"],
+        "core": [["entangle", 2], ["hold-person", 1], ["iceball", 2], ["suppression-bolt", 1], ["break-concentration", 1], ["icy-blast", 1], ["suppress-aura", 1], ["throw", 1], ["heat-weapon", 1], ["shove", 1]],
+        "prefer": ["extension", "shatter-weapon", "pyrotechnics", "destroy-armor", "planar-grounding", "force-bolt", "astral-intervention"],
         "avoid": ["sphere-of-annihilation", "finger-of-death", "contagion"],
         "why": "Stops, Freezes and Suppresses the enemies fighting its teammates. It rarely gets the kill; the fighter next to the target does."
       },
       {
         "id": "lockdown-killer", "name": "Lock-down and finish", "stance": "offense", "play": "striker", "share": 0.25,
-        "core": [["hold-person", 1], ["entangle", 1], ["dragged-below", 1], ["iceball", 1], ["shatter", 1], ["ravage", 1], ["lightning-bolt", 1], ["icy-blast", 1], ["wounding", 1], ["finger-of-death", 1]],
-        "prefer": ["force-bolt", "astral-intervention", "dimensional-rift", "extension", "swift"],
+        "core": [["hold-person", 1], ["entangle", 1], ["dragged-below", 1], ["iceball", 1], ["shatter", 1], ["ravage", 1], ["lightning-bolt", 1], ["icy-blast", 1], ["wounding", 1], ["finger-of-death", 1], ["force-bolt", 1]],
+        "prefer": ["astral-intervention", "dimensional-rift", "extension", "swift"],
         "avoid": ["contagion", "vampirism", "void-touched", "persistent"],
         "combos": [["hold-person", "dragged-below"], ["entangle", "dragged-below"], ["lightning-bolt", "dragged-below"], ["iceball", "shatter"], ["icy-blast", "shatter"], ["astral-intervention", "dimensional-rift"], ["ravage", "force-bolt"], ["ravage", "wounding"]],
         "why": "Uses its own control spell to set up its own kill: Stop then Dragged Below, Freeze then Shatter, Fragile then any wound."
