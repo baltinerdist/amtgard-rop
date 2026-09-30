@@ -18,7 +18,7 @@ from sim.engine import effects as fx
 from sim.engine.effects import Ctx
 from sim.engine.loadout import build_player
 from sim.engine.state import ARMS, INF, LOCATIONS, Cast, Ench, Player, Uses
-from sim.policies import decide
+from sim.policies import decide, keep_casting
 from sim.policies.value import value as ability_value
 from sim.rules.compile import Ability, Rules
 
@@ -744,8 +744,11 @@ class Game:
         order = list(self.players)
         self.rng.shuffle(order)
         for p in order:
-            if p.alive and p.casting is None and p.can_act(self.t):
-                decide(self, p)
+            if p.alive and p.can_act(self.t):
+                if p.casting is None:
+                    decide(self, p)
+                elif not keep_casting(self, p):
+                    self.interrupt(p, "abandoned")
         self._engage()
         self._melee()
         self._progress_casts()

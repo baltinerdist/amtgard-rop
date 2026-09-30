@@ -288,6 +288,12 @@
       "unit": "probability/s",
       "assumption": true,
       "why": "Chance a free enchanter tries to enchant an unenchanted ally on the field (rather than only at base)."
+    },
+    "abandon_cast_when_attacked": {
+      "value": true,
+      "unit": "bool",
+      "assumption": true,
+      "why": "A player attacked in melee mid-incantation or mid-Charge stops and defends unless the incantation completes this second. Standing still and talking while being hit is how a veteran caster gets killed; they break off and fight or back away."
     }
   },
   "game": {

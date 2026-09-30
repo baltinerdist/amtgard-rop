@@ -184,6 +184,17 @@ def _try_shoot(g: "Game", p: Player) -> bool:
     return False
 
 
+def keep_casting(g: "Game", p: Player) -> bool:
+    """Asked each tick of a player mid-incantation or mid-Charge. An attacked player stops
+    talking and defends unless the incantation finishes this tick: standing still while being
+    hit only ends in a wound. (Before this hook the engine never asked, so casters kept
+    incanting under attack and never struck back.)"""
+    c = p.casting
+    if c is None or not g.attackers_of(p):
+        return True
+    return c.remaining <= g.dt or not g.rules.a("policy.abandon_cast_when_attacked")
+
+
 def decide(g: "Game", p: Player) -> None:
     t = g.t
     if p.at_base_until > t:
