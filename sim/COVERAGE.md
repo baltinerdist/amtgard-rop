@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **387 of 445** (87%)
-- Not handled: **19** no-op, **19** needs-map, **20** out-of-scope
-- Abilities fully handled: **149**, partly: **23**, not at all: **11**, no effects recorded: 0 (of 183)
+- Effect instances handled: **392 of 445** (88%)
+- Not handled: **14** no-op, **19** needs-map, **20** out-of-scope
+- Abilities fully handled: **152**, partly: **20**, not at all: **11**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -18,9 +18,9 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `state.apply` | 43 | 52 | 49 | instant 42, out-of-scope 3, passive 7 |
 | `ability.grant` | 30 | 41 | 41 | instant 1, loadout 23, passive 17 |
 | `action.restrict` | 25 | 36 | 24 | instant 9, loadout 9, needs-map 8, out-of-scope 4, passive 6 |
-| `economy.frequency` | 19 | 25 | 24 | loadout 24, no-op 1 |
+| `economy.frequency` | 19 | 25 | 25 | loadout 25 |
 | `special-effect.grant` | 18 | 28 | 28 | instant 18, passive 10 |
-| `ability.modify` | 17 | 22 | 21 | loadout 12, no-op 1, passive 9 |
+| `ability.modify` | 17 | 22 | 22 | loadout 13, passive 9 |
 | `defense.immunity` | 13 | 14 | 14 | passive 14 |
 | `ability.remove` | 11 | 16 | 16 | loadout 16 |
 | `equipment.permit` | 10 | 18 | 8 | loadout 8, out-of-scope 10 |
@@ -45,7 +45,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `meta.modify-next` | 4 | 4 | 3 | instant 3, needs-map 1 |
 | `move.keep-away` | 4 | 4 | 3 | instant 3, no-op 1 |
 | `ability.restore-uses` | 3 | 3 | 3 | instant 3 |
-| `class.look-the-part` | 3 | 3 | 0 | no-op 3 |
+| `class.look-the-part` | 3 | 3 | 3 | loadout 3 |
 | `death.prevent` | 3 | 3 | 3 | instant 3 |
 | `defense.negate-engulfing` | 3 | 4 | 2 | out-of-scope 2, passive 2 |
 | `economy.cost` | 3 | 4 | 4 | loadout 4 |
@@ -103,4 +103,4 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (5/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `sniper` (4/5), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (5/7, 2u)
+`blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (5/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `reload` (1/3), `rogue` (2/3, 1u), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (5/7, 2u)

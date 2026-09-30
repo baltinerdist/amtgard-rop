@@ -799,6 +799,40 @@ def test_undead_minion_waits_for_its_caster(rules):
     assert minion.alive and not any(e.ability.slug == "undead-minion" for e in minion.enchantments)
 
 
+# ---------------------------------------------------------------- class.look-the-part
+
+def ltp_kit(rules, cls, archetype, ltp_slug, ltp_freq, picked=()):
+    p = Player(pid=0, team=0, cls=cls, level=6, skill=0.0, role="fighter")
+    for slug, freq, rng in picked:
+        _add(p, rules, slug, frequency.parse(freq), 1, False, rng)
+    created = ltp_slug not in p.uses
+    _add(p, rules, ltp_slug, frequency.parse(ltp_freq), 1, False, "")
+    p.ltp = (ltp_slug, frequency.parse(ltp_freq).uses or 1, created)
+    _add(p, rules, archetype, frequency.parse(""), 1, False, "")
+    _apply_loadout_effects(p, rules, random.Random(1), rules.classes[cls])
+    return p
+
+
+def test_raider_look_the_part_becomes_brutal_strike(rules):
+    p = ltp_kit(rules, "Barbarian", "raider", "rage", "1/Refresh Charge x10 (ex) (Ambulant)",
+                picked=[("brutal-strike", "1/Life Charge x3", "Unlimited")])
+    assert p.uses["brutal-strike"].max == 2, "one extra use, applied once for its three records"
+    assert "rage" not in p.uses
+
+
+def test_artificer_and_sniper_look_the_part(rules):
+    a = ltp_kit(rules, "Archer", "artificer", "poison-arrow", "1 Arrow / Unlimited (ex)")
+    assert "poison-arrow" not in a.uses and a.uses["pinning-arrow"].max == 4
+    s = ltp_kit(rules, "Archer", "sniper", "destruction-arrow", "1 Arrow / Unlimited (ex)")
+    assert "destruction-arrow" not in s.uses
+    assert (s.uses["mend"].per, s.uses["mend"].max, s.uses["mend"].magical) == ("life", 1, False)
+
+
+def test_no_look_the_part_nothing_to_change(rules):
+    p = kit(rules, "Barbarian", ["raider"], picked=[("brutal-strike", "1/Life Charge x3", "Unlimited")])
+    assert p.uses["brutal-strike"].max == 1
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

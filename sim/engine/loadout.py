@@ -238,6 +238,8 @@ def _economy_frequency(p: Player, rules: Rules, rng: random.Random, sheet: Class
         for slug in [s for s, u in p.uses.items() if u.ability.delivery == "specialty-arrow"]:
             del p.uses[slug]
         return
+    if scope == "Brutal Strike" and change == "other":
+        return    # Raider: the extra use in place of Look the Part, applied by its class.look-the-part record
     if scope == "Ancestral Armor" and change == "other":
         u = p.uses.get(rules.by_name.get("ancestral armor", ""))
         if u is not None:
@@ -300,6 +302,29 @@ def _ability_modify(p: Player, rules: Rules, ab: Ability, prm: dict) -> None:
             _double(u)
 
 
+def _look_the_part(p: Player, rules: Rules, prm: dict) -> None:
+    """An Archetype changing the Look the Part bonus (Artificer: a fourth Pinning Arrow; Raider: an
+    extra use of Brutal Strike; Sniper: Mend 1/Life (ex)). Only players who earned Look the Part
+    (the loadout.look_the_part_share assumption) have a bonus to change."""
+    if p.ltp is None:
+        return
+    slug, added, created = p.ltp
+    u = p.uses.get(slug)
+    if u is not None:              # take the class's Look the Part bonus back
+        if created or u.max is None:
+            del p.uses[slug]
+        else:
+            u.max -= added
+            u.left = min(u.left, u.max)
+    p.ltp = None
+    target = rules.by_name.get(str(prm.get("ability", "")).lower())
+    if prm.get("how") == "replaced-by":
+        _add(p, rules, target, freqmod.parse("1/Life (ex)"), 1, False, "")
+    elif target in p.uses and p.uses[target].max is not None:
+        p.uses[target].max += 1
+        p.uses[target].left += 1
+
+
 def _experienced(p: Player, rng: random.Random, sheet: ClassSheet | None, per: str, change: str) -> bool:
     """One Experienced option: a random purchased Verbal of 4th level or lower with this period and
     no Charge yet becomes chargeable. False when no Verbal qualifies."""
@@ -348,6 +373,8 @@ def _apply_other_loadout_effects(p: Player, rules: Rules, rng: random.Random, sh
                 p.traits = [t for t in p.traits if t.slug != slug]
             elif kind == "ability.modify":
                 _ability_modify(p, rules, ab, prm)
+            elif kind == "class.look-the-part" and fx.loadout_handled(eff):
+                _look_the_part(p, rules, prm)
             elif kind == "economy.frequency":
                 if fx.loadout_handled(eff):
                     _economy_frequency(p, rules, rng, sheet, ab, prm)
@@ -398,7 +425,10 @@ def build_player(rules: Rules, pid: int, team: int, cls: str, level: int, skill:
         opts = sheet.look_the_part.get("options") or []
         if ltp and opts:
             o = opts[int(ltp_pick * len(opts)) % len(opts)]
-            _add(p, rules, o["slug"], freqmod.Frequency(**o["frequency"]), 1, False, "")
+            f = freqmod.Frequency(**o["frequency"])
+            created = o["slug"] not in p.uses
+            _add(p, rules, o["slug"], f, 1, False, "")
+            p.ltp = (o["slug"], f.uses or 1, created)
     p.traits = [t for t in p.traits if t.slug not in ablate]   # an ablated Archetype grants nothing
     _apply_loadout_effects(p, rules, rng, sheet)
     for slug in ablate:

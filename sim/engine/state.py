@@ -111,6 +111,7 @@ class Player:
     uses: dict[str, Uses] = field(default_factory=dict)
     traits: list[Ability] = field(default_factory=list)       # traits and archetypes, always on
     trait_copies: dict[str, int] = field(default_factory=dict)  # Traits bought more than once (Experienced)
+    ltp: tuple | None = None    # Look the Part bonus added at build: (slug, uses added, created the use)
     ench_slots: int = 1                                         # magical enchantments allowed
 
     # per-life state

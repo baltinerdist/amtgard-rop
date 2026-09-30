@@ -450,7 +450,7 @@ PASSIVE = frozenset({
 # Archetype/Trait effects applied when the loadout is built (sim/engine/loadout.py).
 LOADOUT = frozenset({
     "ability.grant", "ability.remove", "ability.modify", "economy.frequency",
-    "armor.limit", "equipment.permit", "economy.purchase-restrict", "economy.cost",
+    "armor.limit", "equipment.permit", "economy.purchase-restrict", "economy.cost", "class.look-the-part",
 })
 
 
@@ -494,6 +494,8 @@ def modify_change(change: str) -> str | None:
         return f"arrows-{m.group(1)}"
     if "double the uses" in change:
         return "double-uses"
+    if "in place of Look the Part" in change:
+        return "look-the-part"   # Raider; applied once, by the class.look-the-part record
     return None
 
 
@@ -543,8 +545,8 @@ EXPERIENCED_SCOPES = {
     "a single purchased per-life Verbal of 4th level or lower": "life",
     "a single purchased per-refresh Verbal of 4th level or lower": "refresh",
 }
-# (scope, 'other') changes spelled out in the ability text
-FREQUENCY_OTHER = ("Archer Specialty Arrows", "Ancestral Armor")
+# (scope, 'other') changes spelled out in the ability text (Brutal Strike: Raider's Look the Part use)
+FREQUENCY_OTHER = ("Archer Specialty Arrows", "Ancestral Armor", "Brutal Strike")
 
 
 def is_equipment(ab: Ability) -> bool:
@@ -602,6 +604,8 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
         return prm.get("what") in _SHIELDS + ("great-weapon", "bows", "any-number-of-specialty-arrows")
     if eff.kind == "armor.limit":
         return prm.get("change") in ("set", "increase")
+    if eff.kind == "class.look-the-part":
+        return prm.get("how") in ("extra-use-of", "replaced-by") and named("ability")
     if eff.kind == "economy.purchase-restrict":
         return prm.get("scope") in PURCHASE_RESTRICT        # loadout._magic_user
     if eff.kind == "economy.cost":
