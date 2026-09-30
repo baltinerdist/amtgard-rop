@@ -73,9 +73,9 @@ def _usable(g: "Game", p: Player) -> list[Uses]:
             and (has_utility(u.ability) or (g.value(u.ability, p) > 0 and songs.keeps_song(g, p, u)))]
 
 
-def _in_range(g: "Game", u: Uses) -> bool:
-    table = g.rules.a("range.p_in_range")
-    return g.rng.random() < table.get(u.range, 0.5)
+def _in_range(g: "Game", p: Player, u: Uses, q: Player) -> bool:
+    """q is within u's range of p now (Space.roll_in_range: Phase 1 draws `range.p_in_range`)."""
+    return g.space.roll_in_range(p, q, u)
 
 
 def _engaged(g: "Game", p: Player) -> bool:
@@ -112,6 +112,7 @@ def _enemy_for(g: "Game", p: Player, u: Uses) -> Player | None:
     else:
         foes = [q for q in g.enemies(p) if g.targetable(q)]
     foes = [q for q in foes if g.check_requirements(u.ability, p, q, start=True) is None]
+    foes = g.space.in_range_filter(p, foes, u)       # the field: only enemies in range (Phase 1: all)
     return g.rng.choice(foes) if foes else None
 
 
@@ -124,7 +125,7 @@ def _try_offense(g: "Game", p: Player) -> bool:
         if engaged and not g.rules.a("casting.engaged_casting_allowed"):
             continue
         target = _enemy_for(g, p, u)
-        if target is None or not _in_range(g, u):
+        if target is None or not _in_range(g, p, u, target):
             continue
         if g.start_cast(p, u, target):
             return True
@@ -157,12 +158,13 @@ def _try_revive(g: "Game", p: Player) -> bool:
     for u in revives:
         # a granted revive may be tied to one player (Undead Minion's Raise Dead: only its bearer)
         pool = dead if u.only_target is None else [q for q in dead if q.pid == u.only_target]
+        pool = g.space.touch_filter(p, pool, u)
         if not pool:
             continue
         q = g.rng.choice(pool)
         if g.check_requirements(u.ability, p, q, start=True, uses=u) or not _can_receive(g, u, p, q):
             continue
-        if g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch") and g.start_cast(p, u, q):
+        if g.space.roll_touch(p, q, u) and g.start_cast(p, u, q):
             return True
     return False
 
@@ -194,10 +196,11 @@ def _try_heal(g: "Game", p: Player) -> bool:
             if p in able and g.start_cast(p, u, p):
                 return True
             continue
+        able = g.space.touch_filter(p, able, u)
         if not able:
             continue
         q = p if p in able else g.rng.choice(able)
-        if (q is p or g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch")) and g.start_cast(p, u, q):
+        if (q is p or g.space.roll_touch(p, q, u)) and g.start_cast(p, u, q):
             return True
     return False
 
@@ -274,7 +277,7 @@ def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False,
             if not targets:
                 continue
             q = _enchant_priority(g, u, targets) if prioritized else g.rng.choice(targets)
-        if not at_base and q is not p and g.rng.random() >= g.rules.a("range.p_ally_nearby_for_touch"):
+        if not at_base and q is not p and not g.space.roll_touch(p, q, u):
             continue
         if g.start_cast(p, u, q):
             return True
@@ -283,6 +286,8 @@ def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False,
 
 def _field_targets(g: "Game", p: Player, u: Uses, at_base: bool, free_only: bool) -> list[Player]:
     targets = _enchant_targets(g, p, u, at_base)
+    if not at_base:
+        targets = g.space.touch_filter(p, targets, u)      # the field: within reach now (Phase 1: all)
     return [q for q in targets if q is p or not _engaged(g, q)] if free_only else targets
 
 
@@ -306,7 +311,7 @@ def _try_charge(g: "Game", p: Player) -> bool:
     """Recharge the spent ability with the most value per second of Charging, among those that
     would be used. Standing still for a long Charge is only worth it in a lull; fighters and archers
     would rather fight, so they Charge only in a lull at all."""
-    if _engaged(g, p) or g.rng.random() >= g.rules.a("policy.p_charge_when_safe"):
+    if _engaged(g, p) or g.rng.random() >= g.p_tick("policy.p_charge_when_safe"):
         return False
     lull = _lull(g, p)
     if (p.role in ("fighter", "archer") or p.play == "battle") and not lull:
@@ -331,6 +336,7 @@ def _try_shoot(g: "Game", p: Player) -> bool:
     if not g.can_fire_normal_arrows(p) or not g.weapon_usable(p):
         return False
     foes = [q for q in g.enemies(p) if g.targetable(q) and g.can_attack(p, q)]
+    foes = g.space.in_range_filter(p, foes, label="bow")      # the field: within bow range
     if foes:
         g.shoot(p, g.rng.choice(foes))
         return True
@@ -448,10 +454,11 @@ def _try_cleanse(g: "Game", p: Player) -> bool:
             pool = [q for q in pool if q.role in ("fighter", "archer")]
         pool = [q for q in pool if _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
                 and g.check_requirements(u.ability, p, q, start=True) is None]
+        pool = _reachable(g, p, u, pool)
         if not pool:
             continue
         q = p if p in pool else g.rng.choice(pool)
-        if q is not p and not _in_reach(g, u):
+        if q is not p and not _in_reach(g, p, u, q):
             continue
         if g.start_cast(p, u, q):
             return True
@@ -478,20 +485,28 @@ def _try_repair(g: "Game", p: Player) -> bool:
             pool = [q for q in pool if q is not p]
         pool = [q for q in pool if g.can_cast_at(p, q, u) and _can_receive(g, u, p, q)
                 and not _being_helped(g, q, p, lambda v: _kind_of(v.ability) == "repair")]
+        pool = _reachable(g, p, u, pool)
         if not pool:
             continue
         q = p if p in pool else g.rng.choice(pool)
-        if q is not p and not _in_reach(g, u):
+        if q is not p and not _in_reach(g, p, u, q):
             continue
         if g.start_cast(p, u, q):
             return True
     return False
 
 
-def _in_reach(g: "Game", u: Uses) -> bool:
+def _in_reach(g: "Game", p: Player, u: Uses, q: Player) -> bool:
     if u.range in ("Touch", "Other"):
-        return g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch")
-    return _in_range(g, u)
+        return g.space.roll_touch(p, q, u)
+    return _in_range(g, p, u, q)
+
+
+def _reachable(g: "Game", p: Player, u: Uses, pool: list[Player]) -> list[Player]:
+    """The field: only teammates within the ability's reach now (Phase 1: all of them)."""
+    if u.range in ("Touch", "Other"):
+        return g.space.touch_filter(p, pool, u)
+    return g.space.in_range_filter(p, pool, u)
 
 
 def keep_casting(g: "Game", p: Player) -> bool:
@@ -609,10 +624,11 @@ def _locked(g: "Game", q: Player, u: Uses) -> bool:
     return any(r.slug == u.slug and r.until > t for r in q.restrictions)
 
 
-def _first_in_range(g: "Game", u: Uses, ranked: list[Player]) -> Player | None:
-    """The first enemy in priority order who turns out to be in range (each rolled independently)."""
+def _first_in_range(g: "Game", p: Player, u: Uses, ranked: list[Player]) -> Player | None:
+    """The first enemy in priority order who turns out to be in range (Phase 1: each rolled
+    independently; the field: measured)."""
     for q in ranked:
-        if _in_range(g, u):
+        if _in_range(g, p, u, q):
             return q
     return None
 
@@ -635,7 +651,7 @@ def _try_control(g: "Game", p: Player) -> bool:
                      key=lambda u: -g.value(u.ability, p))
     for u in options:
         foes = [q for q in g.enemies(p) if g.targetable(q) and not _locked(g, q, u) and _can_hit(g, p, u, q)]
-        q = _first_in_range(g, u, _control_order(g, p, foes)) if foes else None
+        q = _first_in_range(g, p, u, _control_order(g, p, foes)) if foes else None
         if q is not None and g.start_cast(p, u, q):
             return True
     return False
@@ -673,7 +689,7 @@ def _try_finish(g: "Game", p: Player) -> bool:
             fighting = _engaged_with_team(g, p)
         foes.sort(key=lambda qs: (qs[0].state_src.get(qs[1]) != p.pid, qs[0].pid not in fighting,
                                   -_threat(qs[0]), qs[0].pid))
-        q = _first_in_range(g, u, [q for q, _ in foes])
+        q = _first_in_range(g, p, u, [q for q, _ in foes])
         if q is not None and g.start_cast(p, u, q):
             return True
     return False
@@ -693,7 +709,7 @@ def _try_setup(g: "Game", p: Player) -> bool:
             continue
         foes = [q for q in g.enemies(p) if g.targetable(q) and not _locked(g, q, su)
                 and _can_hit(g, p, su, q) and not _resists(g, fu, q)]
-        q = _first_in_range(g, su, _control_order(g, p, foes)) if foes else None
+        q = _first_in_range(g, p, su, _control_order(g, p, foes)) if foes else None
         if q is not None and g.start_cast(p, su, q):
             return True
     return False
@@ -745,17 +761,18 @@ def _try_refill(g: "Game", p: Player) -> bool:
         pool = [q for q in pool if _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
                 and (q is p or not _resists(g, u, q))     # Void Touched, Rage (unaffected by Verbals), ...
                 and g.check_requirements(u.ability, p, q, start=True, uses=u) is None]
+        pool = _reachable(g, p, u, pool)
         q, x = enablers.best_target(g, p, u, pool)
         if q is not None and (best is None or x > best[0]):
             best = (x, u, q)
     if best is None or not enablers.worth_casting(g, p, best[1], best[0]):
         return False
     _, u, q = best
-    return (q is p or _in_reach(g, u)) and g.start_cast(p, u, q)
+    return (q is p or _in_reach(g, p, u, q)) and g.start_cast(p, u, q)
 
 
 def _enchant_on_field(g: "Game", p: Player) -> bool:
-    return g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False, prioritized=True)
+    return g.rng.random() < g.p_tick("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False, prioritized=True)
 
 
 def _try_song(g: "Game", p: Player) -> bool:
@@ -801,7 +818,7 @@ def _play_battle(g: "Game", p: Player) -> None:
     only when not in melee."""
     if _try_self_buff(g, p) or _try_song(g, p) or _try_step_back_heal(g, p):
         return
-    if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
+    if p.target is None and g.rng.random() < g.p_tick("policy.p_use_offensive_ability_when_free"):
         if _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p):
             return
     if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_refill(g, p) or _try_cleanse(g, p)
@@ -842,7 +859,7 @@ def decide(g: "Game", p: Player) -> None:
             return
         if _try_heal(g, p) or _try_cleanse(g, p) or _try_refill(g, p):
             return
-        if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
+        if g.rng.random() < g.p_tick("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
         if _try_repair(g, p) or _try_offense(g, p) or _try_shoot(g, p) or _try_charge(g, p):
             return
@@ -850,7 +867,7 @@ def decide(g: "Game", p: Player) -> None:
         if _try_self_buff(g, p) or _try_refill(g, p) or _try_offense(g, p) or _try_revive(g, p) \
                 or _try_heal(g, p) or _try_cleanse(g, p):
             return
-        if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
+        if g.rng.random() < g.p_tick("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
         if _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
             return
@@ -862,7 +879,7 @@ def decide(g: "Game", p: Player) -> None:
     else:
         if _try_self_buff(g, p) or _try_step_back_heal(g, p):
             return
-        if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
+        if p.target is None and g.rng.random() < g.p_tick("policy.p_use_offensive_ability_when_free"):
             if _try_offense(g, p):
                 return
         if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_refill(g, p) or _try_cleanse(g, p)

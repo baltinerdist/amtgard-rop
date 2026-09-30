@@ -1,10 +1,14 @@
-"""Phase 1 game loop: non-spatial, one-second ticks.
+"""The game loop.
 
 Players are either at base, on the field, or dead. On the field, melee players pick an enemy
 target (an "engagement"); every tick each attacker rolls to land a hit on its target. Casters
 spend incantation time (words x repetitions / speech rate) and are interrupted by wounds, death,
-action-preventing States, and sometimes by hits on armor. Range and positioning are abstracted
-into probabilities from sim/data/assumptions.json.
+action-preventing States, and sometimes by hits on armor.
+
+Every distance question (range, Touch, who fights whom, the walk back from base) goes through
+`self.space` (sim/engine/space.py). With `space="off"` (the default) that is Phase 1: one-second
+ticks and probabilities from sim/data/assumptions.json, bit-for-bit as before. With `space="on"`
+it is the field: positions, movement, 0.5 s ticks, geometric ranges and engagement from proximity.
 """
 from __future__ import annotations
 
@@ -20,6 +24,7 @@ from sim.engine import gifts
 from sim.engine.effects import Ctx
 from sim.engine.loadout import _uses as make_uses
 from sim.engine.loadout import build_player
+from sim.engine.space import make_space
 from sim.engine.state import ARMS, INF, LOCATIONS, Cast, Ench, Player, Uses
 from sim.policies import decide, keep_casting, name_refill
 from sim.policies.value import value_for as ability_value
@@ -47,7 +52,7 @@ def _logit(p: float) -> float:
 
 class Game:
     def __init__(self, rules: Rules, scenario: dict, seed: int, ablate: frozenset = frozenset(),
-                 trace: bool = False):
+                 trace: bool = False, space: str | None = None):
         self.rules = rules
         self.sc = scenario
         self.seed = seed
@@ -89,6 +94,10 @@ class Game:
                     self._activate(p, ench)
                 self.players.append(p)
         self.n_teams = len(scenario["teams"])
+        # where players are (sim/engine/space.py): "off" is Phase 1, "on" the field
+        self.space = make_space(self, space if space is not None else scenario.get("space"))
+        self.dt = self.space.tick_seconds
+        self.space.deploy()
         self.next_refresh = scenario.get("refresh_seconds") or INF
         base = rules.a("melee.base_hit_per_second")
         self._base_logit = _logit(base)
@@ -104,6 +113,16 @@ class Game:
     def at(self, when: float, fn: Callable[[], None]) -> None:
         self._seq += 1
         heapq.heappush(self._events, (when, self._seq, fn))
+
+    def per_tick(self, p_per_second: float) -> float:
+        """A per-second chance as a chance per tick (the same number at Phase 1's one-second tick)."""
+        if self.dt == 1:
+            return p_per_second
+        return 1.0 - (1.0 - p_per_second) ** self.dt
+
+    def p_tick(self, key: str) -> float:
+        """An assumption given per second (probability/s), as a chance per tick."""
+        return self.per_tick(self.rules.a(key))
 
     def value(self, ability: Ability, p: Player) -> float:
         """The usefulness score of p's ability (sim/policies/value.py) with this game's rules, in
@@ -606,8 +625,9 @@ class Game:
             p.magic_armor[l] = min(p.magic_armor.get(l, 0), best)
 
     def arrival_time(self, p: Player) -> float:
-        """When a player sent to base now gets there (the rejoin time stands for the walk)."""
-        return self.t + self.rules.a("respawn.rejoin_seconds")
+        """When a player sent to base now gets there (Phase 1: the rejoin time stands for the walk;
+        the field: the walk from where they stand)."""
+        return self.space.arrival_time(p)
 
     def _insubstantial_choice(self, p: Player, ench: Ench) -> None:
         """Gift of Air / Song of Survival: right after activating, the bearer chooses option 1
@@ -630,7 +650,7 @@ class Game:
         if p.enchantments:
             # other Chants "may be spoken while moving"; Song of Power "ends if the bearer moves"
             self.end_chants(p, "moved", only=frozenset({"moves-from-start"}))
-        p.at_base_until = self.t + self.rules.a("respawn.rejoin_seconds")
+        self.space.send_to_base(p)
 
     # ------------------------------------------------------------------ hits, wounds, death
 
@@ -841,6 +861,7 @@ class Game:
         if members and all(not q.alive for q in members):
             for q in members:
                 q.dead_until = self.t
+            self.space.team_wiped(team)
 
     def revive(self, p: Player, src: Player, slug: str) -> None:
         p.alive = True
@@ -945,7 +966,7 @@ class Game:
                 u.left = u.max
         p.weapon_ok, p.shield_hits = True, 0
         p.target, p.casting = None, None
-        p.at_base_until = self.t + self.rules.a("respawn.rejoin_seconds")
+        self.space.respawn(p)
         self.log("respawn", p.pid)
 
     # ------------------------------------------------------------------ casting
@@ -983,7 +1004,7 @@ class Game:
                 if caster.has_state("stopped", t):
                     return req
             elif req in ("no-enemy-within-20ft", "no-enemy-within-10ft"):
-                if caster.target is not None or self.attackers_of(caster):
+                if self.space.enemy_within(caster, 20 if req == "no-enemy-within-20ft" else 10):
                     return req
             elif req == "bearer-wears-armor":
                 if target is None or target.armor_max <= 0:
@@ -1056,6 +1077,7 @@ class Game:
                 self.barred(p, "wield-weapons") or not self.weapon_usable(p))):
             self.fails[(uses.slug, "restricted")] += 1
             return False
+        label = uses.range
         if declare_words is not None:
             secs, persistent = max(1.0, float(round(declare_words / self.words_per_second))), False
             if barrage:
@@ -1067,10 +1089,12 @@ class Game:
             if p.barrage is not None and uses.magical:
                 p.barrage = None          # Elemental Barrage ends on beginning any new Magical ability
             secs = 1.0 if uses.swift else ab.cast_seconds(self.words_per_second)
-            secs, persistent = self._apply_meta_magic(p, uses, secs)
+            secs, persistent, extended = self._apply_meta_magic(p, uses, secs, target)
+            if uses.base_range == "20'" and uses.range == "50'" and not extended:
+                label = "20'"          # Extension offered but not stated: the ability keeps its 20'
             self._begin_incantation(p)
         p.casting = Cast(uses, target.pid if target is not None else None, secs, persistent=persistent,
-                         declared=declare_words is not None)
+                         declared=declare_words is not None, range=label)
         if uses.magical and aimed is not p:
             self._provoke(p, aimed, "cast-start")
         self.log("cast-start", p.pid, uses.slug, target.pid if target is not None else None)
@@ -1139,16 +1163,17 @@ class Game:
     def _meta_ext_ready(self, p: Player) -> bool:
         return any(u.ability.slug == "extension" and u.available() for u in p.uses.values())
 
-    def _apply_meta_magic(self, p: Player, uses: Uses, secs: float) -> tuple[float, bool]:
+    def _apply_meta_magic(self, p: Player, uses: Uses, secs: float,
+                          target: Player | None = None) -> tuple[float, bool, bool]:
+        """(seconds, Persistent stated, Extension stated)."""
         ab = uses.ability
         armed = p.meta_armed
-        persistent = False
+        persistent = extended = False
         if uses.granted_by is not None or uses.ench is not None:
-            return secs, False                               # rule 6
+            return secs, False, False                        # rule 6
         if ab.delivery == "verbal" and uses.base_range == "20'" and uses.range == "50'":
-            table = self.rules.a("range.p_in_range")
-            if self.rng.random() >= table["20'"] / table["50'"]:     # the target was beyond 20'
-                self._spend_meta(p, "extension", ab, armed)
+            if self.space.roll_beyond_20(p, target):             # the target was beyond 20'
+                extended = self._spend_meta(p, "extension", ab, armed)
         if not uses.swift and (uses.range in ("Touch", "Other", "Self") or ab.delivery == "magic-ball"):
             single = max(1.0, float(round(ab.words / self.words_per_second)))
             if single < secs and self._spend_meta(p, "swift", ab, armed):
@@ -1156,7 +1181,7 @@ class Game:
         if ab.delivery == "enchantment" and "persistent" not in ab.properties:
             persistent = self._spend_meta(p, "persistent", ab, armed)
         armed.clear()
-        return secs, persistent
+        return secs, persistent, extended
 
     def _spend_meta(self, p: Player, name: str, ab: Ability, armed: set) -> bool:
         if name in armed:
@@ -1178,7 +1203,7 @@ class Game:
                 continue
             song = next((e for e in q.enchantments if e.ability.effects_of("ability.charge-faster")), None)
             if song is not None:
-                return song if self.rng.random() < self.rules.a("range.p_in_range")["20'"] else None
+                return song if self.space.roll_song_near(q, p) else None
         return None
 
     def _begin_incantation(self, p: Player) -> None:
@@ -1231,6 +1256,11 @@ class Game:
                 if ench.strips <= 0:
                     self.remove_enchantment(p, ench)
         self.casts[ab.slug] += 1
+        if not self.space.completes_in_range(p, target, c.range or uses.range, ab.delivery):
+            # "If the incantation is completed and the target is not in range, the ability fails
+            # but is still expended" (the field only; Phase 1 checks range when a cast starts)
+            self.fails[(ab.slug, "out-of-range")] += 1
+            return
         if ab.delivery in ("magic-ball", "specialty-arrow"):
             self._projectile(p, uses, target)
             return
@@ -1378,41 +1408,8 @@ class Game:
     # ------------------------------------------------------------------ the loop
 
     def _engage(self) -> None:
-        t = self.t
-        a = self.rules.a
-        p_engage = a("engagement.p_engage_per_second")
-        backline = a("engagement.backline_factor")
-        caster_w = a("engagement.caster_weight_when_choosing_melee_target")
-        p_dis = a("engagement.p_disengage_per_second")
-        # Shuffled like _melee: walking the roster in order let team 0 always choose targets first
-        # and team 1 always react, which tilted even ability-free games.
-        order = list(self.players)
-        self.rng.shuffle(order)
-        for p in order:
-            if not p.can_act(t) or not p.on_field(t) or self.barred(p, "wield-weapons") or p.weapon_hot_until > t:
-                p.target = None
-                continue
-            if p.target is not None:
-                q = self.players[p.target]
-                if not self.targetable(q) or not self.can_attack(p, q) or self.rng.random() < p_dis:
-                    p.target = None
-                continue
-            if p.casting is not None or p.kept_away_until > t:
-                continue
-            attackers = [q for q in self.attackers_of(p) if self.targetable(q) and self.can_attack(p, q)]
-            if attackers:
-                p.target = self.rng.choice(attackers).pid
-                continue
-            if p.role != "fighter" and p.play != "battle" and not (p.role == "archer" and not p.has_bow):
-                continue
-            if self.rng.random() >= p_engage:
-                continue
-            foes = [q for q in self.enemies(p) if self.targetable(q) and q.kept_away_until <= t
-                    and self.can_attack(p, q)]
-            if not foes:
-                continue
-            weights = [(backline * caster_w) if q.backline else 1.0 for q in foes]
-            p.target = self.rng.choices(foes, weights=weights)[0].pid
+        """Who fights whom: Phase 1's per-second draw, or proximity on the field (Space.engage)."""
+        self.space.engage()
 
     def _melee(self) -> None:
         t = self.t
@@ -1432,6 +1429,8 @@ class Game:
             if (not self.targetable(d) and not d.has_state("stunned", t)) or not self.can_attack(p, d):
                 p.target = None
                 continue
+            if not self.space.can_reach(p, d):
+                continue              # the field: still stepping in to reach
             self._provoke(p, d, "attack")
             d_shield = self.shield_up(d)
             x = self._base_logit + k_skill * (p.skill - d.skill)
@@ -1449,7 +1448,7 @@ class Game:
             poison = self._poison(p) if p.enchantments else None
             if poison is not None and not self.immune(d, poison.ability.school):
                 specials = specials | {"wounds-kill"}
-            if self.rng.random() < _logistic(x):
+            if self.rng.random() < self.per_tick(_logistic(x)):
                 if self.hit(d, p, "melee", specials=specials, kind="melee") and poison is not None:
                     # Poison is expended only when a wound is received (N1), even against a target
                     # Immune to Death (Enchantments rule 5)
@@ -1540,9 +1539,11 @@ class Game:
                     if any(u.ability.slug == "extension" or (u.base_range and u.range != u.base_range)
                            for u in p.uses.values()):
                         self._offer_extension(p)
-                    decide(self, p)
+                    if not self.space.retreating(p):     # the field: backing off from a charging fighter
+                        decide(self, p)
                 elif not keep_casting(self, p):
                     self.interrupt(p, "abandoned")
+        self.space.move()
         self._engage()
         self._melee()
         self._progress_casts()
@@ -1574,6 +1575,7 @@ class Game:
             "kill_sources": dict(self.kill_sources),
             "holdings": getattr(self, "_start_holdings", None) or self.holdings(),
             **({"gifts": self.gift_log} if self.gift_log else {}),
+            **({"space": self.space.stats()} if self.space.spatial else {}),
         }
 
     def holdings(self) -> dict[str, list[int]]:
@@ -1586,5 +1588,6 @@ class Game:
         return out
 
 
-def play(rules: Rules, scenario: dict, seed: int, ablate: frozenset = frozenset(), trace: bool = False) -> dict:
-    return Game(rules, scenario, seed, ablate, trace).run()
+def play(rules: Rules, scenario: dict, seed: int, ablate: frozenset = frozenset(), trace: bool = False,
+         space: str | None = None) -> dict:
+    return Game(rules, scenario, seed, ablate, trace, space).run()

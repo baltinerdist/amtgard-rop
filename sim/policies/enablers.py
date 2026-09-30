@@ -67,7 +67,6 @@ def _attack_rate(g: "Game", p: "Player") -> float:
     from sim.policies import TRIGGERED, _is_offensive
     if not any(g.targetable(q) for q in g.enemies(p)):
         return 0.0
-    table = g.rules.a("range.p_in_range")
     best = 0.0
     for u in p.uses.values():
         ab = u.ability
@@ -76,7 +75,7 @@ def _attack_rate(g: "Game", p: "Player") -> float:
             continue
         v = g.value(ab, p)
         if v > 0:
-            best = max(best, v / max(1.0, cast_seconds(g, u)) * table.get(u.range, 0.5))
+            best = max(best, v / max(1.0, cast_seconds(g, u)) * g.space.p_any_in_range(p, u))
     return best
 
 
@@ -222,9 +221,9 @@ def _steal_life(g: "Game", p: "Player", _target) -> float:
 
 def fillers(g: "Game", p: "Player", q: "Player", own_only: bool) -> list[float]:
     """Worth to q of each Enchantment that would fill an extra slot on q: the caster's own with a use
-    left, and (unless only the caster's count) a teammate caster's, at p_ally_nearby_for_touch."""
+    left, and (unless only the caster's count) a teammate caster's, at the chance they reach q
+    (Space.p_touch: Phase 1's p_ally_nearby_for_touch)."""
     from sim.policies import _is_offensive
-    near = g.rules.a("range.p_ally_nearby_for_touch")
     worn = {e.ability.slug for e in q.enchantments}
     best: dict[str, float] = {}
     for c in [p] + ([] if own_only else [a for a in living(g.allies(p)) if a is not p]):
@@ -234,7 +233,7 @@ def fillers(g: "Game", p: "Player", q: "Player", own_only: bool) -> list[float]:
                     or (u.range or ab.range) == "Self" or "exempt-from-enchantment-limit" in ab.properties
                     or ab.effects_of("enchantment.extra-slot") or songs.is_song(ab) or (own_only and not u.magical)):
                 continue
-            w = max(0.0, ench_worth(g, c, ab, q)) * (1.0 if c is p else near)
+            w = max(0.0, ench_worth(g, c, ab, q)) * (1.0 if c is p else g.space.p_touch(c, q))
             best[ab.slug] = max(best.get(ab.slug, 0.0), w)
     return sorted(best.values(), reverse=True)
 
@@ -284,7 +283,7 @@ for _slug in ("regeneration", "gift-of-water", "battlefield-triage"):
 @register("undead-minion")
 def _minion(g: "Game", p: "Player", q: "Player") -> float:
     """q's deaths while the caster lives (their death rates' ratio; at most q's lives left or the
-    time left) x (a Raise Dead by the caster, reaching q at p_ally_nearby_for_touch, less the
+    time left) x (a Raise Dead by the caster, reaching q at Space.p_touch, less the
     respawn it replaces at value.late_share), less Cursed once. 0 once the caster has its cap."""
     ab = g.rules.abilities["undead-minion"]
     cap = g._per_caster_cap(ab, p)
@@ -296,7 +295,7 @@ def _minion(g: "Game", p: "Player", q: "Player") -> float:
     if q.lives_left is not None:
         deaths = min(deaths, q.lives_left)
     rd = g.rules.abilities.get("raise-dead")
-    per = (max(0.0, g.value(rd, p)) if rd else 0.0) * g.rules.a("range.p_ally_nearby_for_touch") \
+    per = (max(0.0, g.value(rd, p)) if rd else 0.0) * g.space.p_touch(p, q) \
         - V.KIND_WEIGHT["life.revive"] * V.late_share(g.rules, g.sc.get("game_type"))
     return (deaths * per - V.STATE_WEIGHT["cursed"]) * acts_soon(g, q, field=False)
 
@@ -323,8 +322,8 @@ def _strips(slug: str):
         spell = g.rules.abilities.get(g.rules.by_name.get(name, ""))
         if spell is None:
             return 0.0
-        foes = sum(1 for q in living(g.enemies(p)) if _hittable(g, p, spell, q))
-        casts = min(float(ab.strips or 1), foes * g.rules.a("range.p_in_range").get(spell.range, 0.5))
+        foes = [q for q in living(g.enemies(p)) if _hittable(g, p, spell, q)]
+        casts = min(float(ab.strips or 1), g.space.expected_in_range(p, foes, spell.range))
         _, song = songs.best_song(g, p)
         return max(0.0, g.value(spell, p)) * _geometric(casts) \
             - value_of(g, song * g.rules.a("policy.song_switch_horizon_seconds"))

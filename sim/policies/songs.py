@@ -176,17 +176,18 @@ def _survival(g: "Game", p: Player, _target) -> float:
 def _power(g: "Game", p: Player, _target) -> float:
     if _fights_in_line(p):
         return 0.0
-    near = g.rules.a("range.p_in_range")["20'"]
-    total = 0.0
+    mates, weights = [], []
     for a in g.allies(p):
         if a is p or not a.alive or not a.on_field(g.t):
             continue
         if a.casting is not None and a.casting.kind == "charge":
-            total += 1.0
+            mates.append(a)
+            weights.append(1.0)
         elif any(u.charge and u.max and u.left is not None and u.left < u.max and g.value(u.ability, a) > 0
                  for u in a.uses.values()):
-            total += 0.5
-    return total * near
+            mates.append(a)
+            weights.append(0.5)
+    return g.space.expected_in_range(p, mates, "20'", weights)
 
 
 @register("song-of-visit")

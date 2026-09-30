@@ -13,8 +13,8 @@ weight everywhere else. Every weight carries its source (`Tables.sources`):
 - `hand`: not calibrated
 
 **Staleness.** A calibration is only valid for the assumptions and the engine it was measured
-under. The file records `fingerprint()`: the SHA-256 of `sim/data/assumptions.json` and
-`sim.engine.ENGINE_VERSION`. If either differs, loading fails loudly (`StaleCalibration`). Rerun
+under. The file records `fingerprint()`: the SHA-256 of `sim/data/assumptions.json` (without the
+`space` group, which only the field reads) and `sim.engine.ENGINE_VERSION`. If either differs, loading fails loudly (`StaleCalibration`). Rerun
 `python -m sim.analyze.calibrate`, or set the environment variable `SIM_CALIBRATION`:
 
 - `on` (default): use the file; stale raises; a missing file falls back to the hand weights (with a warning)
@@ -50,10 +50,33 @@ class StaleCalibration(RuntimeError):
     pass
 
 
+# Assumption groups the space-off engine never reads (the field, `--space on`), left out of the
+# fingerprint: the calibration is measured with space off, so they can't make it stale. Runs with
+# space on warn instead (`space_warning`).
+UNFINGERPRINTED = ("space",)
+
+
 def fingerprint(assumptions_path=ASSUMPTIONS_JSON) -> dict:
+    """SHA-256 of the assumptions file without the UNFINGERPRINTED groups, as the file is written
+    (`json.dumps(indent=2)` and a newline; a file without those groups hashes as its raw bytes),
+    and the engine version."""
     from sim.engine import ENGINE_VERSION
-    digest = hashlib.sha256(open(assumptions_path, "rb").read()).hexdigest()
+    raw = open(assumptions_path, "rb").read()
+    doc = json.loads(raw)
+    if any(k in doc for k in UNFINGERPRINTED):
+        raw = (json.dumps({k: v for k, v in doc.items() if k not in UNFINGERPRINTED}, indent=2) + "\n").encode()
+    digest = hashlib.sha256(raw).hexdigest()
     return {"assumptions_sha256": digest, "engine_version": ENGINE_VERSION}
+
+
+SPACE_WARNING = ("space on: the value calibration (sim/data/value-calibration.json) was measured "
+                 "with space off, without the map. Ability values and the policies that use them are "
+                 "Phase 1's; recalibrating under the field is stage 3 of sim/PHASE2.md.")
+
+
+def space_warning(space: str | None) -> str | None:
+    """The warning to print for a run with the field on, None otherwise."""
+    return SPACE_WARNING if (space or "off") == "on" else None
 
 
 def stale_reasons(doc: dict, current: dict | None = None) -> list[str]:

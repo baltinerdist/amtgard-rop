@@ -96,6 +96,7 @@ class Cast:
     charge_for: Uses | None = None
     persistent: bool = False    # the Persistent Meta-Magic was stated for this Enchantment
     declared: bool = False      # a declaration, not an incantation: not stopped by Suppressed
+    range: str = ""             # the range the cast was started at (20' unless Extension was stated)
 
 
 @dataclass(slots=True)

@@ -373,5 +373,142 @@
       "assumption": true,
       "why": "Placeholder: uniform class mix until ORK data is available."
     }
+  },
+  "space": {
+    "_about": "Phase 2 stage 1: the field (sim/engine/space.py), used only with --space on. The value calibration (sim/data/value-calibration.json) was measured with space off, and its staleness fingerprint leaves this group out (sim/policies/calibration.py), so editing it does not make the calibration stale.",
+    "tick_seconds": {
+      "value": 0.5,
+      "unit": "s",
+      "assumption": true,
+      "why": "Tick length on the field. Movement at a run covers 2 m a tick, a little more than melee reach, so a charging fighter can't pass through a reach circle between ticks. Incantations and Charges still count in whole seconds; per-second chances (melee hits, policy rates) are converted to per-tick chances."
+    },
+    "field_length_m": {
+      "value": 60.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Length of the rectangle between the two bases (a medium park field). Respawned players walk back over it, so rejoin time grows with it."
+    },
+    "field_width_m": {
+      "value": 40.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Width of the field. No obstacles or terrain in stage 1."
+    },
+    "walk_speed_mps": {
+      "value": 1.4,
+      "unit": "m/s",
+      "assumption": true,
+      "why": "Ordinary walking pace: taking position, the line's advance, walking back from base. From base to midfield (30 m) takes about 21 s, close to Phase 1's respawn.rejoin_seconds (20 s)."
+    },
+    "run_speed_mps": {
+      "value": 4.0,
+      "unit": "m/s",
+      "assumption": true,
+      "why": "A jog in armor and garb on grass, kept up over a fight: charging, retreating, a medic reaching the wounded. Everyone runs at the same speed; a sprint (6-7 m/s) isn't sustained."
+    },
+    "hobble_speed_mps": {
+      "value": 0.5,
+      "unit": "m/s",
+      "assumption": true,
+      "why": "A player with a wounded leg and no living enemy within 20' may hobble: 'move slowly, take no more than one step per second, and drag a leg' (combat-rules.md, Hit Locations note 6). About half a metre a step."
+    },
+    "crawl_speed_mps": {
+      "value": 0.3,
+      "unit": "m/s",
+      "assumption": true,
+      "why": "A player with a wounded leg and a living enemy within 20' kneels (the knee may be lifted briefly to move, note 4a) or posts (the wounded foot may not move, note 4b): moving on the knees at most."
+    },
+    "touch_m": {
+      "value": 1.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Touch and Other: 'any physical contact ... or placing one's hand within six inches of the target' (mechanics-and-definitions.md, Range): six inches plus an arm's reach."
+    },
+    "reach_m": {
+      "value": {
+        "short": 1.2,
+        "standard": 1.5,
+        "great": 2.1
+      },
+      "unit": "m",
+      "assumption": true,
+      "why": "Melee reach by weapon, hand to tip plus a lean: a Magic User's or archer's dagger or short weapon, a fighter's long sword, a two-handed Great weapon. Weapon types beyond Great weapons aren't modeled (all fighters carry 'standard')."
+    },
+    "throw_range_m": {
+      "value": 12.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Farthest a Magic Ball is thrown at a player. Stage 1 keeps the flat projectiles.magic_ball_p_hit inside this range; the distance curve is stage 2."
+    },
+    "bow_range_m": {
+      "value": 30.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Farthest an arrow (normal or Specialty) is shot at a player. Stage 1 keeps the flat projectiles.arrow_p_hit inside this range."
+    },
+    "deploy_depth_m": {
+      "value": 6.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Each team forms within this distance of its base end before the game: line fighters on a line at this depth, everyone else behind them."
+    },
+    "line_spacing_m": {
+      "value": 2.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "Lateral spacing between line fighters in their team's line: about a weapon's length each side."
+    },
+    "charge_distance_m": {
+      "value": 8.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "A line fighter charges (runs at the enemy it can reach soonest) when an enemy is this close; the line walks forward in formation until then. About two seconds at a run."
+    },
+    "retreat_trigger_m": {
+      "value": 6.0,
+      "unit": "m",
+      "assumption": true,
+      "why": "A caster, healer or archer backs off at a run, and starts no incantation, while a free enemy line fighter is this close (20'): a charging fighter covers it in about 1.5 s, less than most incantations."
+    },
+    "preferred_distance_m": {
+      "value": {
+        "caster": 5.5,
+        "medic": 8.0,
+        "enchanter": 4.0,
+        "archer": 15.0
+      },
+      "unit": "m",
+      "assumption": true,
+      "why": "Distance a non-line player keeps from the nearest enemy when not moving to help someone: strikers and controllers just inside 20' (6.1 m, their Verbals and Magic Balls), medics and enchanters farther back or near their line, archers well out of melee."
+    },
+    "behind_line_m": {
+      "value": {
+        "caster": 2.0,
+        "medic": 4.0,
+        "enchanter": 3.0,
+        "archer": 4.0
+      },
+      "unit": "m",
+      "assumption": true,
+      "why": "How far behind their own fighting front (the median of their line fighters near the front) a non-line player stays, whatever their preferred distance."
+    },
+    "crowd_penalty_seconds": {
+      "value": 1.5,
+      "unit": "s",
+      "assumption": true,
+      "why": "When a line fighter picks the enemy to charge (the one it can reach soonest), each teammate already fighting or running at an enemy adds this many seconds to that enemy's time: fighters spread out rather than all piling on one, but a close enemy still draws a second attacker."
+    },
+    "caster_priority_seconds": {
+      "value": 1.0,
+      "unit": "s",
+      "assumption": true,
+      "why": "A caster, healer or archer counts as this many seconds closer when a line fighter picks whom to charge (Phase 1's caster weight: fighters slightly prefer reachable casters)."
+    },
+    "reach_horizon_seconds": {
+      "value": 3.0,
+      "unit": "s",
+      "assumption": true,
+      "why": "For situational utilities, which may not draw random numbers: the chance a teammate or enemy is 'in range soon' is 1 in range and falls linearly to 0 at what a run covers in this time beyond it."
+    }
   }
 }
