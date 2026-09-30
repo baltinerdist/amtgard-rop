@@ -1450,7 +1450,7 @@ class Game:
             "players": [
                 {"pid": p.pid, "team": p.team, "cls": p.cls, "level": p.level, "skill": round(p.skill, 4),
                  "role": p.role, "kills": p.kills, "deaths": p.deaths, "time_dead": p.time_dead,
-                 "won": int(p.team == winner)} for p in self.players],
+                 "won": int(p.team == winner), "doctrine": p.doctrine, "play": p.play} for p in self.players],
             "casts": dict(self.casts),
             "applied": {f"{s}|{k}": n for (s, k), n in self.applied.items()},
             "noops": {f"{s}|{k}": n for (s, k), n in self.noops.items()},

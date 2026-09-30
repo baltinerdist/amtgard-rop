@@ -21,7 +21,8 @@ Variants (both change the rules object the workers build, never the files on dis
 Tables (appended to; one row set per run_id):
   runs      run_id, started, games, seed, config, ablate, assume, substitute, wall_seconds, workers
   games     run_id, seed, game_type, balance, n_players, skill_sd, winner, duration
-  players   run_id, seed, pid, team, cls, level, skill, role, kills, deaths, time_dead, won
+  players   run_id, seed, pid, team, cls, level, skill, role, kills, deaths, time_dead, won,
+            doctrine, play (a Magic User's build plan and play style; '' for martial classes)
   abilities run_id, seed, slug, metric, detail, n     (metric: cast / applied / noop / fail / kill)
 """
 from __future__ import annotations
@@ -195,6 +196,16 @@ def frames(results: list[dict], run_id: str):
             pd.DataFrame(abil, columns=["run_id", "seed", "slug", "metric", "detail", "n"]))
 
 
+def _sql_type(series) -> str:
+    """Column type for a column added to an older table: numbers stay numbers (older rows get NULL)."""
+    import pandas as pd
+    if pd.api.types.is_bool_dtype(series) or pd.api.types.is_integer_dtype(series):
+        return "bigint"
+    if pd.api.types.is_float_dtype(series):
+        return "double"
+    return "varchar"
+
+
 def store(results: list[dict], run_meta: dict, db_path) -> None:
     import duckdb
     import pandas as pd
@@ -208,8 +219,8 @@ def store(results: list[dict], run_meta: dict, db_path) -> None:
             cols = {r[0] for r in con.execute(
                 "select column_name from information_schema.columns where table_name = ?", [name]).fetchall()}
             for col in df.columns:
-                if col not in cols:  # e.g. runs.assume / runs.substitute in databases made before they existed
-                    con.execute(f'alter table {name} add column "{col}" varchar')
+                if col not in cols:  # e.g. runs.assume, players.doctrine in databases made before they existed
+                    con.execute(f'alter table {name} add column "{col}" {_sql_type(df[col])}')
             con.execute(f"insert into {name} by name select * from df")
         else:
             con.execute(f"create table {name} as select * from df")

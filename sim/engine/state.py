@@ -115,6 +115,9 @@ class Player:
     trait_copies: dict[str, int] = field(default_factory=dict)  # Traits bought more than once (Experienced)
     ltp: tuple | None = None    # Look the Part bonus added at build: (slug, uses added, created the use)
     ench_slots: int = 1                                         # magical enchantments allowed
+    doctrine: str = ""          # a Magic User's build plan (sim/data/doctrines.json id); "" for martial classes
+    play: str = ""              # the doctrine's play style (sim/policies): striker, controller, enchanter, ...
+    combos: tuple = ()          # the doctrine's (set-up, finisher) pairs
 
     # per-life state
     alive: bool = True

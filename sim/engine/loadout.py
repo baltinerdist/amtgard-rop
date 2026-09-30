@@ -104,9 +104,12 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
     if ltp:
         pools[p.level] += 1
     cands = [c for c in sheet.abilities if c.kind in ("spell", "archetype") and c.cost]
-    # the buyer weighs each Archetype under its own purchase rules (costs, forbidden spells)
-    bought = buy.choose(cands, p.level, p.role, pools, rules, rng, ablate,
-                        purchase_rules=lambda arch: _archetype_purchase_rules(rules.abilities[arch], rules))
+    # the buyer draws a doctrine and buys under its Archetype's purchase rules (costs, forbidden spells)
+    bought, doctrine = buy.choose(cands, p.level, p.role, pools, rules, rng, ablate,
+                                  purchase_rules=lambda arch: _archetype_purchase_rules(rules.abilities[arch], rules),
+                                  cls=p.cls)
+    if doctrine is not None:
+        p.doctrine, p.play, p.combos = doctrine.id, doctrine.play, doctrine.combos
     for slug, n in sorted(bought.items()):
         c = next(c for c in cands if c.slug == slug)
         _add(p, rules, slug, c.freq, n, True, c.range, purchased=True)

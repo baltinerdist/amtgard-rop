@@ -16,9 +16,9 @@ from sim.scenarios import generate, load_config
 # builds. 2% is at least 20 holder games per 1,000 (100 in a 5,000-game ablation). Before the buyer
 # had taste and favorites, 33 were never held.
 #
-# Archetypes are exempt: they are chosen by value (sim/policies/buy.py), and an Archetype whose
-# restrictions cost more than it gives in this model is rightly never taken. ARCHETYPES_WORTH_TAKING
-# lists the ones the model does take; the others are reported in the README.
+# Archetypes are exempt: a Magic User's Archetype comes from their doctrine (sim/data/doctrines.json),
+# and a martial player's is chosen by value (sim/policies/buy.py), so an Archetype whose restrictions
+# cost more than they give in this model is rightly never taken by a martial player.
 MIN_HELD_SHARE = 0.02
 GAMES = 1000
 
@@ -55,16 +55,13 @@ def test_every_modeled_purchasable_ability_is_held(rules, held_share):
     assert not low, f"held in < {MIN_HELD_SHARE:.0%} of {GAMES} mixed games: {low}"
 
 
-ARCHETYPES_WORTH_TAKING = {"dervish", "summoner", "necromancer", "warder"}
-
-
-def test_archetypes_are_chosen_by_value(rules, held_share):
-    """No Archetype is taken for its drawback alone (Battlemage), and the ones whose build beats
-    going without are actually taken."""
+def test_magic_user_archetypes_come_from_doctrines(rules, held_share):
+    """Every Archetype a doctrine names is held, including Battlemage, which is bought for its plan
+    (Ambulant on the run) although the engine models only its restriction."""
     assert not effective(rules.abilities["battlemage"], rules)
-    assert held_share.get("battlemage", 0.0) == 0.0
-    for slug in ARCHETYPES_WORTH_TAKING:
-        assert held_share.get(slug, 0.0) > 0.0, slug
+    for d in rules.doctrines.all():
+        if d.archetype:
+            assert held_share.get(d.archetype, 0.0) > 0.0, d.key
 
 
 @pytest.mark.parametrize("arch,cls", [("warlock", "Wizard"), ("priest", "Healer"), ("summoner", "Druid")])
@@ -93,11 +90,12 @@ def _builds(rules, cls, level, n=300):
 
 @pytest.mark.parametrize("level", [1, 3, 6])
 def test_core_spells_stay_near_universal(rules, level):
-    """Taste varies the list but not the core: Healers take Heal, Wizards take Force Bolt."""
+    """Taste varies the list but not the core: Healers take Heal (every Healer doctrine's first core
+    spell), artillery and Evoker Wizards take Force Bolt."""
     healers = _builds(rules, "Healer", level)
-    wizards = _builds(rules, "Wizard", level)
+    wizards = [p for p in _builds(rules, "Wizard", level) if p.doctrine in ("artillery", "evoker")]
     assert sum("heal" in p.uses for p in healers) / len(healers) >= 0.9
-    assert sum("force-bolt" in p.uses for p in wizards) / len(wizards) >= 0.9
+    assert wizards and sum("force-bolt" in p.uses for p in wizards) / len(wizards) >= 0.9
 
 
 def test_builds_vary_and_respect_points(rules):
