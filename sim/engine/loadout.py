@@ -5,6 +5,7 @@ import heapq
 import random
 import re
 
+from sim.engine import effects as fx
 from sim.engine.state import LOCATIONS, Player, Uses
 from sim.policies.value import value
 from sim.rules import frequency as freqmod
@@ -39,18 +40,21 @@ def _uses(ability: Ability, freq: freqmod.Frequency, copies: int, magical_defaul
     else:
         per, mx = (freq.per, (freq.uses or 1) * copies)
     magical = freq.magical if freq.magical is not None else magical_default
-    return Uses(ability, per, mx, mx, freq.charge, freq.unit, magical, freq.ambulant, freq.swift,
-                normalize_range(rng_range, ability))
+    u = Uses(ability, per, mx, mx, freq.charge, freq.unit, magical, freq.ambulant, freq.swift,
+             normalize_range(rng_range, ability))
+    u.copies = copies
+    return u
 
 
 def _add(p: Player, rules: Rules, slug: str, freq: freqmod.Frequency, copies: int, magical: bool, rng_range: str,
-         trait: bool = False):
+         trait: bool = False, purchased: bool = False):
     ab = rules.abilities.get(slug)
     if ab is None:
         return
     if trait or ab.delivery in PASSIVE_DELIVERY or (ab.delivery == "" and not ab.words):
         if all(t.slug != slug for t in p.traits):
             p.traits.append(ab)
+        p.trait_copies[slug] = p.trait_copies.get(slug, 0) + copies
         return
     if slug in p.uses:
         u = p.uses[slug]
@@ -60,8 +64,11 @@ def _add(p: Player, rules: Rules, slug: str, freq: freqmod.Frequency, copies: in
             u.left += extra
         if freq.charge and not u.charge:
             u.charge = freq.charge
+        u.copies += copies
+        u.purchased = u.purchased or purchased
         return
     p.uses[slug] = _uses(ab, freq, copies, magical, rng_range)
+    p.uses[slug].purchased = purchased
 
 
 def _martial(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random):
@@ -123,7 +130,7 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
         heapq.heappush(heap, (negv * 0.6, slug, n + 1, c))
     for slug, n in bought.items():
         c = next(c for c in cands if c.slug == slug)
-        _add(p, rules, slug, c.freq, n, True, c.range)
+        _add(p, rules, slug, c.freq, n, True, c.range, purchased=True)
 
 
 _SHIELD_ORDER = ("none", "small", "medium", "large")
@@ -149,16 +156,97 @@ def _apply_equipment_restrictions(p: Player) -> None:
                 p.has_bow = False
 
 
-def _apply_loadout_effects(p: Player, rules: Rules):
+def _apply_loadout_effects(p: Player, rules: Rules, rng: random.Random | None = None,
+                           sheet: ClassSheet | None = None):
     # restrictions first, so a permit that depends on the equipment (Hunter: a Great weapon when no
     # shield is carried) sees the final kit, and again last so no permit re-grants forbidden gear
     _apply_equipment_restrictions(p)
-    _apply_other_loadout_effects(p, rules)
+    _apply_other_loadout_effects(p, rules, rng or random.Random(f"loadout-effects:{p.pid}"), sheet)
     _apply_equipment_restrictions(p)
 
 
-def _apply_other_loadout_effects(p: Player, rules: Rules):
+def _set_charge(u: Uses, change: str) -> bool:
+    if m := re.fullmatch(r"charge-x(\d+)", change):
+        u.charge = int(m.group(1))
+        return True
+    return False
+
+
+def _double(u: Uses) -> None:
+    if u.max is not None:
+        u.max *= 2
+        u.left = u.max
+
+
+def _economy_frequency(p: Player, rules: Rules, rng: random.Random, sheet: ClassSheet | None, ab: Ability, prm: dict):
+    scope, change = str(prm.get("scope", "")), str(prm.get("change", ""))
+    if scope == "Archer Specialty Arrows" and change == "other":
+        # Artificer: the Archer's class Specialty Arrows are replaced by the archetype's own
+        # allotment (granted by its later effects); ruling artificer#1
+        for slug in [s for s, u in p.uses.items() if u.ability.delivery == "specialty-arrow"]:
+            del p.uses[slug]
+        return
+    if scope == "Ancestral Armor" and change == "other":
+        u = p.uses.get(rules.by_name.get("ancestral armor", ""))
+        if u is not None:
+            u.charge = None   # Marauder: no longer chargeable
+        return
+    if scope in fx.EXPERIENCED_SCOPES:
+        return    # applied per purchase by _apply_experienced
+    group = fx.FREQUENCY_GROUPS.get(scope)
+    if group is not None:
+        targets = [u for _, u in sorted(p.uses.items()) if group(u)]
+    else:
+        u = p.uses.get(rules.by_name.get(scope.lower(), ""))
+        targets = [u] if u is not None else []
+    how = fx.FREQUENCY_SET.get(scope)
+    for u in targets:
+        if how == "per-purchase":
+            u.per, u.max, u.left, u.unit = "life", u.copies, u.copies, None
+        elif how == "one":
+            u.per, u.max, u.left, u.unit = "life", 1, 1, None
+        if _set_charge(u, change):
+            continue
+        if change == "double-uses":
+            _double(u)
+        elif change == "unlimited":
+            u.max = u.left = None
+            u.per = "unlimited"
+
+
+def _experienced(p: Player, rng: random.Random, sheet: ClassSheet | None, per: str, change: str) -> bool:
+    """One Experienced option: a random purchased Verbal of 4th level or lower with this period and
+    no Charge yet becomes chargeable. False when no Verbal qualifies."""
+    def level(u: Uses) -> int:
+        if sheet is None:
+            return 1
+        return min((min(c.levels) for c in sheet.abilities if c.slug == u.slug), default=99)
+
+    cands = [s for s, u in sorted(p.uses.items()) if u.purchased and u.ability.delivery == "verbal"
+             and u.per == per and not u.charge and level(u) <= 4]
+    if not cands:
+        return False
+    return _set_charge(p.uses[rng.choice(cands)], change)
+
+
+def _apply_experienced(p: Player, rng: random.Random, sheet: ClassSheet | None, ab: Ability) -> None:
+    """Experienced: each purchase applies to its own Verbal, chosen before the game, using either
+    option (ruling experienced#1). The engine takes the per-life option (Charge x5) when a Verbal
+    qualifies, else the per-refresh one (Charge x10); the Verbal is picked at random, like other
+    chosen options."""
+    options = [(fx.EXPERIENCED_SCOPES[str(e.params.get("scope"))], str(e.params.get("change")))
+               for e in ab.effects if e.kind == "economy.frequency" and e.params.get("scope") in fx.EXPERIENCED_SCOPES]
+    for _ in range(p.trait_copies.get(ab.slug, 1)):
+        for per, change in options:
+            if _experienced(p, rng, sheet, per, change):
+                break
+
+
+def _apply_other_loadout_effects(p: Player, rules: Rules, rng: random.Random, sheet: ClassSheet | None):
     for ab in list(p.traits):
+        if ab.slug == "experienced":
+            _apply_experienced(p, rng, sheet, ab)
+            continue
         for eff in ab.effects:
             if eff.timing != "while-active":
                 continue
@@ -175,24 +263,13 @@ def _apply_other_loadout_effects(p: Player, rules: Rules):
             elif kind == "ability.modify":
                 slug = rules.by_name.get(str(prm.get("ability", "")).lower())
                 change = str(prm.get("change", ""))
-                if slug in p.uses and re.search(r"\bbecomes?\b.*\d+/(Life|Refresh)", change, re.I):
+                if slug in p.uses and fx.becomes_frequency(change):
                     f = freqmod.parse(change)
                     u = p.uses[slug]
                     u.per, u.max, u.left, u.charge = f.per, f.uses, f.uses, f.charge or u.charge
             elif kind == "economy.frequency":
-                slug = rules.by_name.get(str(prm.get("scope", "")).lower())
-                u = p.uses.get(slug)
-                change = str(prm.get("change", ""))
-                if u is None:
-                    continue
-                if m := re.match(r"charge-x(\d+)", change):
-                    u.charge = int(m.group(1))
-                elif change == "double-uses" and u.max is not None:
-                    u.max *= 2
-                    u.left = u.max
-                elif change == "unlimited":
-                    u.max = u.left = None
-                    u.per = "unlimited"
+                if fx.loadout_handled(eff):
+                    _economy_frequency(p, rules, rng, sheet, ab, prm)
             elif kind == "equipment.permit":
                 what = prm.get("what")
                 order = _SHIELD_ORDER
@@ -236,7 +313,7 @@ def build_player(rules: Rules, pid: int, team: int, cls: str, level: int, skill:
             o = opts[int(ltp_pick * len(opts)) % len(opts)]
             _add(p, rules, o["slug"], freqmod.Frequency(**o["frequency"]), 1, False, "")
     p.traits = [t for t in p.traits if t.slug not in ablate]   # an ablated Archetype grants nothing
-    _apply_loadout_effects(p, rules)
+    _apply_loadout_effects(p, rules, rng, sheet)
     for slug in ablate:
         p.uses.pop(slug, None)
     p.traits = [t for t in p.traits if t.slug not in ablate]

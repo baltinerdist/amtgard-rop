@@ -32,6 +32,8 @@ class Uses:
     extra_reqs: frozenset = frozenset()  # requirements added by the granting ability (Regeneration)
     drop_reqs: frozenset = frozenset()   # requirements the granting ability waives (Undead Minion)
     only_target: int | None = None       # may only be cast on this player (Undead Minion's Raise Dead)
+    purchased: bool = False              # bought with Magic User points (Archetype group scopes)
+    copies: int = 1                      # purchases or picks merged into this use
 
     @property
     def slug(self) -> str:
@@ -95,6 +97,7 @@ class Player:
     has_bow: bool = False
     uses: dict[str, Uses] = field(default_factory=dict)
     traits: list[Ability] = field(default_factory=list)       # traits and archetypes, always on
+    trait_copies: dict[str, int] = field(default_factory=dict)  # Traits bought more than once (Experienced)
     ench_slots: int = 1                                         # magical enchantments allowed
 
     # per-life state

@@ -384,6 +384,37 @@ _BECOMES_FREQ = re.compile(r"\bbecomes?\b.*\d+/(Life|Refresh)", re.I)
 _SHIELDS = ("small-shield", "medium-shield", "large-shield")
 
 
+def becomes_frequency(change: str) -> bool:
+    """'X becomes 2/Life Charge x3': a new frequency for a named ability (not an example in passing,
+    such as Legend's 'each purchase gives double the uses (e.g. 1/Life becomes 2/Life)')."""
+    return bool(_BECOMES_FREQ.search(change)) and "e.g." not in change
+
+
+# economy.frequency group scopes, as the metadata words them, and which of a player's uses each covers
+FREQUENCY_GROUPS: dict[str, Callable] = {
+    "each Verbal purchased": lambda u: u.purchased and u.ability.delivery == "verbal",
+    "Extension (each purchase)": lambda u: u.purchased and u.ability.slug == "extension",
+    "abilities in the Spirit School": lambda u: u.ability.school == "Spirit",
+    "all abilities purchased in the Death School": lambda u: u.purchased and u.ability.school == "Death",
+    "all Meta-Magics purchased": lambda u: u.purchased and u.ability.delivery == "meta-magic",
+    "each type of Specialty Arrow ability": lambda u: u.ability.delivery == "specialty-arrow",
+    "each Enchantment purchased": lambda u: u.purchased and u.ability.delivery == "enchantment",
+    "all abilities purchased in the Protection School": lambda u: u.purchased and u.ability.school == "Protection",
+    "Verbals and Magic Balls purchased in the Death and Flame Schools":
+        lambda u: u.purchased and u.ability.delivery in ("verbal", "magic-ball") and u.ability.school in ("Death", "Flame"),
+}
+# Groups whose frequency is set outright, not just made chargeable: Priest "All Meta-Magics purchased
+# become 1/Life Charge x3" (one use per purchase, ruling priest#1); Sniper "each type of Specialty Arrow
+# ability becomes 1 Arrow / Life Charge x3" (one use per type, ruling sniper#1).
+FREQUENCY_SET = {"all Meta-Magics purchased": "per-purchase", "each type of Specialty Arrow ability": "one"}
+EXPERIENCED_SCOPES = {
+    "a single purchased per-life Verbal of 4th level or lower": "life",
+    "a single purchased per-refresh Verbal of 4th level or lower": "refresh",
+}
+# (scope, 'other') changes spelled out in the ability text
+FREQUENCY_OTHER = ("Archer Specialty Arrows", "Ancestral Armor")
+
+
 def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
     """Whether sim/engine/loadout.py applies this Archetype/Trait effect. `names` (lower-case
     ability names) lets the coverage report check that the named ability resolves."""
@@ -398,10 +429,16 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
     if eff.kind == "ability.remove":
         return named("ability")
     if eff.kind == "ability.modify":
-        return named("ability") and bool(_BECOMES_FREQ.search(str(prm.get("change", ""))))
+        return named("ability") and becomes_frequency(str(prm.get("change", "")))
     if eff.kind == "economy.frequency":
         change = str(prm.get("change", ""))
-        return named("scope") and (change in ("double-uses", "unlimited") or bool(re.fullmatch(r"charge-x\d+", change)))
+        scope = str(prm.get("scope", ""))
+        if change == "other":
+            return scope in FREQUENCY_OTHER
+        if scope in EXPERIENCED_SCOPES:
+            return bool(re.fullmatch(r"charge-x\d+", change))
+        ok_change = change in ("double-uses", "unlimited") or bool(re.fullmatch(r"charge-x\d+", change))
+        return ok_change and (scope in FREQUENCY_GROUPS or named("scope"))
     if eff.kind == "equipment.permit":
         return prm.get("what") in _SHIELDS + ("great-weapon",)
     if eff.kind == "armor.limit":

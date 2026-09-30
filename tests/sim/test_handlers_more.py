@@ -3,8 +3,9 @@ ability record, with fixed seeds, in the style of test_handlers.py."""
 import random
 
 from sim.engine import effects as fx
-from sim.engine.loadout import _apply_loadout_effects
+from sim.engine.loadout import _add, _apply_loadout_effects
 from sim.engine.state import LOCATIONS, Player, Uses
+from sim.rules import frequency
 from tests.sim.conftest import make_game, resolve, spec
 
 
@@ -215,6 +216,75 @@ def test_song_of_interference_as_per_enlightened_soul(rules):
     assert g.unaffected(bard, "verbal-magical-beyond-touch")
     resolve(g, wiz, "hold-person", bard)
     assert g.fails[("hold-person", "unaffected")] == 1 and not bard.has_state("stopped", g.t)
+
+
+def kit(rules, cls, traits, bought=(), picked=(), copies=None, seed=5):
+    """A player with purchased (Magic User) and picked (class level) abilities, then Archetype/Trait
+    effects applied. bought/picked: (slug, frequency text, range)."""
+    p = Player(pid=0, team=0, cls=cls, level=6, skill=0.0, role="caster")
+    for slug, freq, rng in bought:
+        _add(p, rules, slug, frequency.parse(freq), 1, True, rng, purchased=True)
+    for slug, freq, rng in picked:
+        _add(p, rules, slug, frequency.parse(freq), 1, False, rng)
+    for t in traits:
+        _add(p, rules, t, frequency.parse(""), (copies or {}).get(t, 1), False, "", purchased=True)
+    _apply_loadout_effects(p, rules, random.Random(seed), rules.classes[cls])
+    return p
+
+
+def test_group_double_uses(rules):
+    p = kit(rules, "Bard", ["dervish"], bought=[("insult", "1/Life", "20'"), ("song-of-power", "Unlimited", "Self")])
+    assert p.uses["insult"].max == 2, "each Verbal purchased gives double the uses"
+    w = kit(rules, "Wizard", ["warlock"], bought=[("lightning-bolt", "2 Balls / Unlimited", ""),
+                                                  ("force-bolt", "3 Balls / Unlimited", ""),
+                                                  ("finger-of-death", "1/Refresh", "20'"),
+                                                  ("heat-weapon", "1/Life", "20'")])
+    assert (w.uses["finger-of-death"].max, w.uses["heat-weapon"].max, w.uses["lightning-bolt"].max) == (2, 2, 4)
+    assert w.uses["force-bolt"].max == 3, "a Sorcery ball is not a Death or Flame one"
+    s = kit(rules, "Druid", ["summoner"], bought=[("stoneskin", "1/Life", "Other"), ("heat-weapon", "1/Life", "20'")])
+    assert (s.uses["stoneskin"].max, s.uses["heat-weapon"].max) == (2, 1)
+    h = kit(rules, "Healer", ["warder"], bought=[("harden", "1/Refresh", "Other"), ("heal", "Unlimited", "Touch")])
+    assert h.uses["harden"].max == 2
+
+
+def test_group_charge(rules):
+    n = kit(rules, "Healer", ["necromancer"], bought=[("raise-dead", "1/Life", "Touch"), ("heal", "1/Life", "Touch")])
+    assert n.uses["raise-dead"].charge == 3 and not n.uses["heal"].charge
+    m = kit(rules, "Monk", ["medium"], picked=[("heal", "1/Life", "Touch")])
+    assert m.uses["heal"].charge == 3 and m.uses["sever-spirit"].charge == 3
+
+
+def test_priest_meta_magics_become_per_life_charge(rules):
+    p = kit(rules, "Healer", ["priest"], bought=[("ambulant", "1/Refresh", ""), ("ambulant", "1/Refresh", "")])
+    u = p.uses["ambulant"]
+    assert (u.per, u.max, u.charge) == ("life", 2, 3), "ruling priest#1: 2 purchases give 2/Life Charge x3"
+
+
+def test_sniper_and_artificer_arrows(rules):
+    s = kit(rules, "Archer", ["sniper"], picked=[("pinning-arrow", "2 Arrows / Unlimited", ""),
+                                                 ("phase-arrow", "1 Arrow / Unlimited", "")])
+    u = s.uses["pinning-arrow"]
+    assert (u.per, u.max, u.charge, u.unit) == ("life", 1, 3, None), "ruling sniper#1: one per type"
+    a = kit(rules, "Archer", ["artificer"], picked=[("destruction-arrow", "1 Arrow / Unlimited", ""),
+                                                    ("pinning-arrow", "1 Arrow / Unlimited", "")])
+    assert "destruction-arrow" not in a.uses, "ruling artificer#1"
+    assert (a.uses["pinning-arrow"].max, a.uses["phase-arrow"].max, a.uses["suppression-arrow"].max) == (3, 2, 2)
+
+
+def test_marauder_ancestral_armor_not_chargeable(rules):
+    p = kit(rules, "Warrior", ["marauder"], picked=[("ancestral-armor", "(Self) 3/Refresh Charge x10 (ex) (Swift)", "")])
+    assert p.uses["ancestral-armor"].charge is None
+
+
+def test_legend_doubles_each_extension(rules):
+    p = kit(rules, "Bard", ["legend"], bought=[("extension", "1/Life", ""), ("extension", "1/Life", "")])
+    assert p.uses["extension"].max == 4 and p.uses["extension"].per == "life"
+
+
+def test_experienced_one_verbal_per_purchase(rules):
+    p = kit(rules, "Wizard", ["experienced"], copies={"experienced": 2},
+            bought=[("heat-weapon", "1/Life", "20'"), ("mend", "1/Life", "Touch"), ("lightning-bolt", "2 Balls / Unlimited", "")])
+    assert sorted((s, u.charge) for s, u in p.uses.items() if u.charge) == [("heat-weapon", 5), ("mend", 5)]
 
 
 def test_blood_and_thunder_enchants_the_killer(rules):

@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **295 of 445** (66%)
-- Not handled: **126** no-op, **16** needs-map, **8** out-of-scope
-- Abilities fully handled: **103**, partly: **46**, not at all: **34**, no effects recorded: 0 (of 183)
+- Effect instances handled: **307 of 445** (69%)
+- Not handled: **114** no-op, **16** needs-map, **8** out-of-scope
+- Abilities fully handled: **105**, partly: **51**, not at all: **27**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -18,9 +18,9 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `state.apply` | 43 | 52 | 42 | instant 36, no-op 7, out-of-scope 3, passive 6 |
 | `ability.grant` | 30 | 41 | 38 | instant 1, loadout 23, no-op 3, passive 14 |
 | `action.restrict` | 25 | 36 | 20 | instant 7, loadout 9, needs-map 8, no-op 4, out-of-scope 4, passive 4 |
-| `economy.frequency` | 19 | 25 | 11 | loadout 11, no-op 14 |
+| `economy.frequency` | 19 | 25 | 24 | loadout 24, no-op 1 |
 | `special-effect.grant` | 18 | 28 | 25 | instant 16, no-op 3, passive 9 |
-| `ability.modify` | 17 | 22 | 9 | loadout 6, no-op 13, passive 3 |
+| `ability.modify` | 17 | 22 | 8 | loadout 5, no-op 14, passive 3 |
 | `defense.immunity` | 13 | 14 | 14 | passive 14 |
 | `ability.remove` | 11 | 16 | 16 | loadout 16 |
 | `equipment.permit` | 10 | 18 | 6 | loadout 6, no-op 12 |
@@ -92,10 +92,10 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `brutal-strike`, `combat-caster`, `dervish`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `experienced`, `extension`, `greater-harden`, `harden`, `harden-armor`, `heat-weapon`, `imbue`, `necromancer`, `persistent`, `poison`, `priest`, `rage`, `ranger`, `sacred-blades`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-power`, `song-of-visit`, `summoner`, `swift`, `trickery`, `warder`, `warlock`
+`ambulant`, `avatar-of-nature`, `brutal-strike`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `extension`, `greater-harden`, `harden`, `harden-armor`, `heat-weapon`, `imbue`, `persistent`, `poison`, `rage`, `ranger`, `sacred-blades`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-power`, `song-of-visit`, `swift`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`amplification` (1/2), `artificer` (8/11), `attuned` (1/2), `battlefield-triage` (1/2), `battlemage` (1/3), `blink` (1/3, 1u), `circle-of-protection` (2/6, 1u), `corrosive-mist` (1/2), `corruptor` (5/6, 1u), `discordia` (1/2), `equipment-shield-medium` (2/3), `equipment-shield-small` (1/2), `equipment-weapon-great` (1/2), `essence-graft` (2/3), `evoker` (1/3), `gift-of-air` (3/7), `gift-of-earth` (1/2), `golem` (2/8, 3u), `guardian` (4/5), `heart-of-the-swarm` (1/3, 2u), `hunter` (7/9), `juggernaut` (4/5), `legend` (2/4), `marauder` (5/7), `martyr` (3/4), `mass-healing` (1/3), `medium` (5/6), `missile-block` (1/2), `mystic` (4/5, 1u), `naturalize-magic` (1/2), `phoenix-tears` (8/10), `planar-grounding` (1/3), `protection-from-projectiles` (1/2), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `snaring-vines` (1/2), `sniper` (2/5), `song-of-deflection` (1/2), `song-of-survival` (2/6), `spy` (3/5), `summon-dead` (1/2), `undead-minion` (4/7, 2u), `vampirism` (3/4), `void-touched` (4/5)
+`amplification` (1/2), `artificer` (9/11), `attuned` (1/2), `battlefield-triage` (1/2), `battlemage` (1/3), `blink` (1/3, 1u), `circle-of-protection` (2/6, 1u), `corrosive-mist` (1/2), `corruptor` (5/6, 1u), `dervish` (1/2), `discordia` (1/2), `equipment-shield-medium` (2/3), `equipment-shield-small` (1/2), `equipment-weapon-great` (1/2), `essence-graft` (2/3), `evoker` (1/3), `gift-of-air` (3/7), `gift-of-earth` (1/2), `golem` (2/8, 3u), `guardian` (4/5), `heart-of-the-swarm` (1/3, 2u), `hunter` (7/9), `juggernaut` (4/5), `legend` (2/4), `marauder` (6/7), `martyr` (3/4), `mass-healing` (1/3), `missile-block` (1/2), `mystic` (4/5, 1u), `naturalize-magic` (1/2), `necromancer` (1/3), `phoenix-tears` (8/10), `planar-grounding` (1/3), `priest` (1/3), `protection-from-projectiles` (1/2), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `snaring-vines` (1/2), `sniper` (3/5), `song-of-deflection` (1/2), `song-of-survival` (2/6), `spy` (3/5), `summon-dead` (1/2), `summoner` (1/3), `undead-minion` (4/7, 2u), `vampirism` (3/4), `void-touched` (4/5), `warder` (1/2), `warlock` (1/2)
