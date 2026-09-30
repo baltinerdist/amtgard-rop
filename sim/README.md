@@ -29,6 +29,9 @@ Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 30�
 .venv/bin/python -m sim.run --games 1000 --assume melee.base_hit_per_second=0.3 \
     --assume "range.p_in_range.20'=0.4"                         # override assumptions for one run
 .venv/bin/python -m sim.analyze.winrate                         # latest run: class win rates, balance methods
+.venv/bin/python -m sim.analyze.doctrines                       # latest run: caster doctrines, assists -> sim/out/doctrines.json
+.venv/bin/python -m sim.analyze.doctrines --level 6             # one level only (Archetype doctrines exist at 6th)
+.venv/bin/python -m sim.rules.doctrines                         # validate sim/data/doctrines.json
 .venv/bin/python -m sim.analyze.ablation --ability heal,call-lightning --games 1000
 .venv/bin/python -m sim.analyze.ablation --ability heal,mend --together --games 1000   # as one set
 .venv/bin/python -m sim.analyze.ablation --merge icy-blast:iceball --games 1000
@@ -40,7 +43,7 @@ Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 30�
 .venv/bin/python -m sim.analyze.sensitivity                     # re-check cut.json over an assumption grid
 .venv/bin/python -m sim.analyze.sensitivity --grid melee.base_hit_per_second=0.18,0.26 --factorial
 .venv/bin/python -m sim.analyze.sensitivity --analysis winrate --games 1000
-.venv/bin/python -m sim.reports.build_report                    # -> sim/out/report.html
+.venv/bin/python -m sim.reports.build_report                    # -> sim/out/report.html (doctrine section if doctrines.json exists)
 .venv/bin/python -m sim.analyze.validity                        # face-validity checks, pass/fail table (~3 min)
 .venv/bin/python -m sim.analyze.validity --only level --set time.speech_words_per_second=2.5
 .venv/bin/python -m sim.rules.build_classes                     # rebuild sim/data/classes.json
@@ -53,7 +56,11 @@ Results are appended to `sim/out/runs.duckdb` (gitignored). It has four tables:
 
 - `runs`
 - `games`
-- `players`
+- `players`: one row per player and game. Besides class, level, skill, kills, deaths and the result:
+  `doctrine` and `play` (a Magic User's build plan and play style; empty for martial classes),
+  `lives` played, `enchant_assists`, `control_assists`, `saves` (see Caster doctrines) and `bought`
+  (a Magic User's purchases, `slug:copies,...`). Columns added since a database was created are
+  added to it on the next run, with NULL for older rows.
 - `abilities` (casts, applied effects, no-ops, failures and kills per ability per game)
 
 **Determinism.** The seed fixes everything about a game. The scenario, each player's loadout and
@@ -67,7 +74,8 @@ are asked every tick whether to keep casting. The rest is load from other proces
 machine. Extending effect coverage from 257 to 398 instances costs about 4%: 56.2 games/s against
 58.8 without it, run back to back on the same seeds (10 cores). The policy routines that use those
 abilities (cleanses, repairs, buffs, escapes, value-per-second Charging) bring the smoke run from
-23 s to 29–31 s on a shared machine (about 33 games/s). An ablation over 1,000 games runs
+23 s to 29–31 s on a shared machine (about 33 games/s). With caster doctrines (play styles, finishers, assist bookkeeping) the smoke run takes about 20 s
+(50 games/s) and 2,000 mixed games 47 s on 10 cores. An ablation over 1,000 games runs
 the baseline once, then takes about 20 s for each ability removed.
 
 ## Layout
@@ -76,17 +84,19 @@ the baseline once, then takes about 20 s for each ability removed.
 | --- | --- |
 | `rules/compile.py` | Metadata + class sheets + rulings → immutable `Ability` / `ClassSheet` objects |
 | `rules/build_classes.py` | Builds `data/classes.json` from `rules/classes/*.md` and the metadata's availability rows; each field cites its source file |
+| `rules/doctrines.py` | Loads and validates `data/doctrines.json` (caster build plans); `Rules.doctrines` |
 | `rules/rulings.py` | Loads `data/rulings.json` (answers to the metadata's 87 open questions) |
 | `rules/coverage.py` | Which effect kinds the engine executes, and which are needs-map / out-of-scope and why; writes `COVERAGE.md` |
 | `engine/state.py` | Player, ability uses, enchantments, casts |
 | `engine/loadout.py` | Equipment and abilities from class and level. Martial classes use the level table and option picks. Magic Users spend 5 points per level as `policies/buy.py` chooses. |
 | `engine/effects.py` | One handler per effect kind, plus the passive and loadout registries |
 | `engine/game.py` | The one-second tick loop: engagement, melee, casting, hits, wounds, death, respawn, refresh |
-| `policies/` | Scripted behavior per role (fighter / caster / support / archer), whether to keep casting under attack, the ability value score, and Magic User spell buying (`buy.py`) |
+| `policies/` | Scripted behavior per role (fighter / archer) and per doctrine play style (striker, controller, enchanter, medic, battle, archer), whether to keep casting under attack, the ability value score, and Magic User spell buying by doctrine (`buy.py`) |
 | `scenarios/` | Player count, class and level mix, skill spread, team balancing, game type |
 | `run.py` | Parallel runner and DuckDB storage |
 | `analyze/stats.py` | Wilson, game-clustered (sandwich) and cluster-bootstrap intervals, paired intervals |
 | `analyze/winrate.py` | Class win rates with game-clustered intervals (naive Wilson kept for comparison) |
+| `analyze/doctrines.py` | Per class and doctrine: share, win rate, kills, assists and saves per life, most-bought spells |
 | `analyze/impact.py` | Paired gameplay-change measures and the distance D |
 | `analyze/ablation.py` | Paired ablation / merge harness |
 | `analyze/complexity.py` | Complexity cost per ability from the metadata (weights at the top of the file) |
@@ -178,28 +188,164 @@ the baseline once, then takes about 20 s for each ability removed.
     under the detail `needs-map:<kind>` or `out-of-scope:<kind>`. Policies never pick an ability
     with no handled effects on purpose.
 - **Chosen options** are random, not strategic: School choices and the Pick-one options. Archetypes are chosen by value (below).
-- **Loadout choices** (`policies/buy.py`). A Magic User's list comes from the usefulness score (benefits
-  minus drawbacks, `policies/value.py`) with personal taste (log-normal, sd `loadout.spell_taste_sd`)
-  and a few favorite spells bought first (one at 1st level up to `loadout.favorite_spells` = 3 at
-  6th, drawn from any spell that helps the buyer's side in the engine). Unlimited non-ammunition
-  abilities (Heal, Bardic songs) score double. An ability whose only handled effects are drawbacks
-  (Battlemage's purchase restriction) is never bought. **Archetypes are chosen by value**: a
-  6th-level player who considers one at all (`loadout.archetype_share`) takes it only if the build
-  under it (its purchase restrictions and costs), plus what it adds, beats the build without it;
-  martial players weigh its gain against their own kit (the armor Berserker takes away). In 1,000
-  mixed games Summoner, Dervish, Warder and Necromancer are taken; Priest, Evoker, Warlock, Legend,
-  Ranger and Avatar of Nature never are, because their restrictions cost more than they give in
-  this model (Warlock and Evoker forbid most of a Wizard's kill spells). Every purchasable spell is
-  held in at least 2% of games (`tests/sim/test_buying.py`).
+- **Loadout choices** (`policies/buy.py`). A Magic User builds to a **doctrine** (see Caster
+  doctrines below): the doctrine's Archetype first, then its core spells in order, then a greedy
+  fill by usefulness score (benefits minus drawbacks, `policies/value.py`) times personal taste
+  (log-normal, sd `loadout.spell_taste_sd`) times the doctrine's weights, after a few favorite
+  spells (one at 1st level up to `loadout.favorite_spells` = 3 at 6th). Unlimited non-ammunition
+  abilities (Heal, Bardic songs) score double. **Martial Archetypes are chosen by value**: a
+  6th-level martial player who considers one at all (`loadout.archetype_share`) takes the one whose
+  gain for their own kit (the armor Berserker takes away) is largest, or none. Every purchasable,
+  modeled spell is held in at least 2% of games (`tests/sim/test_buying.py`).
 - **Rulings are recorded but not interpreted.** Each of the 87 open questions keeps the reading the metadata already encodes. An answer changes the simulation only if its entry carries a `sim` block (see `rules/rulings.py`). A missing, partial or unreadable `data/rulings.json` is tolerated: each open question without an entry falls back to the metadata's reading, and the fallback is logged.
 - **Weapons.** There are no thrown weapons, no weapon types other than Great weapons, and no backup weapons after one is destroyed.
 - **Player decisions** are scripted heuristics. A different policy can change the conclusions, so run any important question at more than one policy setting.
+
+## Caster doctrines
+
+Casters don't build spell lists from whatever scores well alone. They build to a plan, and much of a
+caster's list exists to help fighters: Enchantments that arm or armor teammates, and control that
+locks an enemy down for a teammate to kill. `data/doctrines.json` writes those plans down: per Magic
+User class, doctrines with a **stance** (offense, control, support, sustain, hybrid), a **play
+style**, an ordered **core** list, **prefer** and **avoid** lists, set-up-and-finish **combos**, and
+**shares**. Everything in it beyond slugs, costs and Archetype rules is an assumption about real
+players, the shares especially. `rules/doctrines.py` loads and validates it (`python -m
+sim.rules.doctrines`; `tests/sim/test_doctrines.py`).
+
+**Buying** (`policies/buy.py`):
+
+1. Below 6th level a caster draws a base doctrine by `share`. At 6th level each Archetype doctrine
+   is drawn by its `share_at_6` (0.4 in total per class) and the rest draw a base doctrine by
+   `share`. Magic Users no longer compare builds under every Archetype: the doctrine's Archetype
+   is the one they take.
+2. The Archetype first; then each core entry in order, up to its listed copies, skipping entries
+   above the player's level, forbidden by the Archetype or ablated (their points go to the fill).
+   Core entries are bought even where the engine models nothing about them (a weapon, Ambulant):
+   the plan pays for them.
+3. Then the fill, as before (free spells, favorites, greedy by score per point), with the score
+   multiplied by `DOCTRINE_WEIGHTS`: ×1.6 for a preferred or core spell, ×0.25 for an avoided one,
+   ×1.25 when the spell's metadata roles match the stance (`STANCE_ROLES`). Taste stays, at half the
+   spread for core spells, and a player skips a core entry whose taste is in their bottom 10%, so
+   builds still vary.
+
+Every draw happens in a fixed order whatever is ablated (the doctrine draw replaced the old
+consider-an-Archetype draw), so paired ablations stay aligned. The Player records `doctrine`, `play`
+and `combos`; the `players` table stores `doctrine`, `play` and `bought`.
+
+**Play styles** (`policies/__init__.py`, `PLAY_ROUTINES`):
+
+| Play | What the caster does |
+| --- | --- |
+| striker | Stays back: self-buffs, finishers, its own combo set-ups, then offense; support last |
+| controller | Finishers, then locks down the enemy most dangerous to a teammate: one engaged with an ally first, then the one with most kill potential (role, skill, kills so far) in range; skips enemies already locked down (Stunned, Frozen, Stopped, Insubstantial, or already under what the spell does) or immune; Suppresses only casters. Kills only when nothing needs locking down |
+| enchanter | Enchants out-of-melee teammates on the field every free moment, refills their uses (Empower, Restoration, Confidence), then revives, heals, cleanses; casts at enemies last |
+| medic | The old support routine: revive, heal, cleanse from behind the line |
+| battle | Starts melee like a fighter (`Game._engage`), isn't treated as backline, keeps self-buffs up, casts only when free |
+| archer | A Ranger with a bow shoots and casts between shots; without a bow, a striker |
+
+Every Magic User places Enchantments by benefit, at base and on the field: weapon Enchantments
+(Flame Blade, Poison, Contagion) to the best melee fighter, armor and protection to the front line,
+and Attuned or Essence Graft first on a fighter when there are Enchantments to fill the slot (the
+usefulness score puts those two below zero, so without the rule they were never cast). A caster
+holding a **finisher** (Dragged Below on a Stopped target, Shatter on a Frozen one, Dimensional Rift
+on an Insubstantial one, any wound on a Fragile one) uses it first, preferring a target whose State
+it applied itself (`Player.state_src`).
+
+**Credit for helping** (`players` table, `Game._credit_assists`):
+
+- **enchant assists**: kills made by a teammate while wearing an Enchantment this player cast
+- **control assists**: a teammate's kill of an enemy who was under a State this player applied
+  (Stunned, Frozen, Stopped, Suppressed, Fragile, Insubstantial) or an Awe, Terror or Insult
+  restriction from them, at the moment of death or within the 10 s before it (the engine records
+  who controls whom every tick). The caster's own kill is not an assist.
+- **saves**: a teammate's death prevented (Phoenix Tears, Troll Blood, Song of Survival), a revive,
+  or a heal that removed a wound from a teammate (a Resurrect's revive and heal count once).
+  Healing yourself is not a save.
+
+These are attribution, not cause: a Barkskin on a fighter earns an enchant assist for every kill
+that fighter makes, whether or not the Barkskin mattered. `python -m sim.analyze.doctrines` reports
+per class and doctrine the share of players, win rate (game-clustered interval), own kills, enchant
+assists, control assists and saves per life, the assist share and the most-bought spells, for all
+levels and for 6th level alone; it writes `sim/out/doctrines.json`, which `reports/build_report.py`
+turns into a section of the report.
+
+**Results, 2,000 mixed games (`--seed 1`).** Win rate [game-clustered 95% interval], per life:
+
+| Class | Doctrine | Stance | Share | Win rate | Kills | Ench. assists | Ctrl assists | Saves | Assist share |
+| --- | --- | --- | --: | --- | --: | --: | --: | --: | --: |
+| Wizard | artillery | offense | 33% | 0.479 [0.453, 0.504] | 0.65 | 0.00 | 0.09 | 0.00 | 12% |
+| Wizard | lockdown-killer | offense | 24% | 0.455 [0.425, 0.486] | 0.61 | 0.01 | 0.22 | 0.00 | 28% |
+| Wizard | controller | control | 28% | 0.430 [0.402, 0.459] | 0.28 | 0.03 | 0.27 | 0.00 | 52% |
+| Wizard | armorer | support | 9% | 0.419 [0.368, 0.470] | 0.38 | 0.44 | 0.08 | 0.00 | 58% |
+| Wizard | battlemage (6th) | offense | 2% | 0.545 [0.436, 0.654] | 0.97 | 0.00 | 0.38 | 0.01 | 28% |
+| Wizard | evoker (6th) | offense | 1.5% | 0.424 [0.304, 0.544] | 0.77 | 0.45 | 0.21 | 0.00 | 46% |
+| Wizard | warlock (6th) | offense | 2% | 0.439 [0.342, 0.536] | 0.65 | 0.38 | 0.35 | 0.00 | 53% |
+| Healer | medic | sustain | 39% | 0.449 [0.425, 0.472] | 0.07 | 1.28 | 0.06 | 0.68 | 95% |
+| Healer | protector | support | 28% | 0.434 [0.406, 0.463] | 0.06 | 2.95 | 0.03 | 0.51 | 98% |
+| Healer | battle-healer | hybrid | 27% | 0.451 [0.422, 0.480] | 0.36 | 0.46 | 0.11 | 0.29 | 62% |
+| Healer | warder (6th) | support | 2% | 0.469 [0.360, 0.578] | 0.05 | 6.49 | 0.00 | 0.81 | 99% |
+| Healer | priest (6th) | sustain | 2% | 0.404 [0.306, 0.503] | 0.05 | 2.03 | 0.11 | 1.76 | 98% |
+| Healer | necromancer (6th) | sustain | 1% | 0.426 [0.283, 0.568] | 0.05 | 0.16 | 0.08 | 1.32 | 83% |
+| Druid | enchanter | support | 38% | 0.467 [0.443, 0.491] | 0.15 | 4.27 | 0.12 | 0.19 | 97% |
+| Druid | elementalist | control | 32% | 0.467 [0.441, 0.493] | 0.10 | 2.59 | 0.30 | 0.12 | 97% |
+| Druid | battle-druid | hybrid | 24% | 0.436 [0.405, 0.466] | 0.35 | 0.96 | 0.08 | 0.10 | 75% |
+| Druid | summoner (6th) | support | 2% | 0.500 [0.387, 0.613] | 0.14 | 9.36 | 0.05 | 1.42 | 99% |
+| Druid | avatar-of-nature (6th) | hybrid | 2% | 0.467 [0.366, 0.569] | 0.84 | 1.64 | 0.06 | 0.42 | 67% |
+| Druid | ranger (6th) | offense | 1.6% | 0.516 [0.392, 0.639] | 1.07 | 2.34 | 0.30 | 0.23 | 71% |
+| Bard | controller | control | 34% | 0.470 [0.444, 0.496] | 0.06 | 0.12 | 0.36 | 0.00 | 89% |
+| Bard | force-multiplier | support | 28% | 0.431 [0.402, 0.460] | 0.07 | 0.31 | 0.10 | 0.00 | 86% |
+| Bard | skald | hybrid | 32% | 0.487 [0.461, 0.512] | 0.62 | 0.10 | 0.12 | 0.00 | 26% |
+| Bard | combat-caster (6th) | hybrid | 2% | 0.545 [0.447, 0.644] | 0.94 | 0.35 | 0.45 | 0.00 | 46% |
+| Bard | dervish (6th) | control | 2% | 0.538 [0.435, 0.642] | 0.07 | 0.28 | 0.78 | 0.00 | 94% |
+| Bard | legend (6th) | control | 1.6% | 0.478 [0.359, 0.596] | 0.08 | 0.19 | 0.73 | 0.00 | 92% |
+
+- **Support and control against offense.** Wizards are the only class with offense doctrines, and
+  there the control and support doctrines win less (controller 0.430, armorer 0.419) than artillery
+  (0.479), with a half or less of its own kills. In the other classes, control and support
+  doctrines win as often as the rest with almost no kills of their own: the Druid enchanter and
+  elementalist (0.467 each) beat the battle druid (0.436), and the Bard controller (0.470) is level
+  with the skald (0.487); only the Bard force multiplier (0.431) lags. Unreliable where it matters:
+  with no map, a controller can't stay out of reach, and the Stopped State (Hold Person, Entangle)
+  stops no one closing to melee, so Stop-based control is undervalued.
+- **Assists.** Near all of the Healer, Druid and Bard support and control doctrines' part in kills
+  comes through teammates (assist share 86–99%): the Druid summoner (9.4 enchant assists per life),
+  Warder (6.5) and Druid enchanter (4.3) most; Dervish (0.78) and Legend (0.73) earn the most
+  control assists. Offense Wizards (12–28%) and the skald (26%) mostly kill for themselves.
+- **Archetypes against their base doctrines at 6th level** (`--level 6`): Dervish 0.538 vs
+  controller 0.485, Summoner 0.500 vs enchanter 0.483, Warder 0.469 vs protector 0.434, Avatar of
+  Nature 0.467 vs battle druid 0.384, Combat caster 0.545 vs skald 0.510, Ranger 0.516 vs
+  elementalist 0.420, Battlemage 0.545 vs lockdown-killer 0.492 and artillery 0.504. Evoker (0.424)
+  and Warlock (0.439), Priest (0.404) and Necromancer (0.426) do worse than artillery (0.504) and
+  medic (0.440). With 50–150 player-games per Archetype doctrine every interval overlaps its
+  counterpart's: a tendency, not a result.
+- **Class win rates hardly move.** In the same run Healers win 0.444, Wizards 0.454, Druids 0.461
+  and Bards 0.468, against 0.54–0.56 for Warriors, Paladins, Anti-Paladins and Barbarians: the
+  melee-over-casters limit below is unchanged by doctrines.
 
 ## Known limitations (from the face-validity suite)
 
 `sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
 true (mirror matches are 50/50, skill wins, armor helps, more lives means longer games, Heal
-doesn't hurt, …). One fails: **class-stack**, a structural limit of Phase 1.
+doesn't hurt, …). **class-stack** fails as a structural limit of Phase 1. Since caster doctrines,
+**level** fails (0.569; see below), and at full scale **no-abilities** fails (0.453) because of a
+side bias that predates doctrines (below). At half scale (`pytest`) no-abilities passes.
+
+- **Level after doctrines.** 6th-level players now beat the same classes at 1st level 0.569 of the
+  time over the check's 600 games (expects ≥ 0.6; it was 0.618). Over 3,000 games of the same kind
+  it is 0.560 with doctrines and 0.589 without them (plain greedy buying and the old role play), so
+  the 600-game 0.618 was partly a lucky sample, and doctrines cost about 0.03. About three quarters of
+  that comes from the play styles (0.582 with doctrine buying and the old play) and a quarter from
+  the buying; the Druid doctrines move it most
+  (0.586 when only Druids go without doctrines), while Bard doctrines widen the gap. Neither the
+  Attuned rule nor Enchantment priorities is the cause (0.553 and 0.570 without them). The reading:
+  a plan helps a 1st-level caster about as much as a 6th-level one (targeted control and
+  enchanting with five points), and the core lists spend 6th-level points on things the engine
+  doesn't model (weapons, Ambulant, Summon Dead, extra songs). The check is left as it is.
+- **No-abilities side bias.** With every ability removed, team 0 wins less than team 1 on the check's
+  rosters in either order: 0.453 as listed and 0.501 for the same rosters swapped (before doctrines:
+  0.475 and 0.493; other seeds 0.472, before 0.469). The mirror and seat-swap checks, with abilities,
+  show no side effect. A likely cause, not verified: `Game._engage` walks players in pid order
+  (team 0 first), unlike the shuffled melee and decision orders.
 
 - **Level (fixed).** When effect coverage went from 257 to 398 instances, 6th level stopped beating
   1st level (0.428; the check expects ≥ 0.6). The cause was scripted choices that didn't weigh
@@ -233,10 +379,19 @@ doesn't hurt, …). One fails: **class-stack**, a structural limit of Phase 1.
   a non-fighter or a wounded fighter (Blink, Shadow Step), cleanses on self or an ally out of melee
   (Release, Greater Release, Shake It Off, Circle of Protection; Martyr only by a non-fighter for a
   fighter or archer), repairs (Mend, Greater Mend, Word of Mending), and casters with a bow shoot.
-  Still never cast in play: Teleport, Astral Intervention, Confidence, Empower, Restoration, Summon
-  Dead, Force Barrier, Stoneform, Reload, Innate, and the Self-range Enchantments aimed at enemies
-  (Discordia, Snaring Vines). A Ranger never appears because the value model never takes the
-  Archetype, so caster bow use is covered by `tests/sim/test_policies.py` only.
+  Enchanters now cast Confidence, Empower and Restoration, and Rangers (the Druid ranger doctrine)
+  shoot. Still never cast in play: Teleport, Summon Dead, Force Barrier, Stoneform, Reload, Innate,
+  and the Self-range Enchantments aimed at enemies (Discordia, Snaring Vines).
+- **Doctrine entries that do nothing here.** Some core entries are bought but never used, because
+  the engine doesn't model them or the usefulness score puts them at zero or below: Ambulant
+  (Battlemage, Priest; needs a map), the weapon purchases (battle doctrines; weapon types are out of
+  scope), Summon Dead (medic; needs a map), Stoneform (battle druid), Snaring Vines (elementalist),
+  Song of Power (Stopped drawback), Amplification and Silver Tongue (force multiplier; their
+  restriction outweighs the granted Meta-Magic), and Undead Minion (Necromancer; its drawbacks
+  outweigh the Raise Dead it grants). Bardic songs are magical Enchantments, so a Bard wears one at
+  a time and the engine never swaps: the skald's Song of Battle and Song of Freedom are never sung
+  once Song of Determination is on. Battle casters also keep `melee.weak_weapon_logit`, whatever
+  weapon they bought.
 - **Healers slipped slightly.** After this round's fixes Healers win 0.430 in the smoke run (0.447
   before; the intervals overlap). It is not the Archetypes (0.427 with none). Likely causes: Raise
   Dead and Phoenix Tears score lower now that their drawbacks count, and Healers spend time
