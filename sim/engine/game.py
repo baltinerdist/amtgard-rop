@@ -1226,6 +1226,10 @@ class Game:
             if choice and eff.polarity in chosen and eff.kind != "action.restrict":
                 continue
             if eff.timing not in timings:
+                if eff.timing == "after-delay" and "on-cast" in timings and fx.is_handled(ab, eff) \
+                        and ab.slug in fx.AFTER_DELAY_SECONDS:
+                    self._after_delay(ab, eff, ctx)
+                    continue
                 if eff.timing == "while-active" and ab.delivery not in fx.PASSIVE_DELIVERIES and "on-cast" in timings:
                     # a Verbal's ongoing effect: registered at cast when handled (Circle of Protection)
                     if fx.is_handled(ab, eff) and eff.kind in fx.INSTANT:
@@ -1244,6 +1248,26 @@ class Game:
                 if choice:
                     chosen.add(eff.polarity)
         return done
+
+    def _after_delay(self, ab: Ability, eff, ctx: Ctx) -> None:
+        """Shake It Off: its effect happens a fixed time after casting, if the caster is still alive.
+        Immunity only matters at the cast (N1); Cursed from an Enchantment stays (rule 7b)."""
+        caster, life = ctx.caster, ctx.caster.deaths
+
+        def fire() -> None:
+            if caster.alive and caster.deaths == life and fx.INSTANT[eff.kind](self, eff, ctx):
+                self.applied[(ab.slug, eff.kind)] += 1
+        self.at(self.t + fx.AFTER_DELAY_SECONDS[ab.slug], fire)
+
+    def enchantment_states(self, p: Player) -> set[str]:
+        """States imparted by p's worn Enchantments and Traits, which cannot be removed while worn."""
+        out = set()
+        for ab, _ in self._passive_sources(p):
+            for eff in ab.effects:
+                if eff.kind == "state.apply" and eff.timing == "while-active" \
+                        and eff.duration_type in fx.PASSIVE_STATE_DURATIONS:
+                    out.add(eff.params.get("state", ""))
+        return out
 
     # ------------------------------------------------------------------ the loop
 

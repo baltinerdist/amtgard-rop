@@ -302,6 +302,35 @@ def _ability_modify(p: Player, rules: Rules, ab: Ability, prm: dict) -> None:
             _double(u)
 
 
+def _range_change(p: Player, sheet: ClassSheet | None, prm: dict) -> None:
+    """Avatar of Nature: the player's Enchantments of level 4 and below (except Golem) become range Self."""
+    group = str(prm.get("group", ""))
+    top = int(re.search(r"Enchantments of level (\d+)", group).group(1))
+    exceptions = {s.strip().lower() for s in re.findall(r"except ([A-Z][A-Za-z' ]+)\)", group)}
+    for slug, u in sorted(p.uses.items()):
+        if u.ability.delivery != "enchantment" or u.ability.name.lower() in exceptions:
+            continue
+        levels = [min(c.levels) for c in sheet.abilities if c.slug == u.slug] if sheet else []
+        if levels and min(levels) <= top:
+            u.range = u.base_range = prm["to"]
+
+
+def _replace(p: Player, rules: Rules, prm: dict) -> None:
+    """Juggernaut: Harden is replaced by Greater Harden (Self) (ex) at the same frequency."""
+    old = rules.by_name.get(str(prm.get("ability", "")).lower())
+    new = rules.by_name.get(str(prm.get("with", "")).lower())
+    u = p.uses.pop(old, None) if old else None
+    if u is None or new is None:
+        return
+    note = str(prm.get("note", ""))
+    u.ability = rules.abilities[new]
+    if m := _PAREN_RANGE.search(note):
+        u.range = m.group(1)
+    if "(ex)" in note:
+        u.magical = False
+    p.uses[new] = u
+
+
 def _look_the_part(p: Player, rules: Rules, prm: dict) -> None:
     """An Archetype changing the Look the Part bonus (Artificer: a fourth Pinning Arrow; Raider: an
     extra use of Brutal Strike; Sniper: Mend 1/Life (ex)). Only players who earned Look the Part
@@ -375,6 +404,10 @@ def _apply_other_loadout_effects(p: Player, rules: Rules, rng: random.Random, sh
                 _ability_modify(p, rules, ab, prm)
             elif kind == "class.look-the-part" and fx.loadout_handled(eff):
                 _look_the_part(p, rules, prm)
+            elif kind == "ability.range-change" and fx.loadout_handled(eff):
+                _range_change(p, sheet, prm)
+            elif kind == "ability.replace" and fx.loadout_handled(eff):
+                _replace(p, rules, prm)
             elif kind == "economy.frequency":
                 if fx.loadout_handled(eff):
                     _economy_frequency(p, rules, rng, sheet, ab, prm)

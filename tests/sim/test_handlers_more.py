@@ -5,7 +5,7 @@ import random
 
 from sim.engine import effects as fx
 from sim.engine.loadout import _add, _apply_loadout_effects, _archetype_purchase_rules, _buy
-from sim.engine.state import INF, LOCATIONS, Cast, Player, Uses
+from sim.engine.state import INF, LOCATIONS, Cast, Ench, Player, Uses
 from sim.rules import frequency
 from tests.sim.conftest import make_game, resolve, spec
 
@@ -878,6 +878,60 @@ def test_elemental_barrage_throws_carried_balls_by_declaration(rules):
     wiz.states.pop("suppressed")
     assert g.start_cast(wiz, hold, war)
     assert wiz.barrage is None, "beginning another Magical ability ends it"
+
+
+# ---------------------------------------------------------------- range-change / replace / after-delay / transfer
+
+def test_avatar_of_nature_low_enchantments_become_self(rules):
+    p = kit(rules, "Druid", ["avatar-of-nature"],
+            bought=[("stoneskin", "1/Life", "Other"), ("golem", "1/Life", "Other")])
+    lv = {c.slug: min(c.levels) for c in rules.classes["Druid"].abilities}
+    assert lv["stoneskin"] <= 4 and p.uses["stoneskin"].range == "Self"
+    assert p.uses["golem"].range == "Other", "except Golem"
+
+
+def test_juggernaut_replaces_harden_with_greater_harden(rules):
+    p = kit(rules, "Warrior", ["juggernaut"], picked=[("harden", "(Self) 1/Life (ex)", "Self")])
+    assert "harden" not in p.uses
+    u = p.uses["greater-harden"]
+    assert (u.ability.slug, u.per, u.max, u.range, u.magical) == ("greater-harden", "life", 1, "Self", False)
+
+
+def test_shake_it_off_after_ten_seconds(rules):
+    g, war, bard, _ = trio(rules, a="Warrior", b="Bard")
+    resolve(g, bard, "awe", war)
+    war.states["stunned"] = g.t + 60
+    resolve(g, war, "shake-it-off", war, magical=False, rng="Self")
+    g.t += 9
+    g._upkeep()
+    assert war.has_state("stunned", g.t)
+    g.t += 1
+    g._upkeep()
+    assert not war.has_state("stunned", g.t) and not war.restrictions
+    assert g.applied[("shake-it-off", "state.remove")] == 1
+
+
+def test_shake_it_off_cannot_remove_an_enchantments_curse(rules):
+    g, war, wiz, _ = trio(rules, a="Warrior", b="Wizard")
+    war.states["stunned"] = g.t + 60
+    resolve(g, war, "shake-it-off", war, magical=False, rng="Self")
+    # Cursed after the cast, but by an Enchantment (Vampirism): rule 7b keeps it (ruling shake-it-off#1)
+    war.enchantments.append(Ench(rules.abilities["vampirism"], wiz.pid, True, None))
+    war.states["cursed"] = INF
+    g.t += 10
+    g._upkeep()
+    assert war.has_state("cursed", g.t) and not war.has_state("stunned", g.t)
+
+
+def test_martyr_takes_the_state_for_ten_seconds(rules):
+    g, pal, _, ally = trio(rules, a="Paladin", b="Wizard")
+    ally.states["stopped"] = g.t + 60
+    resolve(g, pal, "martyr", ally, magical=False, rng="Other")
+    assert not ally.has_state("stopped", g.t)
+    assert pal.states["stopped"] == g.t + 10 and not pal.has_state("insubstantial", g.t)
+    ally.states["insubstantial"] = g.t + 60
+    resolve(g, pal, "martyr", ally, magical=False, rng="Other")
+    assert pal.states["insubstantial"] == g.t + 10
 
 
 def test_blood_and_thunder_enchants_the_killer(rules):

@@ -30,13 +30,15 @@ class Ctx:
     ench: Ench | None = None
     location: str | None = None        # struck location for balls/arrows
     specials: frozenset = frozenset()  # special effects carried by this ball/arrow
+    removed_state: str | None = None   # the single State a state.remove just took off (Martyr)
 
 
 # on-wound: Wound Triggers (Game._wound_trigger); on-choice: Gift of Air / Song of Survival options
 # (Game._insubstantial_choice); on-strip: a strip spent to cast (Game._complete); on-removal: an
 # Enchantment is removed (Game.remove_enchantment)
+# after-delay: scheduled at cast (Game.apply_effects, AFTER_DELAY_SECONDS)
 INSTANT_TIMINGS = frozenset({"on-cast", "on-struck", "on-kill", "on-death", "on-expiry", "on-wound", "on-choice",
-                             "on-strip", "on-removal"})
+                             "on-strip", "on-removal", "after-delay"})
 PASSIVE_DELIVERIES = frozenset({"enchantment", "trait", "archetype"})
 
 HARMFUL_STATE_ORDER = ("stunned", "frozen", "stopped", "suppressed", "fragile", "insubstantial", "cursed")
@@ -82,6 +84,8 @@ def h_state_apply(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         return False
     if not p.alive and state != "cursed":
         return False
+    if ctx.ability.effects_of("state.transfer") and ctx.removed_state != state:
+        return False   # Martyr: only when the State taken on is this one (Insubstantial)
     # caused by the player themself or by an Enchantment they carry (Song of Freedom's exception)
     own = p is ctx.caster or (ctx.ench is not None and ctx.bearer is p)
     if eff.duration_type == "timed" and eff.seconds:
@@ -118,18 +122,41 @@ def h_state_remove(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     if p is None:
         return False
     what = eff.params.get("what", "")
-    except_ = set(eff.params.get("except") or ())
+    # States imparted by a worn Enchantment cannot be removed while it is worn (Enchantments rule 7)
+    except_ = set(eff.params.get("except") or ()) | g.enchantment_states(p)
     if what == "specific-state":
-        return p.states.pop(eff.params.get("state", ""), None) is not None
+        s = eff.params.get("state", "")
+        return s not in except_ and p.states.pop(s, None) is not None
     harmful = [s for s in HARMFUL_STATE_ORDER if p.has_state(s, g.t) and s not in except_]
     if what in ("all-states-and-effects", "chosen-states-and-effects", "same-source-states-and-effects"):
         for s in harmful:
             p.states.pop(s, None)
-        return bool(harmful)
+        ongoing = False
+        if what != "same-source-states-and-effects":
+            # harmful Ongoing Effects too (Awe/Terror/Insult restrictions, Planar Grounding)
+            ongoing = bool(p.restrictions or p.prevented)
+            p.restrictions.clear()
+            p.prevented.clear()
+        return bool(harmful) or ongoing
     if harmful:
         p.states.pop(harmful[0], None)
+        ctx.removed_state = harmful[0]
         return True
     return False
+
+
+def h_state_transfer(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Martyr: the caster gains the State just removed from the target, for 10 seconds (the caster
+    chooses which State to take, ruling martyr#1: the engine takes the worst by its State order)."""
+    s = ctx.removed_state
+    if s is None or not ctx.caster.alive or eff.duration_type != "timed":
+        return False
+    return g.apply_state(ctx.caster, s, g.t + (eff.seconds or 0.0))
+
+
+# Delays written in the ability text but not in the effect record (Shake It Off E1: "10 seconds after
+# casting")
+AFTER_DELAY_SECONDS = {"shake-it-off": 10.0}
 
 
 def h_wound_heal(g: "Game", eff: Effect, ctx: Ctx) -> bool:
@@ -443,6 +470,7 @@ INSTANT: dict[str, Callable] = {
     "equipment.disable": h_equipment_disable,
     "state.prevent": h_state_prevent,
     "ability.declare-instead": h_declare_instead,
+    "state.transfer": h_state_transfer,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -463,6 +491,7 @@ PASSIVE = frozenset({
 LOADOUT = frozenset({
     "ability.grant", "ability.remove", "ability.modify", "economy.frequency",
     "armor.limit", "equipment.permit", "economy.purchase-restrict", "economy.cost", "class.look-the-part",
+    "ability.range-change", "ability.replace",
 })
 
 
@@ -616,6 +645,10 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
         return prm.get("what") in _SHIELDS + ("great-weapon", "bows", "any-number-of-specialty-arrows")
     if eff.kind == "armor.limit":
         return prm.get("change") in ("set", "increase")
+    if eff.kind == "ability.range-change":
+        return prm.get("to") in ("Self", "Touch", "Other") and bool(re.search(r"Enchantments of level (\d+)", str(prm.get("group", ""))))
+    if eff.kind == "ability.replace":
+        return named("ability") and named("with")
     if eff.kind == "class.look-the-part":
         return prm.get("how") in ("extra-use-of", "replaced-by") and named("ability")
     if eff.kind == "economy.purchase-restrict":

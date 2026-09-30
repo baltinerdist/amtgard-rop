@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **394 of 445** (89%)
-- Not handled: **4** no-op, **23** needs-map, **24** out-of-scope
-- Abilities fully handled: **155**, partly: **17**, not at all: **11**, no effects recorded: 0 (of 183)
+- Effect instances handled: **398 of 445** (89%)
+- Not handled: **0** no-op, **23** needs-map, **24** out-of-scope
+- Abilities fully handled: **159**, partly: **15**, not at all: **9**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -24,7 +24,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `defense.immunity` | 13 | 14 | 14 | passive 14 |
 | `ability.remove` | 11 | 16 | 16 | loadout 16 |
 | `equipment.permit` | 10 | 18 | 8 | loadout 8, out-of-scope 10 |
-| `state.remove` | 10 | 13 | 11 | instant 11, needs-map 1, no-op 1 |
+| `state.remove` | 10 | 13 | 12 | instant 12, needs-map 1 |
 | `wound.heal` | 10 | 10 | 10 | instant 9, passive 1 |
 | `death.cause` | 8 | 8 | 8 | instant 8 |
 | `defense.unaffected` | 8 | 11 | 9 | instant 3, needs-map 2, passive 6 |
@@ -61,8 +61,8 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `state.prevent` | 2 | 2 | 2 | instant 1, passive 1 |
 | `team.respawn-point` | 2 | 2 | 0 | needs-map 2 |
 | `ability.charge-faster` | 1 | 1 | 1 | passive 1 |
-| `ability.range-change` | 1 | 1 | 0 | no-op 1 |
-| `ability.replace` | 1 | 1 | 0 | no-op 1 |
+| `ability.range-change` | 1 | 1 | 1 | loadout 1 |
+| `ability.replace` | 1 | 1 | 1 | loadout 1 |
 | `armor.damage` | 1 | 1 | 1 | instant 1 |
 | `armor.destroy` | 1 | 1 | 1 | instant 1 |
 | `armor.protect` | 1 | 1 | 1 | passive 1 |
@@ -74,7 +74,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `life.set-death-location` | 1 | 1 | 0 | needs-map 1 |
 | `move.to-caster` | 1 | 1 | 1 | instant 1 |
 | `move.to-location` | 1 | 2 | 2 | instant 2 |
-| `state.transfer` | 1 | 1 | 0 | no-op 1 |
+| `state.transfer` | 1 | 1 | 1 | instant 1 |
 | `weapon.ignore-protections` | 1 | 2 | 2 | passive 2 |
 
 ## Not modeled in Phase 1
@@ -103,10 +103,10 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `combat-caster`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `missile-block`, `sanctuary`, `shake-it-off`, `song-of-visit`, `trickery`
+`ambulant`, `combat-caster`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `missile-block`, `sanctuary`, `song-of-visit`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`blink` (1/3, 2u), `circle-of-protection` (4/6, 2u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (5/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mystic` (4/5, 1u), `reload` (1/3, 2u), `rogue` (2/3, 1u), `summon-dead` (1/2, 1u), `undead-minion` (5/7, 2u)
+`blink` (1/3, 2u), `circle-of-protection` (4/6, 2u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (5/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `mystic` (4/5, 1u), `reload` (1/3, 2u), `rogue` (2/3, 1u), `summon-dead` (1/2, 1u), `undead-minion` (5/7, 2u)
