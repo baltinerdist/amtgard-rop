@@ -2,18 +2,26 @@
 and not already incanting. Melee targeting itself happens in Game._engage.
 
 Roles (from sim/engine/loadout.py ROLE_BY_CLASS):
-  fighter - closes to melee; sometimes uses an offensive ability first; heals self when free
-  caster  - stays back; offensive abilities first, then support
-  support - stays back; revives, heals, enchants allies, then offense
+  fighter - closes to melee; buffs self (Rage); sometimes uses an offensive ability first; heals,
+            cleanses and mends when free
+  caster  - stays back; buffs self (Elemental Barrage), offensive abilities, then support; shoots
+            if they carry a bow (Ranger)
+  support - stays back; revives, heals, cleanses States, enchants and mends allies, then offense
   archer  - stays back; shoots (Specialty Arrows first), fights with a short weapon if engaged
+Anyone attacked in melee who is not a fighter, or is already wounded, uses an escape (Blink) if
+they have one.
+
+Abilities are recognised by what their effects do, not by name (_kind_of): a self-buff, an
+escape, a cleanse (removes a harmful State), a repair (armor or equipment).
 """
 from __future__ import annotations
 
 import math
 from typing import TYPE_CHECKING
 
+from sim.engine.effects import is_handled
 from sim.engine.state import Player, Uses
-from sim.policies.value import benefit, drawback_cost
+from sim.policies.value import benefit, drawback_cost, is_drawback
 
 if TYPE_CHECKING:
     from sim.engine.game import Game
@@ -142,7 +150,7 @@ def _try_heal(g: "Game", p: Player) -> bool:
     if not hurt:
         return False
     for u in (u for u in _usable(g, p) if _is_heal(u)):
-        able = [q for q in hurt if _can_receive(g, u, p, q)]
+        able = [q for q in hurt if _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)]
         if u.range == "Self":
             if p in able and g.start_cast(p, u, p):
                 return True
@@ -230,20 +238,166 @@ def _try_shoot(g: "Game", p: Player) -> bool:
             target = _enemy_for(g, p, u)
             if target is not None and g.start_cast(p, u, target):
                 return True
-    foes = [q for q in g.enemies(p) if g.targetable(q)]
+    if not g.can_fire_normal_arrows(p) or not g.weapon_usable(p):
+        return False
+    foes = [q for q in g.enemies(p) if g.targetable(q) and g.can_attack(p, q)]
     if foes:
         g.shoot(p, g.rng.choice(foes))
         return True
     return False
 
 
+# ---------------------------------------------------------------- abilities by what they do
+
+_BUFF_KINDS = {"special-effect.grant", "defense.unaffected", "ability.declare-instead"}
+_REMOVABLE = ("stunned", "frozen", "stopped", "suppressed", "fragile", "cursed")
+_KIND_CACHE: dict[str, str] = {}
+
+
+def _kind_of(ab) -> str:
+    """'escape', 'buff', 'cleanse', 'repair' or '' from the ability's handled, non-drawback effects."""
+    k = _KIND_CACHE.get(ab.slug)
+    if k is not None:
+        return k
+    effs = [e for e in ab.effects if is_handled(ab, e) and not is_drawback(ab, e)]
+    kinds = {e.kind for e in effs}
+    self_only = ab.range == "Self"
+    if self_only and any(e.kind == "state.apply" and e.subject == "caster"
+                         and e.params.get("state") == "insubstantial" for e in effs):
+        k = "escape"
+    elif "state.remove" in kinds and ab.delivery == "verbal" and ab.beneficiary != "enemy" \
+            and not kinds & {"life.revive", "wound.heal"} \
+            and not any(e.polarity == "harm" and e.subject in ("target", "struck-player") for e in ab.effects):
+        k = "cleanse"
+    elif self_only and ab.delivery == "verbal" and effs and kinds <= _BUFF_KINDS \
+            and all(e.subject == "caster" for e in effs):
+        k = "buff"
+    elif kinds & {"armor.repair", "equipment.repair"} and not kinds & {"life.revive", "wound.heal"}:
+        k = "repair"
+    else:
+        k = ""
+    _KIND_CACHE[ab.slug] = k
+    return k
+
+
+def _of_kind(g: "Game", p: Player, kind: str) -> list[Uses]:
+    return [u for u in p.uses.values() if u.available() and _kind_of(u.ability) == kind
+            and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties]
+
+
+def _loaded_balls(p: Player) -> int:
+    return sum(u.left or 0 for u in p.uses.values() if u.ability.delivery == "magic-ball" and u.unit)
+
+
+def _try_self_buff(g: "Game", p: Player) -> bool:
+    """Rage before a fight, Elemental Barrage with balls in hand: a Self buff not already on."""
+    if _lull(g, p):
+        return False
+    for u in _of_kind(g, p, "buff"):
+        ab = u.ability
+        if ab.effects_of("ability.declare-instead"):
+            if p.barrage is not None or _loaded_balls(p) < 2 or _engaged(g, p):
+                continue
+        elif any(b.slug == u.slug for b in g._buffs(p)):
+            continue
+        if g.start_cast(p, u, p):
+            return True
+    return False
+
+
+def _try_escape(g: "Game", p: Player) -> bool:
+    """Blink out of a fight you are losing: attacked, and either not a fighter or already wounded."""
+    if not g.attackers_of(p) or (p.role == "fighter" and not p.wounds):
+        return False
+    return any(g.start_cast(p, u, p) for u in _of_kind(g, p, "escape"))
+
+
+def _afflicted(g: "Game", q: Player) -> list[str]:
+    """Harmful States on q that a cleanse could lift (not those a worn Enchantment imposes)."""
+    held = [s for s in _REMOVABLE if q.has_state(s, g.t)]
+    return [s for s in held if s not in g.enchantment_states(q)] if held else []
+
+
+def _is_cleanse(u: Uses) -> bool:
+    return _kind_of(u.ability) == "cleanse"
+
+
+def _try_cleanse(g: "Game", p: Player) -> bool:
+    """Lift a harmful State from yourself or from an ally out of melee whom no one else is helping.
+    Martyr moves the State onto the caster, so only a non-fighter uses it, and only for a fighter
+    or archer."""
+    engaged = _engaged(g, p)
+    options = sorted(_of_kind(g, p, "cleanse"),
+                     key=lambda u: (drawback_cost(u.ability, p.role), u.ability.cast_seconds(g.words_per_second)))
+    for u in options:
+        martyr = drawback_cost(u.ability, p.role) > 0
+        if u.range == "Self":
+            pool = [p]
+        elif engaged:
+            continue
+        else:
+            pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and (q is p or not _engaged(g, q))
+                    and not _being_helped(g, q, p, _is_cleanse)]
+            if u.range == "Other" or martyr:
+                pool = [q for q in pool if q is not p]
+        if martyr:
+            if p.role in ("fighter", "archer"):
+                continue
+            pool = [q for q in pool if q.role in ("fighter", "archer")]
+        pool = [q for q in pool if _afflicted(g, q) and _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
+                and g.check_requirements(u.ability, p, q, start=True) is None]
+        if not pool:
+            continue
+        q = p if p in pool else g.rng.choice(pool)
+        if q is not p and not _in_reach(g, u):
+            continue
+        if g.start_cast(p, u, q):
+            return True
+    return False
+
+
+def _needs_repair(q: Player) -> bool:
+    return (not q.weapon_ok or q.shield_hits > 0
+            or (q.armor_max > 0 and any(v < q.armor_max for v in q.armor.values())))
+
+
+def _try_repair(g: "Game", p: Player) -> bool:
+    """Mend armor or broken equipment: your own, or an ally's out of melee."""
+    if _engaged(g, p):
+        return False
+    for u in _of_kind(g, p, "repair"):
+        pool = [p] if u.range == "Self" else [q for q in g.allies(p) if q.alive and q.on_field(g.t)
+                                             and (q is p or not _engaged(g, q))]
+        if u.range == "Other":
+            pool = [q for q in pool if q is not p]
+        pool = [q for q in pool if _needs_repair(q) and g.can_cast_at(p, q, u) and _can_receive(g, u, p, q)
+                and not _being_helped(g, q, p, lambda v: _kind_of(v.ability) == "repair")]
+        if not pool:
+            continue
+        q = p if p in pool else g.rng.choice(pool)
+        if q is not p and not _in_reach(g, u):
+            continue
+        if g.start_cast(p, u, q):
+            return True
+    return False
+
+
+def _in_reach(g: "Game", u: Uses) -> bool:
+    if u.range in ("Touch", "Other"):
+        return g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch")
+    return _in_range(g, u)
+
+
 def keep_casting(g: "Game", p: Player) -> bool:
     """Asked each tick of a player mid-incantation or mid-Charge. An attacked player stops
-    talking and defends unless the incantation finishes this tick: standing still while being
-    hit only ends in a wound. (Before this hook the engine never asked, so casters kept
-    incanting under attack and never struck back.)"""
+    talking and defends unless the incantation finishes this tick, or it is the escape they are
+    casting because they are attacked: standing still while being hit only ends in a wound.
+    (Before this hook the engine never asked, so casters kept incanting under attack and never
+    struck back.)"""
     c = p.casting
     if c is None or not g.attackers_of(p):
+        return True
+    if c.kind == "cast" and c.uses is not None and _kind_of(c.uses.ability) == "escape":
         return True
     return c.remaining <= g.dt or not g.rules.a("policy.abandon_cast_when_attacked")
 
@@ -253,30 +407,37 @@ def decide(g: "Game", p: Player) -> None:
     if p.at_base_until > t:
         _try_enchant(g, p, at_base=True)
         return
-    if p.has_state("stopped", t) and p.role != "fighter":
-        pass  # Stopped players can still cast and fight; nothing special in Phase 1
+    if _try_escape(g, p):
+        return
     if p.role == "support":
         if g.rules.a("policy.revive_priority") and _try_revive(g, p):
             return
-        if _try_heal(g, p) or (g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False)):
-            return
-        if _try_offense(g, p) or _try_charge(g, p):
-            return
-    elif p.role == "caster":
-        if _try_offense(g, p) or _try_revive(g, p) or _try_heal(g, p):
+        if _try_heal(g, p) or _try_cleanse(g, p):
             return
         if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
+        if _try_repair(g, p) or _try_offense(g, p) or _try_shoot(g, p) or _try_charge(g, p):
+            return
+    elif p.role == "caster":
+        if _try_self_buff(g, p) or _try_offense(g, p) or _try_revive(g, p) or _try_heal(g, p) \
+                or _try_cleanse(g, p):
+            return
+        if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
+            return
+        if _try_repair(g, p) or _try_shoot(g, p):
+            return
         _try_charge(g, p)
     elif p.role == "archer":
-        if _try_shoot(g, p) or _try_heal(g, p):
+        if _try_shoot(g, p) or _try_heal(g, p) or _try_cleanse(g, p):
             return
         _try_charge(g, p)
     else:
+        if _try_self_buff(g, p):
+            return
         if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
             if _try_offense(g, p):
                 return
-        if p.target is None and (_try_heal(g, p) or _try_revive(g, p)):
+        if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_cleanse(g, p) or _try_repair(g, p)):
             return
         if p.target is None:
             _try_charge(g, p)
