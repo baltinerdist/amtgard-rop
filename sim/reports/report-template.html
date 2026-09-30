@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ability Cut Report</title>
+<style>
+:root {
+  --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dedbd3; --panel: #f2f0ea;
+  --accent: #2f5d8a; --good: #2e7d4f; --warn: #a45a12; --bad: #a33a2f; --bar: #8fb0d0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17181a; --fg: #e7e5df; --muted: #9c9a94; --line: #34363a; --panel: #212326;
+    --accent: #8ab4e0; --good: #6cc494; --warn: #e0a35e; --bad: #e5847a; --bar: #4a6f96;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17181a; --fg: #e7e5df; --muted: #9c9a94; --line: #34363a; --panel: #212326;
+  --accent: #8ab4e0; --good: #6cc494; --warn: #e0a35e; --bad: #e5847a; --bar: #4a6f96;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+h2 { font-size: 1.2rem; margin: 36px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { max-width: 75ch; }
+.muted { color: var(--muted); }
+.small { font-size: 0.85rem; }
+.note { background: var(--panel); border-left: 3px solid var(--warn); padding: 10px 14px; margin: 12px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin: 12px 0; }
+.stat { background: var(--panel); padding: 10px 12px; border-radius: 6px; }
+.stat b { display: block; font-size: 1.25rem; }
+.stat span { color: var(--muted); font-size: 0.8rem; }
+.scroll { overflow-x: auto; margin: 8px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 4px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--bg); font-weight: 600; cursor: default; }
+th[data-k] { cursor: pointer; }
+td.n, th.n { text-align: right; }
+td.wrap { white-space: normal; min-width: 240px; }
+tr.chosen td { background: color-mix(in srgb, var(--good) 12%, transparent); }
+.flag { color: var(--warn); font-size: 0.8rem; }
+.pos { color: var(--bad); } .neg { color: var(--good); }
+.ci { position: relative; height: 12px; width: 160px; background: var(--panel); border-radius: 2px; }
+.ci i { position: absolute; top: 5px; height: 2px; background: var(--muted); }
+.ci b { position: absolute; top: 1px; width: 3px; height: 10px; background: var(--accent); }
+.ci u { position: absolute; top: 0; height: 12px; width: 1px; background: var(--fg); opacity: .4; text-decoration: none; }
+.ci s { position: absolute; top: 3px; height: 6px; background: var(--bar); opacity: .7; }
+details { margin: 8px 0; }
+summary { cursor: pointer; color: var(--accent); }
+pre { background: var(--panel); padding: 10px; overflow-x: auto; font-size: 0.8rem; white-space: pre-wrap; }
+code { font-size: 0.85em; }
+.pill { display: inline-block; padding: 0 6px; border-radius: 8px; font-size: 0.75rem; background: var(--panel); }
+.yes { color: var(--good); } .no { color: var(--muted); } .bad { color: var(--bad); }
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const DATA = __DATA__;
+const C = DATA.cut, S = DATA.sensitivity, T = DATA.titles;
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const f = (x, d = 3) => x == null ? "–" : Number(x).toFixed(d);
+const sg = (x, d = 3) => x == null ? "–" : (x >= 0 ? "+" : "") + Number(x).toFixed(d);
+const pct = (x, d = 1) => x == null ? "–" : (100 * x).toFixed(d) + "%";
+const name = (s) => esc(T[s] || s);
+const mins = (s) => s < 90 ? `${s.toFixed(0)} s` : s < 5400 ? `${(s / 60).toFixed(1)} min` : `${(s / 3600).toFixed(1)} h`;
+const signCls = (x) => x == null ? "" : x > 0 ? "pos" : x < 0 ? "neg" : "";
+
+function ciBar(est, lo, hi, min, max, ref) {
+  const x = (v) => Math.max(0, Math.min(100, 100 * (v - min) / (max - min)));
+  if (est == null) return "";
+  let h = `<div class="ci">`;
+  if (ref != null) h += `<u style="left:${x(ref)}%"></u>`;
+  if (lo != null && hi != null) h += `<i style="left:${x(lo)}%;width:${x(hi) - x(lo)}%"></i>`;
+  return h + `<b style="left:calc(${x(est)}% - 1px)"></b></div>`;
+}
+
+// sortable tables: header cells with data-k sort by the row's value in that column
+function table(cols, rows, opts = {}) {
+  const id = "t" + Math.random().toString(36).slice(2);
+  const head = cols.map((c, i) => `<th class="${c.n ? "n" : ""}" ${c.sort === false ? "" : `data-k="${i}"`} title="${esc(c.t || "")}">${c.h}</th>`).join("");
+  const body = rows.map((r) => `<tr class="${opts.rowClass ? opts.rowClass(r) : ""}">` +
+    cols.map((c) => `<td class="${c.n ? "n" : ""} ${c.wrap ? "wrap" : ""}" data-v="${esc(c.v ? c.v(r) : "")}">${c.f(r)}</td>`).join("") + "</tr>").join("");
+  return `<div class="scroll"><table id="${id}"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+document.addEventListener("click", (e) => {
+  const th = e.target.closest("th[data-k]"); if (!th) return;
+  const tb = th.closest("table").tBodies[0], k = +th.dataset.k, dir = th.dataset.dir === "a" ? "d" : "a";
+  th.dataset.dir = dir;
+  const val = (tr) => { const v = tr.cells[k].dataset.v; const n = parseFloat(v); return isNaN(n) ? v : n; };
+  [...tb.rows].sort((a, b) => { const x = val(a), y = val(b); return (x > y ? 1 : x < y ? -1 : 0) * (dir === "a" ? 1 : -1); })
+    .forEach((tr) => tb.appendChild(tr));
+});
+
+const M = C.meta, B = C.baseline, sel = C.selection, comb = C.combined;
+const chosenSet = new Set(sel.chosen.map((it) => it.kind === "merge" ? it.remove + ">" + it.keep : it.remove));
+let h = "";
+
+// ---------------------------------------------------------------- header / run metadata
+h += `<h1>Which abilities could be cut?</h1>
+<p class="muted">Amtgard battlegame simulator: abilities ranked by how little removing them changes play, per point of rules complexity.
+Built ${esc(M.created)} from commit <code>${esc(M.commit || "?")}</code>.</p>
+<div class="grid">
+  <div class="stat"><b>${M.games}</b><span>games per run (seeds ${M.seeds[0]}–${M.seeds[1]})</span></div>
+  <div class="stat"><b>${Object.keys(C.singles).length}</b><span>abilities ablated one at a time${M.limited ? " (sample)" : ""}</span></div>
+  <div class="stat"><b>${C.merges.filter((m) => m.impact).length}</b><span>merges simulated</span></div>
+  <div class="stat"><b>${mins(M.wall_seconds)}</b><span>wall time on ${M.workers} workers</span></div>
+  <div class="stat"><b>${pct(M.target, 0)} by ${esc(M.by)}</b><span>cut target</span></div>
+  <div class="stat"><b>${mins(M.full_run_estimate.seconds_at_this_scale)}</b><span>estimated full run at ${M.games} games (${mins(M.full_run_estimate.seconds_at_1000_games)} at 1000)</span></div>
+</div>
+<p class="small muted">Config <code>${esc(M.config_name)}</code> ${esc(JSON.stringify(M.config))}.
+Assumption overrides: ${Object.keys(M.assume || {}).length ? "<code>" + esc(JSON.stringify(M.assume)) + "</code>" : "none"}.
+Protected: ${M.protect.length ? M.protect.map(name).join(", ") : "none"}. Impact metric: <code>${esc(M.metric)}</code>.
+${M.limited ? "<b>Limited run:</b> the target share is taken over the evaluated abilities only." : ""}</p>`;
+
+// ---------------------------------------------------------------- coverage caveat
+const st = C.coverage.ability_status, cnt = {};
+Object.values(st).forEach((s) => cnt[s] = (cnt[s] || 0) + 1);
+h += `<h2>Coverage caveat</h2>
+<div class="note">The simulator can only measure what it executes. An ability whose effects the engine does not run
+would look free to cut, so those abilities are <b>left out of the ranking</b> rather than ranked as harmless. Everything
+here also rests on scripted player behaviour and on the assumptions in <code>sim/data/assumptions.json</code>, and there is no map.
+Treat the ranking as a shortlist to discuss, not a verdict.</div>
+<div class="grid">
+  <div class="stat"><b>${C.coverage.statuses.full} / ${C.coverage.statuses.partial} / ${C.coverage.statuses.none}</b><span>abilities fully / partly / not executed</span></div>
+  <div class="stat"><b>${pct(B.noop_rate)}</b><span>no-op rate: effect applications the engine skipped (${B.effects_noop} of ${B.effects_noop + B.effects_applied})</span></div>
+  <div class="stat"><b>${cnt.candidate || 0}</b><span>measurable candidates</span></div>
+  <div class="stat"><b>${cnt.unmodeled || 0}</b><span>unmodeled (not ranked)</span></div>
+  <div class="stat"><b>${cnt["not-held"] || 0}</b><span>modeled but held by nobody in the baseline</span></div>
+</div>
+<p class="small muted">Most skipped effects in the baseline: ${B.top_noop_abilities.map(([s, n]) => `${name(s)} (${n})`).join(", ") || "none"}.
+Baseline: ${B.games} games, mean length ${f(B.mean_seconds, 0)} s, ${B.draws} draws, ${f(B.casts_per_game, 1)} casts per game.</p>`;
+
+// ---------------------------------------------------------------- class win rates
+const wr = B.class_winrates;
+h += `<h2>Class win rates (baseline)</h2>
+<p class="small muted">The dark bar is the <b>game-clustered</b> 95% interval: players in the same game share an outcome, so each game is one cluster.
+The pale band is the naive interval that treats players as independent. The design effect is the clustered variance divided by the naive one.
+It can be below 1: when a class has players on both teams of a game, one wins and one loses, so their outcomes are negatively correlated. Draws are left out.</p>`;
+h += table([
+  {h: "Class", f: (r) => esc(r.cls), v: (r) => r.cls},
+  {h: "Win rate", n: 1, f: (r) => pct(r.win_rate), v: (r) => r.win_rate},
+  {h: "95% CI (clustered)", f: (r) => `${pct(r.ci_low)} – ${pct(r.ci_high)}`, v: (r) => r.ci_low},
+  {h: "", sort: false, f: (r) => ciBar(r.win_rate, r.ci_low, r.ci_high, 0.2, 0.8, 0.5).replace('<div class="ci">', `<div class="ci"><s style="left:${100 * (r.naive_low - 0.2) / 0.6}%;width:${100 * (r.naive_high - r.naive_low) / 0.6}%"></s>`)},
+  {h: "Naive CI", f: (r) => `${pct(r.naive_low)} – ${pct(r.naive_high)}`, v: (r) => r.naive_low},
+  {h: "Design effect", n: 1, f: (r) => f(r.deff, 2), v: (r) => r.deff},
+  {h: "Player-games", n: 1, f: (r) => r.n, v: (r) => r.n},
+  {h: "Games", n: 1, f: (r) => r.games, v: (r) => r.games},
+], wr);
+
+// ---------------------------------------------------------------- ranking
+const lowPresence = (s) => s.games_present < Math.max(30, 0.1 * M.games);
+h += `<h2>Cut ranking</h2>
+<p>Each ability was removed from every loadout and the same seeds replayed. <b>Impact</b> is the bias-corrected gameplay change
+distance (0 = indistinguishable from no change at this sample size), and <b>ratio</b> is impact per point of complexity. Lower ratio = better cut.
+Rows in green are in the proposed cut set. Click a column header to sort.</p>`;
+h += table([
+  {h: "#", n: 1, f: (r) => r.rank, v: (r) => r.rank},
+  {h: "Ability", f: (r) => `${name(r.remove)}${lowPresence(C.singles[r.remove]) ? ' <span class="flag" title="held in few games: impact is small partly because it is rare">rare</span>' : ""}`, v: (r) => r.remove},
+  {h: "Impact", n: 1, t: "distance_adj", f: (r) => f(r.impact), v: (r) => r.impact},
+  {h: "D [95% CI]", t: "raw distance with paired bootstrap interval", f: (r) => { const s = C.singles[r.remove]; return `${f(s.distance)} [${f(s.distance_lo)}, ${f(s.distance_hi)}]`; }, v: (r) => C.singles[r.remove].distance},
+  {h: "Noise", n: 1, t: "D expected from sampling noise alone", f: (r) => f(C.singles[r.remove].noise), v: (r) => C.singles[r.remove].noise},
+  {h: "Complexity", n: 1, f: (r) => f(r.saved, 1), v: (r) => r.saved},
+  {h: "Ratio", n: 1, f: (r) => f(r.ratio, 4), v: (r) => r.ratio},
+  {h: "Holder win Δ [95% CI]", t: "paired by seed", f: (r) => { const s = C.singles[r.remove]; return `<span class="${signCls(s.holder_win_delta)}">${sg(s.holder_win_delta)}</span> [${sg(s.holder_ci_low)}, ${sg(s.holder_ci_high)}]`; }, v: (r) => C.singles[r.remove].holder_win_delta},
+  {h: "Games held", n: 1, f: (r) => C.singles[r.remove].games_present, v: (r) => C.singles[r.remove].games_present},
+  {h: "Casts/game", n: 1, f: (r) => f(C.singles[r.remove].casts_per_game_present, 2), v: (r) => C.singles[r.remove].casts_per_game_present},
+  ...["duration", "time_dead", "kills", "class_spread", "use_mix"].map((k) => ({h: k.replace("_", " "), n: 1, t: `component ${k} (standardised change)`,
+    f: (r) => `<span class="${signCls(C.singles[r.remove].measures[k].component)}">${sg(C.singles[r.remove].measures[k].component, 2)}</span>`,
+    v: (r) => C.singles[r.remove].measures[k].component})),
+], C.ranking, {rowClass: (r) => chosenSet.has(r.remove) ? "chosen" : ""});
+
+h += `<details><summary>Complexity components of the ranked abilities (points)</summary>`;
+const ckeys = Object.keys(DATA.definitions.complexity_weights);
+h += table([{h: "Ability", f: (r) => name(r.remove), v: (r) => r.remove},
+  {h: "Total", n: 1, f: (r) => f(C.complexity[r.remove].score, 2), v: (r) => C.complexity[r.remove].score},
+  ...ckeys.map((k) => ({h: k.replace("_", " "), n: 1, t: `points (count × ${DATA.definitions.complexity_weights[k]})`,
+    f: (r) => `${f(C.complexity[r.remove].points[k], 2)} <span class="muted small">(${C.complexity[r.remove].counts[k]})</span>`,
+    v: (r) => C.complexity[r.remove].points[k]}))], C.ranking);
+h += `</details>`;
+
+// ---------------------------------------------------------------- merges
+const mg = C.merges.filter((m) => m.impact);
+if (mg.length) {
+  h += `<h3>Merge proposals</h3>
+<p class="small muted">From the similarity pairs (metadata/SIMILARITY.md). A merge replaces the first ability with the second for everyone
+who held it (the second is the one more classes and levels already carry). It saves the removed ability's own text, not its class-table slots.</p>`;
+  h += table([
+    {h: "Remove", f: (m) => name(m.remove), v: (m) => m.remove},
+    {h: "Keep", f: (m) => name(m.keep), v: (m) => m.keep},
+    {h: "Relation", f: (m) => `<span class="pill">${esc(m.relation)}</span>`, v: (m) => m.relation},
+    {h: "Impact", n: 1, f: (m) => f(m.impact[M.metric]), v: (m) => m.impact[M.metric]},
+    {h: "Saves", n: 1, f: (m) => f(m.saved, 1), v: (m) => m.saved},
+    {h: "Holder win Δ", n: 1, f: (m) => sg(m.impact.holder_win_delta), v: (m) => m.impact.holder_win_delta},
+    {h: "Differences", wrap: 1, f: (m) => esc(m.differences), v: (m) => m.differences},
+  ], mg, {rowClass: (m) => chosenSet.has(m.remove + ">" + m.keep) ? "chosen" : ""});
+}
+
+// ---------------------------------------------------------------- proposed cut set
+h += `<h2>Proposed cut set</h2>
+<p>Greedy selection <b>by ${esc(sel.by)}</b>: ${sel.by === "count" ? "smallest impact first" : "smallest impact per point saved first"}, until
+${sel.by === "count" ? `${sel.need_count} of ${sel.universe_count} abilities are removed` : `${f(sel.need_complexity, 1)} of ${f(sel.universe_complexity, 1)} complexity points are saved`}.
+Target <b class="${sel.reached ? "yes" : "bad"}">${sel.reached ? "reached" : "not reached"}</b>:
+removed ${sel.removed_count} of ${sel.universe_count} (${pct(sel.removed_count / sel.universe_count, 0)}), saving ${f(sel.saved, 1)} of ${f(sel.universe_complexity, 1)} points (${pct(sel.saved / sel.universe_complexity, 0)}).</p>`;
+h += table([
+  {h: "Change", f: (it) => it.kind === "merge" ? `${name(it.remove)} → ${name(it.keep)} <span class="pill">merge</span>` : `${name(it.remove)} <span class="pill">cut</span>`, v: (it) => it.remove},
+  {h: "Impact alone", n: 1, f: (it) => f(it.impact), v: (it) => it.impact},
+  {h: "Complexity saved", n: 1, f: (it) => f(it.saved, 1), v: (it) => it.saved},
+], sel.chosen);
+if (comb) {
+  const ms = comb.measures, keys = Object.keys(ms);
+  h += `<h3>All together (re-simulated)</h3>
+<p>Removing the whole set at once: gameplay change distance <b>${f(comb.distance)}</b> [${f(comb.distance_lo)}, ${f(comb.distance_hi)}],
+bias-corrected <b>${f(comb.distance_adj)}</b> (noise ${f(comb.noise)}). The single-ablation impacts sum to ${f(comb.additive_sum)}
+(root-sum-square ${f(comb.additive_rss)}). ${comb.distance_adj > 1.5 * comb.additive_sum + 0.02 ? "<b>The set interacts:</b> together it changes play more than the parts suggest." : comb.distance_adj < 0.67 * comb.additive_rss ? "Together it changes play less than the parts suggest (they overlap or cancel)." : "Roughly in line with the singles."}
+Holder-team win change ${sg(comb.holder_win_delta)} [${sg(comb.holder_ci_low)}, ${sg(comb.holder_ci_high)}] over ${comb.games_with_holder} games.</p>`;
+  h += table([
+    {h: "Measure", f: (k) => esc(k.replace("_", " ")), v: (k) => k},
+    {h: "Baseline", n: 1, f: (k) => f(ms[k].base), v: (k) => ms[k].base},
+    {h: "Without the set", n: 1, f: (k) => f(ms[k].variant), v: (k) => ms[k].variant},
+    {h: "Change [95% CI]", f: (k) => `<span class="${signCls(ms[k].delta)}">${sg(ms[k].delta)}</span> [${sg(ms[k].lo)}, ${sg(ms[k].hi)}]`, v: (k) => ms[k].delta},
+    {h: "Component", n: 1, f: (k) => sg(ms[k].component, 2), v: (k) => ms[k].component},
+  ], keys);
+}
+
+// ---------------------------------------------------------------- sensitivity
+h += `<h2>Sensitivity</h2>`;
+if (!S) {
+  h += `<p class="muted">No sensitivity run found. Run <code>python -m sim.analyze.sensitivity</code> and rebuild.</p>`;
+} else if (S.analysis === "cut") {
+  const ss = S.summary;
+  h += `<p>The same abilities and merges were re-evaluated with the assumptions below changed (${S.factorial ? "every combination" : "one at a time"},
+${S.games} games per run, built ${esc(S.created)}). <b>${ss.chosen_at_every_setting} of ${ss.baseline_chosen}</b> chosen cuts or merges are chosen at every setting.
+The lowest rank correlation of impacts with the baseline setting is ${f(ss.min_spearman, 2)}, and the smallest overlap of chosen sets is ${f(ss.min_jaccard_chosen, 2)}.</p>`;
+  h += table([
+    {h: "Setting", f: (r) => `<code>${esc(r.label)}</code>`, v: (r) => r.label},
+    {h: "Spearman ρ", n: 1, t: "rank correlation of impacts with the baseline setting", f: (r) => f(r.spearman_vs_baseline, 2), v: (r) => r.spearman_vs_baseline},
+    {h: "Overlap of chosen set", n: 1, t: "Jaccard", f: (r) => f(r.jaccard_chosen, 2), v: (r) => r.jaccard_chosen},
+    {h: "Overlap of bottom share", n: 1, f: (r) => f(r.jaccard_bottom, 2), v: (r) => r.jaccard_bottom},
+    {h: "Chosen", n: 1, f: (r) => r.chosen.length, v: (r) => r.chosen.length},
+    {h: "Target reached", f: (r) => r.reached ? "yes" : "no", v: (r) => r.reached},
+  ], S.settings);
+  const ab = Object.entries(S.abilities).sort((a, b) => b[1].share_in_cut - a[1].share_in_cut || a[0].localeCompare(b[0]));
+  h += `<details open><summary>Per ability: picked at each setting</summary>`;
+  h += table([
+    {h: "Ability / merge", f: ([k, a]) => a.merge ? k.split(">").map(name).join(" → ") : name(k), v: ([k]) => k},
+    {h: "Picked at", n: 1, f: ([k, a]) => pct(a.share_in_cut, 0), v: ([k, a]) => a.share_in_cut},
+    ...S.settings.map((r, i) => ({h: `<span title="${esc(r.label)}">${i === 0 ? "base" : "s" + i}</span>`, sort: false,
+      f: ([k, a]) => `${a.in_cut[i] ? '<b class="yes">cut</b>' : a.in_bottom[i] ? '<span class="muted">low</span>' : '<span class="no">·</span>'}${a.ranks[i] ? ` <span class="muted small">#${a.ranks[i]}</span>` : ""}`})),
+  ], ab);
+  h += `<p class="small muted">cut = picked by the greedy selection; low = in the bottom ${pct(M.target, 0)} of the ranking but not picked; #n = rank.
+Settings: ${S.settings.map((r, i) => `${i === 0 ? "base" : "s" + i} = <code>${esc(r.label)}</code>`).join("; ")}.</p></details>`;
+} else {
+  h += `<p>Class win rates re-run over ${S.settings.length} assumption settings (${S.games} games each). Best class stable: <b>${S.summary.best_stable}</b>;
+worst class stable: <b>${S.summary.worst_stable}</b>; lowest Spearman ρ with the baseline ordering ${f(S.summary.min_spearman, 2)}.</p>`;
+  h += table([
+    {h: "Setting", f: (r) => `<code>${esc(r.label)}</code>`, v: (r) => r.label},
+    {h: "Best", f: (r) => esc(r.best), v: (r) => r.best},
+    {h: "Worst", f: (r) => esc(r.worst), v: (r) => r.worst},
+    {h: "Spearman ρ", n: 1, f: (r) => f(r.spearman_vs_baseline, 2), v: (r) => r.spearman_vs_baseline},
+  ], S.settings);
+}
+
+// ---------------------------------------------------------------- unmodeled / definitions
+const unm = Object.entries(st).filter(([, s]) => s === "unmodeled" || s === "not-held").map(([k, s]) => [k, s])
+  .sort((a, b) => C.complexity[b[0]].score - C.complexity[a[0]].score);
+h += `<h2>Not measured</h2>
+<p class="small muted">These abilities are not ranked: the engine does not execute their effects (unmodeled), or no baseline player held them.
+Their complexity is shown so they can be judged by hand.</p>`;
+h += `<details><summary>${unm.length} abilities</summary>` + table([
+  {h: "Ability", f: ([k]) => name(k), v: ([k]) => k},
+  {h: "Why", f: ([, s]) => esc(s), v: ([, s]) => s},
+  {h: "Complexity", n: 1, f: ([k]) => f(C.complexity[k].score, 1), v: ([k]) => C.complexity[k].score},
+], unm) + `</details>`;
+
+h += `<h2>Definitions</h2>
+<h3>Complexity</h3><p class="small">Weights (points per unit): ${Object.entries(DATA.definitions.complexity_weights).map(([k, v]) => `<code>${esc(k)}</code> ${v}`).join(", ")}.</p>
+<details><summary>Full definition</summary><pre>${esc(DATA.definitions.complexity_doc)}</pre></details>
+<h3>Gameplay change distance</h3><p class="small">Component weights: ${Object.entries(DATA.definitions.distance_weights).map(([k, v]) => `<code>${esc(k)}</code> ${v}`).join(", ")}.</p>
+<details><summary>Full definition</summary><pre>${esc(DATA.definitions.impact_doc)}</pre></details>`;
+
+document.getElementById("app").innerHTML = h;
+</script>
+</body>
+</html>
