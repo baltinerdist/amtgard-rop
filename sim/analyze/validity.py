@@ -15,6 +15,7 @@ something (see `known_limit` on a check). It does not mean the check should be t
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import os
 import random
@@ -24,7 +25,8 @@ from typing import Callable
 
 from sim.engine.game import Game
 from sim.engine.state import LOCATIONS
-from sim.rules.compile import Rules, default_rules
+from sim.paths import ASSUMPTIONS_JSON
+from sim.rules.compile import Rules, build_rules
 
 GAME_TYPES = {
     "annihilation": {"game_type": "annihilation", "lives": 4, "respawn_seconds": 150, "refresh_seconds": None,
@@ -38,12 +40,23 @@ CONTROL_STATES = {"stunned", "frozen", "stopped", "suppressed", "fragile", "insu
 CONTROL_MOVES = {"move.to-base", "move.push", "move.keep-away", "move.to-location", "move.to-caster"}
 
 _RULES: Rules | None = None
+_OVERRIDES: dict = {}
+
+
+def _set_overrides(overrides: dict) -> None:
+    """Assumption overrides ("group.name" -> value) for sensitivity runs; also a Pool initializer."""
+    global _OVERRIDES, _RULES
+    _OVERRIDES, _RULES = dict(overrides), None
 
 
 def _rules() -> Rules:
     global _RULES
     if _RULES is None:
-        _RULES = default_rules()
+        a = json.loads(ASSUMPTIONS_JSON.read_text())
+        for key, v in _OVERRIDES.items():
+            group, name = key.split(".", 1)
+            a[group][name]["value"] = v
+        _RULES = build_rules(assumptions=a)
     return _RULES
 
 
@@ -192,7 +205,7 @@ class Runner:
         if self.workers == 1 or len(jobs) < 8:
             return [play_job(j) for j in jobs]
         if self._pool is None:
-            self._pool = Pool(self.workers or os.cpu_count() or 1)
+            self._pool = Pool(self.workers or os.cpu_count() or 1, _set_overrides, (_OVERRIDES,))
         n = self.workers or os.cpu_count() or 1
         return self._pool.map(play_job, jobs, chunksize=max(1, len(jobs) // (n * 6)))
 
@@ -443,7 +456,10 @@ def main(argv=None) -> int:
     ap.add_argument("--only", default="", help="comma-separated check names")
     ap.add_argument("--scale", type=float, default=1.0, help="multiply every check's game count")
     ap.add_argument("--workers", type=int, default=0)
+    ap.add_argument("--set", action="append", default=[], metavar="GROUP.NAME=VALUE",
+                    help="override an assumption for this run (JSON value), e.g. time.speech_words_per_second=3.5")
     args = ap.parse_args(argv)
+    _set_overrides({k: json.loads(v) for k, v in (s.split("=", 1) for s in args.set)})
     names = {s for s in args.only.split(",") if s} or None
     results = run_checks(names, args.scale, args.workers or None)
     print(table(results))

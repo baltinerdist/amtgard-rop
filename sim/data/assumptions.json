@@ -8,10 +8,10 @@
       "why": "Resolution of the round-based loop. Melee exchanges and incantation progress are resolved once per tick."
     },
     "speech_words_per_second": {
-      "value": 2.5,
+      "value": 3.5,
       "unit": "words/s",
       "assumption": true,
-      "why": "Incantation time = words x repetitions / this rate. Brisk but audible speech."
+      "why": "Incantation time = words x repetitions / this rate. 3.5 words/s is about 210 words a minute: a practiced player reciting a memorized, repeated incantation, still audible at 20' with no two-second gaps. Was 2.5 (150 wpm, ordinary conversation), which made a Heal 16 s and a Magic Ball 10 s and left 6th-level players barely better than 1st-level ones (face-validity check 'level': 0.555 at 2.5, 0.683 at 3.5, 0.733 at 4.5 words/s)."
     },
     "charge_incantation_words": {
       "value": 28,
