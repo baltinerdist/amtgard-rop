@@ -16,7 +16,7 @@ python3.14 -m venv .venv                      # .venv/ is gitignored
 ```
 
 The packages are numpy, pandas, scipy, pytest, duckdb and numba. numba 0.67 installs on
-Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 45–55 games/s on
+Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 30–45 games/s on
 10 cores, so no speed-up has been needed so far.
 
 ## Running
@@ -65,7 +65,9 @@ validity fixes it took 15 s on 10 cores (66 games/s); it now takes 18–25 s (40
 20% of that is the new code: shorter incantations mean more policy decisions, and casting players
 are asked every tick whether to keep casting. The rest is load from other processes on the test
 machine. Extending effect coverage from 257 to 398 instances costs about 4%: 56.2 games/s against
-58.8 without it, run back to back on the same seeds (10 cores). An ablation over 1,000 games runs
+58.8 without it, run back to back on the same seeds (10 cores). The policy routines that use those
+abilities (cleanses, repairs, buffs, escapes, value-per-second Charging) bring the smoke run from
+23 s to 29–31 s on a shared machine (about 33 games/s). An ablation over 1,000 games runs
 the baseline once, then takes about 20 s for each ability removed.
 
 ## Layout
@@ -175,8 +177,20 @@ the baseline once, then takes about 20 s for each ability removed.
   - Anything not executed is counted in the `noop` metric of every run; explicitly unmodeled effects
     under the detail `needs-map:<kind>` or `out-of-scope:<kind>`. Policies never pick an ability
     with no handled effects on purpose.
-- **Chosen options** are random, not strategic: School choices, the Pick-one options, and whether and which Archetype to take.
-- **Magic User spell lists** (`policies/buy.py`) come from the usefulness score with personal taste (log-normal, sd `loadout.spell_taste_sd`), two favorite spells bought first (`loadout.favorite_spells`), and at most one Archetype at 6th level. Unlimited non-ammunition abilities (Heal, Bardic songs) score double. Abilities that do nothing in the engine are never bought. Evoker, Warlock and Legend now change play (Elemental Barrage, Death and Flame purchases doubled, Extension). Battlemage's only benefit, Ambulant, is needs-map, but `buy.effective` counts its purchase restriction (a drawback) as an effect, so it is bought (see Known limitations). With the extended coverage, Elemental Barrage is held in only 1.2% of 1,000 mixed games (`tests/sim/test_buying.py` requires 2%).
+- **Chosen options** are random, not strategic: School choices and the Pick-one options. Archetypes are chosen by value (below).
+- **Loadout choices** (`policies/buy.py`). A Magic User's list comes from the usefulness score (benefits
+  minus drawbacks, `policies/value.py`) with personal taste (log-normal, sd `loadout.spell_taste_sd`)
+  and a few favorite spells bought first (one at 1st level up to `loadout.favorite_spells` = 3 at
+  6th, drawn from any spell that helps the buyer's side in the engine). Unlimited non-ammunition
+  abilities (Heal, Bardic songs) score double. An ability whose only handled effects are drawbacks
+  (Battlemage's purchase restriction) is never bought. **Archetypes are chosen by value**: a
+  6th-level player who considers one at all (`loadout.archetype_share`) takes it only if the build
+  under it (its purchase restrictions and costs), plus what it adds, beats the build without it;
+  martial players weigh its gain against their own kit (the armor Berserker takes away). In 1,000
+  mixed games Summoner, Dervish, Warder and Necromancer are taken; Priest, Evoker, Warlock, Legend,
+  Ranger and Avatar of Nature never are, because their restrictions cost more than they give in
+  this model (Warlock and Evoker forbid most of a Wizard's kill spells). Every purchasable spell is
+  held in at least 2% of games (`tests/sim/test_buying.py`).
 - **Rulings are recorded but not interpreted.** Each of the 87 open questions keeps the reading the metadata already encodes. An answer changes the simulation only if its entry carries a `sim` block (see `rules/rulings.py`). A missing, partial or unreadable `data/rulings.json` is tolerated: each open question without an entry falls back to the metadata's reading, and the fallback is logged.
 - **Weapons.** There are no thrown weapons, no weapon types other than Great weapons, and no backup weapons after one is destroyed.
 - **Player decisions** are scripted heuristics. A different policy can change the conclusions, so run any important question at more than one policy setting.
@@ -185,25 +199,17 @@ the baseline once, then takes about 20 s for each ability removed.
 
 `sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
 true (mirror matches are 50/50, skill wins, armor helps, more lives means longer games, Heal
-doesn't hurt, …). Two fail: **level** (below), which started failing when effect coverage went from
-257 to 398 instances, and **class-stack**, a structural limit of Phase 1:
+doesn't hurt, …). One fails: **class-stack**, a structural limit of Phase 1.
 
-- **6th level no longer beats 1st level (level check: 0.46, expects ≥ 0.6; 0.66 before).** The
-  rules are now enforced, but the scripted choices don't weigh their costs. Measured by patching
-  one thing at a time (300 games each):
-  - about 9 points: the policies now use newly handled abilities at their `value.py` weight. Fighters
-    spend long stretches charging Brutal Strike (Charge ×10, about 80 s) and Poison (Charge ×3);
-    refusing charges of newly handled abilities alone recovers 4 points. The buyer (`buy.py`) spends
-    Magic User points and favorite picks on newly modeled, low-value spells (Swift, Extension, Heat
-    Weapon, Sleight of Mind, …), and `value.py` adds weight for drawbacks (harm-polarity effects on
-    the bearer) the same as for benefits.
-  - about 4 points: Healers cast Gift of Air on fighters, who then may not wield weapons.
-  - about 3 points: martial players take a random Archetype at 6th level, and half of Barbarians,
-    Monks and Assassins now go without armor (Berserker, Medium, Spy).
-  With all three patched out the check passes (0.63). The fixes belong to the policies: score
-  charges by value per second, ignore drawbacks in `value.py` and `buy.effective`, and don't
-  enchant fighters with Gift of Air (`Game.barred` tells whether a player may wield weapons).
-
+- **Level (fixed).** When effect coverage went from 257 to 398 instances, 6th level stopped beating
+  1st level (0.428; the check expects ≥ 0.6). The cause was scripted choices that didn't weigh
+  costs. The fixes, in the policies: drawbacks count as costs in `value.py` and are ignored by
+  `buy.effective`; Archetypes are chosen by value instead of a coin flip (0.428 → 0.555); a Charge
+  is chosen by value per second, only for something that will be used, and a Charge longer than
+  `policy.max_field_charge_seconds` (30 s) waits for a lull with no enemy on the field (fighters
+  and archers Charge only in a lull); Enchantments whose drawbacks cost the bearer more than they
+  give (Gift of Air on a fighter) go to someone else (0.555 → 0.637). With the new ability routines
+  below the check is at 0.618.
 - **Melee classes are too strong against casters.** At equal skill, a small team stacked with
   Warriors, Barbarians, Paladins and Anti-Paladins beats a mixed team about 89% of the time (the
   check expects 50–80%). In the 1,000-game smoke run Warriors win 56% and Healers and Wizards 44–45%.
@@ -222,13 +228,20 @@ doesn't hurt, …). Two fail: **level** (below), which started failing when effe
   limb wound only shifts hit chances slightly. Heal is now neutral in the paired ablation
   (+0.001 [−0.018, +0.020]) rather than positive. Wounded fighters also never step back to be
   healed; they stay in melee, where no one heals them.
-- **Charging runs long.** Druids still spend a large share of field time charging Barkskin
-  (Charge ×10, about 80 s), because the Charge policy picks the most valuable spent ability
-  whether or not it will be used. Anti-Paladins and Barbarians now do the same with Brutal Strike.
-- **Handled but never chosen.** No scripted role casts a Self-range Verbal that is neither healing
-  nor an Enchantment, so Rage, Shake It Off, Elemental Barrage, Blink, Martyr and Circle of
-  Protection work when cast but are not cast in play. The caster policy never shoots, so a Ranger's
-  bow (`Player.has_bow`) goes unused.
+- **Handled abilities in play.** Roles now use abilities by what their effects do: Self buffs
+  before a fight (Rage; Elemental Barrage with two or more balls in hand), escapes when attacked by
+  a non-fighter or a wounded fighter (Blink, Shadow Step), cleanses on self or an ally out of melee
+  (Release, Greater Release, Shake It Off, Circle of Protection; Martyr only by a non-fighter for a
+  fighter or archer), repairs (Mend, Greater Mend, Word of Mending), and casters with a bow shoot.
+  Still never cast in play: Teleport, Astral Intervention, Confidence, Empower, Restoration, Summon
+  Dead, Force Barrier, Stoneform, Reload, Innate, and the Self-range Enchantments aimed at enemies
+  (Discordia, Snaring Vines). A Ranger never appears because the value model never takes the
+  Archetype, so caster bow use is covered by `tests/sim/test_policies.py` only.
+- **Healers slipped slightly.** After this round's fixes Healers win 0.430 in the smoke run (0.447
+  before; the intervals overlap). It is not the Archetypes (0.427 with none). Likely causes: Raise
+  Dead and Phoenix Tears score lower now that their drawbacks count, and Healers spend time
+  cleansing and mending. In the heal-not-harmful check the side with Heal scores 0.476 in
+  annihilation (0.497 before), still inside the tolerance.
 
 ### Engine queries for policies
 
@@ -269,8 +282,8 @@ All values are in `data/assumptions.json`, and each has a unit and a reason. To 
 - `casting`: interrupts; casting while engaged
 - `projectiles`: hit chances, shot time, ball retrieval
 - `respawn`: rejoin time, pregame prep
-- `loadout`: Look The Part, Archetype and armor-wearing shares; spell copy cap; Magic User taste spread (`spell_taste_sd`) and favorite spells (`favorite_spells`)
-- `policy`: revive priority, offense and charge rates, self-Insubstantial and forced-move durations, abandoning a cast when attacked
+- `loadout`: Look The Part and armor-wearing shares; the share of 6th-level players who consider an Archetype; spell copy cap; Magic User taste spread (`spell_taste_sd`) and favorite spells (`favorite_spells`)
+- `policy`: revive priority, offense and charge rates, the longest Charge started mid-battle, self-Insubstantial and forced-move durations, abandoning a cast when attacked
 - `game`: time cap
 - `population`: class and level mix. These are placeholders until ORK attendance data is available.
 
