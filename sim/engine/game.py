@@ -61,6 +61,7 @@ class Game:
         self._value_cache: dict = {}
         self._bars_cache: dict = {}
         self._as_per_cache: dict = {}
+        self._kept_down: set = set()      # (pid, deaths) already counted as kept down by Undead Minion
         # players
         self.players: list[Player] = []
         lives = scenario.get("lives")
@@ -800,6 +801,41 @@ class Game:
         p.dead_until = 0.0
         self.log("revive", p.pid, src.pid, slug)
 
+    def _persisting(self, p: Player) -> list[Ench]:
+        """Enchantments that return with p after respawning: Persistent ones, all of them while Golem
+        is worn, and Phoenix Tears' extra Protection Enchantment while Phoenix Tears is worn (the
+        most recently attached (m) Protection one, when the extra slot is in use)."""
+        keep = [e for e in p.enchantments if e.persistent]
+        golem = next((e for e in p.enchantments if any(x.kind == "enchantment.make-persistent" and
+                                                       x.params.get("which") == "all-worn" for x in e.ability.effects)), None)
+        if golem is not None:
+            self.applied[(golem.ability.slug, "enchantment.make-persistent")] += 1
+            return list(p.enchantments)
+        pt = next((e for e in p.enchantments if any(x.kind == "enchantment.make-persistent" and
+                                                    x.params.get("which") == "the-extra-enchantment" for x in e.ability.effects)), None)
+        if pt is not None and p.magical_enchantment_count() >= p.ench_slots:
+            extra = [e for e in p.enchantments if e is not pt and e.magical and e.ability.school == "Protection"
+                     and "exempt-from-enchantment-limit" not in e.ability.properties]
+            if extra and not extra[-1].persistent:
+                keep.append(extra[-1])
+                self.applied[(pt.ability.slug, "enchantment.make-persistent")] += 1
+        return keep
+
+    def _respawn_prevented(self, p: Player) -> bool:
+        """Undead Minion: the bearer cannot respawn while enchanted. The engine keeps them down only
+        while its caster is alive to Raise them; after that the bearer removes the Enchantment
+        (Enchantments rule 8) and respawns, so a game cannot stall on a minion nobody can raise."""
+        for e in p.enchantments:
+            if e.ability.effects_of("life.prevent-respawn"):
+                caster = self.players[e.caster]
+                if caster.alive and caster is not p:
+                    if (p.pid, p.deaths) not in self._kept_down:
+                        self._kept_down.add((p.pid, p.deaths))
+                        self.applied[(e.ability.slug, "life.prevent-respawn")] += 1
+                    return True
+                self.remove_enchantment(p, e)
+        return False
+
     def respawn(self, p: Player) -> None:
         if p.lives_left is not None:
             p.lives_left -= 1
@@ -816,7 +852,8 @@ class Game:
         p.meta_armed.clear()
         p.armor = {l: p.armor_max for l in LOCATIONS}
         p.magic_armor = {l: 0 for l in LOCATIONS}
-        for e in [e for e in p.enchantments if not e.persistent]:
+        keep = {id(e) for e in self._persisting(p)}
+        for e in [e for e in p.enchantments if id(e) not in keep]:
             self.remove_enchantment(p, e)
         for e in p.enchantments:
             self._activate(p, e)
@@ -1263,7 +1300,7 @@ class Game:
                 p.buffs = self._buffs(p)
             if not p.alive and not p.out:
                 p.time_dead += self.dt
-                if p.dead_until <= t:
+                if p.dead_until <= t and not self._respawn_prevented(p):
                     self.respawn(p)
         if t >= self.next_refresh:
             for p in self.players:

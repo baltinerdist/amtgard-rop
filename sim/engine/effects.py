@@ -246,6 +246,13 @@ def h_enchantment_remove(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         return dropped
     if scope == "all":
         keep = [e for e in p.enchantments if "cannot-be-removed" in e.ability.properties]
+        if ctx.ability.slug == "dispel-magic":
+            # Sleight of Mind: Dispel Magic (from any source) removes only Sleight of Mind itself
+            # (ruling sleight-of-mind#1)
+            som = next((e for e in p.enchantments if e.ability.effects_of("enchantment.protect")), None)
+            if som is not None:
+                keep = [e for e in p.enchantments if e is not som]
+                g.applied[(som.ability.slug, "enchantment.protect")] += 1
     elif scope in ("non-persistent", "non-persistent-others"):
         keep = [e for e in p.enchantments if e.persistent or (scope == "non-persistent-others" and e is ctx.ench)]
     else:
@@ -815,6 +822,10 @@ MODE_RULES: dict[str, Callable[..., str | None]] = {
     "state.prevent": lambda ab, eff, names=None: (
         "instant" if eff.timing == "on-cast" and eff.duration_type == "timed"
         else "passive" if eff.timing == "while-active" and ab.delivery in PASSIVE_DELIVERIES else None),
+    # read by Game: respawn (make-persistent, prevent-respawn) and h_enchantment_remove (protect)
+    "enchantment.make-persistent": _equipment_mode,
+    "enchantment.protect": _equipment_mode,
+    "life.prevent-respawn": _equipment_mode,
     "enchantment.remove": lambda ab, eff, names=None: (
         "instant" if (eff.timing in INSTANT_TIMINGS or eff.params.get("scope") == "auto-insubstantial-only")
         else None),

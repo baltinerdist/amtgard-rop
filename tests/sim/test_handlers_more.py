@@ -752,6 +752,53 @@ def test_song_of_freedom_blocks_others_states_not_own(rules):
     assert bard.has_state("insubstantial", g.t), "caused by the bearer"
 
 
+# ---------------------------------------------------------------- persistence, protection, respawn
+
+def test_golem_makes_all_worn_enchantments_persistent(rules):
+    g = make_game(rules, [spec("Wizard"), spec("Druid"), spec("Warrior")], [spec("Warrior")])
+    wiz, dru, war, _ = g.players
+    resolve(g, wiz, "golem", war, rng="Other")
+    resolve(g, dru, "blessing-against-wounds", war, magical=False, rng="Other")   # (ex), no slot
+    war.alive = False
+    g.respawn(war)
+    assert {"golem", "blessing-against-wounds"} <= {e.ability.slug for e in war.enchantments}
+
+
+def test_phoenix_tears_extra_protection_enchantment_persists(rules):
+    g = make_game(rules, [spec("Healer"), spec("Druid"), spec("Warrior")], [spec("Warrior")])
+    heal, dru, war, _ = g.players
+    resolve(g, heal, "phoenix-tears", war, magical=False, rng="Other")   # (ex), no slot
+    resolve(g, dru, "barkskin", war, rng="Other")
+    resolve(g, dru, "stoneskin", war, rng="Other")
+    assert war.magical_enchantment_count() == war.ench_slots == 2
+    war.alive = False
+    g.respawn(war)
+    assert "stoneskin" in {e.ability.slug for e in war.enchantments}, "the extra one stays"
+    assert "barkskin" not in {e.ability.slug for e in war.enchantments}
+
+
+def test_sleight_of_mind_stops_dispel(rules):
+    g = make_game(rules, [spec("Wizard"), spec("Druid"), spec("Warrior")], [spec("Wizard")])
+    wiz, dru, war, foe = g.players
+    resolve(g, dru, "stoneskin", war, rng="Other")
+    resolve(g, wiz, "sleight-of-mind", war, rng="Other")
+    resolve(g, foe, "dispel-magic", war)
+    assert [e.ability.slug for e in war.enchantments] == ["stoneskin"], "only Sleight of Mind goes"
+
+
+def test_undead_minion_waits_for_its_caster(rules):
+    g = make_game(rules, [spec("Healer"), spec("Warrior"), spec("Warrior")], [spec("Wizard")])
+    heal, minion, _, wiz = g.players   # a third, living teammate: no team wipe
+    resolve(g, heal, "undead-minion", minion, rng="Other")
+    g.kill(minion, wiz, "test")
+    minion.dead_until = g.t
+    g._upkeep()
+    assert not minion.alive, "no respawn while the caster can Raise them"
+    g.kill(heal, wiz, "test")
+    g._upkeep()
+    assert minion.alive and not any(e.ability.slug == "undead-minion" for e in minion.enchantments)
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players
