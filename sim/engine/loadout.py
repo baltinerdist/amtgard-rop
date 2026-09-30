@@ -1,12 +1,11 @@
 """Build a player's equipment and abilities from their class sheet and level."""
 from __future__ import annotations
 
-import heapq
 import random
 import re
 
 from sim.engine.state import LOCATIONS, Player, Uses
-from sim.policies.value import value
+from sim.policies import buy
 from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, ClassAbility, ClassSheet, Rules
 
@@ -16,6 +15,7 @@ ROLE_BY_CLASS = {
     "Archer": "archer", "Bard": "caster", "Druid": "caster", "Wizard": "caster", "Healer": "support",
 }
 PASSIVE_DELIVERY = ("trait", "archetype")
+_SHIELD_ORDER = ("none", "small", "medium", "large")
 _RANGE_KEYS = ("Unlimited", "50'", "20'", "Touch", "Other", "Self")
 
 
@@ -84,40 +84,22 @@ def _martial(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random):
 
 
 def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, ablate: frozenset, ltp: bool):
+    """Points per level (Look The Part adds one at the top level); the choice of what to buy is a
+    policy (sim/policies/buy.py)."""
     pools = {lv: 5 for lv in range(1, p.level + 1)}
     if ltp:
         pools[p.level] += 1
-    cap = rules.a("loadout.magic_user_copy_cap")
-    cands = [c for c in sheet.abilities if c.kind in ("spell", "archetype") and c.cost
-             and min(c.levels) <= p.level and c.slug not in ablate]
-    heap = []
-    for c in cands:
-        v = value(rules.abilities[c.slug], p.role) if c.slug in rules.abilities else 0.0
-        if v > 0:
-            # tiny seeded jitter breaks ties so equal-value spells vary between players
-            heapq.heappush(heap, (-(v / c.cost) - rng.random() * 1e-3, c.slug, 0, c))
-    bought: dict[str, int] = {}
-    while heap:
-        negv, slug, n, c = heapq.heappop(heap)
-        limit = c.max if c.max is not None else cap
-        if n >= limit:
-            continue
-        lv = min(c.levels)
-        eligible = sorted(l for l in pools if l >= lv)
-        if sum(pools[l] for l in eligible) < c.cost:
-            continue
-        due = c.cost
-        for l in eligible:
-            take = min(due, pools[l])
-            pools[l] -= take
-            due -= take
-            if due == 0:
-                break
-        bought[slug] = n + 1
-        heapq.heappush(heap, (negv * 0.6, slug, n + 1, c))
-    for slug, n in bought.items():
+    cands = [c for c in sheet.abilities if c.kind in ("spell", "archetype") and c.cost]
+    bought = buy.choose(cands, p.level, p.role, pools, rules, rng, ablate)
+    for slug, n in sorted(bought.items()):
         c = next(c for c in cands if c.slug == slug)
         _add(p, rules, slug, c.freq, n, True, c.range)
+        # a Magic User who paid for a shield carries it (the class itself allows none)
+        for eff in rules.abilities[slug].effects:
+            size = str(eff.params.get("what", "")).removesuffix("-shield")
+            if eff.kind == "equipment.permit" and size in _SHIELD_ORDER and \
+                    _SHIELD_ORDER.index(size) > _SHIELD_ORDER.index(p.shield):
+                p.shield = size
 
 
 def _apply_loadout_effects(p: Player, rules: Rules):

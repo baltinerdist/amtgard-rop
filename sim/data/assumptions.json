@@ -245,6 +245,18 @@
       "assumption": true,
       "why": "Magic Users buy at most this many copies of a spell whose Max is not listed."
     },
+    "spell_taste_sd": {
+      "value": 0.6,
+      "unit": "log-scale sd",
+      "assumption": true,
+      "why": "Magic Users multiply each spell's usefulness score by a personal taste factor exp(sd x N(0,1)) before buying by score per point (sim/policies/buy.py). Real players of the same class and level buy different lists. Kept narrow so core picks stay near-universal (Heal, Force Bolt); the long tail comes from favorite_spells. With no spread every Healer of a level bought the identical list and a third of the purchasable, modeled abilities were never held in 1,000 games."
+    },
+    "favorite_spells": {
+      "value": 2,
+      "unit": "spells",
+      "assumption": true,
+      "why": "Each Magic User buys one copy of this many favorite spells first, drawn uniformly among the spells they can buy that the engine models: the spell a player builds around because they like it. Gives every purchasable spell a real chance of being held (so ablation can measure it) while leaving the rest of the list to usefulness."
+    },
     "armor_worn_share": {
       "value": 0.8,
       "unit": "probability",
