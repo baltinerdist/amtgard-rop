@@ -43,7 +43,9 @@ from typing import TYPE_CHECKING
 
 from sim.engine.effects import is_handled
 from sim.engine.state import Player, Uses
-from sim.policies import songs
+from sim.policies import enablers, songs
+from sim.policies.enablers import name_refill  # noqa: F401  (the engine's refill hook, Game.name_refill)
+from sim.policies.utility import has_utility
 from sim.policies.value import Ctx, benefit, drawback_cost, is_drawback, player_ctx
 
 if TYPE_CHECKING:
@@ -58,10 +60,11 @@ TRIGGERED = {"immediately-after-kill", "after-dying", "immediately-after-wound"}
 
 def _usable(g: "Game", p: Player) -> list[Uses]:
     """Abilities the policy may choose to cast now (triggered ones fire on their own), and worth the
-    song their incantation would end (songs.keeps_song)."""
-    return [u for u in p.uses.values() if u.available() and g.value(u.ability, p) > 0
+    song their incantation would end (songs.keeps_song). An ability with a utility function
+    (enablers.py) is weighed by it, song included (enablers.time_cost), not by its fixed score."""
+    return [u for u in p.uses.values() if u.available()
             and not (u.ability.requirements & TRIGGERED) and "kill-trigger" not in u.ability.properties
-            and songs.keeps_song(g, p, u)]
+            and (has_utility(u.ability) or (g.value(u.ability, p) > 0 and songs.keeps_song(g, p, u)))]
 
 
 def _in_range(g: "Game", u: Uses) -> bool:
@@ -235,25 +238,36 @@ def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Playe
     if u.range == "Other":
         pool = [q for q in pool if q is not p]
     return [q for q in pool if all(e.ability.slug != u.slug for e in q.enchantments)
-            and (not u.magical or q.magical_enchantment_count() < q.ench_slots)
-            and not _crippled(g, p, u.ability, q) and (q is p or not songs.declines(g, q, u))]
+            and (not u.magical or "exempt-from-enchantment-limit" in u.ability.properties
+                 or q.magical_enchantment_count() < q.ench_slots)
+            and (has_utility(u.ability) or not _crippled(g, p, u.ability, q))    # a utility counts drawbacks
+            and (q is p or not songs.declines(g, q, u))]
 
 
 def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False, free_only: bool = False) -> bool:
     """`prioritized`: weapon Enchantments to the best melee fighters, armor and protection to the
     front line (_enchant_priority); otherwise a random eligible ally. `free_only`: only allies out
-    of melee (an enchanter re-enchants between fights)."""
-    if prioritized and _try_extra_slot(g, p, at_base, free_only):
-        return True
-    for u in sorted(_usable(g, p), key=lambda u: -g.value(u.ability, p)):
-        if u.ability.delivery != "enchantment" or _is_offensive(u) or songs.is_song(u.ability):
+    of melee (an enchanter re-enchants between fights). An Enchantment with a utility function
+    (enablers.py: extra slots, grants, Undead Minion, Self strips aimed at enemies) goes to the
+    teammate it is worth most to, only when that beats the time the cast costs, and is tried in
+    order of that utility among the others' fixed scores."""
+    opts = []
+    for i, u in enumerate(_usable(g, p)):
+        util = has_utility(u.ability)
+        if u.ability.delivery != "enchantment" or (_is_offensive(u) and not util) or songs.is_song(u.ability):
             continue            # songs are chosen by the situation (_try_song)
-        targets = _enchant_targets(g, p, u, at_base)
-        if free_only:
-            targets = [q for q in targets if q is p or not _engaged(g, q)]
-        if not targets:
+        if not util:
+            opts.append((-g.value(u.ability, p), i, u, None))
             continue
-        q = _enchant_priority(g, u, targets) if prioritized else g.rng.choice(targets)
+        q, x = enablers.best_target(g, p, u, _field_targets(g, p, u, at_base, free_only))
+        if q is not None and enablers.worth_casting(g, p, u, x, at_base):
+            opts.append((-x, i, u, q))
+    for _, _, u, q in sorted(opts, key=lambda o: o[:2]):
+        if q is None:
+            targets = _field_targets(g, p, u, at_base, free_only)
+            if not targets:
+                continue
+            q = _enchant_priority(g, u, targets) if prioritized else g.rng.choice(targets)
         if not at_base and q is not p and g.rng.random() >= g.rules.a("range.p_ally_nearby_for_touch"):
             continue
         if g.start_cast(p, u, q):
@@ -261,33 +275,9 @@ def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False,
     return False
 
 
-def _try_extra_slot(g: "Game", p: Player, at_base: bool, free_only: bool) -> bool:
-    """Attuned or Essence Graft on the best melee fighter who lacks it, while the caster holds
-    other Enchantments to fill the slot: what a Druid enchanter builds around. (Their usefulness
-    score is the best Enchantment the caster holds to fill the slot, `value.py`; this rule picks the
-    bearer.)"""
-    slotters = [u for u in p.uses.values() if u.available() and u.ability.delivery == "enchantment"
-                and u.ability.effects_of("enchantment.extra-slot") and not (u.ability.requirements & TRIGGERED)]
-    if not slotters:
-        return False
-    fillers = [u for u in _usable(g, p) if u.ability.delivery == "enchantment" and not _is_offensive(u)
-               and not u.ability.effects_of("enchantment.extra-slot") and u.range != "Self"]
-    if not fillers:
-        return False
-    for u in slotters:
-        pool = [p] if u.range == "Self" else [q for q in g.allies(p) if q.alive and (q.at_base_until > g.t) == at_base]
-        pool = [q for q in pool if (q.role == "fighter" or q.play == "battle")
-                and all(e.ability.slug != u.slug for e in q.enchantments)
-                and not any(e.ability.effects_of("enchantment.extra-slot") for e in q.enchantments)
-                and (not free_only or q is p or not _engaged(g, q))]
-        if not pool:
-            continue
-        q = max(pool, key=_melee_rank)
-        if not at_base and q is not p and g.rng.random() >= g.rules.a("range.p_ally_nearby_for_touch"):
-            continue
-        if g.start_cast(p, u, q):
-            return True
-    return False
+def _field_targets(g: "Game", p: Player, u: Uses, at_base: bool, free_only: bool) -> list[Player]:
+    targets = _enchant_targets(g, p, u, at_base)
+    return [q for q in targets if q is p or not _engaged(g, q)] if free_only else targets
 
 
 def _charge_seconds(g: "Game", u: Uses) -> float:
@@ -730,32 +720,31 @@ def _enchant_priority(g: "Game", u: Uses, targets: list[Player]) -> Player:
     return g.rng.choice(targets)
 
 
-def _refill_need(g: "Game", u: Uses, q: Player) -> float:
-    """Value of what this refill would give back to q: spent per-life uses (Empower, Restoration)
-    or a spent chargeable use (Confidence)."""
-    if u.ability.effects_of("ability.charge"):
-        return max((g.value(v.ability, q) for v in q.uses.values()
-                    if v.charge and v.left is not None and v.max and v.left < v.max), default=0.0)
-    return sum(g.value(v.ability, q) * (v.max - v.left) for v in q.uses.values()
-               if v.per == "life" and v.left is not None and v.max and v.left < v.max)
-
-
 def _try_refill(g: "Game", p: Player) -> bool:
-    """Give a teammate out of melee back the uses they spent, the one who gets most back first."""
-    options = [u for u in _usable(g, p) if u.ability.delivery == "verbal" and u.ability.beneficiary != "enemy"
-               and u.ability.effects_of("ability.restore-uses", "ability.charge")]
-    if not options or _engaged(g, p):
+    """Give back a spent use (Empower, Restoration, Confidence to a teammate out of melee; Innate to
+    oneself) where it is worth most: the refill and teammate with the highest utility
+    (enablers.py), if it beats the time the cast costs. The ability refilled is named when the
+    cast resolves (Game.name_refill)."""
+    if _engaged(g, p):
         return False
-    for u in options:
-        pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and not (q is p and u.range == "Other")
-                and (q is p or not _engaged(g, q)) and _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)]
-        scored = [(n, q) for q in pool if (n := _refill_need(g, u, q)) > 0]
-        if not scored:
+    best = None
+    for u in _usable(g, p):
+        if not enablers.is_refill(u.ability):
             continue
-        _, q = max(scored, key=lambda nq: (nq[0], -nq[1].pid))
-        if (q is p or _in_reach(g, u)) and g.start_cast(p, u, q):
-            return True
-    return False
+        if u.range in ("Self", ""):
+            pool = [p]
+        else:
+            pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and not (q is p and u.range == "Other")
+                    and (q is p or not _engaged(g, q))]
+        pool = [q for q in pool if _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
+                and g.check_requirements(u.ability, p, q, start=True, uses=u) is None]
+        q, x = enablers.best_target(g, p, u, pool)
+        if q is not None and (best is None or x > best[0]):
+            best = (x, u, q)
+    if best is None or not enablers.worth_casting(g, p, best[1], best[0]):
+        return False
+    _, u, q = best
+    return (q is p or _in_reach(g, u)) and g.start_cast(p, u, q)
 
 
 def _enchant_on_field(g: "Game", p: Player) -> bool:
@@ -768,7 +757,7 @@ def _try_song(g: "Game", p: Player) -> bool:
 
 
 def _play_striker(g: "Game", p: Player) -> None:
-    if _try_self_buff(g, p) or _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p) \
+    if _try_self_buff(g, p) or _try_finish(g, p) or _try_setup(g, p) or _try_refill(g, p) or _try_offense(g, p) \
             or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) \
             or _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
@@ -776,7 +765,7 @@ def _play_striker(g: "Game", p: Player) -> None:
 
 
 def _play_controller(g: "Game", p: Player) -> None:
-    if _try_self_buff(g, p) or _try_finish(g, p) or _try_control(g, p) or _try_offense(g, p) \
+    if _try_self_buff(g, p) or _try_finish(g, p) or _try_control(g, p) or _try_refill(g, p) or _try_offense(g, p) \
             or _try_revive(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) \
             or _try_repair(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
@@ -794,7 +783,7 @@ def _play_enchanter(g: "Game", p: Player) -> None:
 def _play_medic(g: "Game", p: Player) -> None:
     if g.rules.a("policy.revive_priority") and _try_revive(g, p):
         return
-    if _try_heal(g, p) or _try_cleanse(g, p) or _enchant_on_field(g, p) or _try_repair(g, p) \
+    if _try_heal(g, p) or _try_cleanse(g, p) or _try_refill(g, p) or _enchant_on_field(g, p) or _try_repair(g, p) \
             or _try_offense(g, p) or _try_shoot(g, p) or _try_song(g, p):
         return
     _try_charge(g, p)
@@ -808,7 +797,8 @@ def _play_battle(g: "Game", p: Player) -> None:
     if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
         if _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p):
             return
-    if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_cleanse(g, p) or _try_repair(g, p)):
+    if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_refill(g, p) or _try_cleanse(g, p)
+                             or _try_repair(g, p)):
         return
     if p.target is None:
         _try_charge(g, p)
@@ -819,8 +809,8 @@ def _play_archer(g: "Game", p: Player) -> None:
     if not p.has_bow:
         _play_striker(g, p)
         return
-    if _try_shoot(g, p) or _try_finish(g, p) or _try_offense(g, p) or _try_heal(g, p) or _try_cleanse(g, p) \
-            or _try_song(g, p):
+    if _try_shoot(g, p) or _try_finish(g, p) or _try_refill(g, p) or _try_offense(g, p) or _try_heal(g, p) \
+            or _try_cleanse(g, p) or _try_song(g, p):
         return
     _try_charge(g, p)
 
@@ -843,15 +833,15 @@ def decide(g: "Game", p: Player) -> None:
     if p.role == "support":
         if g.rules.a("policy.revive_priority") and _try_revive(g, p):
             return
-        if _try_heal(g, p) or _try_cleanse(g, p):
+        if _try_heal(g, p) or _try_cleanse(g, p) or _try_refill(g, p):
             return
         if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
         if _try_repair(g, p) or _try_offense(g, p) or _try_shoot(g, p) or _try_charge(g, p):
             return
     elif p.role == "caster":
-        if _try_self_buff(g, p) or _try_offense(g, p) or _try_revive(g, p) or _try_heal(g, p) \
-                or _try_cleanse(g, p):
+        if _try_self_buff(g, p) or _try_refill(g, p) or _try_offense(g, p) or _try_revive(g, p) \
+                or _try_heal(g, p) or _try_cleanse(g, p):
             return
         if g.rng.random() < g.rules.a("policy.p_enchant_ally_on_field") and _try_enchant(g, p, False):
             return
@@ -859,7 +849,7 @@ def decide(g: "Game", p: Player) -> None:
             return
         _try_charge(g, p)
     elif p.role == "archer":
-        if _try_shoot(g, p) or _try_heal(g, p) or _try_cleanse(g, p):
+        if _try_shoot(g, p) or _try_heal(g, p) or _try_cleanse(g, p) or _try_refill(g, p):
             return
         _try_charge(g, p)
     else:
@@ -868,7 +858,8 @@ def decide(g: "Game", p: Player) -> None:
         if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
             if _try_offense(g, p):
                 return
-        if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_cleanse(g, p) or _try_repair(g, p)):
+        if p.target is None and (_try_heal(g, p) or _try_revive(g, p) or _try_refill(g, p) or _try_cleanse(g, p)
+                                 or _try_repair(g, p)):
             return
         if p.target is None:
             _try_charge(g, p)

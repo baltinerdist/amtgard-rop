@@ -310,21 +310,29 @@ def h_move_away(g: "Game", eff: Effect, ctx: Ctx) -> bool:
 
 
 def h_ability_charge(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Charge the spent ability the caster names ("by stating its name": Game.name_refill)."""
     p = subject(eff, ctx)
     if p is None:
         return False
-    spent = [u for u in p.uses.values() if u.charge and u.left is not None and u.max and u.left < u.max]
-    if not spent:
+    named = g.name_refill(ctx.caster, ctx.ability, p)
+    if named is None:
         return False
-    best = max(spent, key=lambda u: g.value(u.ability, p))
-    best.restore(1)
+    named.restore(1)
     return True
 
 
 def h_ability_restore(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """One use of the per-life ability the caster names (Empower: "regains one use of any per-life
+    ability", Game.name_refill), or every per-life use (Restoration)."""
     p = subject(eff, ctx)
     if p is None:
         return False
+    if eff.params.get("amount") == "one":
+        named = g.name_refill(ctx.caster, ctx.ability, p)
+        if named is None:
+            return False
+        named.restore(1)
+        return True
     changed = False
     for u in p.uses.values():
         if u.per == "life" and u.left is not None and u.max and u.left < u.max:
@@ -441,6 +449,8 @@ def h_action_restrict(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         ends_on_src_death=bool({"either-dies", "caster-dies"} & term)))
     return True
 
+
+REFILL_KINDS = ("ability.charge", "ability.restore-uses")   # the caster names what they refill (Game.name_refill)
 
 INSTANT: dict[str, Callable] = {
     "death.prevent": h_death_prevent,

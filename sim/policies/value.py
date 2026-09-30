@@ -813,16 +813,20 @@ class _Eval:
         return k, DRAWBACK_WEIGHT.get(k, 1)
 
     def late_share(self, ctx: Ctx | None) -> float:
-        """Chance the Undead Minion's caster doesn't raise the bearer before a respawn would have
-        come: (the walk back + Raise Dead's incantation) / the game type's respawn seconds."""
-        from sim.scenarios import GAME_TYPES, PRESETS
-        rd = self.rules.abilities.get("raise-dead")
-        raise_s = self.rules.a("respawn.rejoin_seconds") + (
-            rd.cast_seconds(self.rules.a("time.speech_words_per_second")) if rd else 0.0)
-        shares = {ctx.game_type: 1.0} if ctx is not None and ctx.game_type else PRESETS["mixed"]["game_types"]
-        total = sum(shares.values())
-        return sum(w / total * min(1.0, raise_s / GAME_TYPES[gt]["respawn_seconds"])
-                   for gt, w in sorted(shares.items()) if gt in GAME_TYPES)
+        return late_share(self.rules, ctx.game_type if ctx is not None else None)
+
+
+def late_share(rules: "Rules", game_type: str | None = None) -> float:
+    """Chance the Undead Minion's caster doesn't raise the bearer before a respawn would have
+    come: (the walk back + Raise Dead's incantation) / the game type's respawn seconds."""
+    from sim.scenarios import GAME_TYPES, PRESETS
+    rd = rules.abilities.get("raise-dead")
+    raise_s = rules.a("respawn.rejoin_seconds") + (
+        rd.cast_seconds(rules.a("time.speech_words_per_second")) if rd else 0.0)
+    shares = {game_type: 1.0} if game_type else PRESETS["mixed"]["game_types"]
+    total = sum(shares.values())
+    return sum(w / total * min(1.0, raise_s / GAME_TYPES[gt]["respawn_seconds"])
+               for gt, w in sorted(shares.items()) if gt in GAME_TYPES)
 
 
 def mu_share(rules: "Rules") -> float:

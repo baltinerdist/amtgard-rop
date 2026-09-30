@@ -21,7 +21,7 @@ from sim.engine.effects import Ctx
 from sim.engine.loadout import _uses as make_uses
 from sim.engine.loadout import build_player
 from sim.engine.state import ARMS, INF, LOCATIONS, Cast, Ench, Player, Uses
-from sim.policies import decide, keep_casting
+from sim.policies import decide, keep_casting, name_refill
 from sim.policies.value import value_for as ability_value
 from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, Rules
@@ -109,6 +109,12 @@ class Game:
         """The usefulness score of p's ability (sim/policies/value.py) with this game's rules, in
         p's context: their own kit, the game type, the ablated abilities. Cached for the game."""
         return ability_value(self, ability, p)
+
+    def name_refill(self, caster: Player, ab: Ability, recipient: Player) -> Uses | None:
+        """Policy hook: the spent use a refill (an instant Charge, a restored use) acts on, as its
+        caster names it when the ability resolves (sim.policies.enablers.name_refill); None for none.
+        Steal Life Essence: None while the recipient is wounded means the heal is chosen instead."""
+        return name_refill(self, caster, ab, recipient)
 
     def enemies(self, p: Player) -> list[Player]:
         return [q for q in self.players if q.team != p.team]
@@ -1315,8 +1321,15 @@ class Game:
         choice = "has-choice" in ab.properties and ab.delivery == "verbal"
         chosen: set[str] = set()
         done: list[str] = []
+        # a refill offered as a choice (Steal Life Essence: heal a wound or Charge): when the caster
+        # names an ability to refill (Game.name_refill), that option is taken, not the others
+        refill = next((e for e in ab.effects if e.kind in fx.REFILL_KINDS), None) if choice else None
+        if refill is not None and self.name_refill(ctx.caster, ab, fx.subject(refill, ctx)) is None:
+            refill = None
         for eff in ab.effects:
             if choice and eff.polarity in chosen and eff.kind != "action.restrict":
+                continue
+            if refill is not None and eff.polarity == refill.polarity and eff.kind not in fx.REFILL_KINDS:
                 continue
             if eff.timing not in timings:
                 if eff.timing == "after-delay" and "on-cast" in timings and fx.is_handled(ab, eff) \
