@@ -385,8 +385,8 @@ the other direct scores are unchanged.
 
 **Effect in 2,000 mixed games (`--seed 1`)**, against the same run before:
 
-- **Newly cast:** Amplification (773 casts), Regeneration (1,445), Undead Minion (327) and
-  Silver Tongue (262), all bought before but never cast. Momentum went from 5 casts to 1,296,
+- **Newly cast:** Amplification (772 casts), Regeneration (1,448), Undead Minion (327) and
+  Silver Tongue (262), all bought before but never cast. Momentum went from 5 casts to 1,295,
   through the Archetype picks below. No ability is newly bought; none stopped being cast.
 - **Bought more:**
   - Gift of Water 240 → 1,116 players and Regeneration 158 → 876
@@ -394,15 +394,15 @@ the other direct scores are unchanged.
   - Song of Power 456 → 997, Swift 494 → 778 and Restoration 508 → 877
 - **Bought less:** Innate 1,944 → 1,609 (still never cast) and Teleport 2,858 → 2,539.
 - **Win rates:**
-  - Doctrine shares are identical (the doctrine draw is unchanged). No doctrine's win rate moved
-    outside its interval.
-  - The largest moves are on 30–70 players: Legend 0.597 → 0.493, Necromancer 0.489 → 0.404,
-    Dervish 0.495 → 0.538. Among the base doctrines: Healer protector 0.450 → 0.422, Bard skald
-    0.466 → 0.481.
-  - Enchant assists rose where the new Enchantments are cast: Wizard warlock 0.37 → 1.21, evoker
-    0.30 → 1.21 and controller 0.03 → 0.20 per life, mostly Void Touched; Necromancer
-    0.40 → 1.08.
-  - Class win rates moved by at most 0.011.
+  - Doctrine shares are identical (the doctrine draw is unchanged).
+  - Every doctrine's new interval overlaps its old one. Only Healer protector ends just below
+    its old interval: 0.450 → 0.420 [0.392, 0.448], against [0.421, 0.478] before.
+  - The largest moves are on 30–70 players: Legend 0.597 → 0.493, Necromancer 0.489 → 0.426,
+    Dervish 0.495 → 0.549. Bard skald went 0.466 → 0.481.
+  - Enchant assists rose where the new Enchantments are cast: Wizard warlock 0.37 → 1.19, evoker
+    0.30 → 1.20 and controller 0.03 → 0.20 per life, mostly Void Touched; Necromancer
+    0.40 → 1.09.
+  - Class win rates moved by at most 0.012 (Barbarian 0.544 → 0.532).
 - **Martial Archetypes changed** (6th-level players who consider one, 400 per class):
   - Barbarian Berserker 54 → 245 (Momentum Unlimited now refills Rage and Brutal Strike)
   - Warrior Juggernaut 0 → 239 and Marauder 78 → 1 (Phoenix Tears 3/Refresh counts three uses)
@@ -456,9 +456,10 @@ would take the same pieces from the game state instead of a typical kit:
 
 `sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
 true (mirror matches are 50/50, skill wins, armor helps, more lives means longer games, Heal
-doesn't hurt, …). **class-stack** fails as a structural limit of Phase 1. Since caster doctrines,
-**level** fails (0.569; see below), and at full scale **no-abilities** fails (0.453) because of a
-side bias that predates doctrines (below). At half scale (`pytest`) no-abilities passes.
+doesn't hurt, …). **class-stack** fails as a structural limit of Phase 1. **level** fails:
+0.567 over its 600 games before the context valuation, 0.512 after it (see below).
+**no-abilities** now passes at full scale too (0.484, the same before and after the valuation).
+The side bias described below had shown 0.453.
 
 - **Level after the context valuation.** Over 3,000 games of the check's kind, 6th-level players
   beat the same classes at 1st level 0.511 of the time with the new usefulness score, against
@@ -564,7 +565,7 @@ side bias that predates doctrines (below). At half scale (`pytest`) no-abilities
     that refills.
 - **A counting quirk.** Amplification's "no other source of Extension" is counted as applied each
   time the engine checks the bearer's Extension (`Game._meta_use`, every tick from
-  `_offer_extension`): 147,000 times in 2,000 games. It is accounting only; play is unaffected.
+  `_offer_extension`): 146,000 times in 2,000 games. It is accounting only; play is unaffected.
 - **Healers slipped slightly.** After this round's fixes Healers win 0.430 in the smoke run (0.447
   before; the intervals overlap). It is not the Archetypes (0.427 with none). Likely causes: Raise
   Dead and Phoenix Tears score lower now that their drawbacks count, and Healers spend time
