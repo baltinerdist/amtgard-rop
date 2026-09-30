@@ -199,6 +199,11 @@ def _economy_frequency(p: Player, rules: Rules, rng: random.Random, sheet: Class
     else:
         u = p.uses.get(rules.by_name.get(scope.lower(), ""))
         targets = [u] if u is not None else []
+        if change == "double-uses" and any(
+                e.kind == "ability.modify" and e.params.get("ability") == scope
+                and (fx.modify_change(str(e.params.get("change", ""))) or "").startswith(("frequency", "arrows-"))
+                for e in ab.effects):
+            return   # the ability.modify twin states the resulting frequency ("becomes 2/Life ...")
     how = fx.FREQUENCY_SET.get(scope)
     for u in targets:
         if how == "per-purchase":
@@ -212,6 +217,35 @@ def _economy_frequency(p: Player, rules: Rules, rng: random.Random, sheet: Class
         elif change == "unlimited":
             u.max = u.left = None
             u.per = "unlimited"
+
+
+def _ability_modify(p: Player, rules: Rules, ab: Ability, prm: dict) -> None:
+    """An Archetype changing a named ability's frequency. Most are recorded twice (as ability.modify
+    and economy.frequency, metadata convention 34); setting a Charge or a frequency is idempotent,
+    and a doubling is applied once, by the economy.frequency twin when there is one."""
+    name = str(prm.get("ability", ""))
+    u = p.uses.get(rules.by_name.get(name.lower(), ""))
+    change = str(prm.get("change", ""))
+    how = fx.modify_change(change)
+    if u is None or how is None:
+        return
+    if how == "frequency":
+        f = freqmod.parse(change)
+        u.per, u.max, u.left, u.charge = f.per, f.uses, f.uses, f.charge or u.charge
+    elif how == "no-charge":
+        u.charge = None
+    elif how == "unlimited":
+        u.max = u.left = None
+        u.per = "unlimited"
+    elif how.startswith("charge-x"):
+        _set_charge(u, how)
+    elif how.startswith("arrows-"):
+        u.max = u.left = int(how.split("-")[1])
+    elif how == "double-uses":
+        twin = any(e.kind == "economy.frequency" and e.params.get("change") == "double-uses"
+                   and str(e.params.get("scope", "")).startswith(name) for e in ab.effects)
+        if not twin:
+            _double(u)
 
 
 def _experienced(p: Player, rng: random.Random, sheet: ClassSheet | None, per: str, change: str) -> bool:
@@ -261,12 +295,7 @@ def _apply_other_loadout_effects(p: Player, rules: Rules, rng: random.Random, sh
                 p.uses.pop(slug, None)
                 p.traits = [t for t in p.traits if t.slug != slug]
             elif kind == "ability.modify":
-                slug = rules.by_name.get(str(prm.get("ability", "")).lower())
-                change = str(prm.get("change", ""))
-                if slug in p.uses and fx.becomes_frequency(change):
-                    f = freqmod.parse(change)
-                    u = p.uses[slug]
-                    u.per, u.max, u.left, u.charge = f.per, f.uses, f.uses, f.charge or u.charge
+                _ability_modify(p, rules, ab, prm)
             elif kind == "economy.frequency":
                 if fx.loadout_handled(eff):
                     _economy_frequency(p, rules, rng, sheet, ab, prm)

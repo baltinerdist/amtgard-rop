@@ -384,6 +384,38 @@ _BECOMES_FREQ = re.compile(r"\bbecomes?\b.*\d+/(Life|Refresh)", re.I)
 _SHIELDS = ("small-shield", "medium-shield", "large-shield")
 
 
+def modify_change(change: str) -> str | None:
+    """The loadout change an Archetype's `ability.modify` describes, normalized; None if it is not a
+    frequency change the loadout applies."""
+    if becomes_frequency(change):
+        return "frequency"
+    if "no longer chargeable" in change:
+        return "no-charge"
+    if m := re.search(r"becomes Charge x(\d+)", change):
+        return f"charge-x{m.group(1)}"
+    if re.search(r"\bbecomes? unlimited\b", change):
+        return "unlimited"
+    if m := re.search(r"becomes (\d+) Arrows? / Unlimited", change):
+        return f"arrows-{m.group(1)}"
+    if "double the uses" in change:
+        return "double-uses"
+    return None
+
+
+# ability.modify changes the engine applies during play (Game), by a phrase of their text
+ENGINE_MODIFIES = (
+    "does not consume a use of Mend",                  # Artificer   (Game._complete)
+    "Mend can remove a wound from the bearer",         # Golem       (Game._complete)
+    "only one instance of Imbue may be active",        # Guardian    (Game.attach_enchantment)
+    "combined total of five Undead Minion",            # Necromancer (Game.attach_enchantment)
+    "works through their Cursed State",                # Vampirism   (Game._kill_trigger)
+)
+
+
+def engine_modify(change: str) -> str | None:
+    return next((k for k in ENGINE_MODIFIES if k in change), None)
+
+
 def becomes_frequency(change: str) -> bool:
     """'X becomes 2/Life Charge x3': a new frequency for a named ability (not an example in passing,
     such as Legend's 'each purchase gives double the uses (e.g. 1/Life becomes 2/Life)')."""
@@ -429,7 +461,7 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
     if eff.kind == "ability.remove":
         return named("ability")
     if eff.kind == "ability.modify":
-        return named("ability") and becomes_frequency(str(prm.get("change", "")))
+        return named("ability") and modify_change(str(prm.get("change", ""))) is not None
     if eff.kind == "economy.frequency":
         change = str(prm.get("change", ""))
         scope = str(prm.get("scope", ""))
@@ -544,16 +576,27 @@ def _modify_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str
     prm = eff.params
     if eff.timing != "while-active":
         return None
+    change = str(prm.get("change", ""))
+    if engine_modify(change) and ab.delivery in PASSIVE_DELIVERIES:
+        return "passive"
     if ab.delivery in ("archetype", "trait"):
         return "loadout" if loadout_handled(eff, names) else None
     if ab.delivery != "enchantment":
         return None
     # modifiers of an ability the same Enchantment grants: applied to the granted uses in Game._grant
-    change = str(prm.get("change", ""))
     if prm.get("requirement") or "only be cast with the bearer as the target" in change \
             or "ignores the requirement that the target has not moved" in change:
         return "passive"
     return None
+
+
+def _wound_heal_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    if eff.timing == "while-active":
+        # Golem: the bearer's wound is removed by Mend (Game._complete), paired with its ability.modify
+        mend = any(e.kind == "ability.modify" and engine_modify(str(e.params.get("change", ""))) ==
+                   "Mend can remove a wound from the bearer" for e in ab.effects)
+        return "passive" if mend and ab.delivery in PASSIVE_DELIVERIES else None
+    return "instant" if eff.timing in INSTANT_TIMINGS else None
 
 
 # Kinds whose handled mode is decided by a rule function (None = no-op for that instance).
@@ -561,6 +604,7 @@ MODE_RULES: dict[str, Callable[..., str | None]] = {
     "action.restrict": _restrict_mode,
     "ability.grant": _grant_mode,
     "ability.modify": _modify_mode,
+    "wound.heal": _wound_heal_mode,
 }
 
 

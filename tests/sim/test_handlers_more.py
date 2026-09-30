@@ -4,7 +4,7 @@ import random
 
 from sim.engine import effects as fx
 from sim.engine.loadout import _add, _apply_loadout_effects
-from sim.engine.state import LOCATIONS, Player, Uses
+from sim.engine.state import INF, LOCATIONS, Cast, Player, Uses
 from sim.rules import frequency
 from tests.sim.conftest import make_game, resolve, spec
 
@@ -287,10 +287,92 @@ def test_experienced_one_verbal_per_purchase(rules):
     assert sorted((s, u.charge) for s, u in p.uses.items() if u.charge) == [("heat-weapon", 5), ("mend", 5)]
 
 
+# ---------------------------------------------------------------- ability.modify
+
+def test_archetype_modify_pairs_apply_once(rules):
+    spy = kit(rules, "Assassin", ["spy"], picked=[("blink", "2/Life", "Self"), ("shadow-step", "2/Life", "Self")])
+    assert (spy.uses["blink"].charge, spy.uses["blink"].max, spy.uses["shadow-step"].charge) == (3, 2, 3)
+    bm = kit(rules, "Wizard", ["battlemage"], bought=[("ambulant", "1/Life", "")])
+    assert bm.uses["ambulant"].per == "unlimited"
+    hunter = kit(rules, "Scout", ["hunter"], picked=[("pinning-arrow", "1 Arrow / Unlimited", "")])
+    assert hunter.uses["pinning-arrow"].max == 2
+    legend = kit(rules, "Bard", ["legend"], bought=[("extension", "1/Life", "")])
+    assert legend.uses["extension"].max == 2, "doubled once, not by both records of the change"
+
+
+def test_golem_mend_removes_a_wound(rules):
+    g = make_game(rules, [spec("Wizard"), spec("Warrior")], [spec("Warrior")])
+    wiz, war, _ = g.players
+    resolve(g, wiz, "golem", war)
+    war.wounds.add("left_arm")
+    war.weapon_ok = False
+    resolve(g, wiz, "mend", war, rng="Touch")
+    assert not war.wounds and not war.weapon_ok, "a wound instead of a repair (ruling golem#1)"
+    assert g.applied[("golem", "wound.heal")] == 1
+
+
+def test_artificer_mend_on_equipment_is_free(rules):
+    g = make_game(rules, [spec("Archer"), spec("Warrior")], [spec("Warrior")])
+    arc, war, _ = g.players
+    arc.traits.append(rules.abilities["artificer"])
+    war.weapon_ok = False
+    u = uses_of(g, "mend", magical=False, rng="Touch")
+    u.max = u.left = 1
+    arc.casting = Cast(u, war.pid, 0)
+    g._complete(arc)
+    assert war.weapon_ok and u.left == 1
+    war.armor = {l: 0 for l in LOCATIONS}
+    arc.casting = Cast(u, war.pid, 0)
+    g._complete(arc)
+    assert u.left == 0, "a Mend on armor still uses it up"
+
+
+def test_guardian_one_imbue_and_necromancer_five_minions(rules):
+    g = make_game(rules, [spec("Paladin", level=6), spec("Warrior"), spec("Warrior"), spec("Healer", level=6),
+                          spec("Warrior"), spec("Warrior"), spec("Warrior"), spec("Warrior")], [spec("Warrior")])
+    pal, a, b, heal, *minions, _ = g.players
+    pal.traits.append(rules.abilities["guardian"])
+    resolve(g, pal, "imbue", a, rng="Touch")
+    resolve(g, pal, "imbue", b, rng="Touch")
+    assert g.fails[("imbue", "per-caster-limit")] == 1
+    for m in minions:
+        resolve(g, heal, "undead-minion", m, rng="Other")
+    assert g.fails[("undead-minion", "per-caster-limit")] == 1, "three per caster"
+    heal.traits.append(rules.abilities["necromancer"])
+    resolve(g, heal, "undead-minion", minions[-1], rng="Other")
+    assert sum(e.ability.slug == "undead-minion" for q in g.players for e in q.enchantments) == 4
+
+
+def test_cursed_adrenaline_only_with_vampirism(rules):
+    g = make_game(rules, [spec("Wizard"), spec("Barbarian")], [spec("Warrior")])
+    wiz, barb, war = g.players
+    adr = uses_of(g, "adrenaline", magical=False, rng="Self")
+    adr.per, adr.max, adr.left = "unlimited", None, None
+    barb.uses = {"adrenaline": adr}
+    barb.states["cursed"] = INF
+    barb.wounds.add("left_arm")
+    g.kill(war, barb, "melee")
+    assert barb.wounds, "Cursed: Immune to Spirit, so Adrenaline has no effect"
+    resolve(g, wiz, "vampirism", barb, rng="Other")
+    war.alive = True
+    g.kill(war, barb, "melee")
+    assert not barb.wounds and g.applied[("vampirism", "ability.modify")] == 1
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players
     assert "blood-and-thunder" in barb.uses
+    barb.uses = {"blood-and-thunder": barb.uses["blood-and-thunder"]}
     g.kill(wiz, barb, "melee")
     assert any(e.ability.slug == "blessing-against-wounds" and not e.magical for e in barb.enchantments)
     assert g.applied[("blood-and-thunder", "ability.grant")] == 1
+
+
+def test_one_kill_trigger_per_kill(rules):
+    g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
+    barb, wiz = g.players
+    triggers = [s for s, u in barb.uses.items() if "kill-trigger" in u.ability.properties]
+    assert len(triggers) > 1
+    g.kill(wiz, barb, "melee")
+    assert sum(g.casts[s] for s in triggers) == 1

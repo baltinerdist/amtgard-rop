@@ -244,10 +244,10 @@ class Game:
             self._as_per_cache[ab.slug] = effs
         return effs
 
-    def immune(self, p: Player, school: str) -> bool:
+    def immune(self, p: Player, school: str, ignore_cursed: bool = False) -> bool:
         if not school:
             return False
-        if school == "Spirit" and p.states.get("cursed", -1) > self.t:
+        if school == "Spirit" and not ignore_cursed and p.states.get("cursed", -1) > self.t:
             return True
         for ab, ench in self._passive_sources(p):
             for eff in self._passive_effects(ab):
@@ -287,6 +287,21 @@ class Game:
                     specials.add(eff.params.get("effect"))
         return frozenset(specials)
 
+    def modifier(self, p: Player, phrase: str) -> Ability | None:
+        """The worn Enchantment, Trait or Archetype carrying an engine-level ability.modify (see
+        effects.ENGINE_MODIFIES), if p has one."""
+        for ab, _ in self._passive_sources(p):
+            for eff in ab.effects:
+                if eff.kind == "ability.modify" and fx.engine_modify(str(eff.params.get("change", ""))) == phrase:
+                    return ab
+        return None
+
+    @staticmethod
+    def _modify_target(ab: Ability) -> str:
+        """The ability name an engine-level ability.modify on ab refers to."""
+        return next((str(e.params.get("ability", "")) for e in ab.effects
+                     if e.kind == "ability.modify" and fx.engine_modify(str(e.params.get("change", "")))), "")
+
     def _ancestral_magic_armor(self, p: Player) -> Ench | None:
         for e in p.enchantments:
             if e.ability.effects_of("armor.magic") and any(
@@ -322,6 +337,18 @@ class Game:
         if any(e.ability.slug == ab.slug for e in target.enchantments):
             self.fails[(ab.slug, "already-worn")] += 1
             return False
+        cap = self._per_caster_cap(ab, caster)
+        if cap is not None:
+            active = sum(1 for q in self.players for e in q.enchantments
+                         if e.ability.slug == ab.slug and e.caster == caster.pid)
+            base = self.PER_CASTER_CAPS.get(ab.slug)
+            if active >= cap:
+                self.fails[(ab.slug, "per-caster-limit")] += 1
+                if base is None or cap < base:          # Guardian's one-Imbue limit bit
+                    self.applied[("guardian", "ability.modify")] += 1
+                return False
+            if base is not None and active >= base:     # Necromancer's extra Minions used
+                self.applied[("necromancer", "ability.modify")] += 1
         # Essence Graft: the bearer may only wear (m) Enchantments from the Graft's caster
         if uses.magical:
             graft = next((e for e in target.enchantments
@@ -374,6 +401,17 @@ class Game:
                 u.drop_reqs = u.drop_reqs | {"target-not-moved-5ft"}
         key = slug if slug not in holder.uses else f"{slug}@{ench.ability.slug}"
         holder.uses[key] = u
+
+    # Per-caster limits written in the abilities' Limitations: Golem "a single Golem Enchantment at a
+    # time", Undead Minion "not more than three".
+    PER_CASTER_CAPS = {"golem": 1, "undead-minion": 3}
+
+    def _per_caster_cap(self, ab: Ability, caster: Player) -> int | None:
+        if ab.slug == "undead-minion" and self.modifier(caster, "combined total of five Undead Minion"):
+            return 5      # Necromancer
+        if ab.slug == "imbue" and self.modifier(caster, "only one instance of Imbue may be active"):
+            return 1      # Guardian
+        return self.PER_CASTER_CAPS.get(ab.slug)
 
     def _activate(self, p: Player, ench: Ench) -> None:
         ab = ench.ability
@@ -563,21 +601,32 @@ class Game:
         """Kill Trigger abilities and abilities cast immediately after a kill (Assassinate)."""
         if not k.alive or k.has_state("suppressed", self.t):
             return
+        # "may only use one Kill Trigger ability per eligible killing blow": the most valuable usable one
+        triggers = sorted((u for u in k.uses.values() if "kill-trigger" in u.ability.properties),
+                          key=lambda u: (-self.value(u.ability, k), u.slug))
+        for u in triggers:
+            if self._fire_after_kill(k, u, k):
+                break
         for u in list(k.uses.values()):
-            ab = u.ability
-            if not u.available():
-                continue
-            if "kill-trigger" in ab.properties:
-                target = k
-            elif "immediately-after-kill" in ab.requirements:
-                target = victim
-            else:
-                continue
-            if self.value(ab, k) <= 0:
-                continue
-            u.spend()
-            self.casts[u.slug] += 1
-            self.apply_effects(ab, ("on-kill", "on-cast"), Ctx(ab, k, target, bearer=k))
+            if "kill-trigger" not in u.ability.properties and "immediately-after-kill" in u.ability.requirements:
+                self._fire_after_kill(k, u, victim)
+
+    def _fire_after_kill(self, k: Player, u: Uses, target: Player) -> bool:
+        ab = u.ability
+        if not u.available() or self.value(ab, k) <= 0:
+            return False
+        if target is k and "bypass-immunities" not in ab.properties and self.immune(k, ab.school):
+            # e.g. a Cursed player is Immune to Spirit, so their own Adrenaline has no effect;
+            # Vampirism's Adrenaline works through Cursed (ruling vampirism#1: any Adrenaline)
+            vamp = self.modifier(k, "works through their Cursed State")
+            if vamp is None or ab.name != self._modify_target(vamp) \
+                    or self.immune(k, ab.school, ignore_cursed=True):
+                return False
+            self.applied[(vamp.slug, "ability.modify")] += 1
+        u.spend()
+        self.casts[u.slug] += 1
+        self.apply_effects(ab, ("on-kill", "on-cast"), Ctx(ab, k, target, bearer=k))
+        return True
 
     def _team_wipe_check(self, team: int) -> None:
         """Mutual Annihilation: if everyone on a team is dead, dead players advance to their next life."""
@@ -757,7 +806,21 @@ class Game:
                 return
             self.attach_enchantment(target, uses, p)
             return
-        self.apply_effects(ab, ("on-cast",), Ctx(ab, p, target, bearer=p))
+        if ab.slug == "mend" and target.wounds:
+            golem = self.modifier(target, "Mend can remove a wound from the bearer")
+            if golem is not None:
+                # Golem: Mend removes one wound from the bearer, in place of a repair (ruling golem#1)
+                target.wounds.discard(sorted(target.wounds)[0])
+                self.applied[(golem.slug, "ability.modify")] += 1
+                self.applied[(golem.slug, "wound.heal")] += 1
+                return
+        done = self.apply_effects(ab, ("on-cast",), Ctx(ab, p, target, bearer=p))
+        if ab.slug == "mend" and "equipment.repair" in done:
+            art = self.modifier(p, "does not consume a use of Mend")
+            if art is not None:
+                # Artificer: mending a weapon or shield gives the use back (one had to remain to cast)
+                uses.restore(1)
+                self.applied[(art.slug, "ability.modify")] += 1
 
     def _projectile(self, p: Player, uses: Uses, target: Player) -> None:
         ab = uses.ability
@@ -797,13 +860,15 @@ class Game:
         if self.targetable(target) and self.rng.random() < self.rules.a("projectiles.arrow_p_hit"):
             self.hit(target, p, "arrow", specials=frozenset({"armor-breaking"}), kind="arrow")
 
-    def apply_effects(self, ab: Ability, timings: tuple[str, ...], ctx: Ctx) -> None:
-        # A Verbal with a choice (Mend, Release, Steal Life Essence) applies only the first effect
-        # that works within each polarity group: e.g. Mend repairs a weapon, else a point of armor.
-        # action.restrict effects are never alternatives: Insult's has-choice is the target's choice
-        # (E2), and its two restrictions are parts of one effect.
+    def apply_effects(self, ab: Ability, timings: tuple[str, ...], ctx: Ctx) -> list[str]:
+        """Run ab's handled effects with these timings; returns the kinds that took effect.
+        A Verbal with a choice (Mend, Release, Steal Life Essence) applies only the first effect
+        that works within each polarity group: e.g. Mend repairs a weapon, else a point of armor.
+        action.restrict effects are never alternatives: Insult's has-choice is the target's choice
+        (E2), and its two restrictions are parts of one effect."""
         choice = "has-choice" in ab.properties and ab.delivery == "verbal"
         chosen: set[str] = set()
+        done: list[str] = []
         for eff in ab.effects:
             if choice and eff.polarity in chosen and eff.kind != "action.restrict":
                 continue
@@ -816,8 +881,10 @@ class Game:
                 continue
             if fx.INSTANT[eff.kind](self, eff, ctx):
                 self.applied[(ab.slug, eff.kind)] += 1
+                done.append(eff.kind)
                 if choice:
                     chosen.add(eff.polarity)
+        return done
 
     # ------------------------------------------------------------------ the loop
 
