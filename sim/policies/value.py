@@ -58,10 +58,12 @@ results don't depend on call order.
 from __future__ import annotations
 
 import math
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterable
 
 from sim.engine.effects import EXPERIENCED_SCOPES, FREQUENCY_GROUPS, is_handled
+from sim.policies import calibration
 from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, Effect
 
@@ -69,10 +71,17 @@ if TYPE_CHECKING:
     from sim.engine.state import Player
     from sim.rules.compile import Rules
 
-STATE_WEIGHT = {"stunned": 6, "frozen": 4, "stopped": 4, "suppressed": 3, "fragile": 4,
-                "insubstantial": 3, "cursed": 2}
+# ---------------------------------------------------------------- anchor weights
+#
+# The HAND_* tables are the hand-set weights. They are the fallback, and the value of every weight
+# the calibration doesn't measure. The tables in use (KIND_WEIGHT, STATE_WEIGHT, ...) come from
+# sim/policies/calibration.py: the measured weight where sim/data/value-calibration.json has one
+# (see "Calibration" in the module docstring), the hand weight otherwise; TABLES.sources says which.
 
-KIND_WEIGHT = {
+HAND_STATE_WEIGHT = {"stunned": 6, "frozen": 4, "stopped": 4, "suppressed": 3, "fragile": 4,
+                     "insubstantial": 3, "cursed": 2}
+
+HAND_KIND_WEIGHT = {
     "death.cause": 10, "life.revive": 9, "death.prevent": 7, "wound.inflict": 5, "wound.heal": 4,
     "defense.immunity": 3, "defense.resistance": 3, "defense.negate-hit": 4, "defense.unaffected": 3,
     "armor.repair": 2, "armor.destroy": 3, "armor.damage": 1, "enchantment.remove": 3,
@@ -84,7 +93,7 @@ KIND_WEIGHT = {
 
 # Special effects granted to weapons or carried by a ball or arrow. Wounds Kill turns every limb hit
 # into a kill, so it is worth far more than breaking a point of armor.
-SPECIAL_WEIGHT = {"wounds-kill": 6, "armor-destroying": 3, "armor-breaking": 2, "phasing": 2,
+HAND_SPECIAL_WEIGHT = {"wounds-kill": 6, "armor-destroying": 3, "armor-breaking": 2, "phasing": 2,
                   "shield-crushing": 1.5, "weapon-destroying": 1, "shield-destroying": 1}
 
 # What a drawback costs, by kind, when it isn't a State or a restriction and nothing in the
@@ -100,8 +109,62 @@ OFFENSE = {"death.cause", "wound.inflict", "move.to-base", "armor.destroy", "enc
 
 # Equipment a Magic User can buy: a shield blocks blows in melee, a Great weapon is Armor Breaking
 # and Shield Crushing. A larger shield permit also permits the smaller, so only the best counts.
-EQUIPMENT_WEIGHT = {"small-shield": 2.0, "medium-shield": 3.0, "large-shield": 3.5, "great-weapon": 2.0,
-                    "bows": 4.0}
+HAND_EQUIPMENT_WEIGHT = {"small-shield": 2.0, "medium-shield": 3.0, "large-shield": 3.5, "great-weapon": 2.0,
+                         "bows": 4.0}
+
+# Per-unit weights. charge_second None: `policy.value_per_threat_second` (sim/data/assumptions.json).
+HAND_SCALAR_WEIGHT = {
+    "armor_point": 2.0,          # a point of worn armor on every location (armor.limit increase)
+    "armor_loss_point": 2.0,     # a point of worn armor taken away ("may not wear armor")
+    "magic_armor_point": 2.0,    # a point of Magic Armor (armor.magic)
+    "charge_second": None,       # a second of Charge incantation saved (Song of Power)
+}
+# Factors on compositional values (module docstring, "Calibration").
+HAND_FACTOR = {
+    "stack_share": 0.5,          # share of a filler Enchantment an extra slot adds: the filler could
+                                 # usually go on another teammate; the slot adds it when none is free
+    "refill_factor": 1.0,        # share of the refilled ability an instant Charge is worth
+    "fighter_heal": 1.0,         # share of a Heal's weight a fighter gets from it
+}
+HAND = {"kind": HAND_KIND_WEIGHT, "state": HAND_STATE_WEIGHT, "special": HAND_SPECIAL_WEIGHT,
+        "equipment": HAND_EQUIPMENT_WEIGHT, "scalar": HAND_SCALAR_WEIGHT, "factor": HAND_FACTOR}
+
+TABLES = calibration.tables(HAND, calibration.load())
+
+
+def _install(t: "calibration.Tables") -> None:
+    global TABLES, KIND_WEIGHT, STATE_WEIGHT, SPECIAL_WEIGHT, EQUIPMENT_WEIGHT, SCALAR_WEIGHT, FACTOR
+    TABLES = t
+    KIND_WEIGHT, STATE_WEIGHT = t.weights["kind"], t.weights["state"]
+    SPECIAL_WEIGHT, EQUIPMENT_WEIGHT = t.weights["special"], t.weights["equipment"]
+    SCALAR_WEIGHT, FACTOR = t.weights["scalar"], t.weights["factor"]
+
+
+_install(TABLES)
+
+
+@contextmanager
+def hand_weights():
+    """Value with the hand tables for the duration (the calibration harness's residuals). Values
+    are memoized per rules object: use a rules object of your own (build_rules())."""
+    saved = TABLES
+    _install(calibration.tables(HAND, None))
+    try:
+        yield
+    finally:
+        _install(saved)
+
+
+@contextmanager
+def using(doc: dict | None):
+    """Value with the tables built from this calibration document (None: hand) for the duration.
+    Use a rules object of your own, as for hand_weights()."""
+    saved = TABLES
+    _install(calibration.tables(HAND, doc))
+    try:
+        yield
+    finally:
+        _install(saved)
 
 # ---------------------------------------------------------------- frequency (shared with buy.py)
 
@@ -256,10 +319,12 @@ def restrict_cost(what: str, role: str, p: "Player | Kit | None" = None) -> floa
         return (8.0 if bow else 0.0) if bow is not None else (8.0 if role == "archer" else 0.0)
     if what == "wear-armor":
         armor = known("armor_max")
-        return 2.0 * armor if armor is not None else (4.0 if melee else 0.5)
+        per = SCALAR_WEIGHT["armor_loss_point"]
+        return per * armor if armor is not None else per * (2.0 if melee else 0.25)
     if what == "wield-shields":
         shield = known("shield")
-        return EQUIPMENT_WEIGHT.get(f"{shield}-shield", 0.0) if shield is not None else (2.0 if melee else 0.5)
+        typical = EQUIPMENT_WEIGHT["small-shield"] * (1.0 if melee else 0.25)
+        return EQUIPMENT_WEIGHT.get(f"{shield}-shield", 0.0) if shield is not None else typical
     if what == "wield-large-shields":
         shield = known("shield")
         return (0.5 if shield == "large" else 0.0) if shield is not None else 0.5
@@ -485,7 +550,7 @@ class _Eval:
         if k == "ability.grant":
             return self.grant(ab, eff, role, ctx)
         if k in _REFILLS:
-            return self.refill(ab, eff, role, ctx)
+            return self.refill_value(ab, eff, role, ctx)
         if k == "enchantment.extra-slot":
             return self.extra_slot(ab, eff, role, ctx)
         if k == "ability.charge-faster":
@@ -574,7 +639,27 @@ class _Eval:
             return f"restore {RESTORE_ALL_USES} per-life uses", mean * RESTORE_ALL_USES
         return ("charge" if eff.kind == "ability.charge" else "restore") + " a typical use", mean
 
+    def refill_value(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
+        """`refill`, with an instant Charge scaled by what one is worth in play (`refill_factor`)."""
+        label, v = self.refill(ab, eff, role, ctx)
+        if eff.kind == "ability.charge":
+            f = refill_factor(self.rules)
+            if f != 1.0:
+                return f"{label} x{f:.2f} (instant Charge in play)", v * f
+        return label, v
+
+    def chargeable_mean(self, role: str) -> float:
+        """What refilling a typical chargeable ability is worth to a typical player of the role."""
+        kit = typical_kit(self.rules, role)
+        return self.mean_value((a for h, a in self.held_abilities(kit, None, lambda h, a: bool(h.charge)
+                                                                       and not any(e.kind in _REFILLS for e in a.effects))),
+                               role, None)
+
     def extra_slot(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
+        """An extra Enchantment slot adds only the stacking: the Enchantment that fills it could
+        usually have gone on another teammate instead. So it is worth the best fillers times
+        `stack_share`, the share of a filler's value a slot adds (measured by giving fighters an
+        extra slot; module docstring)."""
         only = str(eff.params.get("only", "any"))
         count = int(eff.params.get("count", 1) or 1)
         holder = ctx.holder if ctx is not None else None
@@ -582,12 +667,19 @@ class _Eval:
         if _self_range(ab):
             # teammates fill it (Evolution), and only a Magic User teammate who picks this bearer
             pool, sub = team_kit(self.rules), _sub(ctx, None)
-            fill = sum(c.magic_user for c in self.rules.classes.values()) / max(1, len(self.rules.classes))
+            fill = mu_share(self.rules)
         else:
             pool, sub = self.kit_or_typical(holder, role, ab.slug), _sub(ctx, holder)
+        share = stack_share(self.rules)
+        v = fill * share * self.slot_fillers(pool, sub, ctx, role, only, count, ab.slug)
+        return (f"{count} slot(s) for the best Enchantments ({only}) x{share:.2f} stacking"
+                + (f", filled {fill:.2f}" if fill < 1 else "")), v
 
+    def slot_fillers(self, pool: Kit, sub: Ctx | None, ctx: Ctx | None, role: str, only: str, count: int,
+                     own: str = "") -> float:
+        """The best `count` Enchantments in `pool` that could fill an extra slot, k-th times COPY_DECAY ** k."""
         def fills(h: Held, a: Ability) -> bool:
-            if a.delivery != "enchantment" or a.slug == ab.slug or "exempt-from-enchantment-limit" in a.properties:
+            if a.delivery != "enchantment" or a.slug == own or "exempt-from-enchantment-limit" in a.properties:
                 return False
             if a.effects_of("enchantment.extra-slot") or (h.range or a.range) == "Self":
                 return False          # "not in conjunction with ... similar abilities"; cast on another
@@ -599,8 +691,7 @@ class _Eval:
 
         cands = {a.slug: a for _, a in self.held_abilities(pool, ctx, fills)}
         vals = sorted((self.value(a, role, sub) for a in cands.values()), reverse=True)[:count]
-        v = fill * sum(x * COPY_DECAY ** k for k, x in enumerate(vals) if x > 0)
-        return f"{count} slot(s) for the best Enchantments ({only})" + (f", filled {fill:.2f}" if fill < 1 else ""), v
+        return sum(x * COPY_DECAY ** k for k, x in enumerate(vals) if x > 0)
 
     def charge_faster(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
         rules = self.rules
@@ -610,7 +701,7 @@ class _Eval:
         if not entries:
             return "no chargeable abilities", 0.0
         saved = sum((n - max(1, n // 2)) * per_rep for n in entries) / len(entries)
-        v = saved * rules.a("policy.value_per_threat_second") * rules.a("range.p_in_range")["20'"]
+        v = saved * charge_second(rules) * rules.a("range.p_in_range")["20'"]
         return f"{saved:.0f} s saved per Charge (x{charges})", v
 
     def meta(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
@@ -696,6 +787,51 @@ class _Eval:
                    for gt, w in sorted(shares.items()) if gt in GAME_TYPES)
 
 
+def mu_share(rules: "Rules") -> float:
+    """Share of classes that are Magic Users: the chance a teammate can fill a Self extra slot."""
+    return sum(c.magic_user for c in rules.classes.values()) / max(1, len(rules.classes))
+
+
+def charge_second(rules: "Rules") -> float:
+    """Value of a second of Charge incantation saved: calibrated, else `policy.value_per_threat_second`."""
+    w = SCALAR_WEIGHT.get("charge_second")
+    return w if w is not None else rules.a("policy.value_per_threat_second")
+
+
+def _factor(rules: "Rules", name: str, compositional) -> float:
+    """A calibrated factor: the measured score over the compositional value, in [0, 1]; the hand
+    factor when the calibration has none. Computed once per rules object."""
+    measured = TABLES.measured.get(f"factor.{name}")
+    if measured is None:
+        return FACTOR[name]
+    key = ("factor", name, id(TABLES))
+    memo = _memo(rules)
+    if key not in memo:
+        c = compositional(_Eval(rules))
+        memo[key] = min(1.0, max(0.0, measured / c)) if c > 0 else FACTOR[name]
+    return memo[key]
+
+
+def stack_share(rules: "Rules") -> float:
+    """The share of a filler Enchantment an extra slot adds. Calibrated: the measured value of an
+    extra slot on a fighter, whom teammates fill, over the compositional value of that slot (the
+    best Enchantment on the class lists times the Magic User share)."""
+    return _factor(rules, "stack_share", lambda ev: mu_share(rules) * ev.slot_fillers(
+        team_kit(rules), None, None, "fighter", "any", 1))
+
+
+def refill_factor(rules: "Rules") -> float:
+    """The share of the refilled ability an instant Charge (Momentum, Steal Life Essence, Empower's
+    kind) is worth in play. Calibrated: the measured value of an instant Charge per life over the
+    mean value of a typical chargeable ability of the recipients' roles."""
+    roles = TABLES.roles.get("factor.refill_factor") or {"fighter": 1}
+
+    def comp(ev: "_Eval") -> float:
+        n = sum(roles.values())
+        return sum(k / n * ev.chargeable_mean(r) for r, k in roles.items() if r) if n else 0.0
+    return _factor(rules, "refill_factor", comp)
+
+
 class _UsesView:
     """What FREQUENCY_GROUPS reads from a use."""
     __slots__ = ("ability", "purchased", "per")
@@ -709,13 +845,13 @@ class _UsesView:
 def direct_benefit(ability: Ability, eff: Effect, role: str) -> float:
     """A handled, non-drawback effect's flat contribution (the tables at the top)."""
     if eff.kind == "armor.limit" and eff.params.get("change") == "increase":
-        return 2.0 * int(eff.params.get("points", 1))  # like Magic Armor, but it can be repaired
+        return SCALAR_WEIGHT["armor_point"] * int(eff.params.get("points", 1))  # worn armor: it can be repaired
     if eff.kind == "state.apply":
         w = STATE_WEIGHT.get(eff.params.get("state", ""), 1)
         if eff.subject in ("caster", "bearer"):
             w = 0.5  # a State on yourself is usually a cost, not a benefit
     elif eff.kind == "armor.magic":
-        w = 2 * int(eff.params.get("points", 1))
+        w = SCALAR_WEIGHT["magic_armor_point"] * int(eff.params.get("points", 1))
     elif eff.kind == "special-effect.grant":
         w = SPECIAL_WEIGHT.get(eff.params.get("effect", ""), 2)
         if eff.params.get("on") == "next-wound":
@@ -724,6 +860,8 @@ def direct_benefit(ability: Ability, eff: Effect, role: str) -> float:
         w = KIND_WEIGHT.get(eff.kind, UNPRICED_WEIGHT)
     if role == "support" and eff.kind in HEALING:
         w *= 1.5
+    if role == "fighter" and eff.kind == "wound.heal":
+        w *= FACTOR["fighter_heal"]     # how much of a Heal a fighter uses (calibration)
     if role == "caster" and eff.kind in OFFENSE:
         w *= 1.3
     return w

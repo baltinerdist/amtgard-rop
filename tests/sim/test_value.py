@@ -6,7 +6,7 @@ import math
 import pytest
 
 from sim.policies import buy
-from sim.policies.value import Ctx, Held, Kit, breakdown, drawback_cost, value
+from sim.policies.value import Ctx, Held, Kit, breakdown, drawback_cost, stack_share, value
 from sim.rules.compile import build_rules
 
 
@@ -63,7 +63,7 @@ def test_named_enablers_follow_their_targets(fresh):
     assert triage["e1"] == pytest.approx(heal * (1 + 0.6 + 0.36))       # three strips
 
 
-def test_extra_slot_is_worth_the_best_enchantment_the_caster_holds(fresh):
+def test_extra_slot_is_worth_stacking_the_best_enchantment_the_caster_holds(fresh):
     attuned = fresh.abilities["attuned"]
     weak = Kit("caster", (Held("barkskin"),))
     strong = Kit("caster", (Held("barkskin"), Held("flame-blade")))
@@ -71,8 +71,11 @@ def test_extra_slot_is_worth_the_best_enchantment_the_caster_holds(fresh):
     v_weak = value(attuned, "caster", Ctx(holder=weak), fresh)
     v_strong = value(attuned, "caster", Ctx(holder=strong), fresh)
     assert value(attuned, "caster", Ctx(holder=none), fresh) == 0.0
-    assert v_weak == pytest.approx(value(fresh.abilities["barkskin"], "caster", rules=fresh))
-    assert v_strong == pytest.approx(value(fresh.abilities["flame-blade"], "caster", rules=fresh))
+    # only the stacking counts: the filler could otherwise go on another teammate
+    share = stack_share(fresh)
+    assert 0.0 < share <= 1.0
+    assert v_weak == pytest.approx(share * value(fresh.abilities["barkskin"], "caster", rules=fresh))
+    assert v_strong == pytest.approx(share * value(fresh.abilities["flame-blade"], "caster", rules=fresh))
 
 
 def test_refills_follow_the_spent_ability(fresh):
