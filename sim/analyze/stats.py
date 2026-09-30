@@ -1,8 +1,9 @@
 """Small statistics helpers shared by the analyses.
 
 Players in the same game share an outcome (a whole team wins or loses together), so a player-level
-interval that treats each player-game as independent is too narrow. The helpers here treat the
-**game** as the unit of resampling:
+interval that treats each player-game as independent is wrong: too narrow when the players counted
+tend to be on the same team, too wide when they are split across teams (one wins, one loses). The
+helpers here treat the **game** as the unit of resampling:
 
 - `cluster_ratio_ci`   cluster-robust (sandwich) interval for a ratio of sums, e.g. wins / player-games,
                        with each game as one cluster. Fast and deterministic; used for class win rates.

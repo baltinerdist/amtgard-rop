@@ -160,7 +160,9 @@ All values are in `data/assumptions.json`, and each has a unit and a reason. To 
 
 ## Reading results
 
-- **Player-level win rates** use **game-clustered** intervals: players in the same game share its outcome, so each game is one cluster (a cluster-robust sandwich estimate). The naive Wilson interval is still printed next to it. The design effect (`deff`) says how much wider the honest interval is.
+- **Player-level win rates** use **game-clustered** intervals: players in the same game share its outcome, so each game is one cluster (a cluster-robust sandwich estimate). The naive Wilson interval is still printed next to it. The design effect (`deff`) is the ratio of the clustered variance to the naive one.
+  - For **class** win rates the clustered interval is slightly *narrower* (deff ≈ 0.6–0.9 in the mixed preset). In about half the games a class has players on both teams, and one of them wins while the other loses, so the correlation within a game is negative. A cluster bootstrap agrees to within 0.002.
+  - Groupings that sit on one team (for example team or balance method) get the wider interval you would expect.
 - **Team- and game-level measures** are one row per game already.
 - **Ablation** compares the holder team's result with and without the ability, over the same seeds, with a **paired-by-seed** interval.
   - Paired seeds align the rosters, but play diverges once the ability would have mattered. That adds noise, not bias.

@@ -139,7 +139,8 @@ Baseline: ${B.games} games, mean length ${f(B.mean_seconds, 0)} s, ${B.draws} dr
 const wr = B.class_winrates;
 h += `<h2>Class win rates (baseline)</h2>
 <p class="small muted">The dark bar is the <b>game-clustered</b> 95% interval: players in the same game share an outcome, so each game is one cluster.
-The pale band is the naive interval that treats players as independent. The design effect is how much the clustered variance exceeds the naive one. Draws are left out.</p>`;
+The pale band is the naive interval that treats players as independent. The design effect is the clustered variance divided by the naive one.
+It can be below 1: when a class has players on both teams of a game, one wins and one loses, so their outcomes are negatively correlated. Draws are left out.</p>`;
 h += table([
   {h: "Class", f: (r) => esc(r.cls), v: (r) => r.cls},
   {h: "Win rate", n: 1, f: (r) => pct(r.win_rate), v: (r) => r.win_rate},
