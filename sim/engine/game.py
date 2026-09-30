@@ -442,7 +442,7 @@ class Game:
                                         range="Touch", ench=ench)
             elif k == "enchantment.extra-slot":
                 p.ench_slots += int(eff.params.get("count", 1))
-            elif k == "state.apply" and eff.duration_type in ("while-worn", "permanent"):
+            elif k == "state.apply" and eff.duration_type in fx.PASSIVE_STATE_DURATIONS and fx.is_handled(ab, eff):
                 self.apply_state(p, eff.params.get("state", ""), INF)
 
     def remove_enchantment(self, p: Player, ench: Ench) -> None:
@@ -459,7 +459,7 @@ class Game:
                 continue
             if eff.kind == "enchantment.extra-slot":
                 p.ench_slots = max(1, p.ench_slots - int(eff.params.get("count", 1)))
-            elif eff.kind == "state.apply" and eff.duration_type in ("while-worn", "permanent"):
+            elif eff.kind == "state.apply" and eff.duration_type in fx.PASSIVE_STATE_DURATIONS and fx.is_handled(ench.ability, eff):
                 p.states.pop(eff.params.get("state", ""), None)
         self._recompute_magic_armor(p)
 
@@ -471,6 +471,25 @@ class Game:
                     best = max(best, int(eff.params.get("points", 1)))
         for l in LOCATIONS:
             p.magic_armor[l] = min(p.magic_armor.get(l, 0), best)
+
+    def arrival_time(self, p: Player) -> float:
+        """When a player sent to base now gets there (the rejoin time stands for the walk)."""
+        return self.t + self.rules.a("respawn.rejoin_seconds")
+
+    def _insubstantial_choice(self, p: Player, ench: Ench) -> None:
+        """Gift of Air / Song of Survival: right after activating, the bearer chooses option 1
+        (Insubstantial in place, may exit at any time) or option 2 (Insubstantial return to base as
+        Forced Movement, may not exit early, exits on arrival). The choice is random, like other
+        chosen options. Option 2's lock is applied before its State."""
+        ab = ench.ability
+        want = self.rng.choice(("until-removed", "until-arrival"))
+        effs = sorted((e for e in ab.effects if e.timing == "on-choice" and e.duration_type == want),
+                      key=lambda e: e.kind != "action.restrict")
+        ctx = Ctx(ab, p, p, bearer=p, ench=ench)   # the bearer's own choice and State
+        for eff in effs:
+            if fx.is_handled(ab, eff) and fx.INSTANT[eff.kind](self, eff, ctx):
+                self.applied[(ab.slug, eff.kind)] += 1
+        self.log("choice", p.pid, ab.slug, want)
 
     def send_to_base(self, p: Player) -> None:
         self.interrupt(p, "moved")
@@ -494,14 +513,17 @@ class Game:
         if self.consume_resistance(p, "source"):
             return
         loc = location or self._location()
-        # Gift of Air: weapon and arrow hits turn the bearer Insubstantial and send them to base.
-        if kind in ("melee", "arrow") and not (set(specials) & set(GIFT_OF_AIR_EXCEPT)):
+        # Gift of Air: the weapon or arrow hit is ignored and the bearer becomes Insubstantial, in place
+        # or returning to base (their choice). It stays on for later hits (ruling gift-of-air#1).
+        # Melee Siege/Armor-/Shield-breaking weapons don't trigger it; arrows always do (gift-of-air#3).
+        if kind == "arrow" or (kind == "melee" and not (set(specials) & set(GIFT_OF_AIR_EXCEPT))):
             e = self._enchant_with(p, "defense.negate-hit", **{"from": "weapons-and-arrows"})
             if e is not None:
                 self.applied[(e.ability.slug, "defense.negate-hit")] += 1
-                self.remove_enchantment(p, e)
-                self.apply_state(p, "insubstantial", self.t + self.rules.a("respawn.rejoin_seconds"))
-                self.send_to_base(p)
+                if worn := p.armor.get(loc, 0):      # worn armor is affected as normal (E2)
+                    broken = "armor-destroying" in specials or ("armor-breaking" in specials and worn <= 3)
+                    p.armor[loc] = 0 if broken else worn - 1
+                self._insubstantial_choice(p, e)
                 return
         worn, magic = p.armor.get(loc, 0), p.magic_armor.get(loc, 0)
         if worn > 0 and (e := self._enchant_with(p, "defense.negate-hit", **{"from": "hits-on-worn-armor"})):
@@ -536,9 +558,28 @@ class Game:
         self.interrupt(p, "wounded")
         if "wounds-kill" in specials or loc == "torso" or p.wounds or p.has_state("fragile", self.t):
             self.kill(p, src, slug)
+        else:
+            p.wounds.add(loc)
+            self.log("wound", p.pid, loc, slug)
+        self._wound_trigger(src, p)
+
+    def _wound_trigger(self, src: Player | None, victim: Player) -> None:
+        """Wound Trigger abilities (Brutal Strike): used immediately after the caster causes a wound to
+        an enemy, even if it kills them, but not if the wound is not received (mechanics: Trigger)."""
+        if src is None or src.team == victim.team or not src.alive or src.has_state("suppressed", self.t):
             return
-        p.wounds.add(loc)
-        self.log("wound", p.pid, loc, slug)
+        for u in list(src.uses.values()):
+            ab = u.ability
+            if "wound-trigger" not in ab.properties or not u.available() or self.value(ab, src) <= 0:
+                continue
+            u.spend()
+            self.casts[ab.slug] += 1
+            why = self.blocked(u, src, victim)
+            if why:
+                self.fails[(ab.slug, why)] += 1
+            else:
+                self.apply_effects(ab, ("on-wound",), Ctx(ab, src, victim))
+            return
 
     def kill(self, p: Player, src: Player | None, slug: str) -> None:
         if not p.alive:
@@ -560,9 +601,8 @@ class Game:
             self.apply_effects(ench.ability, ("on-death",), ctx)
             instead = prevent.params.get("instead")
             if instead == "insubstantial":
-                self.remove_enchantment(p, ench)
-                self.apply_state(p, "insubstantial", self.t + self.rules.a("respawn.rejoin_seconds"))
-                self.send_to_base(p)
+                self.remove_enchantment(p, ench)     # Song of Survival ends at once (E3)
+                self._insubstantial_choice(p, ench)
             elif instead == "heal-and-frozen":
                 thaw = p.states.get("frozen", self.t)
 

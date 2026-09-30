@@ -412,6 +412,63 @@ def test_equipment_permits(rules):
         assert modes == {fx.OUT_OF_SCOPE}
 
 
+# ---------------------------------------------------------------- state.apply
+
+def test_brutal_strike_wound_trigger(rules):
+    g = make_game(rules, [spec("Anti-Paladin", level=4)], [spec("Wizard"), spec("Wizard")])
+    ap, wiz, wiz2 = g.players
+    assert "brutal-strike" in ap.uses
+    g.wound(wiz, "left_arm", ap, "melee")
+    assert wiz.states["cursed"] == INF and wiz.states["suppressed"] == g.t + 30
+    assert ap.uses["brutal-strike"].left == 0, "1/Life"
+    ap.uses["brutal-strike"].restore(1)
+    g.wound(wiz2, "torso", ap, "melee")          # a killing wound: only Cursed (ruling brutal-strike#1)
+    assert not wiz2.alive and wiz2.has_state("cursed", g.t) and not wiz2.has_state("suppressed", g.t)
+    assert g.casts["brutal-strike"] == 2
+
+
+def test_brutal_strike_not_on_a_resisted_wound(rules):
+    g = make_game(rules, [spec("Anti-Paladin", level=4), spec("Monk")], [spec("Wizard")])
+    ap, monk, wiz = g.players
+    resolve(g, monk, "blessing-against-wounds", wiz, magical=False, rng="Touch")
+    g.wound(wiz, "left_arm", ap, "melee")
+    assert not wiz.wounds and g.casts["brutal-strike"] == 0
+
+
+def test_gift_of_air_options(rules):
+    seen = set()
+    for seed in range(8):
+        g, heal, war, ally = trio(rules, a="Healer", seed=seed)
+        resolve(g, heal, "gift-of-air", ally)
+        g.hit(ally, war, "melee", location="torso")
+        assert ally.alive and ally.has_state("insubstantial", g.t)
+        assert any(e.ability.slug == "gift-of-air" for e in ally.enchantments), "stays on (ruling gift-of-air#1)"
+        if ally.at_base_until > g.t:        # option 2: to base, Insubstantial until arrival, no early exit
+            assert ally.states["insubstantial"] == ally.at_base_until == ally.exit_lock_until
+            seen.add(2)
+        else:                               # option 1: in place, exits at will (the self-exit assumption)
+            assert ally.states["insubstantial"] == g.t + g.rules.a("policy.self_insubstantial_seconds")
+            seen.add(1)
+    assert seen == {1, 2}
+
+
+def test_song_of_survival_option_and_removal(rules):
+    g, bard, war, _ = trio(rules)
+    resolve(g, bard, "song-of-survival", bard, rng="Self")
+    g.kill(bard, war, "melee")
+    assert bard.alive and bard.has_state("insubstantial", g.t)
+    assert not any(e.ability.slug == "song-of-survival" for e in bard.enchantments)
+    assert sum(n for (s, k), n in g.applied.items() if s == "song-of-survival" and k == "state.apply") == 1
+
+
+def test_song_of_power_stops_the_bard_while_sung(rules):
+    g, bard, _, _ = trio(rules)
+    resolve(g, bard, "song-of-power", bard, rng="Self")
+    assert bard.has_state("stopped", g.t)
+    g.remove_enchantment(bard, bard.enchantments[-1])
+    assert not bard.has_state("stopped", g.t)
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

@@ -32,7 +32,9 @@ class Ctx:
     specials: frozenset = frozenset()  # special effects carried by this ball/arrow
 
 
-INSTANT_TIMINGS = frozenset({"on-cast", "on-struck", "on-kill", "on-death", "on-expiry"})
+# on-wound: Wound Triggers (Game._wound_trigger); on-choice: Gift of Air / Song of Survival options
+# (Game._insubstantial_choice)
+INSTANT_TIMINGS = frozenset({"on-cast", "on-struck", "on-kill", "on-death", "on-expiry", "on-wound", "on-choice"})
 PASSIVE_DELIVERIES = frozenset({"enchantment", "trait", "archetype"})
 
 HARMFUL_STATE_ORDER = ("stunned", "frozen", "stopped", "suppressed", "fragile", "insubstantial", "cursed")
@@ -80,6 +82,9 @@ def h_state_apply(g: "Game", eff: Effect, ctx: Ctx) -> bool:
         return False
     if eff.duration_type == "timed" and eff.seconds:
         g.apply_state(p, state, g.t + eff.seconds)
+    elif eff.duration_type == "until-arrival" and _returns_to_base(ctx.ability, eff):
+        # Insubstantial while returning to base, ended on arrival (Gift of Air / Song of Survival option 2)
+        g.apply_state(p, state, g.arrival_time(p))
     elif state == "insubstantial" and p is ctx.caster and eff.duration_type in ("until-removed", "until-arrival"):
         # self-imposed Insubstantial: the policy ends it after a while (assumption), but not before
         # an exit-early lock (Martyr, Gift of Air option 2) allows it
@@ -87,6 +92,11 @@ def h_state_apply(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     else:
         g.apply_state(p, state, INF)
     return True
+
+
+def _returns_to_base(ab: Ability, eff: Effect) -> bool:
+    return any(e.kind == "move.to-base" and e.timing == eff.timing and e.duration_type == "until-arrival"
+               for e in ab.effects)
 
 
 def h_state_remove(g: "Game", eff: Effect, ctx: Ctx) -> bool:
@@ -303,7 +313,12 @@ def h_action_restrict(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     if p is None or not p.alive:
         return False
     what = eff.params.get("what")
-    until = g.t + (eff.seconds or 0.0) if eff.duration_type == "timed" else INF
+    if eff.duration_type == "timed":
+        until = g.t + (eff.seconds or 0.0)
+    elif eff.duration_type == "until-arrival" and _returns_to_base(ctx.ability, eff):
+        until = g.arrival_time(p)
+    else:
+        until = INF
     if what == "exit-early":
         p.exit_lock_until = max(p.exit_lock_until, until)
         return True
@@ -367,6 +382,10 @@ LOADOUT = frozenset({
 })
 
 
+# States a worn Enchantment/Trait imposes for as long as it is worn (a Chant is modeled as worn until
+# removed, as for Song of Deflection)
+PASSIVE_STATE_DURATIONS = ("while-worn", "permanent", "while-chanting")
+
 # Parameter values the passive handlers in Game actually implement; other variants are no-ops.
 PASSIVE_PARAMS: dict[str, Callable[[dict, Effect], bool]] = {
     "defense.negate-hit": lambda p, e: p.get("from") in ("hits-on-worn-armor", "weapons-and-arrows"),
@@ -375,7 +394,7 @@ PASSIVE_PARAMS: dict[str, Callable[[dict, Effect], bool]] = {
     "special-effect.grant": lambda p, e: p.get("on") == "bearer-melee-weapons" and p.get("effect") in (
         "armor-breaking", "armor-destroying", "shield-crushing", "wounds-kill"),
     "defense.resistance": lambda p, e: p.get("to") in ("next-source", "wounds", "chosen-school"),
-    "state.apply": lambda p, e: e.duration_type in ("while-worn", "permanent"),
+    "state.apply": lambda p, e: e.duration_type in PASSIVE_STATE_DURATIONS,
     "ability.cast-via-strips": lambda p, e: bool(p.get("ability")),
 }
 
@@ -536,6 +555,9 @@ UNMODELED_RULES: tuple = (
     ("action.restrict", lambda a, e: e.params.get("what") in ("wield-javelins", "wield-heavy-thrown", "wield-long-weapons"),
      OUT_OF_SCOPE, "Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great "
      "weapons), so there is nothing to forbid."),
+    (None, lambda a, e: a.slug == "trickery", NEEDS_MAP,
+     "Trickery chains positional escapes (Blink, Shadow Step, Teleport while already Insubstantial); "
+     "without movement the chain has nothing to model."),
     ("equipment.permit", lambda a, e: e.params.get("what") == "carry-extras", OUT_OF_SCOPE,
      "Spare equipment only matters for replacing broken gear, and Phase 1 has no backup weapons or "
      "shields (a destroyed item stays destroyed until repaired or respawn)."),
@@ -570,6 +592,8 @@ def _restrict_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> s
     what = eff.params.get("what")
     if eff.timing == "on-cast" and (what in TARGET_RESTRICTS or what == "exit-early"):
         return "instant"      # Game.can_attack / can_cast_at; exit-early locks the caster's State
+    if eff.timing == "on-choice" and what == "exit-early":
+        return "instant"      # Game._insubstantial_choice, option 2
     if eff.timing == "while-active":
         if ab.delivery in ("archetype", "trait") and what in LOADOUT_RESTRICTS:
             return "loadout"  # sim/engine/loadout.py strips the forbidden equipment
