@@ -357,6 +357,17 @@ def h_equipment_disable(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     return True
 
 
+def h_declare_instead(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Elemental Barrage: the Magic Balls the caster carries now may be thrown by declaring their name
+    instead of incanting (Game.start_cast), until the caster picks up a ball or begins casting another
+    Magical ability (ruling elemental-barrage#1: only the balls carried at the time)."""
+    p = ctx.caster
+    carried = {s: u.left for s, u in sorted(p.uses.items())
+               if u.ability.delivery == "magic-ball" and u.left and u.granted_by is None}
+    p.barrage = carried or None
+    return bool(carried)
+
+
 def h_ability_grant(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     """Blood and Thunder: on a kill the caster becomes enchanted with Blessing Against Wounds (ex).
     It lasts as that Enchantment does: until it stops a wound, or is removed (ruling
@@ -431,6 +442,7 @@ INSTANT: dict[str, Callable] = {
     "defense.unaffected": h_buff,
     "equipment.disable": h_equipment_disable,
     "state.prevent": h_state_prevent,
+    "ability.declare-instead": h_declare_instead,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -646,6 +658,21 @@ UNMODELED_RULES: tuple = (
     ("meta.modify-next", lambda a, e: e.params.get("mode") == "cast-while-moving", NEEDS_MAP,
      "Ambulant lets the next ability be cast while moving; Phase 1 has no movement, so casting "
      "already ignores it."),
+    ("move.free", None, NEEDS_MAP,
+     "Moving freely (Blink within 50', Reload retrieving arrows) is pure positioning."),
+    ("move.keep-away", lambda a, e: e.params.get("from") == "combat", NEEDS_MAP,
+     "Reload's 'stay at least 10' away from combat' is a distance from other players' fights."),
+    ("life.set-death-location", None, NEEDS_MAP,
+     "Summon Dead moves where a dead player counts as having died; Phase 1 has no positions."),
+    ("casting.modify", lambda a, e: "empty hand" in str(e.params.get("change", "")), OUT_OF_SCOPE,
+     "Phase 1 does not model hands or what they hold, so casting never needs an empty hand."),
+    (None, lambda a, e: a.slug == "missile-block", OUT_OF_SCOPE,
+     "Blocking projectiles with hands or weapons is a physical skill; Phase 1 has no chance-to-block "
+     "assumption, so Missile Block would do nothing (its negate-hit was previously counted as handled "
+     "but never applied)."),
+    ("ability.cast-while-insubstantial", lambda a, e: a.slug == "circle-of-protection", OUT_OF_SCOPE,
+     "Circle members acting on each other needs Circle's group targeting (caster plus up to five) and "
+     "acting while Insubstantial; Phase 1 applies Circle to one target, and no scripted role casts it."),
     (None, lambda a, e: a.slug == "trickery", NEEDS_MAP,
      "Trickery chains positional escapes (Blink, Shadow Step, Teleport while already Insubstantial); "
      "without movement the chain has nothing to model."),
@@ -826,6 +853,11 @@ MODE_RULES: dict[str, Callable[..., str | None]] = {
     "state.prevent": lambda ab, eff, names=None: (
         "instant" if eff.timing == "on-cast" and eff.duration_type == "timed"
         else "passive" if eff.timing == "while-active" and ab.delivery in PASSIVE_DELIVERIES else None),
+    "ability.charge-faster": _equipment_mode,      # Game.start_charge (Song of Power)
+    "ability.declare-instead": lambda ab, eff, names=None: (
+        "passive" if ab.delivery == "enchantment" and eff.timing == "while-active"     # Mass Healing
+        else "instant" if ab.delivery == "verbal" and eff.timing == "while-active"     # Elemental Barrage
+        else None),
     # read by Game: respawn (make-persistent, prevent-respawn) and h_enchantment_remove (protect)
     "enchantment.make-persistent": _equipment_mode,
     "enchantment.protect": _equipment_mode,

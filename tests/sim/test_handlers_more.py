@@ -1,5 +1,6 @@
 """Handlers added to raise effect coverage. One test (or a few) per handler, each on the real
 ability record, with fixed seeds, in the style of test_handlers.py."""
+import math
 import random
 
 from sim.engine import effects as fx
@@ -831,6 +832,52 @@ def test_artificer_and_sniper_look_the_part(rules):
 def test_no_look_the_part_nothing_to_change(rules):
     p = kit(rules, "Barbarian", ["raider"], picked=[("brutal-strike", "1/Life Charge x3", "Unlimited")])
     assert p.uses["brutal-strike"].max == 1
+
+
+# ---------------------------------------------------------------- charge-faster / declare-instead
+
+def test_song_of_power_halves_nearby_charges(rules):
+    halved = 0
+    for seed in range(12):
+        g, bard, _, ally = trio(rules, seed=seed)
+        resolve(g, bard, "song-of-power", bard, rng="Self")
+        u = uses_of(g, "heal", rng="Touch")
+        u.max, u.left, u.charge = 1, 0, 3
+        assert g.start_charge(ally, u)
+        full = math.ceil(3 * g.rules.a("time.charge_incantation_words") / g.words_per_second)
+        halved += ally.casting.remaining < full
+    assert 0 < halved < 12, "only when the singer is within 20' (a range probability)"
+
+
+def test_mass_healing_declared_heal_works_while_suppressed(rules):
+    g, heal, _, ally = trio(rules, a="Healer")
+    resolve(g, heal, "mass-healing", heal, rng="Self")
+    u = next(u for u in heal.uses.values() if u.ench is not None and u.slug == "heal")
+    assert u.declare_words == 4
+    heal.states["suppressed"] = g.t + 30
+    ally.wounds.add("left_arm")
+    assert g.start_cast(heal, u, ally) and heal.casting.remaining == max(1, round(4 / g.words_per_second))
+    for _ in range(3):
+        g.t += 1
+        g._progress_casts()
+    assert not ally.wounds
+
+
+def test_elemental_barrage_throws_carried_balls_by_declaration(rules):
+    g, wiz, war, _ = trio(rules, a="Wizard")
+    bolt = uses_of(g, "lightning-bolt", rng="")
+    bolt.per, bolt.max, bolt.left, bolt.unit = "unlimited", 2, 2, "balls"
+    wiz.uses = {"lightning-bolt": bolt}
+    resolve(g, wiz, "elemental-barrage", wiz, magical=True, rng="Self")
+    assert wiz.barrage == {"lightning-bolt": 2}
+    wiz.states["suppressed"] = g.t + 30
+    assert g.start_cast(wiz, bolt, war) and wiz.casting.remaining == 1.0 and wiz.casting.declared
+    wiz.casting = None
+    hold = uses_of(g, "hold-person", rng="20'")
+    hold.max = hold.left = 1
+    wiz.states.pop("suppressed")
+    assert g.start_cast(wiz, hold, war)
+    assert wiz.barrage is None, "beginning another Magical ability ends it"
 
 
 def test_blood_and_thunder_enchants_the_killer(rules):

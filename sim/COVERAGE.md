@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **392 of 445** (88%)
-- Not handled: **14** no-op, **19** needs-map, **20** out-of-scope
-- Abilities fully handled: **152**, partly: **20**, not at all: **11**, no effects recorded: 0 (of 183)
+- Effect instances handled: **394 of 445** (89%)
+- Not handled: **4** no-op, **23** needs-map, **24** out-of-scope
+- Abilities fully handled: **155**, partly: **17**, not at all: **11**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -33,7 +33,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `economy.purchase-restrict` | 7 | 8 | 8 | loadout 8 |
 | `ability.cast-via-strips` | 6 | 6 | 6 | passive 6 |
 | `armor.magic` | 6 | 6 | 6 | passive 6 |
-| `defense.negate-hit` | 5 | 5 | 5 | instant 5 |
+| `defense.negate-hit` | 5 | 5 | 4 | instant 4, out-of-scope 1 |
 | `equipment.repair` | 5 | 5 | 5 | instant 5 |
 | `move.to-base` | 5 | 7 | 6 | instant 6, out-of-scope 1 |
 | `wound.inflict` | 5 | 5 | 5 | instant 5 |
@@ -43,35 +43,35 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `enchantment.extra-slot` | 4 | 4 | 4 | passive 4 |
 | `life.revive` | 4 | 4 | 4 | instant 4 |
 | `meta.modify-next` | 4 | 4 | 3 | instant 3, needs-map 1 |
-| `move.keep-away` | 4 | 4 | 3 | instant 3, no-op 1 |
+| `move.keep-away` | 4 | 4 | 3 | instant 3, needs-map 1 |
 | `ability.restore-uses` | 3 | 3 | 3 | instant 3 |
 | `class.look-the-part` | 3 | 3 | 3 | loadout 3 |
 | `death.prevent` | 3 | 3 | 3 | instant 3 |
 | `defense.negate-engulfing` | 3 | 4 | 2 | out-of-scope 2, passive 2 |
 | `economy.cost` | 3 | 4 | 4 | loadout 4 |
 | `equipment.protect` | 3 | 4 | 4 | passive 4 |
-| `move.free` | 3 | 3 | 0 | needs-map 1, no-op 2 |
+| `move.free` | 3 | 3 | 0 | needs-map 3 |
 | `team.alternate-base` | 3 | 3 | 0 | needs-map 3 |
-| `ability.cast-while-insubstantial` | 2 | 2 | 0 | needs-map 1, no-op 1 |
-| `ability.declare-instead` | 2 | 2 | 0 | no-op 2 |
+| `ability.cast-while-insubstantial` | 2 | 2 | 0 | needs-map 1, out-of-scope 1 |
+| `ability.declare-instead` | 2 | 2 | 2 | instant 1, passive 1 |
 | `armor.limit` | 2 | 2 | 2 | loadout 2 |
 | `enchantment.make-persistent` | 2 | 2 | 2 | passive 2 |
 | `equipment.destroy` | 2 | 2 | 2 | instant 2 |
 | `move.push` | 2 | 4 | 4 | instant 4 |
 | `state.prevent` | 2 | 2 | 2 | instant 1, passive 1 |
 | `team.respawn-point` | 2 | 2 | 0 | needs-map 2 |
-| `ability.charge-faster` | 1 | 1 | 0 | no-op 1 |
+| `ability.charge-faster` | 1 | 1 | 1 | passive 1 |
 | `ability.range-change` | 1 | 1 | 0 | no-op 1 |
 | `ability.replace` | 1 | 1 | 0 | no-op 1 |
 | `armor.damage` | 1 | 1 | 1 | instant 1 |
 | `armor.destroy` | 1 | 1 | 1 | instant 1 |
 | `armor.protect` | 1 | 1 | 1 | passive 1 |
-| `casting.modify` | 1 | 1 | 0 | no-op 1 |
-| `defense.block-projectiles` | 1 | 1 | 0 | no-op 1 |
+| `casting.modify` | 1 | 1 | 0 | out-of-scope 1 |
+| `defense.block-projectiles` | 1 | 1 | 0 | out-of-scope 1 |
 | `enchantment.protect` | 1 | 1 | 1 | passive 1 |
 | `equipment.disable` | 1 | 1 | 1 | instant 1 |
 | `life.prevent-respawn` | 1 | 1 | 1 | passive 1 |
-| `life.set-death-location` | 1 | 1 | 0 | no-op 1 |
+| `life.set-death-location` | 1 | 1 | 0 | needs-map 1 |
 | `move.to-caster` | 1 | 1 | 1 | instant 1 |
 | `move.to-location` | 1 | 2 | 2 | instant 2 |
 | `state.transfer` | 1 | 1 | 0 | no-op 1 |
@@ -86,21 +86,27 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | needs-map | `action.restrict` | circle-of-protection e3 | Forbids moving from a starting spot; Phase 1 has no positions. |
 | needs-map | `action.restrict` | golem e8, undead-minion e7 | Forbids using Alternate Bases, which need positions to mean anything (see team.alternate-base). |
 | needs-map | `action.restrict`, `defense.unaffected`, `move.free` | sanctuary e1, sanctuary e2, sanctuary e3, sanctuary e4, sanctuary e5, sanctuary e6, sanctuary e7 | Sanctuary protects only against hostile acts from within 20', and its limits (no approaching an enemy base, no game items, no impeding play, free movement, exit only at base after touching a weapon) are about positions and objectives; Sanctuary is not modeled at all. |
+| needs-map | `life.set-death-location` | summon-dead e2 | Summon Dead moves where a dead player counts as having died; Phase 1 has no positions. |
 | needs-map | `meta.modify-next` | ambulant e1 | Ambulant lets the next ability be cast while moving; Phase 1 has no movement, so casting already ignores it. |
+| needs-map | `move.free` | blink e2, reload e2 | Moving freely (Blink within 50', Reload retrieving arrows) is pure positioning. |
+| needs-map | `move.keep-away` | reload e3 | Reload's 'stay at least 10' away from combat' is a distance from other players' fights. |
 | needs-map | `team.alternate-base` | golem e6, heart-of-the-swarm e3, undead-minion e6 | An Alternate Base only changes where Forced Movement to base may end; Phase 1 has no positions. |
 | needs-map | `team.respawn-point` | golem e5, heart-of-the-swarm e2 | A respawn point is a place on the field; Phase 1 respawns everyone at an abstract base. |
+| out-of-scope | `ability.cast-while-insubstantial` | circle-of-protection e6 | Circle members acting on each other needs Circle's group targeting (caster plus up to five) and acting while Insubstantial; Phase 1 applies Circle to one target, and no scripted role casts it. |
 | out-of-scope | `action.restrict` | corruptor e5, mystic e4, rogue e3 | Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great weapons), so there is nothing to forbid. |
 | out-of-scope | `action.restrict`, `move.to-base`, `state.apply` | song-of-visit e1, song-of-visit e2, song-of-visit e3, song-of-visit e4, song-of-visit e5 | Song of Visit is a non-combat visit (Stopped and Invulnerable while chanting, then an Invulnerable walk to base); ending the Chant is the Bard's choice and Phase 1 has no rule for when to stop, so modeling it would park the Bard for the rest of the game. |
+| out-of-scope | `casting.modify` | combat-caster e1 | Phase 1 does not model hands or what they hold, so casting never needs an empty hand. |
+| out-of-scope | `defense.block-projectiles`, `defense.negate-hit` | missile-block e1, missile-block e2 | Blocking projectiles with hands or weapons is a physical skill; Phase 1 has no chance-to-block assumption, so Missile Block would do nothing (its negate-hit was previously counted as handled but never applied). |
 | out-of-scope | `defense.negate-engulfing` | imbue e2, imbue e4 | Imbue ignores Engulfing effects that hit the bearer's wielded equipment; Phase 1 resolves every projectile on a body location and never models a strike on carried equipment. |
 | out-of-scope | `equipment.permit` | equipment-weapon-hinged e1, equipment-weapon-long e1, equipment-weapon-short e1, hunter e2 | Phase 1 tells only Great weapons apart from other melee weapons and has no thrown weapons, so permitting another weapon type changes nothing it models. |
 | out-of-scope | `equipment.permit` | equipment-shield-medium e3, equipment-shield-small e2, equipment-weapon-great e2, equipment-weapon-hinged e2, equipment-weapon-long e2, equipment-weapon-short e2 | Spare equipment only matters for replacing broken gear, and Phase 1 has no backup weapons or shields (a destroyed item stays destroyed until repaired or respawn). |
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `sanctuary`, `shake-it-off`, `song-of-visit`, `trickery`
+`ambulant`, `avatar-of-nature`, `combat-caster`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `missile-block`, `sanctuary`, `shake-it-off`, `song-of-visit`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (5/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `reload` (1/3), `rogue` (2/3, 1u), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (5/7, 2u)
+`blink` (1/3, 2u), `circle-of-protection` (4/6, 2u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (5/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mystic` (4/5, 1u), `reload` (1/3, 2u), `rogue` (2/3, 1u), `summon-dead` (1/2, 1u), `undead-minion` (5/7, 2u)

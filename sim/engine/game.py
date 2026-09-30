@@ -11,6 +11,7 @@ from __future__ import annotations
 import heapq
 import math
 import random
+import re
 from collections import Counter
 from typing import Callable
 
@@ -217,6 +218,7 @@ class Game:
         p.restrictions.clear()
         p.buffs.clear()
         p.prevented.clear()
+        p.barrage = None
         for q in self.players:
             if q.restrictions:
                 q.restrictions = [r for r in q.restrictions if not (r.ends_on_src_death and r.src == p.pid)]
@@ -531,10 +533,15 @@ class Game:
                     p.resist.append({"to": school, "ench": ench, "slug": ab.slug})
             elif k == "ability.cast-via-strips":
                 slug = self.rules.by_name.get(str(eff.params.get("ability", "")).lower())
-                if slug and slug not in p.uses and slug in self.rules.abilities:
+                if slug and slug in self.rules.abilities and not any(u.ench is ench for u in p.uses.values()):
                     n = ench.strips or 1
-                    p.uses[slug] = Uses(self.rules.abilities[slug], None, n, n, None, None, True,
-                                        range="Touch", ench=ench)
+                    # tracked apart from the player's own uses of the same ability (Enchantments rule 6)
+                    key = slug if slug not in p.uses else f"{slug}@{ab.slug}"
+                    p.uses[key] = Uses(self.rules.abilities[slug], None, n, n, None, None, True,
+                                       range="Touch", ench=ench)
+                    decl = next((d for d in ab.effects if d.kind == "ability.declare-instead"), None)
+                    if decl is not None and (m := re.search(r'"([^"]+)"', str(decl.params.get("what", "")))):
+                        p.uses[key].declare_words = len(m.group(1).split())   # Mass Healing
             elif k == "enchantment.extra-slot":
                 p.ench_slots += int(eff.params.get("count", 1))
             elif k == "state.apply" and eff.duration_type in fx.PASSIVE_STATE_DURATIONS and fx.is_handled(ab, eff):
@@ -848,6 +855,7 @@ class Game:
         p.restrictions.clear()
         p.buffs.clear()
         p.prevented.clear()
+        p.barrage = None
         p.exit_lock_until = 0.0
         p.meta_armed.clear()
         p.armor = {l: p.armor_max for l in LOCATIONS}
@@ -954,7 +962,13 @@ class Game:
     def start_cast(self, p: Player, uses: Uses, target: Player | None) -> bool:
         if not uses.available() or p.casting is not None:
             return False
-        if p.has_state("suppressed", self.t) and "works-while-suppressed" not in uses.ability.properties:
+        ab = uses.ability
+        # a declaration instead of an incantation (Mass Healing's Heal, Elemental Barrage's balls) is
+        # not stopped by Suppressed and takes only as long as the words said
+        barrage = ab.delivery == "magic-ball" and p.barrage is not None and p.barrage.get(uses.slug, 0) > 0
+        declare_words = uses.declare_words or (len(ab.name.split()) if barrage else None)
+        if p.has_state("suppressed", self.t) and "works-while-suppressed" not in ab.properties \
+                and declare_words is None:
             return False
         why = self.check_requirements(uses.ability, p, target, start=True, uses=uses)
         if why:
@@ -965,10 +979,21 @@ class Game:
                 self.barred(p, "wield-weapons") or not self.weapon_usable(p))):
             self.fails[(uses.slug, "restricted")] += 1
             return False
-        secs = 1.0 if uses.swift else uses.ability.cast_seconds(self.words_per_second)
-        secs, persistent = self._apply_meta_magic(p, uses, secs)
-        self._begin_incantation(p)
-        p.casting = Cast(uses, target.pid if target is not None else None, secs, persistent=persistent)
+        if declare_words is not None:
+            secs, persistent = max(1.0, float(round(declare_words / self.words_per_second))), False
+            if barrage:
+                p.barrage[uses.slug] -= 1
+                self.applied[("elemental-barrage", "ability.declare-instead")] += 1
+            else:
+                self.applied[(uses.ench.ability.slug if uses.ench else ab.slug, "ability.declare-instead")] += 1
+        else:
+            if p.barrage is not None and uses.magical:
+                p.barrage = None          # Elemental Barrage ends on beginning any new Magical ability
+            secs = 1.0 if uses.swift else ab.cast_seconds(self.words_per_second)
+            secs, persistent = self._apply_meta_magic(p, uses, secs)
+            self._begin_incantation(p)
+        p.casting = Cast(uses, target.pid if target is not None else None, secs, persistent=persistent,
+                         declared=declare_words is not None)
         if uses.magical and aimed is not p:
             self._provoke(p, aimed, "cast-start")
         self.log("cast-start", p.pid, uses.slug, target.pid if target is not None else None)
@@ -978,7 +1003,13 @@ class Game:
         if p.casting is not None or not uses.charge or p.has_state("suppressed", self.t):
             return False
         words = self.rules.a("time.charge_incantation_words")
-        secs = math.ceil(uses.charge * words / self.words_per_second)
+        reps = uses.charge
+        song = self._song_of_power_near(p)
+        if song is not None:
+            # Song of Power: a friendly player within 20' of the singer halves their Charge repetitions
+            reps = max(1, reps // 2)
+            self.applied[(song.ability.slug, "ability.charge-faster")] += 1
+        secs = math.ceil(reps * words / self.words_per_second)
         self._begin_incantation(p)
         p.casting = Cast(None, None, secs, kind="charge", charge_for=uses)
         return True
@@ -1058,6 +1089,17 @@ class Game:
         self.applied[(u.slug, "meta.modify-next")] += 1
         return True
 
+    def _song_of_power_near(self, p: Player) -> Ench | None:
+        """A friendly singer of Song of Power (not p; ruling song-of-power#1) within 20', judged with
+        the same range probability as a 20' ability."""
+        for q in self.allies(p):
+            if q is p or not q.alive or not q.on_field(self.t):
+                continue
+            song = next((e for e in q.enchantments if e.ability.effects_of("ability.charge-faster")), None)
+            if song is not None:
+                return song if self.rng.random() < self.rules.a("range.p_in_range")["20'"] else None
+        return None
+
     def _begin_incantation(self, p: Player) -> None:
         """Starting an Incantation ends effects that say so (Rage)."""
         if p.buffs:
@@ -1125,8 +1167,11 @@ class Game:
         ab = uses.ability
         if uses.unit and uses.left == 0 and uses.max:
             u = uses
-            self.at(self.t + self.rules.a("projectiles.magic_ball_retrieve_seconds"),
-                    lambda u=u: setattr(u, "left", u.max))
+
+            def retrieve(u=u, p=p):
+                u.left = u.max
+                p.barrage = None      # picking up any Magic Ball ends Elemental Barrage (elemental-barrage#1)
+            self.at(self.t + self.rules.a("projectiles.magic_ball_retrieve_seconds"), retrieve)
         key = "projectiles.magic_ball_p_hit" if ab.delivery == "magic-ball" else "projectiles.arrow_p_hit"
         if ab.delivery == "specialty-arrow":
             self._provoke(p, target, "attack")
@@ -1318,7 +1363,7 @@ class Game:
             if not p.can_act(t):
                 self.interrupt(p, "cannot-act")
                 continue
-            if c.kind == "cast" and p.has_state("suppressed", t) \
+            if c.kind == "cast" and p.has_state("suppressed", t) and not c.declared \
                     and "works-while-suppressed" not in c.uses.ability.properties:
                 self.interrupt(p, "suppressed")
                 continue

@@ -33,6 +33,7 @@ class Uses:
     drop_reqs: frozenset = frozenset()   # requirements the granting ability waives (Undead Minion)
     only_target: int | None = None       # may only be cast on this player (Undead Minion's Raise Dead)
     base_range: str = ""                 # range before Extension is offered (Game._offer_extension)
+    declare_words: int | None = None     # cast by a declaration, not an incantation (Mass Healing)
     purchased: bool = False              # bought with Magic User points (Archetype group scopes)
     copies: int = 1                      # purchases or picks merged into this use
 
@@ -94,6 +95,7 @@ class Cast:
     kind: str = "cast"          # cast / charge
     charge_for: Uses | None = None
     persistent: bool = False    # the Persistent Meta-Magic was stated for this Enchantment
+    declared: bool = False      # a declaration, not an incantation: not stopped by Suppressed
 
 
 @dataclass(slots=True)
@@ -132,6 +134,7 @@ class Player:
     exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
     meta_armed: set = field(default_factory=set)                # Meta-Magics stated for the next ability
     prevented: dict[str, float] = field(default_factory=dict)  # States p may not gain until then (Planar Grounding)
+    barrage: dict[str, int] | None = None   # Elemental Barrage: carried Magic Balls usable by declaration
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
     weapon_ok: bool = True
