@@ -362,6 +362,27 @@ class FieldSpace(Space):
         return [q for q in self.g.players if q is not p and q.alive and (team is None or q.team == team)
                 and row[q.pid] <= metres]
 
+    def move_toward(self, p: Player, x: float, y: float, metres: float) -> tuple[float, float, float]:
+        """p's position after moving up to `metres` toward (x, y), kept on the field; and the metres moved."""
+        px, py = self.x[p.pid], self.y[p.pid]
+        dx, dy = x - px, y - py
+        dist = math.hypot(dx, dy)
+        if dist < 1e-9:
+            return px, py, 0.0
+        step = min(dist, metres)
+        nx = min(self.L, max(0.0, px + dx / dist * step))
+        ny = min(self.W, max(0.0, py + dy / dist * step))
+        return nx, ny, math.hypot(nx - px, ny - py)
+
+    def move_away(self, p: Player, x: float, y: float, metres: float, back: float = 0.5) -> tuple[float, float, float]:
+        """p's position after moving up to `metres` away from (x, y), bent toward p's own base by
+        `back` (a retreat heads for its own side, not along the field's width)."""
+        px, py = self.x[p.pid], self.y[p.pid]
+        d = max(math.hypot(px - x, py - y), 1e-6)
+        dx, dy = (px - x) / d - back * self.fwd(p.team), (py - y) / d
+        n = math.hypot(dx, dy) or 1.0
+        return self.move_toward(p, px + dx / n * 100.0, py + dy / n * 100.0, metres)
+
     def nearest(self, p: Player, candidates) -> Player | None:
         row = self._matrix()[p.pid]
         best, bd = None, INF
@@ -700,11 +721,8 @@ class FieldSpace(Space):
             return self.x_of(self.line_u[p.team], p.team), self._slot_y(self._slot[p.team][pid], len(line)), False
         q = self.nearest(p, self._threats_near(p, self.retreat_m)) if self.retreating(p) else None
         if q is not None:
-            d = max(self.distance(p, q), 1e-6)
-            dx, dy = (self.x[pid] - self.x[q.pid]) / d, (self.y[pid] - self.y[q.pid]) / d
-            dx -= 0.5 * self.fwd(p.team)                    # back toward their own side
-            n = math.hypot(dx, dy) or 1.0
-            return self.x[pid] + dx / n * 10, self.y[pid] + dy / n * 10, True
+            x, y, _ = self.move_away(p, self.x[q.pid], self.y[q.pid], 10.0)
+            return x, y, True
         if s in ("medic", "enchanter"):
             q = self._helpable(p, s)
             if q is not None:
@@ -730,13 +748,7 @@ class FieldSpace(Space):
             if want is None:
                 continue
             tx, ty, urgent = want
-            dx, dy = tx - self.x[p.pid], ty - self.y[p.pid]
-            dist = math.hypot(dx, dy)
-            if dist < 1e-6:
-                continue
-            step = min(dist, min(cap, self.run if urgent else self.walk) * dt)
-            nx[p.pid] = min(self.L, max(0.0, self.x[p.pid] + dx / dist * step))
-            ny[p.pid] = min(self.W, max(0.0, self.y[p.pid] + dy / dist * step))
+            nx[p.pid], ny[p.pid], step = self.move_toward(p, tx, ty, min(cap, self.run if urgent else self.walk) * dt)
             self.moved_m[p.pid] += step
         self.x, self.y = nx, ny
         self._d = None
