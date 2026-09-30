@@ -2,19 +2,20 @@
 target. The rest of the policies use the fixed usefulness score in `value.py`, which is the same
 whatever is happening on the field.
 
-This is a pilot, used only by the Bardic songs (`sim/policies/songs.py`). The pattern is meant to
-extend to other abilities one at a time:
+Used by the Bardic songs (`sim/policies/songs.py`) and the enablers (`sim/policies/enablers.py`:
+refills, extra slots, grant Enchantments, Undead Minion, Self strip Enchantments). Other abilities
+still use the fixed score. The pattern:
 
     @register("song-of-battle")
     def _battle(g, caster, target) -> float: ...
 
     utility(g, caster, ability, target)     # None when the ability has no utility function
 
-**Units.** A utility is in *threat units*: the enemies (or teammates) the ability acts against or
-for, each weighted by how likely it is to matter to the target soon (`reach`). So utilities of
-different abilities can be compared with each other. Where a policy has to weigh a utility against
-a fixed value.py score, `value_of` converts seconds of utility into value points at the rate
-`policy.value_per_threat_second` (sim/data/assumptions.json).
+**Units.** A song's utility is in *threat units*: the enemies (or teammates) the song acts against
+or for, each weighted by how likely it is to matter to the target soon (`reach`). Where a policy has
+to weigh it against a fixed value.py score, `value_of` converts seconds of utility into value points
+at the rate `policy.value_per_threat_second` (sim/data/assumptions.json). An enabler's utility is in
+value points already (the calibrated scale), per cast.
 
 Utility functions must not draw from the game's random stream: they are read many times a tick and
 must not change the play. Results are cached for the tick in `Game.policy_cache`.

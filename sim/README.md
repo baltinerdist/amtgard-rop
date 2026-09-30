@@ -109,6 +109,8 @@ the baseline once, then takes about 20 s for each ability removed.
 | `analyze/validity.py` | Face-validity suite: pass/fail table of checks a veteran player would expect to hold |
 | `analyze/calibrate.py` | Calibration harness: paired gifts to team 0, per-unit win change per anchor, → `data/value-calibration.json` |
 | `policies/calibration.py` | Builds value.py's weight tables from `data/value-calibration.json` (calibrated or hand, with sources); the staleness check |
+| `policies/utility.py` | Situational utility: per-ability functions `(game, caster, target) -> utility`, registered by slug |
+| `policies/songs.py`, `policies/enablers.py` | The utility functions: Bardic songs; refills, extra slots, grant Enchantments, Undead Minion, Self strip Enchantments |
 | `engine/gifts.py` | Calibration-only gifts injected into a game from their own random stream (armor, a shield, ability uses, a State on enemies, ...) |
 
 ## What is modeled
@@ -129,6 +131,8 @@ the baseline once, then takes about 20 s for each ability removed.
   - a caster attacked in melee breaks off the incantation (or Charge) to defend unless it finishes this second (`policies.keep_casting`)
   - healers heal themselves or allies out of melee that no one else is healing and who can receive it (not Cursed, Frozen or Insubstantial)
   - Charge takes the 28-word Charge incantation × N
+  - a refill (an instant Charge, a restored use) acts on the spent ability its caster names when it
+    resolves (`Game.name_refill`, the policy's choice); Empower gives back one use of it
 - **Frequencies:**
   - per-life (restored at respawn) and per-refresh (restored on the scenario's refresh timer)
   - Unlimited
@@ -245,17 +249,17 @@ and `combos`; the `players` table stores `doctrine`, `play` and `bought`.
 | --- | --- |
 | striker | Stays back: self-buffs, finishers, its own combo set-ups, then offense; support last |
 | controller | Finishers, then locks down the enemy most dangerous to a teammate: one engaged with an ally first, then the one with most kill potential (role, skill, kills so far) in range; skips enemies already locked down (Stunned, Frozen, Stopped, Insubstantial, or already under what the spell does) or immune; Suppresses only casters. Kills only when nothing needs locking down |
-| enchanter | Enchants out-of-melee teammates on the field every free moment, refills their uses (Empower, Restoration, Confidence), then revives, heals, cleanses; casts at enemies last |
+| enchanter | Enchants out-of-melee teammates on the field every free moment, refills their uses, then revives, heals, cleanses; casts at enemies last |
 | medic | The old support routine: revive, heal, cleanse from behind the line |
 | battle | Starts melee like a fighter (`Game._engage`), isn't treated as backline, keeps self-buffs up, casts only when free |
 | archer | A Ranger with a bow shoots and casts between shots; without a bow, a striker |
 
 Every Magic User places Enchantments by benefit, at base and on the field: weapon Enchantments
-(Flame Blade, Poison, Contagion) to the best melee fighter, armor and protection to the front line,
-and Attuned or Essence Graft first on a fighter when there are Enchantments to fill the slot. An
-Enchantment that gives a teammate nothing (Amplification on a player with no 20' Verbal), or whose
-drawbacks cost that teammate more than it gives, goes to someone else (`_crippled`, priced with
-both kits). A caster
+(Flame Blade, Poison, Contagion) to the best melee fighter, armor and protection to the front line.
+An Enchantment that gives a teammate nothing, or whose drawbacks cost that teammate more than it
+gives, goes to someone else (`_crippled`, priced with both kits). Enablers (extra slots, grant
+Enchantments, Undead Minion, refills) go where their situational utility is highest, in every play
+style (see "Deciding casts by situational utility"). A caster
 holding a **finisher** (Dragged Below on a Stopped target, Shatter on a Frozen one, Dimensional Rift
 on an Insubstantial one, any wound on a Fragile one) uses it first, preferring a target whose State
 it applied itself (`Player.state_src`).
@@ -625,21 +629,118 @@ In 2,000 mixed games Bards start about 1.6 songs per life. By share of songs sta
 Determination 37%, Battle 34%, Survival 12%, Freedom 7%, Power 6%, Deflection 5%, Interference
 under 1%. No Bard doctrine's win rate moved beyond its interval.
 
-**Where the enablers' context values plug in (next step).** The other enablers are still cast by
-the fixed score, which now carries their value in the caster's context. A utility function for each
-would take the same pieces from the game state instead of a typical kit:
+### Enablers
 
-| Enabler | Context value now (`value.py`) | What its utility function would read |
-| --- | --- | --- |
-| Attuned, Essence Graft | `extra_slot`: best Enchantments the caster holds | the fillers the caster has uses left for, the bearer's current Enchantments and free slots |
-| Amplification, Silver Tongue | `grant` on the bearer's kit, less the "other sources" drawback | the bearer's 20' Verbals (Touch/Self/Magic Ball incantations for Swift) with uses left; the bearer's own Extension or Swift uses |
-| Song of Power | `charge_faster`: a typical Charge | already `songs._power`: teammates Charging or with a spent chargeable ability within 20' |
-| Undead Minion | Raise Dead grant, less `late_share(game type)` | the bearer's expected deaths, lives left, whether the caster is near enough to raise them |
-| Confidence, Innate, Empower, Restoration, Momentum | `refill` with `Ctx.spent` | the target's actual spent uses (`_refill_need` already finds them); pass each as `Ctx.spent` |
-| Extension, Swift, Persistent | `meta` over the holder's kit | the ability being started now (the engine applies them automatically at cast start) |
-| Regeneration, Gift of Water, Troll Blood | Heal (Self) Unlimited on the bearer | the bearer's wounds and how often they are out of melee |
-| Battlefield Triage, Mass Healing, Corrosive Mist, Discordia, Snaring Vines | the stripped ability × strips | the stripped ability's own utility per use |
-| Heart of the Swarm | 0 (its benefits need a map) | respawn distance, once there is a map |
+The enablers are decided the same way (`policies/enablers.py`). Their utility is in value points,
+the calibrated usefulness score's scale, per cast. The caster scores each candidate target,
+takes the best (ties: the lowest pid) and casts when that utility beats **the time the cast costs**
+(`enablers.time_cost`): the caster's best attack right now (its score per second of incantation,
+times the chance a target is in range; 0 with no enemy to hit) over the incantation, plus the song
+the incantation ends. At base the time costs nothing. Enchantments with a utility compete with the
+caster's other Enchantments by that utility (`_try_enchant`). Refills (`_try_refill`) are now tried
+in every play style and martial role, not only by enchanters: before attacks for strikers,
+controllers, archers and plain casters, beside heals for medics, battle casters and fighters.
+
+| Ability | Utility for target q |
+| --- | --- |
+| Empower, Confidence | `refill_worth` of q's best spent use it can refill, if q acts soon |
+| Innate | the same, for the caster (it Charges only its caster, whatever range the use reads) |
+| Restoration | the sum over q's spent per-life uses (a second missing use of one ability at `COPY_DECAY`), if q acts soon |
+| Steal Life Essence | its Charge option: `refill_worth` of the caster's best spent chargeable use. The caster names it instead of healing a wound only when it is worth more than a heal (`wound.heal`) |
+| Attuned, Essence Graft | `stack_share` (calibrated, 0.025) × the Enchantments one more slot adds for q: the fillers beyond q's free slots, from the caster (with a use left) or a teammate caster nearby (× `p_ally_nearby_for_touch`); Essence Graft counts only the caster's own and subtracts q's (m) Enchantments from other casters, which it drops. 0 if q has an extra slot already |
+| Amplification, Silver Tongue | the Enchantment's score to q over q's abilities that still have a use (20' Verbals for Extension; Touch, Other, Self and Magic Ball abilities for Swift) |
+| Regeneration, Gift of Water, Battlefield Triage | the Enchantment's score to q, with its Heal priced as a fighter's (calibrated `fighter_heal`) if q fights in the line: a fighter under attack rarely heals |
+| Undead Minion | q's expected deaths while the caster lives (their death rates' ratio, capped by q's lives and the time left) × (the caster's Raise Dead × `p_ally_nearby_for_touch` − the respawn it replaces, `value.late_share`), less Cursed once. 0 once the caster has its three |
+| Discordia, Snaring Vines | the stripped spell's score × its expected casts: the strips, or fewer when fewer enemies it can hit are expected in its range (living, on the field or coming back; for Break Concentration only enemies who cast), less the song the Enchantment keeps off the Bard's slot for the song horizon. Hold Person keeps the hand Stopped weight (needs a map) |
+
+Shared helpers: `acts_soon(q)` is 1 for a player who is alive, has lives left, is on the field (at
+base counts for Enchantments) and is not Frozen, Stunned, Insubstantial or Invulnerable (or, for a
+magical ability, Suppressed), else 0. So no refill goes to a dead, respawning or locked-down
+teammate. `refill_worth(u, q)` is u's score in q's kit, the value of what is refilled (value.py's
+refill with `Ctx.spent`), times the calibrated `refill_factor` (0.12) for an instant Charge.
+`ench_worth` is an Enchantment's score with the caster's and the bearer's kits, as `_crippled`
+prices it. Death rates start from a hand-set prior (`DEATH_PRIOR`: one death per 120 s for a player
+in the line, half that behind it) and move with the deaths seen. No utility draws from the game's
+random stream. Refills also skip teammates who would shrug them off (Void Touched, Rage: `_resists`).
+
+**Engine hook.** The rules have the caster name the ability a refill acts on ("by stating its
+name", Innate, Steal Life Essence). `Game.name_refill(caster, ability, recipient)` asks the policy
+(`enablers.name_refill`: the spent use worth most to the recipient) when the refill resolves. The
+Charge handler Charges that use; the restore handler gives back one use of it for Empower ("regains
+one use of any per-life ability"; before, it restored every per-life use) and, for Restoration,
+still every per-life use. For a refill offered as a choice beside a heal (Steal Life Essence),
+`Game.apply_effects` skips the heal when the caster names an ability. Momentum and the calibration's
+free Charge pick as before (the most valuable spent use).
+
+**Casts per holder-life, 2,000 mixed games (`--seed 1`)**, before (run fa2aeeb5bbe6) and after
+(8cb2b4f6de48). Holders are the Magic Users who bought the spell and the martial players whose class
+gives it at their level:
+
+| Ability | Holders | Casts before | per life | Casts after | per life |
+| --- | --: | --: | --: | --: | --: |
+| Empower | 1,327 | 1,972 | 0.26 | 3,809 | 0.50 |
+| Restoration | 890 | 864 | 0.17 | 1,761 | 0.35 |
+| Confidence | 1,224 | 3,899 | 0.55 | 4,485 | 0.63 |
+| Innate | 1,594 | 0 | 0 | 1,801 | 0.19 |
+| Steal Life Essence (Charges made) | 3,030 | 51,706 (39,547) | 3.06 | 49,029 (38,460) | 2.92 |
+| Attuned | 775 | 1,175 | 0.26 | 911 | 0.20 |
+| Essence Graft | 99 | 226 | 0.37 | 172 | 0.30 |
+| Amplification | 530 | 757 | 0.26 | 759 | 0.25 |
+| Silver Tongue | 162 | 252 | 0.26 | 250 | 0.27 |
+| Battlefield Triage | 1,907 | 2,626 | 0.24 | 2,617 | 0.24 |
+| Regeneration | 544 | 614 | 0.19 | 591 | 0.19 |
+| Gift of Water | 1,305 | 2,581 | 0.35 | 2,503 | 0.34 |
+| Undead Minion | 124 | 225 | 0.30 | 212 | 0.29 |
+| Discordia | 222 | 0 | 0 | 84 | 0.06 |
+| Snaring Vines | 142 | 0 | 0 | 140 | 0.17 |
+
+Empower now gives back one use per cast, so it is cast about twice as often. Refills that failed
+on a teammate unaffected by them ("unaffected": 265 Confidence, 44 Empower, 17 Restoration) are
+down to 13. The Enchantments are cast about as often as before, but on other teammates (casts in
+games 1–600, by bearer; "line" is a fighter or battle-play caster):
+
+| Ability | Line | Other casters, support, archers | Self |
+| --- | --- | --- | --- |
+| Gift of Water | 631 → 148 | 156 → 620 | 22 → 18 |
+| Battlefield Triage | 454 → 17 | 221 → 604 | 96 → 144 |
+| Regeneration | 16 → 0 | 172 → 179 | — |
+| Amplification | 103 → 75 | 71 → 93 | 57 → 62 |
+| Attuned | 376 → 159 | 1 → 125 | 1 → 1 |
+| Essence Graft | 92 → 38 | 0 → 37 | 1 → 0 |
+| Undead Minion | 44 → 68 | 27 → 5 | — |
+
+**Doctrines** (`sim.analyze.doctrines`, run 8cb2b4f6de48 against ea1552045998, the same games as
+fa2aeeb5bbe6): every doctrine's win-rate interval overlaps its old one, at all levels and at 6th.
+The largest moves are on 60–370 players: Druid ranger 0.516 → 0.609, Wizard armorer
+0.411 → 0.457, warlock 0.378 → 0.418, Healer warder 0.420 → 0.457, Wizard controller
+0.458 → 0.429, Bard combat caster 0.586 → 0.525. Bard enchant assists fall (controller 0.19 → 0.07
+per life, combat caster 0.45 → 0.13, legend 0.38 → 0.12): their Battlefield Triage now goes to
+Healers, who make few kills, instead of fighters. That is attribution, not effect: the Bard win
+rates moved by at most 0.03 except the combat caster's. Class win rates moved by at most 0.008.
+
+**Validity**: the same 14 of 15 pass. level 0.642 → 0.686, class-stack (the known limit)
+0.875 → 0.865, control-scales' large-game edge +0.160 → +0.090 (still passes).
+
+**Never cast** among the purchasable spells (2,000 games), with the reason:
+
+| Spell | Bought by | Why |
+| --- | --: | --- |
+| Teleport | 2,503 | needs a map: the engine applies it (Insubstantial until arrival), but where to go is the point |
+| Summon Dead | 1,083 | needs a map: it moves where a dead player died |
+| Stoneform | 707 | policy gap: Frozen on oneself until the caster ends it; no routine decides when to go in or come out |
+| Force Barrier | 420 | policy gap: Frozen on oneself for 10 s; no routine stalls a fight that way |
+| Ambulant | 155 | needs a map: casting while moving |
+| Heart of the Swarm | 0 | needs a map: a respawn point and Alternate Base |
+| Song of Visit | 0 | unmodeled (out of scope; its utility is 0) |
+
+Innate, Discordia and Snaring Vines left this list. Among martial abilities, Momentum (no one takes
+Berserker), Martyr, Evolution and Sacred Blades (Archetype grants nobody chose, or always-on
+Traits), Sanctuary, Reload's keep-away and the Scout's Teleport (needs a map) are never cast.
+
+**What the remaining enablers still use.** Song of Power has its song utility; Extension, Swift and
+Persistent are stated by the engine at cast start; Momentum and Troll Blood trigger on their own;
+Mass Healing and Corrosive Mist keep the fixed score; Heart of the Swarm is worth 0 until there is
+a map.
 
 ## Known limitations (from the face-validity suite)
 
@@ -725,18 +826,17 @@ The side bias described below had shown 0.453.
   a non-fighter or a wounded fighter (Blink, Shadow Step), cleanses on self or an ally out of melee
   (Release, Greater Release, Shake It Off, Circle of Protection; Martyr only by a non-fighter for a
   fighter or archer), repairs (Mend, Greater Mend, Word of Mending), and casters with a bow shoot.
-  Enchanters now cast Confidence, Empower and Restoration, and Rangers (the Druid ranger doctrine)
-  shoot. Still never cast in play: Teleport, Summon Dead, Force Barrier, Stoneform, Reload, Innate,
-  and the Self-range Enchantments aimed at enemies (Discordia, Snaring Vines).
+  Every caster now refills (Confidence, Empower, Restoration, Innate) by utility, and Rangers (the
+  Druid ranger doctrine) shoot. Still never cast in play: Teleport, Summon Dead, Force Barrier,
+  Stoneform, Reload (see "Never cast" under "Deciding casts by situational utility").
 - **Doctrine entries that do nothing here.** Some core entries are bought but never used, because
   the engine or the policies don't use them:
   - Ambulant (Battlemage, Priest; needs a map)
   - the weapon purchases (battle doctrines; weapon types are out of scope)
   - Summon Dead (medic; needs a map)
-  - Stoneform (battle druid)
-  - Snaring Vines (elementalist)
+  - Stoneform (battle druid; no routine goes Frozen on purpose)
 
-  Amplification, Silver Tongue and Undead Minion used to be on this list. The usefulness score
+  Amplification, Silver Tongue, Undead Minion and Snaring Vines used to be on this list. The usefulness score
   now values them by what they grant, in context, and they are cast (see "Usefulness score"
   above). Battle casters also keep `melee.weak_weapon_logit`, whatever weapon they bought.
 - **Enabler values sit on the flat tables' scale** (before the calibration; the first three points
@@ -753,9 +853,8 @@ The side bias described below had shown 0.453.
     though that Enchantment could often have gone to another teammate: the gain is stacking, not
     the Enchantment.
   - Discordia and Snaring Vines (strips of Break Concentration and Hold Person) score higher and
-    are bought more (577 → 734, 147 → 190), but no routine casts a Self Enchantment aimed at
-    enemies. Innate is bought by 1,609 Magic Users and never cast: no routine states a Meta-Magic
-    that refills.
+    are bought more (577 → 734, 147 → 190). Until the enabler utilities, no routine cast a Self
+    Enchantment aimed at enemies, and Innate was never cast.
 - **What the calibration can't settle.**
   - **Melee anchors may read high.** Armor, Magic Armor, shields and weapon specials are measured
     in an engine where melee decides most games (the class-stack limit), so they may be worth less
@@ -781,6 +880,28 @@ The side bias described below had shown 0.453.
   - **Noisy contexts.** Large attrition has 450 pairs. Some per-context scores there and in large
     annihilation are far from the pooled value: a death ward scores −7.7 in large annihilation
     against 7.8 pooled. Read per-context scores with `--report`, not alone.
+- **Enabler utilities (`policies/enablers.py`).**
+  - **The calibration predates them.** `sim.engine.ENGINE_VERSION` should be bumped for a policy
+    change that alters play, and this one does; it was left at 2 because a bump makes the
+    calibration stale and every run refuse to start until it is re-measured (2.5 h). The anchors
+    were measured under the old enabler policy (and the hand weights); rerun the calibration and
+    bump the version together.
+  - **Armor Enchantments leave the front line.** Gift of Water and Battlefield Triage now go mostly
+    to casters, healers and archers, whose Heal is worth more (fighters' Heal is priced at the
+    calibrated `fighter_heal`, 0.5). Gift of Water's Magic Armor is priced the same on everyone
+    (16 per point, measured on fighters), though a backline caster is hit far less. An exposure
+    weight on armor would send it back to the line; none is measured, so none is used.
+  - **Extra slots are worth almost nothing.** With `stack_share` 0.025 an Attuned is worth about
+    0.3–0.9, so it waits for a moment with nothing to attack (casts 1,175 → 911), and its target is
+    chosen between very small numbers: now mostly players other than fighters (376 → 159 on the
+    line in 600 games).
+  - **Charges and restores are priced differently.** An instant Charge is scaled by the calibrated
+    `refill_factor` (0.12); a restored use (Empower, Restoration) is not calibrated and counts at
+    the full value of what it restores. So Confidence and Innate often lose to an attack and
+    Empower rarely does.
+  - **Hand-set pieces.** The death-rate prior for Undead Minion (`DEATH_PRIOR`), the song horizon
+    for what Discordia keeps off a Bard's slot, and the time cost, which counts only attacks: a
+    heal or another Enchantment competes through the routine's order, not the utility.
 - **A counting quirk.** Amplification's "no other source of Extension" is counted as applied each
   time the engine checks the bearer's Extension (`Game._meta_use`, every tick from
   `_offer_extension`): 146,000 times in 2,000 games. It is accounting only; play is unaffected.

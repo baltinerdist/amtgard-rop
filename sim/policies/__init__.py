@@ -13,8 +13,8 @@ Magic Users play their doctrine's play style (sim/data/doctrines.json `play_styl
                range; never one already locked down or immune); kills only when nothing needs
                locking down
   enchanter  - enchants teammates at base and, out of melee, on the field (weapon Enchantments to
-               the best melee fighters, armor and protection to the front line), refills their uses
-               (Empower, Restoration, Confidence), then heals and cleanses; casts at enemies last
+               the best melee fighters, armor and protection to the front line), refills their uses,
+               then heals and cleanses; casts at enemies last
   medic      - revives, heals, cleanses from behind the line (the old support routine)
   battle     - starts melee like a fighter (Game._engage) and is not treated as backline; keeps
                self-buffs up and casts when free
@@ -29,6 +29,12 @@ doctrine with combos casts a set-up whose finisher it holds before other offense
 
 Abilities are recognised by what their effects do, not by name (_kind_of): a self-buff, an
 escape, a cleanse (removes a harmful State), a repair (armor or equipment).
+
+Enablers are cast by situational utility (sim/policies/enablers.py): refills (Empower, Restoration,
+Confidence, Innate; `_try_refill`, in every routine), extra slots, Enchantments that grant an ability,
+Undead Minion, and Self Enchantments whose strips are cast at enemies (in `_try_enchant`). Each goes
+to the target it is worth most to, and only when that beats the caster's best attack over the time
+the incantation takes (enablers.time_cost).
 
 Bardic songs are chosen by situational utility, not the fixed score (sim/policies/songs.py,
 _try_song): a battle Bard sings first, the other play styles when they have nothing better to cast.
