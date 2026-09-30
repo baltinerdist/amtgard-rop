@@ -119,6 +119,7 @@ class Player:
     play: str = ""              # the doctrine's play style (sim/policies): striker, controller, enchanter, ...
     combos: tuple = ()          # the doctrine's (set-up, finisher) pairs
     bought: dict = field(default_factory=dict)   # a Magic User's purchases: slug -> copies
+    charge_seconds_saved: float = 0.0   # calibration gift only (sim/engine/gifts.py): each Charge is this much shorter
 
     # per-life state
     alive: bool = True

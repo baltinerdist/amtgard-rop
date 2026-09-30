@@ -16,6 +16,7 @@ from collections import Counter
 from typing import Callable
 
 from sim.engine import effects as fx
+from sim.engine import gifts
 from sim.engine.effects import Ctx
 from sim.engine.loadout import _uses as make_uses
 from sim.engine.loadout import build_player
@@ -91,6 +92,8 @@ class Game:
         self.next_refresh = scenario.get("refresh_seconds") or INF
         base = rules.a("melee.base_hit_per_second")
         self._base_logit = _logit(base)
+        # calibration only (sim/engine/gifts.py): a paired change to one team, from its own random stream
+        self.gift_log: list[dict] = gifts.apply(self, scenario["gifts"]) if scenario.get("gifts") else []
 
     # ------------------------------------------------------------------ utilities
 
@@ -1078,6 +1081,10 @@ class Game:
             reps = max(1, reps // 2)
             self.applied[(song.ability.slug, "ability.charge-faster")] += 1
         secs = math.ceil(reps * words / self.words_per_second)
+        if p.charge_seconds_saved:          # calibration gift (sim/engine/gifts.py)
+            saved = min(p.charge_seconds_saved, secs - 1)
+            secs -= saved
+            self.applied[("gift-charge-time", "seconds-saved")] += saved
         self._begin_incantation(p)
         p.casting = Cast(None, None, secs, kind="charge", charge_for=uses)
         return True
@@ -1553,6 +1560,7 @@ class Game:
             "fails": {f"{s}|{k}": n for (s, k), n in self.fails.items()},
             "kill_sources": dict(self.kill_sources),
             "holdings": getattr(self, "_start_holdings", None) or self.holdings(),
+            **({"gifts": self.gift_log} if self.gift_log else {}),
         }
 
     def holdings(self) -> dict[str, list[int]]:
