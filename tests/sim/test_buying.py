@@ -52,8 +52,10 @@ def test_every_modeled_purchasable_ability_is_held(rules, held_share):
 
 
 def test_inert_abilities_are_never_bought(rules, held_share):
-    """Archetypes whose handled effects only touch abilities the engine can't use are skipped."""
-    for slug in ("battlemage", "evoker", "warlock", "legend"):
+    """Archetypes whose handled effects only touch abilities the engine can't use are skipped.
+    Evoker (Elemental Barrage), Warlock (Death and Flame purchases doubled) and Legend (Extension)
+    now change play and are no longer inert; Battlemage's only benefit is Ambulant (needs-map)."""
+    for slug in ("battlemage",):
         assert not effective(rules.abilities[slug], rules)
         assert held_share.get(slug, 0.0) == 0.0
 

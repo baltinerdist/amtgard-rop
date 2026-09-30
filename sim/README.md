@@ -64,8 +64,9 @@ exactly, including across processes and hash seeds (`tests/sim/test_determinism.
 validity fixes it took 15 s on 10 cores (66 games/s); it now takes 18–25 s (40–55 games/s). About
 20% of that is the new code: shorter incantations mean more policy decisions, and casting players
 are asked every tick whether to keep casting. The rest is load from other processes on the test
-machine. An ablation over 1,000 games runs the baseline once, then takes about 20 s for each
-ability removed.
+machine. Extending effect coverage from 257 to 398 instances costs about 4%: 56.2 games/s against
+58.8 without it, run back to back on the same seeds (10 cores). An ablation over 1,000 games runs
+the baseline once, then takes about 20 s for each ability removed.
 
 ## Layout
 
@@ -74,7 +75,7 @@ ability removed.
 | `rules/compile.py` | Metadata + class sheets + rulings → immutable `Ability` / `ClassSheet` objects |
 | `rules/build_classes.py` | Builds `data/classes.json` from `rules/classes/*.md` and the metadata's availability rows; each field cites its source file |
 | `rules/rulings.py` | Loads `data/rulings.json` (answers to the metadata's 87 open questions) |
-| `rules/coverage.py` | Which effect kinds the engine executes; writes `COVERAGE.md` |
+| `rules/coverage.py` | Which effect kinds the engine executes, and which are needs-map / out-of-scope and why; writes `COVERAGE.md` |
 | `engine/state.py` | Player, ability uses, enchantments, casts |
 | `engine/loadout.py` | Equipment and abilities from class and level. Martial classes use the level table and option picks. Magic Users spend 5 points per level as `policies/buy.py` chooses. |
 | `engine/effects.py` | One handler per effect kind, plus the passive and loadout registries |
@@ -126,11 +127,34 @@ ability removed.
   - Fragile players die on the next wound
 - **Defenses:**
   - Immunity and Resistance (by School, next source, or wounds)
-  - Protection from Magic and Protection from Projectiles
-  - Ancestral Armor, Gift of Air
+  - Protection from Magic and Protection from Projectiles (including Engulfing arrows), Void Touched, Rage
+  - Ancestral Armor (and Stoneskin/Ironskin Magic Armor as per it), Harden Armor
+  - Gift of Air and Song of Survival, with the bearer's choice of Insubstantial in place or a return to base (random, like other choices); Gift of Air stays on (ruling gift-of-air#1)
   - death prevention: Phoenix Tears (including what happens when it thaws), Troll Blood, Song of Survival
+  - Planar Grounding and Song of Freedom prevent States; Sleight of Mind stops Dispel Magic
+- **Equipment:** Harden, Greater Harden and Imbue protect weapons or shields (Harden not against
+  object-destroying abilities such as Pyrotechnics); Heat Weapon puts a weapon out of use for 30 s;
+  Sacred Blades ignore Magic Armor and wound Resistances.
+- **Restrictions on players** (`action.restrict`), enforced by the engine where attacks and casts
+  are chosen and resolved:
+  - Awe and Terror (no attacking or Magic at the caster; negated when the caster attacks or casts at
+    the target, or dies), Insult (only the caster, plus anyone who attacks the target)
+  - Archetype drawbacks (no armor, no Great weapons, no shields or Large shields, no bows, no normal
+    arrows), Gift of Air (no weapons or shields), Essence Graft (only the grafter's (m) Enchantments)
+- **Enchantment grants:** abilities an Enchantment grants (Gift of Water's Heal, Void Touched,
+  Undead Minion's Raise Dead on the caster, …) are separate uses, removed with it; "as per"
+  grants take on the other ability's effects.
+- **Archetypes and Traits at loadout:** group frequency changes (Dervish, Summoner, Warder, Warlock,
+  Medium, Necromancer, Priest, Sniper, Experienced), purchase restrictions and cost changes for Magic
+  Users (the buyer is replayed under the Archetype's rules), Look the Part changes (Artificer,
+  Raider, Sniper), range and ability replacements (Avatar of Nature, Juggernaut).
+- **Meta-Magic:** the engine states Swift, Extension and Persistent for a player when they are
+  allowed and help (scripted players never do); never on abilities granted by Enchantments.
 - **Triggers:**
-  - Kill Trigger abilities and "immediately after a kill" (Scavenge, Momentum, Adrenaline, Assassinate)
+  - Kill Trigger abilities (one per kill, the most valuable usable one) and "immediately after a
+    kill" (Scavenge, Momentum, Adrenaline, Assassinate); a self-targeted trigger has no effect
+    through the caster's Immunity, except Vampirism's Adrenaline through Cursed
+  - Wound Triggers (Brutal Strike)
   - "immediately after dying" (True Grit)
 - **Game types** (rules/battlegames.md):
   - Mutual Annihilation: individual lives, 150 s count, and the team-wipe rule
@@ -141,21 +165,44 @@ ability removed.
 
 - **Space.** There is no map, terrain, line of sight, movement speed, formations or objectives. Range and reach are probabilities.
 - **Effect coverage** (from `COVERAGE.md`):
-  - **257 of 445** effect instances are executed (58%)
-  - **89** abilities are fully handled, **53** partly, and **41** not at all
-  - The biggest gaps are `action.restrict` (25 abilities, e.g. Insult, Awe), `economy.purchase-restrict` and `meta.modify-next` (Extension, Swift, Ambulant).
-  - Anything unhandled is counted in the `noop` metric of every run. Policies never pick an ability with no handled effects on purpose.
+  - **398 of 445** effect instances are executed (89%); none is an unexplained no-op
+  - **23** are **needs-map** (Alternate Bases and respawn points, free movement, Blink's 10' exit
+    rule, Sanctuary, Trickery, Ambulant, Summon Dead's death location, Reload's keep-away) and **24**
+    are **out-of-scope** (spare equipment and weapon types Phase 1 doesn't tell apart, thrown
+    weapons, hands, Missile Block's blocking skill, Imbue's equipment-only Engulfing protection,
+    Song of Visit, Circle of Protection's group). `COVERAGE.md` gives the reason for each.
+  - **159** abilities are fully handled, **15** partly, and **9** not at all (all needs-map or out-of-scope)
+  - Anything not executed is counted in the `noop` metric of every run; explicitly unmodeled effects
+    under the detail `needs-map:<kind>` or `out-of-scope:<kind>`. Policies never pick an ability
+    with no handled effects on purpose.
 - **Chosen options** are random, not strategic: School choices, the Pick-one options, and whether and which Archetype to take.
-- **Magic User spell lists** (`policies/buy.py`) come from the usefulness score with personal taste (log-normal, sd `loadout.spell_taste_sd`), two favorite spells bought first (`loadout.favorite_spells`), and at most one Archetype at 6th level. Unlimited non-ammunition abilities (Heal, Bardic songs) score double. Abilities that do nothing in the engine are never bought, including the Archetypes that only modify unmodeled abilities (Battlemage, Evoker, Warlock, Legend). Every purchasable, modeled ability is held in at least 2.8% of 1,000 mixed games (`tests/sim/test_buying.py` requires 2%). Before this, 33 were never held.
+- **Magic User spell lists** (`policies/buy.py`) come from the usefulness score with personal taste (log-normal, sd `loadout.spell_taste_sd`), two favorite spells bought first (`loadout.favorite_spells`), and at most one Archetype at 6th level. Unlimited non-ammunition abilities (Heal, Bardic songs) score double. Abilities that do nothing in the engine are never bought. Evoker, Warlock and Legend now change play (Elemental Barrage, Death and Flame purchases doubled, Extension). Battlemage's only benefit, Ambulant, is needs-map, but `buy.effective` counts its purchase restriction (a drawback) as an effect, so it is bought (see Known limitations). With the extended coverage, Elemental Barrage is held in only 1.2% of 1,000 mixed games (`tests/sim/test_buying.py` requires 2%).
 - **Rulings are recorded but not interpreted.** Each of the 87 open questions keeps the reading the metadata already encodes. An answer changes the simulation only if its entry carries a `sim` block (see `rules/rulings.py`). A missing, partial or unreadable `data/rulings.json` is tolerated: each open question without an entry falls back to the metadata's reading, and the fallback is logged.
-- **Weapons.** There are no thrown weapons, and no backup weapons after one is destroyed.
+- **Weapons.** There are no thrown weapons, no weapon types other than Great weapons, and no backup weapons after one is destroyed.
 - **Player decisions** are scripted heuristics. A different policy can change the conclusions, so run any important question at more than one policy setting.
 
 ## Known limitations (from the face-validity suite)
 
 `sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
 true (mirror matches are 50/50, skill wins, armor helps, more lives means longer games, Heal
-doesn't hurt, …). All pass except one, which is a structural limit of Phase 1:
+doesn't hurt, …). Two fail: **level** (below), which started failing when effect coverage went from
+257 to 398 instances, and **class-stack**, a structural limit of Phase 1:
+
+- **6th level no longer beats 1st level (level check: 0.46, expects ≥ 0.6; 0.66 before).** The
+  rules are now enforced, but the scripted choices don't weigh their costs. Measured by patching
+  one thing at a time (300 games each):
+  - about 9 points: the policies now use newly handled abilities at their `value.py` weight. Fighters
+    spend long stretches charging Brutal Strike (Charge ×10, about 80 s) and Poison (Charge ×3);
+    refusing charges of newly handled abilities alone recovers 4 points. The buyer (`buy.py`) spends
+    Magic User points and favorite picks on newly modeled, low-value spells (Swift, Extension, Heat
+    Weapon, Sleight of Mind, …), and `value.py` adds weight for drawbacks (harm-polarity effects on
+    the bearer) the same as for benefits.
+  - about 4 points: Healers cast Gift of Air on fighters, who then may not wield weapons.
+  - about 3 points: martial players take a random Archetype at 6th level, and half of Barbarians,
+    Monks and Assassins now go without armor (Berserker, Medium, Spy).
+  With all three patched out the check passes (0.63). The fixes belong to the policies: score
+  charges by value per second, ignore drawbacks in `value.py` and `buy.effective`, and don't
+  enchant fighters with Gift of Air (`Game.barred` tells whether a player may wield weapons).
 
 - **Melee classes are too strong against casters.** At equal skill, a small team stacked with
   Warriors, Barbarians, Paladins and Anti-Paladins beats a mixed team about 89% of the time (the
@@ -177,7 +224,36 @@ doesn't hurt, …). All pass except one, which is a structural limit of Phase 1:
   healed; they stay in melee, where no one heals them.
 - **Charging runs long.** Druids still spend a large share of field time charging Barkskin
   (Charge ×10, about 80 s), because the Charge policy picks the most valuable spent ability
-  whether or not it will be used.
+  whether or not it will be used. Anti-Paladins and Barbarians now do the same with Brutal Strike.
+- **Handled but never chosen.** No scripted role casts a Self-range Verbal that is neither healing
+  nor an Enchantment, so Rage, Shake It Off, Elemental Barrage, Blink, Martyr and Circle of
+  Protection work when cast but are not cast in play. The caster policy never shoots, so a Ranger's
+  bow (`Player.has_bow`) goes unused.
+
+### Engine queries for policies
+
+The engine enforces restrictions itself where attacks and casts are chosen and resolved, so a
+policy that ignores them only wastes a choice (counted as a `restricted` failure). Policies can
+avoid that with: `Game.can_attack(a, b)`, `Game.can_cast_at(a, b, uses)`,
+`Game.restricted_targets(a)`, `Game.barred(p, what)` (e.g. `"wield-weapons"`),
+`Game.can_fire_normal_arrows(p)`, `Game.weapon_usable(p)` (Heat Weapon), `Game.shield_up(p)`,
+`Game.equipment_protection(p, item)` and `Game.prevented(p, state)`.
+
+### Interpretations made by the handlers
+
+Where a rule's text left a choice, the handlers read it as follows (ruling ids where one applies):
+Insult bars Magic at anyone but the caster, the target and their allies included, and its exception
+for attackers covers attacks only (insult#1); Awe/Terror/Insult leave (ex) abilities other than
+Specialty Arrows allowed (awe#1, insult#3, terror#1); Awe's keep-away ends with it when negated; an
+Essence Graft drops the bearer's (m) Enchantments from other casters; Experienced takes the
+per-life option when a Verbal qualifies; a Magic User holds at most one Archetype; zero-cost
+spells (Priest's Heal) are taken at their Max; the extra Protection Enchantment Phoenix Tears keeps
+is the most recently attached one; an Undead Minion is kept down only while its caster lives to
+raise it, then removes the Enchantment (Enchantments rule 8); Golem's Mend removes a wound instead
+of repairing (golem#1); Shake It Off's 10 s delay comes from its text (E1), not the effect record;
+Martyr takes the worst State by the engine's State order (martyr#1); Harden and Imbue pick weapons
+or shield at random when the bearer has a shield (harden#1, imbue#1); Song of Power's 20' is the
+20' range probability.
 - The **control-scales** check passes, but only because control is worth about nothing in small
   games. There are no lines to break and no clumps for area effects to hit.
 

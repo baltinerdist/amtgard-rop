@@ -28,6 +28,14 @@ class Uses:
     swift: bool = False
     range: str = ""
     ench: "Ench | None" = None   # set when the use comes from an Enchantment's strips
+    granted_by: "Ench | None" = None   # granted while an Enchantment is worn (tracked separately)
+    extra_reqs: frozenset = frozenset()  # requirements added by the granting ability (Regeneration)
+    drop_reqs: frozenset = frozenset()   # requirements the granting ability waives (Undead Minion)
+    only_target: int | None = None       # may only be cast on this player (Undead Minion's Raise Dead)
+    base_range: str = ""                 # range before Extension is offered (Game._offer_extension)
+    declare_words: int | None = None     # cast by a declaration, not an incantation (Mass Healing)
+    purchased: bool = False              # bought with Magic User points (Archetype group scopes)
+    copies: int = 1                      # purchases or picks merged into this use
 
     @property
     def slug(self) -> str:
@@ -57,12 +65,37 @@ class Ench:
 
 
 @dataclass(slots=True)
+class Restriction:
+    """An Ongoing Effect limiting whom a player may attack or cast at (Awe, Terror, Insult)."""
+    what: str                    # attack-caster / cast-at-caster / attack-anyone-but-caster / cast-at-anyone-but-caster
+    src: int                     # pid of the player who imposed it
+    until: float
+    slug: str
+    negate_on_provoke: bool = False   # Awe/Terror: ends if the caster attacks or casts at the target
+    ends_on_src_death: bool = False
+    allowed: set = field(default_factory=set)  # Insult: others who attacked or cast on the target
+
+
+@dataclass(slots=True)
+class Buff:
+    """An Ongoing Effect from a Verbal that the engine queries like a worn one (Rage's Verbal
+    immunity and weapon specials; Circle of Protection's protections while its Insubstantial lasts)."""
+    slug: str
+    effect: object               # the compiled Effect
+    until: float
+    rides_state: str | None = None   # ends when this State ends
+    ends_on_incantation: bool = False
+
+
+@dataclass(slots=True)
 class Cast:
     uses: Uses | None           # None for a Charge
     target: int | None
     remaining: float
     kind: str = "cast"          # cast / charge
     charge_for: Uses | None = None
+    persistent: bool = False    # the Persistent Meta-Magic was stated for this Enchantment
+    declared: bool = False      # a declaration, not an incantation: not stopped by Suppressed
 
 
 @dataclass(slots=True)
@@ -79,6 +112,8 @@ class Player:
     has_bow: bool = False
     uses: dict[str, Uses] = field(default_factory=dict)
     traits: list[Ability] = field(default_factory=list)       # traits and archetypes, always on
+    trait_copies: dict[str, int] = field(default_factory=dict)  # Traits bought more than once (Experienced)
+    ltp: tuple | None = None    # Look the Part bonus added at build: (slug, uses added, created the use)
     ench_slots: int = 1                                         # magical enchantments allowed
 
     # per-life state
@@ -94,9 +129,16 @@ class Player:
     states: dict[str, float] = field(default_factory=dict)     # state -> expiry time (INF = indefinite)
     enchantments: list[Ench] = field(default_factory=list)
     resist: list[dict] = field(default_factory=list)
+    restrictions: list[Restriction] = field(default_factory=list)
+    buffs: list[Buff] = field(default_factory=list)
+    exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
+    meta_armed: set = field(default_factory=set)                # Meta-Magics stated for the next ability
+    prevented: dict[str, float] = field(default_factory=dict)  # States p may not gain until then (Planar Grounding)
+    barrage: dict[str, int] | None = None   # Elemental Barrage: carried Magic Balls usable by declaration
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
     weapon_ok: bool = True
+    weapon_hot_until: float = 0.0                               # Heat Weapon: may not wield it until then
     shield_hits: int = 0
     balls_retrieve_at: dict[str, float] = field(default_factory=dict)
     next_shot_at: float = 0.0
