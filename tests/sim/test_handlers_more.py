@@ -555,6 +555,85 @@ def test_removing_attuned_drops_an_enchantment_to_meet_the_limit(rules):
     assert g.applied[("attuned", "enchantment.remove")] == 1
 
 
+# ---------------------------------------------------------------- equipment / armor protection
+
+def worn(p, slug):
+    return next(e for e in p.enchantments if e.ability.slug == slug)
+
+
+def test_harden_protects_the_chosen_item_but_not_from_object_destroyers(rules):
+    g, heal, war, ally = trio(rules, a="Healer", b="Wizard")
+    ally.shield = "large"
+    resolve(g, heal, "harden", ally, rng="Other")
+    h = worn(ally, "harden")
+    h.choice = "shield"
+    assert g.equipment_protection(ally, "shield") is h and g.equipment_protection(ally, "weapon") is None
+    assert g.equipment_protection(ally, "shield", object_destroying=True) is None
+    resolve(g, war, "pyrotechnics", ally, rng="50'")
+    assert ally.shield_hits == 3, "Pyrotechnics destroys objects despite Harden"
+
+
+def test_imbue_shield_cannot_be_destroyed(rules):
+    g, heal, wiz, ally = trio(rules, a="Healer", b="Wizard")
+    ally.shield = "large"
+    resolve(g, heal, "imbue", ally, rng="Other")
+    worn(ally, "imbue").choice = "shield"
+    resolve(g, wiz, "pyrotechnics", ally, rng="50'")
+    assert ally.shield_hits == 0 and not ally.weapon_ok, "the weapon goes instead"
+
+
+def test_as_per_harden_grants(rules):
+    g, heal, _, ally = trio(rules, a="Healer")
+    resolve(g, heal, "greater-harden", ally, rng="Other")
+    assert g.equipment_protection(ally, "shield") and g.equipment_protection(ally, "weapon")
+    g2, wiz, _, ally2 = trio(rules, a="Wizard")
+    resolve(g2, wiz, "sacred-blades", wiz, rng="Self")
+    assert g2.equipment_protection(wiz, "weapon") and not g2.equipment_protection(wiz, "shield")
+
+
+def test_harden_armor_turns_armor_breaking_into_a_regular_strike(rules):
+    g, dru, war, ally = trio(rules, a="Druid")
+    ally.armor = {l: 3 for l in LOCATIONS}
+    ally.armor_max = 3
+    resolve(g, dru, "harden-armor", ally, rng="Other")
+    g.hit(ally, war, "melee", location="torso", specials=frozenset({"armor-breaking"}))
+    assert ally.armor["torso"] == 2
+
+
+def test_heat_weapon_stops_the_weapon_for_30s(rules):
+    g, dru, war, ally = trio(rules, a="Druid")
+    resolve(g, dru, "heat-weapon", war)
+    assert war.weapon_hot_until == g.t + 30 and not g.weapon_usable(war)
+    war.target = ally.pid
+    g._engage()
+    assert war.target is None
+    g.t += 30
+    assert g.weapon_usable(war)
+    g2, dru2, pal, _ = trio(rules, a="Druid", b="Paladin")
+    resolve(g2, dru2, "gift-of-fire", pal, rng="Other")       # Immune to Flame keeps wielding it
+    resolve(g2, dru2, "heat-weapon", pal)
+    assert g2.weapon_usable(pal) and g2.fails[("heat-weapon", "immune")] == 1
+
+
+def test_protection_from_projectiles_negates_engulfing_arrows(sure_rules):
+    g, heal, arc, ally = trio(sure_rules, a="Healer", b="Archer")
+    resolve(g, heal, "protection-from-projectiles", ally, rng="Other")
+    resolve(g, arc, "pinning-arrow", ally, magical=False)
+    assert not ally.has_state("stopped", g.t)
+    assert g.applied[("protection-from-projectiles", "defense.negate-engulfing")] == 1
+
+
+def test_sacred_blades_ignore_magic_armor_and_wound_resistance(rules):
+    g = make_game(rules, [spec("Wizard")], [spec("Druid"), spec("Warrior")])
+    wiz, dru, war = g.players
+    resolve(g, wiz, "sacred-blades", wiz, rng="Self")
+    war.armor = {l: 0 for l in LOCATIONS}
+    resolve(g, dru, "stoneskin", war, rng="Other")
+    g.hit(war, wiz, "melee", location="left_arm")
+    assert war.wounds == {"left_arm"} and war.magic_armor["left_arm"] == 2
+    assert g.applied[("sacred-blades", "weapon.ignore-protections")] == 1
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

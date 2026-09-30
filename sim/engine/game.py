@@ -308,6 +308,37 @@ class Game:
                 specials.add(b.effect.params.get("effect"))
         return frozenset(specials)
 
+    def equipment_protection(self, p: Player, item: str, object_destroying: bool = False) -> Ench | None:
+        """The worn Enchantment protecting p's wielded 'weapon' or 'shield' from damage: Harden and the
+        abilities affected as per Harden (except against object-destroying Magic Balls and Verbals),
+        or Imbue (cannot be destroyed nor damaged at all)."""
+        for e in p.enchantments:
+            for eff in e.ability.effects:
+                if eff.kind == "equipment.protect":
+                    what, degree = eff.params.get("what"), eff.params.get("degree")
+                elif eff.kind == "ability.grant" and eff.params.get("how") == "as-per" \
+                        and eff.params.get("ability") == "Harden" and e.ability.slug in fx.AS_PER_HARDEN:
+                    what, degree = fx.AS_PER_HARDEN[e.ability.slug], "except-object-destroying-abilities"
+                else:
+                    continue
+                if object_destroying and degree != "indestructible":
+                    continue
+                if what == "weapons-and-shields" or (what == "weapons-or-shield" and e.choice == item) \
+                        or (what in ("weapons", "shield") and what.rstrip("s") == item
+                            and (e.choice is None or e.choice == item)):
+                    return e
+        return None
+
+    def _worn_with(self, p: Player, kind: str, key: str, value: str) -> Ench | None:
+        for e in p.enchantments:
+            if any(eff.kind == kind and eff.params.get(key) == value for eff in e.ability.effects):
+                return e
+        return None
+
+    def weapon_usable(self, p: Player) -> bool:
+        """Not destroyed and not Heat Weapon'd."""
+        return p.weapon_ok and p.weapon_hot_until <= self.t
+
     def _poison(self, p: Player) -> Ench | None:
         """A worn Enchantment making p's next melee wound Wounds Kill (Poison)."""
         for e in p.enchantments:
@@ -394,6 +425,11 @@ class Game:
         for eff in ab.effects:
             if eff.kind == "defense.immunity" and eff.params.get("school") == "choice":
                 ench.choice = self.rng.choice(eff.params.get("options") or [""])
+        if ("has-choice" in ab.properties and ab.effects_of("equipment.protect")) \
+                or fx.AS_PER_HARDEN.get(ab.slug) == "weapons-or-shield":
+            # Harden / Imbue: weapons or shield, chosen once when cast (rulings harden#1, imbue#1);
+            # random like other choices, and weapons for a bearer without a shield
+            ench.choice = self.rng.choice(("weapon", "shield")) if target.shield != "none" else "weapon"
         target.enchantments.append(ench)
         self._activate(target, ench)
         ctx = Ctx(ab, caster, target, bearer=target, ench=ench)
@@ -558,10 +594,21 @@ class Game:
                 self._insubstantial_choice(p, e)
                 return
         worn, magic = p.armor.get(loc, 0), p.magic_armor.get(loc, 0)
+        # Sacred Blades: the bearer's melee weapons ignore Magic Armor and Resistances to wounds
+        sacred = self._worn_with(src, "weapon.ignore-protections", "against", "magic-armor") \
+            if kind == "melee" and src is not None and src.enchantments else None
+        if sacred is not None and magic > 0:
+            magic = 0
+            self.applied[(sacred.ability.slug, "weapon.ignore-protections")] += 1
         if worn > 0 and (e := self._enchant_with(p, "defense.negate-hit", **{"from": "hits-on-worn-armor"})):
             p.armor[loc] = worn - 1
             self.applied[(e.ability.slug, "defense.negate-hit")] += 1
             return
+        if "armor-breaking" in specials and worn > 0 and magic == 0 \
+                and (ha := self._worn_with(p, "armor.protect", "against", "armor-breaking")) is not None:
+            # Harden Armor: Armor Breaking strikes to worn armor are regular strikes (not Magic Armor)
+            specials = specials - {"armor-breaking"}
+            self.applied[(ha.ability.slug, "armor.protect")] += 1
         if magic > 0 and (e := self._ancestral_magic_armor(p)) is not None:
             # Stoneskin / Ironskin: their Magic Armor is affected as per Ancestral Armor, so any hit
             # on it only removes one point, whatever its special effects
@@ -580,12 +627,17 @@ class Game:
             if p.casting is not None and self.rng.random() < self.rules.a("casting.p_interrupt_on_armor_hit"):
                 self.interrupt(p, "struck")
             return
-        return self.wound(p, loc, src, slug, specials)
+        pierce = sacred is not None and self._worn_with(src, "weapon.ignore-protections", "against",
+                                                         "wound-resistances") is not None
+        return self.wound(p, loc, src, slug, specials, ignore_resistance=pierce)
 
-    def wound(self, p: Player, loc: str, src: Player | None, slug: str, specials: frozenset = frozenset()) -> bool:
+    def wound(self, p: Player, loc: str, src: Player | None, slug: str, specials: frozenset = frozenset(),
+              ignore_resistance: bool = False) -> bool:
         if not p.alive:
             return False
-        if self.consume_resistance(p, "wound"):
+        if ignore_resistance and any(r["to"] == "wounds" for r in p.resist):
+            self.applied[("sacred-blades", "weapon.ignore-protections")] += 1
+        elif self.consume_resistance(p, "wound"):
             return False
         self.interrupt(p, "wounded")
         if "wounds-kill" in specials or loc == "torso" or p.wounds or p.has_state("fragile", self.t):
@@ -822,7 +874,8 @@ class Game:
                     and self.unaffected(target, "verbal-magical-beyond-touch"):
                 return "unaffected"
         harmful = any(e.polarity == "harm" for e in ab.effects)
-        if harmful and target is not caster and "bypass-resistances" not in ab.properties:
+        if harmful and target is not caster and "bypass-resistances" not in ab.properties \
+                and "targets-equipment" not in ab.properties:   # heat-weapon#1: the item is the target
             if self.consume_resistance(target, "school", ab.school) or self.consume_resistance(target, "source"):
                 return "resisted"
         return None
@@ -837,8 +890,8 @@ class Game:
             self.fails[(uses.slug, f"requirement:{why}")] += 1
             return False
         aimed = target if target is not None else p
-        if not self.can_cast_at(p, aimed, uses) or (
-                uses.ability.delivery == "specialty-arrow" and self.barred(p, "wield-weapons")):
+        if not self.can_cast_at(p, aimed, uses) or (uses.ability.delivery == "specialty-arrow" and (
+                self.barred(p, "wield-weapons") or not self.weapon_usable(p))):
             self.fails[(uses.slug, "restricted")] += 1
             return False
         secs = 1.0 if uses.swift else uses.ability.cast_seconds(self.words_per_second)
@@ -943,6 +996,15 @@ class Game:
         if kind == "ball" and uses.magical:
             self._provoke(p, target, "cast-done")
         ctx = Ctx(ab, p, target, location=self._location(), specials=specials)
+        if kind == "arrow" and "engulfing" in ab.properties:
+            # Protection from Projectiles / Song of Deflection: Engulfing effects from projectiles other
+            # than Magic Balls (e.g. Pinning Arrow) do not affect the bearer, whatever they strike
+            guard = next((e for e in target.enchantments if any(
+                x.kind == "defense.negate-engulfing" and x.subject == "bearer" for x in e.ability.effects)), None)
+            if guard is not None:
+                self.applied[(guard.ability.slug, "defense.negate-engulfing")] += 1
+                self.fails[(ab.slug, "unaffected")] += 1
+                return
         if kind == "arrow" and self.unaffected(target, "projectiles-except-magic-balls"):
             self.fails[(ab.slug, "unaffected")] += 1
             return
@@ -951,7 +1013,7 @@ class Game:
     def shoot(self, p: Player, target: Player) -> None:
         """A normal arrow: Armor Breaking and Weapon Destroying (rules/weapon-types-shields-equipment.md)."""
         p.next_shot_at = self.t + self.rules.a("projectiles.arrow_shot_seconds")
-        if not self.can_fire_normal_arrows(p) or not self.can_attack(p, target):
+        if not self.can_fire_normal_arrows(p) or not self.can_attack(p, target) or not self.weapon_usable(p):
             # the shooter looks for a shot and holds it (Sniper, Gift of Air, Awe/Terror/Insult)
             self.fails[("arrow", "restricted")] += 1
             return
@@ -1001,7 +1063,7 @@ class Game:
         caster_w = a("engagement.caster_weight_when_choosing_melee_target")
         p_dis = a("engagement.p_disengage_per_second")
         for p in self.players:
-            if not p.can_act(t) or not p.on_field(t) or self.barred(p, "wield-weapons"):
+            if not p.can_act(t) or not p.on_field(t) or self.barred(p, "wield-weapons") or p.weapon_hot_until > t:
                 p.target = None
                 continue
             if p.target is not None:
@@ -1038,7 +1100,7 @@ class Game:
         for p in order:
             if p.target is None or not p.alive or not p.can_act(t) or p.casting is not None:
                 continue
-            if not p.weapon_ok or ("right_arm" in p.wounds and "left_arm" in p.wounds):
+            if not self.weapon_usable(p) or ("right_arm" in p.wounds and "left_arm" in p.wounds):
                 continue
             d = self.players[p.target]
             if (not self.targetable(d) and not d.has_state("stunned", t)) or not self.can_attack(p, d):
@@ -1069,7 +1131,11 @@ class Game:
                     self.remove_enchantment(p, poison)
             elif "shield-crushing" in specials and d_shield \
                     and self.rng.random() < a("melee.p_shield_struck_on_miss"):
-                d.shield_hits += 1
+                guard = self.equipment_protection(d, "shield")
+                if guard is not None:
+                    self.applied[(guard.ability.slug, "equipment.protect")] += 1
+                else:
+                    d.shield_hits += 1
 
     def _upkeep(self) -> None:
         t = self.t

@@ -201,10 +201,13 @@ def h_equipment_destroy(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     p = subject(eff, ctx)
     if p is None:
         return False
-    if p.shield_usable():
+    # an object-destroying ability: only equipment that cannot be destroyed at all (Imbue) resists it
+    if p.shield_usable() and not g.equipment_protection(p, "shield", object_destroying=True):
         p.shield_hits = 3
-    else:
+    elif p.weapon_ok and not g.equipment_protection(p, "weapon", object_destroying=True):
         p.weapon_ok = False
+    else:
+        return False
     return True
 
 
@@ -320,6 +323,17 @@ def h_death_prevent(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     return True
 
 
+def h_equipment_disable(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Heat Weapon: the target's weapon may not be wielded for 30 seconds; a player Immune to Flame
+    may keep wielding it (E2; Game.blocked already stops the ability on them)."""
+    p = ctx.target
+    if p is None or not p.alive or eff.params.get("what") != "weapon":
+        return False
+    p.weapon_hot_until = max(p.weapon_hot_until, g.t + (eff.seconds or 0.0))
+    p.target = None
+    return True
+
+
 def h_ability_grant(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     """Blood and Thunder: on a kill the caster becomes enchanted with Blessing Against Wounds (ex).
     It lasts as that Enchantment does: until it stops a wound, or is removed (ruling
@@ -392,6 +406,7 @@ INSTANT: dict[str, Callable] = {
     "action.restrict": h_action_restrict,
     "ability.grant": h_ability_grant,
     "defense.unaffected": h_buff,
+    "equipment.disable": h_equipment_disable,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -592,6 +607,9 @@ UNMODELED_RULES: tuple = (
     ("action.restrict", lambda a, e: e.params.get("what") in ("wield-javelins", "wield-heavy-thrown", "wield-long-weapons"),
      OUT_OF_SCOPE, "Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great "
      "weapons), so there is nothing to forbid."),
+    ("defense.negate-engulfing", lambda a, e: e.subject == "bearer-equipment", OUT_OF_SCOPE,
+     "Imbue ignores Engulfing effects that hit the bearer's wielded equipment; Phase 1 resolves every "
+     "projectile on a body location and never models a strike on carried equipment."),
     (None, lambda a, e: a.slug == "trickery", NEEDS_MAP,
      "Trickery chains positional escapes (Blink, Shadow Step, Teleport while already Insubstantial); "
      "without movement the chain has nothing to model."),
@@ -661,6 +679,8 @@ def _grant_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str 
             what = prm.get("ability")
             if what in AS_PER_EXPAND:
                 return "passive"
+            if what == "Harden" and ab.slug in AS_PER_HARDEN:
+                return "passive"     # Game.equipment_protection
             if what == AS_PER_MAGIC_ARMOR and ab.effects_of("armor.magic"):
                 return "passive"
             return None
@@ -697,6 +717,19 @@ def _wound_heal_mode(ab: Ability, eff: Effect, names: set[str] | None = None) ->
     return "instant" if eff.timing in INSTANT_TIMINGS else None
 
 
+# "As per Harden" grants and what each covers (Harden itself: weapons or shield, the bearer's choice)
+AS_PER_HARDEN = {"gift-of-earth": "weapons-or-shield", "greater-harden": "weapons-and-shields",
+                 "sacred-blades": "weapons"}
+
+
+def _equipment_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    """equipment.protect / armor.protect / defense.negate-engulfing / weapon.ignore-protections on worn
+    Enchantments: Game queries them where equipment, armor and wounds are hit."""
+    if eff.timing != "while-active" or ab.delivery not in PASSIVE_DELIVERIES:
+        return None
+    return "passive"
+
+
 def _passive_ok(ab: Ability, eff: Effect) -> bool:
     check = PASSIVE_PARAMS.get(eff.kind)
     return ab.delivery in PASSIVE_DELIVERIES and (check is None or check(eff.params, eff))
@@ -731,6 +764,10 @@ MODE_RULES: dict[str, Callable[..., str | None]] = {
     "wound.heal": _wound_heal_mode,
     "defense.unaffected": _unaffected_mode,
     "special-effect.grant": _special_mode,
+    "equipment.protect": _equipment_mode,
+    "armor.protect": _equipment_mode,
+    "defense.negate-engulfing": _equipment_mode,
+    "weapon.ignore-protections": _equipment_mode,
 }
 
 

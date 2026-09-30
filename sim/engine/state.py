@@ -130,6 +130,7 @@ class Player:
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
     weapon_ok: bool = True
+    weapon_hot_until: float = 0.0                               # Heat Weapon: may not wield it until then
     shield_hits: int = 0
     balls_retrieve_at: dict[str, float] = field(default_factory=dict)
     next_shot_at: float = 0.0

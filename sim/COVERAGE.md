@@ -7,16 +7,16 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **361 of 445** (81%)
-- Not handled: **48** no-op, **18** needs-map, **18** out-of-scope
-- Abilities fully handled: **131**, partly: **30**, not at all: **22**, no effects recorded: 0 (of 183)
+- Effect instances handled: **374 of 445** (84%)
+- Not handled: **33** no-op, **18** needs-map, **20** out-of-scope
+- Abilities fully handled: **139**, partly: **28**, not at all: **16**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
 | Kind | Abilities | Instances | Handled | Mode |
 | --- | ---: | ---: | ---: | --- |
 | `state.apply` | 43 | 52 | 49 | instant 42, out-of-scope 3, passive 7 |
-| `ability.grant` | 30 | 41 | 38 | instant 1, loadout 23, no-op 3, passive 14 |
+| `ability.grant` | 30 | 41 | 41 | instant 1, loadout 23, passive 17 |
 | `action.restrict` | 25 | 36 | 22 | instant 9, loadout 9, needs-map 8, no-op 2, out-of-scope 4, passive 4 |
 | `economy.frequency` | 19 | 25 | 24 | loadout 24, no-op 1 |
 | `special-effect.grant` | 18 | 28 | 28 | instant 18, passive 10 |
@@ -47,9 +47,9 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `ability.restore-uses` | 3 | 3 | 3 | instant 3 |
 | `class.look-the-part` | 3 | 3 | 0 | no-op 3 |
 | `death.prevent` | 3 | 3 | 3 | instant 3 |
-| `defense.negate-engulfing` | 3 | 4 | 0 | no-op 4 |
+| `defense.negate-engulfing` | 3 | 4 | 2 | out-of-scope 2, passive 2 |
 | `economy.cost` | 3 | 4 | 4 | loadout 4 |
-| `equipment.protect` | 3 | 4 | 0 | no-op 4 |
+| `equipment.protect` | 3 | 4 | 4 | passive 4 |
 | `move.free` | 3 | 3 | 0 | needs-map 1, no-op 2 |
 | `team.alternate-base` | 3 | 3 | 0 | needs-map 3 |
 | `ability.cast-while-insubstantial` | 2 | 2 | 0 | needs-map 1, no-op 1 |
@@ -65,17 +65,17 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `ability.replace` | 1 | 1 | 0 | no-op 1 |
 | `armor.damage` | 1 | 1 | 1 | instant 1 |
 | `armor.destroy` | 1 | 1 | 1 | instant 1 |
-| `armor.protect` | 1 | 1 | 0 | no-op 1 |
+| `armor.protect` | 1 | 1 | 1 | passive 1 |
 | `casting.modify` | 1 | 1 | 0 | no-op 1 |
 | `defense.block-projectiles` | 1 | 1 | 0 | no-op 1 |
 | `enchantment.protect` | 1 | 1 | 0 | no-op 1 |
-| `equipment.disable` | 1 | 1 | 0 | no-op 1 |
+| `equipment.disable` | 1 | 1 | 1 | instant 1 |
 | `life.prevent-respawn` | 1 | 1 | 0 | no-op 1 |
 | `life.set-death-location` | 1 | 1 | 0 | no-op 1 |
 | `move.to-caster` | 1 | 1 | 1 | instant 1 |
 | `move.to-location` | 1 | 2 | 2 | instant 2 |
 | `state.transfer` | 1 | 1 | 0 | no-op 1 |
-| `weapon.ignore-protections` | 1 | 2 | 0 | no-op 2 |
+| `weapon.ignore-protections` | 1 | 2 | 2 | passive 2 |
 
 ## Not modeled in Phase 1
 
@@ -90,15 +90,16 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | needs-map | `team.respawn-point` | golem e5, heart-of-the-swarm e2 | A respawn point is a place on the field; Phase 1 respawns everyone at an abstract base. |
 | out-of-scope | `action.restrict` | corruptor e5, mystic e4, rogue e3 | Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great weapons), so there is nothing to forbid. |
 | out-of-scope | `action.restrict`, `move.to-base`, `state.apply` | song-of-visit e1, song-of-visit e2, song-of-visit e3, song-of-visit e4, song-of-visit e5 | Song of Visit is a non-combat visit (Stopped and Invulnerable while chanting, then an Invulnerable walk to base); ending the Chant is the Bard's choice and Phase 1 has no rule for when to stop, so modeling it would park the Bard for the rest of the game. |
+| out-of-scope | `defense.negate-engulfing` | imbue e2, imbue e4 | Imbue ignores Engulfing effects that hit the bearer's wielded equipment; Phase 1 resolves every projectile on a body location and never models a strike on carried equipment. |
 | out-of-scope | `equipment.permit` | equipment-weapon-hinged e1, equipment-weapon-long e1, equipment-weapon-short e1, hunter e2 | Phase 1 tells only Great weapons apart from other melee weapons and has no thrown weapons, so permitting another weapon type changes nothing it models. |
 | out-of-scope | `equipment.permit` | equipment-shield-medium e3, equipment-shield-small e2, equipment-weapon-great e2, equipment-weapon-hinged e2, equipment-weapon-long e2, equipment-weapon-short e2 | Spare equipment only matters for replacing broken gear, and Phase 1 has no backup weapons or shields (a destroyed item stays destroyed until repaired or respawn). |
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `extension`, `greater-harden`, `harden`, `harden-armor`, `heat-weapon`, `imbue`, `persistent`, `sacred-blades`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `swift`, `trickery`
+`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `extension`, `persistent`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `swift`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`amplification` (1/2), `artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `gift-of-earth` (1/2), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `phoenix-tears` (9/10), `planar-grounding` (1/3), `priest` (2/3), `protection-from-projectiles` (1/2), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `sniper` (4/5), `song-of-deflection` (1/2), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)
+`amplification` (1/2), `artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `phoenix-tears` (9/10), `planar-grounding` (1/3), `priest` (2/3), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `sniper` (4/5), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)
