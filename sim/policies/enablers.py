@@ -103,6 +103,11 @@ def worth_casting(g: "Game", p: "Player", u: "Uses", x: float, at_base: bool = F
     return x > (0.0 if at_base else time_cost(g, p, cast_seconds(g, u)))
 
 
+def self_refill(ab: "Ability") -> bool:
+    """The refill acts on its caster (Innate, Steal Life Essence), whatever its range says."""
+    return all(e.subject == "caster" for e in ab.effects_of(*REFILLS))
+
+
 def is_refill(ab: "Ability") -> bool:
     """Gives a teammate or oneself a spent use back (Empower, Restoration, Confidence, Innate)."""
     return ab.delivery in ("verbal", "meta-magic") and ab.beneficiary != "enemy" and bool(ab.effects_of(*REFILLS)) \
@@ -189,8 +194,10 @@ def _geometric(n: float) -> float:
 
 def _refill_one(slug: str):
     def fn(g: "Game", p: "Player", q: "Player") -> float:
-        """The best spent use q gets back, if q will use it soon."""
-        u, w = best_spent(g, g.rules.abilities[slug], q)
+        """The best spent use q gets back (the caster's own for Innate), if q will use it soon."""
+        ab = g.rules.abilities[slug]
+        q = p if self_refill(ab) else q
+        u, w = best_spent(g, ab, q)
         return w * acts_soon(g, q, magical=u.magical) if u is not None else 0.0
     return fn
 

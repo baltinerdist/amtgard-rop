@@ -731,7 +731,7 @@ def _try_refill(g: "Game", p: Player) -> bool:
     for u in _usable(g, p):
         if not enablers.is_refill(u.ability):
             continue
-        if u.range in ("Self", ""):
+        if u.range in ("Self", "") or enablers.self_refill(u.ability):
             pool = [p]
         else:
             pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and not (q is p and u.range == "Other")

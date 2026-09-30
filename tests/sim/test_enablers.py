@@ -99,14 +99,15 @@ def test_a_refill_waits_while_attacking_is_worth_more(near_rules):
 
 
 def test_innate_charges_the_casters_best_spent_ability(near_rules):
-    g = _game(near_rules, [("Wizard", 6)], [("Warrior", 1)])
-    wiz, foe = g.players
+    g = _game(near_rules, [("Wizard", 6), ("Wizard", 6)], [("Warrior", 1)])
+    mate, wiz, foe = g.players          # the teammate first: ties go to the lowest pid
     away(g, foe)
-    give(g, wiz, "innate", rng="", per="refresh")
+    give(g, wiz, "innate", rng="20'", per="refresh")     # a loadout gives Meta-Magics a range
     ball = give(g, wiz, "fireball", left=0, charge=3)
     hold = give(g, wiz, "hold-person", left=0, charge=3)
-    assert U(g, wiz, "innate", wiz) > 0
-    assert _try_refill(g, wiz) and wiz.casting.uses.slug == "innate"
+    give(g, mate, "fireball", n=3, left=0, charge=3)
+    assert U(g, wiz, "innate", mate) == U(g, wiz, "innate", wiz) > 0, "Innate only ever Charges its caster"
+    assert _try_refill(g, wiz) and wiz.casting.uses.slug == "innate" and wiz.casting.target == wiz.pid
     finish(g, wiz)
     assert ball.left == 1 and hold.left == 0
 
