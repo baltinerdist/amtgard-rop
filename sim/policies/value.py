@@ -22,7 +22,7 @@ abilities they act on, computed with this same function, so it follows its targe
 | `ability.modify`, `economy.frequency` | the gain on the abilities affected: their value times `frequency_gain` (double uses, Unlimited, Charge), best per ability. A change the engine applies but that is not a frequency (Golem's Mend removing a wound) keeps the flat `UNPRICED_WEIGHT` |
 | `ability.charge` | the value of the ability it refills: the named spent ability when the context gives one (`Ctx.spent`), otherwise the mean over the recipient's chargeable abilities (Empower, Confidence and Restoration excluded, rule text) |
 | `ability.restore-uses` | one use: the mean over the recipient's per-life abilities (Empower); all uses: `RESTORE_ALL_USES` of them (Restoration); a named ability: its value (Rogue's Coup de Grace) |
-| `enchantment.extra-slot` | the best Enchantments that could fill the slots, k-th slot times `COPY_DECAY ** k`: for an Enchantment cast on another player, the caster's own Enchantments castable on another (any, Protection school only for Phoenix Tears, the caster's (m) for Essence Graft); for a Self one (Evolution), any teammate's |
+| `enchantment.extra-slot` | the best Enchantments that could fill the slots, k-th slot times `COPY_DECAY ** k`: for an Enchantment cast on another player, the caster's own Enchantments castable on another (any, Protection school only for Phoenix Tears, the caster's (m) for Essence Graft); for a Self one (Evolution), any teammate's, times the share of classes that are Magic Users (the bearer can't fill it; only a teammate's cast can) |
 | `ability.charge-faster` | Song of Power: the Charge seconds saved on a typical chargeable ability (the mean over every class list's chargeable entries: xN becomes x(N // 2), minimum 1) times `policy.value_per_threat_second` times the chance the teammate is within 20', for one Charge per song. The songs' own exchange rate: a teammate Charging is one threat unit per second (`songs.py`) |
 | `meta.modify-next` | Extension: `1 - p(20') / p(50')` (the share of casts it makes possible, as `Game._apply_meta_magic` rolls it) of the mean value of the holder's own 20' Verbals. Swift: the mean incantation seconds it saves on the holder's Touch, Other, Self and Magic Ball abilities, times `policy.value_per_threat_second`. Persistent: `PERSISTENT_SHARE` of the mean value of the holder's non-Persistent Enchantments |
 | `ability.cast-via-strips` | the ability's value times `held_worth(strips)` |
@@ -578,8 +578,11 @@ class _Eval:
         only = str(eff.params.get("only", "any"))
         count = int(eff.params.get("count", 1) or 1)
         holder = ctx.holder if ctx is not None else None
+        fill = 1.0
         if _self_range(ab):
-            pool, sub = team_kit(self.rules), _sub(ctx, None)     # teammates fill it (Evolution)
+            # teammates fill it (Evolution), and only a Magic User teammate who picks this bearer
+            pool, sub = team_kit(self.rules), _sub(ctx, None)
+            fill = sum(c.magic_user for c in self.rules.classes.values()) / max(1, len(self.rules.classes))
         else:
             pool, sub = self.kit_or_typical(holder, role, ab.slug), _sub(ctx, holder)
 
@@ -596,8 +599,8 @@ class _Eval:
 
         cands = {a.slug: a for _, a in self.held_abilities(pool, ctx, fills)}
         vals = sorted((self.value(a, role, sub) for a in cands.values()), reverse=True)[:count]
-        v = sum(x * COPY_DECAY ** k for k, x in enumerate(vals) if x > 0)
-        return f"{count} slot(s) for the best Enchantments ({only})", v
+        v = fill * sum(x * COPY_DECAY ** k for k, x in enumerate(vals) if x > 0)
+        return f"{count} slot(s) for the best Enchantments ({only})" + (f", filled {fill:.2f}" if fill < 1 else ""), v
 
     def charge_faster(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
         rules = self.rules
