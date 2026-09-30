@@ -23,7 +23,8 @@ to kill.
    6th), drawn uniformly among the candidates the doctrine doesn't avoid, get one copy. Then the
    player buys greedily by score per point, each further copy scoring 0.6 of the previous one, up
    to the spell's Max (or `loadout.magic_user_copy_cap`). The score is the usefulness score
-   (benefits minus drawbacks, `sim/policies/value.py`), doubled for an Unlimited ability that isn't
+   (benefits minus drawbacks, `sim/policies/value.py`; an enabler scored against the spells bought
+   so far, see `_build`), doubled for an Unlimited ability that isn't
    ammunition, times the player's taste (log-normal, sd `loadout.spell_taste_sd`, drawn once per
    player and spell; for core spells `taste ** DOCTRINE_WEIGHTS["core_taste"]`, so taste varies
    them less), times the doctrine weight (`doctrine_weight`): ×1.6 for a preferred or core spell,
@@ -49,33 +50,16 @@ from typing import TYPE_CHECKING, Callable
 
 from sim.engine import effects as fx
 from sim.engine.effects import is_handled
-from sim.policies.value import (DRAWBACK_WEIGHT, EQUIPMENT_WEIGHT, effect_benefit, is_drawback,
-                                restrict_cost, value)
+from sim.policies.value import (COPY_DECAY, UNLIMITED_FACTOR, Ctx, Kit, breakdown, depends_on_context,
+                                is_drawback, value)
 
 if TYPE_CHECKING:
     from sim.engine.state import Player
     from sim.rules.compile import Ability, ClassAbility, Rules
 
-COPY_DECAY = 0.6
-UNLIMITED_FACTOR = 2.0
 # Loadout effects that act on another named ability: they do something only if that ability does.
 _NAMED = {"ability.grant": "ability", "ability.modify": "ability", "ability.remove": "ability",
           "economy.frequency": "scope"}
-CHARGE_GAIN = 0.3      # a use that can be Charged back is worth 30% more
-
-
-def _frequency_gain(change: str, copies: int) -> float:
-    """A frequency change to an ability held `copies` times, in units of that ability's value and
-    on the same scale as the build score (copy k is worth COPY_DECAY ** k): doubling adds copies
-    n..2n-1, Unlimited is worth what an Unlimited purchase is, a Charge adds CHARGE_GAIN."""
-    held = sum(COPY_DECAY ** k for k in range(copies))
-    if "unlimited" in change:
-        return (UNLIMITED_FACTOR - 1.0) * held
-    if "double" in change:
-        return sum(COPY_DECAY ** k for k in range(copies, 2 * copies))
-    if "charge" in change:
-        return CHARGE_GAIN * held
-    return 0.0
 
 PurchaseRules = Callable[[str], tuple[Callable, Callable]]   # archetype slug -> (cost(c), allowed(c))
 
@@ -99,54 +83,20 @@ def effective(ab: "Ability", rules: "Rules") -> bool:
     return False
 
 
-def _frequency_targets(e, rules: "Rules", owned: dict[str, int]) -> list[str]:
-    key = _NAMED.get(e.kind, "ability")
-    scope = str(e.params.get(key, ""))
-    group = fx.FREQUENCY_GROUPS.get(scope)
-    if group is not None:
-        return [s for s in owned if group(SimpleNamespace(purchased=True, ability=rules.abilities[s]))]
-    slug = rules.by_name.get(scope.lower())
-    return [slug] if slug in owned else []
+# Archetype effects the Magic User buyer prices by rebuilding the list, or that do nothing in play
+_NOT_GAIN = frozenset({"economy.purchase-restrict", "economy.cost", "ability.range-change", "class.look-the-part"})
 
 
 def archetype_gain(arch: "Ability", rules: "Rules", role: str, owned: dict[str, int],
                    p: "Player | None" = None) -> float:
-    """What an Archetype adds to a player who holds `owned` (slug -> copies): abilities it grants,
-    frequency changes to abilities held, minus its drawbacks for this player. Purchase
-    restrictions and cost changes are not counted here; the Magic User buyer prices them by
-    rebuilding the list."""
-    gain = 0.0
-    best: dict[str, float] = {}    # a frequency change is often recorded twice; count it once
-    equipment = 0.0
-    for e in arch.effects:
-        if not is_handled(arch, e):
-            continue
-        if is_drawback(arch, e):
-            if e.kind in ("economy.purchase-restrict", "economy.cost"):
-                continue
-            if e.kind == "action.restrict":
-                gain -= restrict_cost(str(e.params.get("what", "")), role, p)
-            elif e.kind == "ability.remove":
-                slug = rules.by_name.get(str(e.params.get("ability", "")).lower())
-                gain -= value(rules.abilities[slug], role) if slug in owned else 0.0
-            else:
-                gain -= DRAWBACK_WEIGHT.get(e.kind, 1)
-            continue
-        if e.kind == "ability.grant":
-            slug = rules.by_name.get(str(e.params.get("ability", "")).lower())
-            if slug:
-                unlimited = "unlimited" in str(e.params.get("frequency", "")).lower()
-                gain += value(rules.abilities[slug], role) * (UNLIMITED_FACTOR if unlimited else 1.0)
-        elif e.kind in ("economy.frequency", "ability.modify"):
-            change = str(e.params.get("change", "")).lower()
-            for slug in _frequency_targets(e, rules, owned):
-                v = value(rules.abilities[slug], role) * _frequency_gain(change, owned[slug])
-                best[slug] = max(best.get(slug, 0.0), v)
-        elif e.kind == "equipment.permit":
-            equipment = max(equipment, EQUIPMENT_WEIGHT.get(str(e.params.get("what", "")), 0.0))
-        elif e.kind not in ("economy.cost", "ability.range-change", "class.look-the-part"):
-            gain += effect_benefit(arch, e, role)
-    return gain + sum(best.values()) + equipment
+    """What an Archetype adds to a player who holds `owned` (slug -> copies): its usefulness score
+    in that player's context (`value.breakdown`: abilities it grants, frequency changes to abilities
+    held, equipment, minus its drawbacks for this player). Purchase restrictions and cost changes
+    are not counted here; the Magic User buyer prices them by rebuilding the list."""
+    kit = Kit.of(p) if p is not None else Kit.build(role, owned, ())
+    ctx = Ctx(holder=kit, bearer=kit)
+    kinds = {e.id: e.kind for e in arch.effects}
+    return sum(c for i, _, c in breakdown(arch, role, ctx, rules) if kinds.get(i) not in _NOT_GAIN)
 
 
 def _draw_tastes(entries: list, rules: "Rules", rng: random.Random) -> dict[str, float]:
@@ -239,7 +189,7 @@ def choose(cands: list["ClassAbility"], level: int, role: str, pools: dict[int, 
                 continue
             core.append((c, n))
     bought, _ = _build(arch, spells, cost, dict(pools), role, rules, taste, fav_key, level,
-                       doctrine=doctrine, core=core)
+                       doctrine=doctrine, core=core, ablate=ablate)
     return bought, doctrine
 
 
@@ -265,10 +215,16 @@ def doctrine_weight(slug: str, doctrine, rules: "Rules") -> float:
 
 def _build(arch, spells: list, cost, pools: dict[int, int], role: str, rules: "Rules",
            taste: dict[str, float], fav_key: dict[str, float], level: int = 6,
-           doctrine=None, core: list = ()) -> tuple[dict[str, int], float]:
+           doctrine=None, core: list = (), ablate: frozenset = frozenset()) -> tuple[dict[str, int], float]:
     """One build: the Archetype (if any) paid first, then the doctrine's core entries in order
     (each up to its copies), then free spells, favorites and a greedy fill by score per point.
-    Returns (bought, total score)."""
+    Returns (bought, total score).
+
+    A spell whose score depends on the kit (`value.depends_on_context`: Attuned is worth the best
+    Enchantment already bought, Extension the 20' Verbals, Innate the chargeable abilities) is
+    scored against what has been bought so far, and re-scored when its turn in the greedy fill
+    comes: if it has fallen, it goes back in the queue at its new score (a score that rises later
+    is not re-checked)."""
     bought: dict[str, int] = {}
     total = 0.0
     core_slugs = {c.slug for c, _ in core} | ({s for s, _ in doctrine.core} if doctrine else set())
@@ -294,10 +250,15 @@ def _build(arch, spells: list, cost, pools: dict[int, int], role: str, rules: "R
 
     cap = rules.a("loadout.magic_user_copy_cap")
 
+    entries = [c for c, _ in core] + list(spells) + ([arch] if arch is not None else [])
+    play = doctrine.play if doctrine is not None else ""
+
     def worth(c) -> float:
+        ab = rules.abilities[c.slug]
+        ctx = Ctx(holder=Kit.build(role, bought, entries, play), ablate=ablate) if depends_on_context(ab) else None
         freq = UNLIMITED_FACTOR if (c.freq.per == "unlimited" and not c.freq.unit) else 1.0
         t = taste[c.slug] ** DOCTRINE_WEIGHTS["core_taste"] if c.slug in core_slugs else taste[c.slug]
-        return value(rules.abilities[c.slug], role) * freq * t * doctrine_weight(c.slug, doctrine, rules)
+        return value(ab, role, ctx, rules) * freq * t * doctrine_weight(c.slug, doctrine, rules)
 
     for c, n in core:
         for _ in range(n - bought.get(c.slug, 0)):
@@ -321,8 +282,14 @@ def _build(arch, spells: list, cost, pools: dict[int, int], role: str, rules: "R
         n = bought.get(slug, 0)
         if n >= (c.max if c.max is not None else cap):
             continue
-        if pay(c, worth(c) * COPY_DECAY ** n):
-            heapq.heappush(heap, (negv * COPY_DECAY, slug, i, c))
+        w = worth(c) * COPY_DECAY ** n
+        dep = depends_on_context(rules.abilities[slug])
+        if dep and w / cost(c) < -negv - 1e-9:
+            if w > 0:           # the kit changed since it was queued: back in line at its new score
+                heapq.heappush(heap, (-w / cost(c), slug, i, c))
+            continue
+        if pay(c, w):
+            heapq.heappush(heap, ((-w / cost(c) if dep else negv) * COPY_DECAY, slug, i, c))
     return bought, total
 
 

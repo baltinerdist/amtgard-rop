@@ -43,7 +43,7 @@ from typing import TYPE_CHECKING
 from sim.engine.effects import is_handled
 from sim.engine.state import Player, Uses
 from sim.policies import songs
-from sim.policies.value import benefit, drawback_cost, is_drawback
+from sim.policies.value import Ctx, benefit, drawback_cost, is_drawback, player_ctx
 
 if TYPE_CHECKING:
     from sim.engine.game import Game
@@ -188,11 +188,16 @@ def _try_heal(g: "Game", p: Player) -> bool:
     return False
 
 
-def _crippled(ab, q: Player) -> bool:
-    """The Enchantment's drawbacks would cost this player more than it gives them: Gift of Air
-    ("may not wield weapons or shields") on a fighter, say. A veteran puts it on someone else."""
-    cost = drawback_cost(ab, q.role, q)
-    return cost > 0 and cost >= benefit(ab, q.role)
+def _crippled(g: "Game", p: Player, ab, q: Player) -> bool:
+    """The Enchantment gives this player nothing, or its drawbacks would cost them more than it
+    gives them: Gift of Air ("may not wield weapons or shields") on a fighter, Amplification on a
+    player with no 20' Verbal or with their own Extension. Priced with both kits
+    (`value.Ctx`: the caster p holds it, q bears it). A veteran puts it on someone else."""
+    ctx = Ctx(holder=player_ctx(g, p).holder, bearer=player_ctx(g, q).holder, game_type=g.sc.get("game_type"),
+              ablate=frozenset(g.ablate))
+    gain = benefit(ab, q.role, ctx, g.rules)
+    cost = drawback_cost(ab, q.role, ctx=ctx, rules=g.rules)
+    return gain <= 0 or (cost > 0 and cost >= gain)
 
 
 def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Player]:
@@ -204,7 +209,7 @@ def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Playe
         pool = [q for q in pool if q is not p]
     return [q for q in pool if all(e.ability.slug != u.slug for e in q.enchantments)
             and (not u.magical or q.magical_enchantment_count() < q.ench_slots)
-            and not _crippled(u.ability, q) and (q is p or not songs.declines(g, q, u))]
+            and not _crippled(g, p, u.ability, q) and (q is p or not songs.declines(g, q, u))]
 
 
 def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False, free_only: bool = False) -> bool:
@@ -231,9 +236,9 @@ def _try_enchant(g: "Game", p: Player, at_base: bool, prioritized: bool = False,
 
 def _try_extra_slot(g: "Game", p: Player, at_base: bool, free_only: bool) -> bool:
     """Attuned or Essence Graft on the best melee fighter who lacks it, while the caster holds
-    other Enchantments to fill the slot. The usefulness score puts these below zero (the drawback
-    if they are removed outweighs one slot), so without this rule they are never cast, though they
-    are what a Druid enchanter builds around."""
+    other Enchantments to fill the slot: what a Druid enchanter builds around. (Their usefulness
+    score is the best Enchantment the caster holds to fill the slot, `value.py`; this rule picks the
+    bearer.)"""
     slotters = [u for u in p.uses.values() if u.available() and u.ability.delivery == "enchantment"
                 and u.ability.effects_of("enchantment.extra-slot") and not (u.ability.requirements & TRIGGERED)]
     if not slotters:

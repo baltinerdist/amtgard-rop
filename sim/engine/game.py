@@ -21,7 +21,7 @@ from sim.engine.loadout import _uses as make_uses
 from sim.engine.loadout import build_player
 from sim.engine.state import ARMS, INF, LOCATIONS, Cast, Ench, Player, Uses
 from sim.policies import decide, keep_casting
-from sim.policies.value import value as ability_value
+from sim.policies.value import value_for as ability_value
 from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, Rules
 
@@ -103,10 +103,9 @@ class Game:
         heapq.heappush(self._events, (when, self._seq, fn))
 
     def value(self, ability: Ability, p: Player) -> float:
-        key = (ability.slug, p.role)
-        if key not in self._value_cache:
-            self._value_cache[key] = ability_value(ability, p.role)
-        return self._value_cache[key]
+        """The usefulness score of p's ability (sim/policies/value.py) with this game's rules, in
+        p's context: their own kit, the game type, the ablated abilities. Cached for the game."""
+        return ability_value(self, ability, p)
 
     def enemies(self, p: Player) -> list[Player]:
         return [q for q in self.players if q.team != p.team]
