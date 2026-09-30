@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
-from sim.engine.state import ARMS, INF, LEGS, LOCATIONS, Ench, Player, Restriction
+from sim.engine.state import ARMS, INF, LEGS, LOCATIONS, Buff, Ench, Player, Restriction
 from sim.rules.compile import Ability, Effect
 
 if TYPE_CHECKING:
@@ -275,7 +275,25 @@ def h_spend_strip(g: "Game", eff: Effect, ctx: Ctx) -> bool:
 
 def h_special_effect(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     # Specials on this ball/arrow are read by Game.hit through Ctx.specials; nothing else to do.
+    if eff.params.get("on") == "bearer-melee-weapons":
+        return h_buff(g, eff, ctx)      # Rage: the caster's melee weapons, for a time
     return eff.params.get("on") in ("this-magic-ball", "this-arrow")
+
+
+def h_buff(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """An Ongoing Effect of a Verbal that Game queries like a worn one: timed (Rage, 7 s, ended by
+    starting an Incantation) or lasting while its subject stays Insubstantial (Circle of Protection)."""
+    p = subject(eff, ctx)
+    if p is None or not p.alive:
+        return False
+    if eff.duration_type == "timed" and eff.seconds:
+        until, rides = g.t + eff.seconds, None
+    elif eff.timing == "while-active" and p.has_state("insubstantial", g.t):
+        until, rides = INF, "insubstantial"
+    else:
+        return False
+    p.buffs.append(Buff(ctx.ability.slug, eff, until, rides, "begins-incantation" in ctx.ability.termination))
+    return True
 
 
 def h_negate_lethal(g: "Game", eff: Effect, ctx: Ctx) -> bool:
@@ -359,6 +377,7 @@ INSTANT: dict[str, Callable] = {
     "defense.negate-hit": h_negate_lethal,
     "action.restrict": h_action_restrict,
     "ability.grant": h_ability_grant,
+    "defense.unaffected": h_buff,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -382,6 +401,10 @@ LOADOUT = frozenset({
 })
 
 
+# defense.unaffected variants Game checks (Game.unaffected, Game.blocked, Game.hit)
+UNAFFECTED_BY = ("projectiles-except-magic-balls", "magical-abilities", "verbal-abilities",
+                 "verbal-magical-beyond-touch", "schools", "blink", "forced-movement-except-banish")
+
 # States a worn Enchantment/Trait imposes for as long as it is worn (a Chant is modeled as worn until
 # removed, as for Song of Deflection)
 PASSIVE_STATE_DURATIONS = ("while-worn", "permanent", "while-chanting")
@@ -389,10 +412,10 @@ PASSIVE_STATE_DURATIONS = ("while-worn", "permanent", "while-chanting")
 # Parameter values the passive handlers in Game actually implement; other variants are no-ops.
 PASSIVE_PARAMS: dict[str, Callable[[dict, Effect], bool]] = {
     "defense.negate-hit": lambda p, e: p.get("from") in ("hits-on-worn-armor", "weapons-and-arrows"),
-    "defense.unaffected": lambda p, e: p.get("by") in (
-        "projectiles-except-magic-balls", "magical-abilities", "verbal-abilities", "verbal-magical-beyond-touch"),
-    "special-effect.grant": lambda p, e: p.get("on") == "bearer-melee-weapons" and p.get("effect") in (
-        "armor-breaking", "armor-destroying", "shield-crushing", "wounds-kill"),
+    "defense.unaffected": lambda p, e: p.get("by") in UNAFFECTED_BY,
+    "special-effect.grant": lambda p, e: (p.get("on") == "bearer-melee-weapons" and p.get("effect") in (
+        "armor-breaking", "armor-destroying", "shield-crushing", "wounds-kill")) or (
+        p.get("on") == "next-wound" and p.get("effect") == "wounds-kill"),   # Poison (Game._melee)
     "defense.resistance": lambda p, e: p.get("to") in ("next-source", "wounds", "chosen-school"),
     "state.apply": lambda p, e: e.duration_type in PASSIVE_STATE_DURATIONS,
     "ability.cast-via-strips": lambda p, e: bool(p.get("ability")),
@@ -660,12 +683,40 @@ def _wound_heal_mode(ab: Ability, eff: Effect, names: set[str] | None = None) ->
     return "instant" if eff.timing in INSTANT_TIMINGS else None
 
 
+def _passive_ok(ab: Ability, eff: Effect) -> bool:
+    check = PASSIVE_PARAMS.get(eff.kind)
+    return ab.delivery in PASSIVE_DELIVERIES and (check is None or check(eff.params, eff))
+
+
+def _unaffected_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    by = eff.params.get("by")
+    if eff.timing == "while-active":
+        if ab.delivery in PASSIVE_DELIVERIES:
+            return "passive" if _passive_ok(ab, eff) else None
+        # Circle of Protection: registered on its targets at cast, lasting while they stay Insubstantial
+        return "instant" if by in ("blink", "forced-movement-except-banish") else None
+    if eff.timing == "on-cast" and eff.duration_type == "timed" and by in UNAFFECTED_BY:
+        return "instant"   # Rage (h_buff)
+    return None
+
+
+def _special_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    on = eff.params.get("on")
+    if eff.timing == "while-active":
+        return "passive" if _passive_ok(ab, eff) else None
+    if eff.timing == "on-cast" and on == "bearer-melee-weapons" and eff.duration_type == "timed":
+        return "instant"   # Rage (h_buff)
+    return "instant" if on in ("this-magic-ball", "this-arrow") and eff.timing in INSTANT_TIMINGS else None
+
+
 # Kinds whose handled mode is decided by a rule function (None = no-op for that instance).
 MODE_RULES: dict[str, Callable[..., str | None]] = {
     "action.restrict": _restrict_mode,
     "ability.grant": _grant_mode,
     "ability.modify": _modify_mode,
     "wound.heal": _wound_heal_mode,
+    "defense.unaffected": _unaffected_mode,
+    "special-effect.grant": _special_mode,
 }
 
 

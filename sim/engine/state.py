@@ -75,6 +75,17 @@ class Restriction:
 
 
 @dataclass(slots=True)
+class Buff:
+    """An Ongoing Effect from a Verbal that the engine queries like a worn one (Rage's Verbal
+    immunity and weapon specials; Circle of Protection's protections while its Insubstantial lasts)."""
+    slug: str
+    effect: object               # the compiled Effect
+    until: float
+    rides_state: str | None = None   # ends when this State ends
+    ends_on_incantation: bool = False
+
+
+@dataclass(slots=True)
 class Cast:
     uses: Uses | None           # None for a Charge
     target: int | None
@@ -114,6 +125,7 @@ class Player:
     enchantments: list[Ench] = field(default_factory=list)
     resist: list[dict] = field(default_factory=list)
     restrictions: list[Restriction] = field(default_factory=list)
+    buffs: list[Buff] = field(default_factory=list)
     exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid

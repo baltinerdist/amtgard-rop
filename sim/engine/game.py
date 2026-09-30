@@ -214,6 +214,7 @@ class Game:
     def _end_restrictions_on_death(self, p: Player) -> None:
         """Ongoing Effects end when their bearer dies or avoids death; some end when their caster dies."""
         p.restrictions.clear()
+        p.buffs.clear()
         for q in self.players:
             if q.restrictions:
                 q.restrictions = [r for r in q.restrictions if not (r.ends_on_src_death and r.src == p.pid)]
@@ -262,7 +263,24 @@ class Game:
             for eff in self._passive_effects(ab):
                 if eff.kind == "defense.unaffected" and eff.params.get("by") == by:
                     return True
-        return False
+        return any(b.effect.kind == "defense.unaffected" and b.effect.params.get("by") == by
+                   for b in self._buffs(p))
+
+    def _buffs(self, p: Player) -> list:
+        """p's active Ongoing Effects from Verbals (Rage, Circle of Protection)."""
+        if not p.buffs:
+            return []
+        t = self.t
+        return [b for b in p.buffs if b.until > t and (b.rides_state is None or p.has_state(b.rides_state, t))]
+
+    def unaffected_by_school(self, p: Player, school: str) -> Ability | None:
+        """Void Touched: unaffected by Magical abilities from the listed Schools."""
+        for ab, _ in self._passive_sources(p):
+            for eff in ab.effects:
+                if eff.kind == "defense.unaffected" and eff.params.get("by") == "schools" \
+                        and school in (eff.params.get("schools") or ()):
+                    return ab
+        return None
 
     def consume_resistance(self, p: Player, kind: str, school: str = "") -> bool:
         for r in p.resist:
@@ -285,7 +303,18 @@ class Game:
             for eff in self._passive_effects(ab):
                 if eff.kind == "special-effect.grant" and eff.params.get("on") == "bearer-melee-weapons":
                     specials.add(eff.params.get("effect"))
+        for b in self._buffs(p):
+            if b.effect.kind == "special-effect.grant" and b.effect.params.get("on") == "bearer-melee-weapons":
+                specials.add(b.effect.params.get("effect"))
         return frozenset(specials)
+
+    def _poison(self, p: Player) -> Ench | None:
+        """A worn Enchantment making p's next melee wound Wounds Kill (Poison)."""
+        for e in p.enchantments:
+            for eff in e.ability.effects:
+                if eff.kind == "special-effect.grant" and eff.params.get("on") == "next-wound":
+                    return e
+        return None
 
     def modifier(self, p: Player, phrase: str) -> Ability | None:
         """The worn Enchantment, Trait or Archetype carrying an engine-level ability.modify (see
@@ -503,8 +532,8 @@ class Game:
         return self.rng.choices(LOCATIONS, weights=[w[l] for l in LOCATIONS])[0]
 
     def hit(self, p: Player, src: Player | None, slug: str, location: str | None = None,
-            specials: frozenset = frozenset(), kind: str = "melee") -> None:
-        """A weapon, arrow or Magic Ball strikes p."""
+            specials: frozenset = frozenset(), kind: str = "melee") -> bool | None:
+        """A weapon, arrow or Magic Ball strikes p. Truthy when p received a wound."""
         if not self.targetable(p):  # dead, at base, Frozen, Insubstantial or Invulnerable
             return
         if kind == "arrow" and self.unaffected(p, "projectiles-except-magic-balls"):
@@ -548,13 +577,13 @@ class Game:
             if p.casting is not None and self.rng.random() < self.rules.a("casting.p_interrupt_on_armor_hit"):
                 self.interrupt(p, "struck")
             return
-        self.wound(p, loc, src, slug, specials)
+        return self.wound(p, loc, src, slug, specials)
 
-    def wound(self, p: Player, loc: str, src: Player | None, slug: str, specials: frozenset = frozenset()) -> None:
+    def wound(self, p: Player, loc: str, src: Player | None, slug: str, specials: frozenset = frozenset()) -> bool:
         if not p.alive:
-            return
+            return False
         if self.consume_resistance(p, "wound"):
-            return
+            return False
         self.interrupt(p, "wounded")
         if "wounds-kill" in specials or loc == "torso" or p.wounds or p.has_state("fragile", self.t):
             self.kill(p, src, slug)
@@ -562,6 +591,7 @@ class Game:
             p.wounds.add(loc)
             self.log("wound", p.pid, loc, slug)
         self._wound_trigger(src, p)
+        return True
 
     def _wound_trigger(self, src: Player | None, victim: Player) -> None:
         """Wound Trigger abilities (Brutal Strike): used immediately after the caster causes a wound to
@@ -594,6 +624,7 @@ class Game:
                 if s != "cursed":
                     p.states.pop(s)
             p.restrictions.clear()   # Ongoing Effects end when an ability lets the player avoid death
+            p.buffs.clear()
             self.interrupt(p, "death-prevented")
             self.disengage(p)
             self.applied[(ench.ability.slug, "death.prevent")] += 1
@@ -692,6 +723,7 @@ class Game:
         p.wounds.clear()
         p.states.clear()
         p.restrictions.clear()
+        p.buffs.clear()
         p.exit_lock_until = 0.0
         p.armor = {l: p.armor_max for l in LOCATIONS}
         p.magic_armor = {l: 0 for l in LOCATIONS}
@@ -766,9 +798,21 @@ class Game:
             return "insubstantial"
         if ab.delivery != "enchantment" and "bypass-immunities" not in ab.properties and self.immune(target, ab.school):
             return "immune"
+        if ab.slug == "blink" and self.unaffected(target, "blink"):
+            return "unaffected"          # Circle of Protection
         if target is not caster:
             if uses.magical and self.unaffected(target, "magical-abilities"):
                 return "unaffected"
+            if uses.magical and ab.delivery != "enchantment":
+                # Void Touched; new Enchantments can still be applied (ruling void-touched#1)
+                vt = self.unaffected_by_school(target, ab.school)
+                if vt is not None:
+                    self.applied[(vt.slug, "defense.unaffected")] += 1
+                    return "unaffected"
+            if ab.slug != "banish" and ("forced-movement" in ab.properties or ab.effects_of(
+                    "move.push", "move.keep-away", "move.to-location", "move.to-caster", "move.to-base")) \
+                    and self.unaffected(target, "forced-movement-except-banish"):
+                return "unaffected"      # Circle of Protection
             if ab.delivery == "verbal" and self.unaffected(target, "verbal-abilities"):
                 return "unaffected"
             if ab.delivery == "verbal" and uses.magical and uses.range not in ("Touch", "Self", "Other") \
@@ -795,6 +839,7 @@ class Game:
             self.fails[(uses.slug, "restricted")] += 1
             return False
         secs = 1.0 if uses.swift else uses.ability.cast_seconds(self.words_per_second)
+        self._begin_incantation(p)
         p.casting = Cast(uses, target.pid if target is not None else None, secs)
         if uses.magical and aimed is not p:
             self._provoke(p, aimed, "cast-start")
@@ -806,8 +851,14 @@ class Game:
             return False
         words = self.rules.a("time.charge_incantation_words")
         secs = math.ceil(uses.charge * words / self.words_per_second)
+        self._begin_incantation(p)
         p.casting = Cast(None, None, secs, kind="charge", charge_for=uses)
         return True
+
+    def _begin_incantation(self, p: Player) -> None:
+        """Starting an Incantation ends effects that say so (Rage)."""
+        if p.buffs:
+            p.buffs = [b for b in p.buffs if not b.ends_on_incantation]
 
     def _complete(self, p: Player) -> None:
         c = p.casting
@@ -914,7 +965,13 @@ class Game:
                 continue
             if eff.timing not in timings:
                 if eff.timing == "while-active" and ab.delivery not in fx.PASSIVE_DELIVERIES and "on-cast" in timings:
-                    self.noops[(ab.slug, fx.runtime_noop_detail(ab, eff))] += 1
+                    # a Verbal's ongoing effect: registered at cast when handled (Circle of Protection)
+                    if fx.is_handled(ab, eff) and eff.kind in fx.INSTANT:
+                        if fx.INSTANT[eff.kind](self, eff, ctx):
+                            self.applied[(ab.slug, eff.kind)] += 1
+                            done.append(eff.kind)
+                    else:
+                        self.noops[(ab.slug, fx.runtime_noop_detail(ab, eff))] += 1
                 continue
             if not fx.is_handled(ab, eff):
                 self.noops[(ab.slug, fx.runtime_noop_detail(ab, eff))] += 1
@@ -993,8 +1050,15 @@ class Game:
             if d.has_state("stunned", t):
                 x += a("melee.stunned_logit")
             specials = self.melee_specials(p)
+            poison = self._poison(p) if p.enchantments else None
+            if poison is not None and not self.immune(d, poison.ability.school):
+                specials = specials | {"wounds-kill"}
             if self.rng.random() < _logistic(x):
-                self.hit(d, p, "melee", specials=specials, kind="melee")
+                if self.hit(d, p, "melee", specials=specials, kind="melee") and poison is not None:
+                    # Poison is expended only when a wound is received (N1), even against a target
+                    # Immune to Death (Enchantments rule 5)
+                    self.applied[(poison.ability.slug, "special-effect.grant")] += 1
+                    self.remove_enchantment(p, poison)
             elif "shield-crushing" in specials and d_shield \
                     and self.rng.random() < a("melee.p_shield_struck_on_miss"):
                 d.shield_hits += 1
@@ -1011,6 +1075,8 @@ class Game:
                     del p.states[s]
             if p.restrictions:
                 p.restrictions = [r for r in p.restrictions if r.until > t]
+            if p.buffs:
+                p.buffs = self._buffs(p)
             if not p.alive and not p.out:
                 p.time_dead += self.dt
                 if p.dead_until <= t:

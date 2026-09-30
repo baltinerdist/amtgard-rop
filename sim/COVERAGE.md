@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **345 of 445** (78%)
-- Not handled: **64** no-op, **18** needs-map, **18** out-of-scope
-- Abilities fully handled: **121**, partly: **38**, not at all: **24**, no effects recorded: 0 (of 183)
+- Effect instances handled: **352 of 445** (79%)
+- Not handled: **57** no-op, **18** needs-map, **18** out-of-scope
+- Abilities fully handled: **124**, partly: **37**, not at all: **22**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -19,7 +19,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `ability.grant` | 30 | 41 | 38 | instant 1, loadout 23, no-op 3, passive 14 |
 | `action.restrict` | 25 | 36 | 22 | instant 9, loadout 9, needs-map 8, no-op 2, out-of-scope 4, passive 4 |
 | `economy.frequency` | 19 | 25 | 24 | loadout 24, no-op 1 |
-| `special-effect.grant` | 18 | 28 | 25 | instant 16, no-op 3, passive 9 |
+| `special-effect.grant` | 18 | 28 | 28 | instant 18, passive 10 |
 | `ability.modify` | 17 | 22 | 20 | loadout 12, no-op 2, passive 8 |
 | `defense.immunity` | 13 | 14 | 14 | passive 14 |
 | `ability.remove` | 11 | 16 | 16 | loadout 16 |
@@ -27,7 +27,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `state.remove` | 10 | 13 | 11 | instant 11, needs-map 1, no-op 1 |
 | `wound.heal` | 10 | 10 | 10 | instant 9, passive 1 |
 | `death.cause` | 8 | 8 | 8 | instant 8 |
-| `defense.unaffected` | 8 | 11 | 5 | needs-map 2, no-op 4, passive 5 |
+| `defense.unaffected` | 8 | 11 | 9 | instant 3, needs-map 2, passive 6 |
 | `enchantment.remove` | 8 | 9 | 5 | instant 5, no-op 4 |
 | `enchantment.spend-strip` | 8 | 8 | 2 | instant 2, no-op 6 |
 | `economy.purchase-restrict` | 7 | 8 | 8 | loadout 8 |
@@ -95,10 +95,10 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `extension`, `greater-harden`, `harden`, `harden-armor`, `heat-weapon`, `imbue`, `persistent`, `poison`, `rage`, `sacred-blades`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `swift`, `trickery`
+`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `extension`, `greater-harden`, `harden`, `harden-armor`, `heat-weapon`, `imbue`, `persistent`, `sacred-blades`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `swift`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`amplification` (1/2), `artificer` (10/11), `attuned` (1/2), `battlefield-triage` (1/2), `blink` (1/3, 1u), `circle-of-protection` (2/6, 1u), `corrosive-mist` (1/2), `corruptor` (5/6, 1u), `discordia` (1/2), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `essence-graft` (2/3), `gift-of-earth` (1/2), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (1/3), `missile-block` (1/2), `mystic` (4/5, 1u), `naturalize-magic` (1/2), `phoenix-tears` (8/10), `planar-grounding` (1/3), `priest` (2/3), `protection-from-projectiles` (1/2), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `snaring-vines` (1/2), `sniper` (4/5), `song-of-deflection` (1/2), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u), `void-touched` (4/5)
+`amplification` (1/2), `artificer` (10/11), `attuned` (1/2), `battlefield-triage` (1/2), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corrosive-mist` (1/2), `corruptor` (5/6, 1u), `discordia` (1/2), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `essence-graft` (2/3), `gift-of-earth` (1/2), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (1/3), `missile-block` (1/2), `mystic` (4/5, 1u), `naturalize-magic` (1/2), `phoenix-tears` (8/10), `planar-grounding` (1/3), `priest` (2/3), `protection-from-projectiles` (1/2), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `snaring-vines` (1/2), `sniper` (4/5), `song-of-deflection` (1/2), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)

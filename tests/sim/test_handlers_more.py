@@ -469,6 +469,62 @@ def test_song_of_power_stops_the_bard_while_sung(rules):
     assert not bard.has_state("stopped", g.t)
 
 
+# ---------------------------------------------------------------- defense.unaffected / special-effect.grant
+
+def test_rage_for_seven_seconds_or_until_an_incantation(rules):
+    g, barb, wiz, _ = trio(rules, a="Barbarian", b="Wizard")
+    before = g.melee_specials(barb)
+    resolve(g, barb, "rage", barb, magical=False, rng="Self")
+    assert g.unaffected(barb, "verbal-abilities")
+    assert {"armor-breaking", "shield-crushing"} <= g.melee_specials(barb)
+    resolve(g, wiz, "stun", barb)
+    assert g.fails[("stun", "unaffected")] == 1
+    g.t += 7
+    assert not g.unaffected(barb, "verbal-abilities") and g.melee_specials(barb) == before
+    g.t -= 7
+    heal = uses_of(g, "heal", magical=False, rng="Self")
+    heal.max = heal.left = 1
+    barb.wounds.add("left_arm")
+    g.start_cast(barb, heal, barb)
+    assert not g.unaffected(barb, "verbal-abilities"), "starting an Incantation ends Rage"
+
+
+def test_poison_next_wound_kills_and_is_expended(rules):
+    g = make_game(rules, [spec("Anti-Paladin", level=2)], [spec("Wizard"), spec("Monk")], seed=2)
+    ap, wiz, monk = g.players
+    resolve(g, ap, "poison", ap, magical=False, rng="Self")
+    resolve(g, monk, "blessing-against-wounds", wiz, magical=False, rng="Touch")
+    ap.target = wiz.pid
+    for _ in range(200):
+        if not wiz.alive:
+            break
+        g._melee()
+        g.t += 1
+    assert not wiz.alive, "the first wound received is Wounds Kill"
+    assert not any(e.ability.slug == "poison" for e in ap.enchantments)
+    assert g.applied[("poison", "special-effect.grant")] == 1
+    assert g.applied[("blessing-against-wounds", "defense.resistance")] == 1, "not expended on a resisted wound"
+
+
+def test_void_touched_unaffected_by_three_schools(rules):
+    g, wiz, war, ally = trio(rules, a="Wizard")
+    resolve(g, wiz, "void-touched", ally, rng="Other")
+    enemy = g.players[2]
+    resolve(g, enemy, "finger-of-death", ally)
+    assert ally.alive and g.fails[("finger-of-death", "unaffected")] == 1
+    resolve(g, wiz, "blessing-against-harm", ally, rng="Other")
+    assert g.fails[("blessing-against-harm", "unaffected")] == 0, "ruling void-touched#1: Enchantments still apply"
+
+
+def test_circle_of_protection_lasts_while_insubstantial(rules):
+    g, heal, war, ally = trio(rules, a="Healer")
+    resolve(g, heal, "circle-of-protection", ally, magical=False, rng="Touch")
+    assert ally.has_state("insubstantial", g.t)
+    assert g.unaffected(ally, "forced-movement-except-banish") and g.unaffected(ally, "blink")
+    ally.states.pop("insubstantial")
+    assert not g.unaffected(ally, "forced-movement-except-banish")
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players
