@@ -113,13 +113,14 @@ def _can_receive(g: "Game", u: Uses, p: Player, q: Player) -> bool:
 
 
 def _try_revive(g: "Game", p: Player) -> bool:
-    if _engaged(g, p):
+    revives = [u for u in _usable(g, p) if _is_revive(u)]
+    if not revives or _engaged(g, p):
         return False
     dead = [q for q in g.allies(p) if not q.alive and not q.out and q is not p
             and not _being_helped(g, q, p, _is_revive)]
     if not dead:
         return False
-    for u in (u for u in _usable(g, p) if _is_revive(u)):
+    for u in revives:
         q = g.rng.choice(dead)
         if g.check_requirements(u.ability, p, q, start=True) or not _can_receive(g, u, p, q):
             continue
@@ -291,9 +292,10 @@ def _loaded_balls(p: Player) -> int:
 
 def _try_self_buff(g: "Game", p: Player) -> bool:
     """Rage before a fight, Elemental Barrage with balls in hand: a Self buff not already on."""
-    if _lull(g, p):
+    buffs = _of_kind(g, p, "buff")
+    if not buffs or _lull(g, p):
         return False
-    for u in _of_kind(g, p, "buff"):
+    for u in buffs:
         ab = u.ability
         if ab.effects_of("ability.declare-instead"):
             if p.barrage is not None or _loaded_balls(p) < 2 or _engaged(g, p):
@@ -307,13 +309,18 @@ def _try_self_buff(g: "Game", p: Player) -> bool:
 
 def _try_escape(g: "Game", p: Player) -> bool:
     """Blink out of a fight you are losing: attacked, and either not a fighter or already wounded."""
-    if not g.attackers_of(p) or (p.role == "fighter" and not p.wounds):
+    if p.role == "fighter" and not p.wounds:
         return False
-    return any(g.start_cast(p, u, p) for u in _of_kind(g, p, "escape"))
+    escapes = _of_kind(g, p, "escape")
+    if not escapes or not g.attackers_of(p):
+        return False
+    return any(g.start_cast(p, u, p) for u in escapes)
 
 
 def _afflicted(g: "Game", q: Player) -> list[str]:
     """Harmful States on q that a cleanse could lift (not those a worn Enchantment imposes)."""
+    if not q.states:
+        return []
     held = [s for s in _REMOVABLE if q.has_state(s, g.t)]
     return [s for s in held if s not in g.enchantment_states(q)] if held else []
 
@@ -326,25 +333,29 @@ def _try_cleanse(g: "Game", p: Player) -> bool:
     """Lift a harmful State from yourself or from an ally out of melee whom no one else is helping.
     Martyr moves the State onto the caster, so only a non-fighter uses it, and only for a fighter
     or archer."""
+    options = _of_kind(g, p, "cleanse")
+    if not options:
+        return False
+    needy = [q for q in g.allies(p) if q.alive and q.states and q.on_field(g.t) and _afflicted(g, q)]
+    if not needy:
+        return False
     engaged = _engaged(g, p)
-    options = sorted(_of_kind(g, p, "cleanse"),
-                     key=lambda u: (drawback_cost(u.ability, p.role), u.ability.cast_seconds(g.words_per_second)))
+    options.sort(key=lambda u: (drawback_cost(u.ability, p.role), u.ability.cast_seconds(g.words_per_second)))
     for u in options:
         martyr = drawback_cost(u.ability, p.role) > 0
         if u.range == "Self":
-            pool = [p]
+            pool = [p] if p in needy else []
         elif engaged:
             continue
         else:
-            pool = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and (q is p or not _engaged(g, q))
-                    and not _being_helped(g, q, p, _is_cleanse)]
+            pool = [q for q in needy if (q is p or not _engaged(g, q)) and not _being_helped(g, q, p, _is_cleanse)]
             if u.range == "Other" or martyr:
                 pool = [q for q in pool if q is not p]
         if martyr:
             if p.role in ("fighter", "archer"):
                 continue
             pool = [q for q in pool if q.role in ("fighter", "archer")]
-        pool = [q for q in pool if _afflicted(g, q) and _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
+        pool = [q for q in pool if _can_receive(g, u, p, q) and g.can_cast_at(p, q, u)
                 and g.check_requirements(u.ability, p, q, start=True) is None]
         if not pool:
             continue
@@ -363,14 +374,18 @@ def _needs_repair(q: Player) -> bool:
 
 def _try_repair(g: "Game", p: Player) -> bool:
     """Mend armor or broken equipment: your own, or an ally's out of melee."""
-    if _engaged(g, p):
+    options = _of_kind(g, p, "repair")
+    if not options:
         return False
-    for u in _of_kind(g, p, "repair"):
-        pool = [p] if u.range == "Self" else [q for q in g.allies(p) if q.alive and q.on_field(g.t)
-                                             and (q is p or not _engaged(g, q))]
+    needy = [q for q in g.allies(p) if q.alive and q.on_field(g.t) and _needs_repair(q)]
+    if not needy or _engaged(g, p):
+        return False
+    for u in options:
+        pool = ([p] if p in needy else []) if u.range == "Self" else \
+            [q for q in needy if q is p or not _engaged(g, q)]
         if u.range == "Other":
             pool = [q for q in pool if q is not p]
-        pool = [q for q in pool if _needs_repair(q) and g.can_cast_at(p, q, u) and _can_receive(g, u, p, q)
+        pool = [q for q in pool if g.can_cast_at(p, q, u) and _can_receive(g, u, p, q)
                 and not _being_helped(g, q, p, lambda v: _kind_of(v.ability) == "repair")]
         if not pool:
             continue
