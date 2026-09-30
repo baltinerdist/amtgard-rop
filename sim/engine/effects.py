@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
-from sim.engine.state import ARMS, INF, LEGS, LOCATIONS, Ench, Player
+from sim.engine.state import ARMS, INF, LEGS, LOCATIONS, Ench, Player, Restriction
 from sim.rules.compile import Ability, Effect
 
 if TYPE_CHECKING:
@@ -81,8 +81,9 @@ def h_state_apply(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     if eff.duration_type == "timed" and eff.seconds:
         g.apply_state(p, state, g.t + eff.seconds)
     elif state == "insubstantial" and p is ctx.caster and eff.duration_type in ("until-removed", "until-arrival"):
-        # self-imposed Insubstantial: the policy ends it after a while (assumption)
-        g.apply_state(p, state, g.t + g.rules.a("policy.self_insubstantial_seconds"))
+        # self-imposed Insubstantial: the policy ends it after a while (assumption), but not before
+        # an exit-early lock (Martyr, Gift of Air option 2) allows it
+        g.apply_state(p, state, max(g.t + g.rules.a("policy.self_insubstantial_seconds"), p.exit_lock_until))
     else:
         g.apply_state(p, state, INF)
     return True
@@ -277,6 +278,28 @@ def h_death_prevent(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     return True
 
 
+def h_action_restrict(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Awe, Terror, Insult: the target may not attack or cast at (or only at) the caster, enforced by
+    Game.can_attack / Game.can_cast_at. Martyr's exit-early locks the caster's transferred State."""
+    p = subject(eff, ctx)
+    if p is None or not p.alive:
+        return False
+    what = eff.params.get("what")
+    until = g.t + (eff.seconds or 0.0) if eff.duration_type == "timed" else INF
+    if what == "exit-early":
+        p.exit_lock_until = max(p.exit_lock_until, until)
+        return True
+    if what not in TARGET_RESTRICTS:
+        return False
+    term = ctx.ability.termination
+    p.restrictions = [r for r in p.restrictions if not (r.slug == ctx.ability.slug and r.what == what)]
+    p.restrictions.append(Restriction(
+        what, ctx.caster.pid, until, ctx.ability.slug,
+        negate_on_provoke="caster-attacks-or-casts-at-target" in term,
+        ends_on_src_death=bool({"either-dies", "caster-dies"} & term)))
+    return True
+
+
 INSTANT: dict[str, Callable] = {
     "death.prevent": h_death_prevent,
     "death.cause": h_death_cause,
@@ -301,6 +324,7 @@ INSTANT: dict[str, Callable] = {
     "ability.restore-uses": h_ability_restore,
     "special-effect.grant": h_special_effect,
     "defense.negate-hit": h_negate_lethal,
+    "action.restrict": h_action_restrict,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -366,7 +390,76 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
     return False
 
 
-def is_handled(ability: Ability, eff: Effect, names: set[str] | None = None) -> bool:
+# ---------------------------------------------------------------- explicit "not modeled" modes
+
+# Effects Phase 1 cannot model honestly. They are counted apart from no-ops, each with its reason,
+# so they are never hidden: the coverage report lists them, and at run time they are logged in the
+# `noop` metric under the detail "<mode>:<kind>".
+NEEDS_MAP = "needs-map"
+OUT_OF_SCOPE = "out-of-scope"
+
+# (kind, predicate on (ability, effect) or None for every instance, mode, reason)
+UNMODELED_RULES: tuple = (
+    ("team.alternate-base", None, NEEDS_MAP,
+     "An Alternate Base only changes where Forced Movement to base may end; Phase 1 has no positions."),
+    ("team.respawn-point", None, NEEDS_MAP,
+     "A respawn point is a place on the field; Phase 1 respawns everyone at an abstract base."),
+    ("action.restrict", lambda a, e: e.params.get("what") == "use-alternate-bases", NEEDS_MAP,
+     "Forbids using Alternate Bases, which need positions to mean anything (see team.alternate-base)."),
+    ("action.restrict", lambda a, e: e.params.get("what") == "move-from-start", NEEDS_MAP,
+     "Forbids moving from a starting spot; Phase 1 has no positions."),
+    ("action.restrict", lambda a, e: e.params.get("what") == "exit-early" and a.slug == "blink", NEEDS_MAP,
+     "Blink may not be ended within 10' of a living enemy: a distance check between two players."),
+    (None, lambda a, e: a.slug == "sanctuary", NEEDS_MAP,
+     "Sanctuary protects only against hostile acts from within 20', and its limits (no approaching an "
+     "enemy base, no game items, no impeding play, free movement, exit only at base after touching a "
+     "weapon) are about positions and objectives; Sanctuary is not modeled at all."),
+    ("action.restrict", lambda a, e: e.params.get("what") in ("wield-javelins", "wield-heavy-thrown", "wield-long-weapons"),
+     OUT_OF_SCOPE, "Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great "
+     "weapons), so there is nothing to forbid."),
+    (None, lambda a, e: a.slug == "song-of-visit", OUT_OF_SCOPE,
+     "Song of Visit is a non-combat visit (Stopped and Invulnerable while chanting, then an Invulnerable "
+     "walk to base); ending the Chant is the Bard's choice and Phase 1 has no rule for when to stop, so "
+     "modeling it would park the Bard for the rest of the game."),
+)
+
+
+def unmodeled(ability: Ability, eff: Effect) -> tuple[str, str] | None:
+    """(mode, reason) when this effect is explicitly not modeled in Phase 1. A rule with kind None
+    covers every effect of the abilities its predicate selects."""
+    for kind, pred, mode, reason in UNMODELED_RULES:
+        if (kind is None or eff.kind == kind) and (pred is None or pred(ability, eff)):
+            return mode, reason
+    return None
+
+
+# ---------------------------------------------------------------- handled modes for newer kinds
+
+# action.restrict variants and where the engine enforces them
+TARGET_RESTRICTS = ("attack-caster", "cast-at-caster", "attack-anyone-but-caster", "cast-at-anyone-but-caster")
+LOADOUT_RESTRICTS = ("wear-armor", "wield-great-weapons", "wield-shields", "wield-large-shields", "wield-bows")
+PASSIVE_RESTRICTS = ("wield-weapons", "wield-shields", "fire-normal-arrows", "wear-others-magical-enchantments")
+
+
+def _restrict_mode(ab: Ability, eff: Effect) -> str | None:
+    what = eff.params.get("what")
+    if eff.timing == "on-cast" and (what in TARGET_RESTRICTS or what == "exit-early"):
+        return "instant"      # Game.can_attack / can_cast_at; exit-early locks the caster's State
+    if eff.timing == "while-active":
+        if ab.delivery in ("archetype", "trait") and what in LOADOUT_RESTRICTS:
+            return "loadout"  # sim/engine/loadout.py strips the forbidden equipment
+        if ab.delivery in PASSIVE_DELIVERIES and what in PASSIVE_RESTRICTS:
+            return "passive"  # Game.barred
+    return None
+
+
+# Kinds whose handled mode is decided by a rule function (None = no-op for that instance).
+MODE_RULES: dict[str, Callable[[Ability, Effect], str | None]] = {
+    "action.restrict": _restrict_mode,
+}
+
+
+def _legacy_handled(ability: Ability, eff: Effect, names: set[str] | None) -> bool:
     if eff.timing == "while-active":
         if ability.delivery in ("archetype", "trait") and eff.kind in LOADOUT:
             return loadout_handled(eff, names)
@@ -382,10 +475,33 @@ def is_handled(ability: Ability, eff: Effect, names: set[str] | None = None) -> 
     return eff.kind in INSTANT and eff.timing in INSTANT_TIMINGS
 
 
-def handling(ability: Ability, eff: Effect, names: set[str] | None = None) -> str:
-    """'instant' / 'passive' / 'loadout' / 'no-op' for the coverage report."""
-    if not is_handled(ability, eff, names):
-        return "no-op"
+def _handled_mode(ability: Ability, eff: Effect, names: set[str] | None) -> str | None:
+    rule = MODE_RULES.get(eff.kind)
+    if rule is not None:
+        return rule(ability, eff)
+    if not _legacy_handled(ability, eff, names):
+        return None
     if eff.timing == "while-active":
         return "loadout" if eff.kind in LOADOUT and ability.delivery in ("archetype", "trait") else "passive"
     return "instant"
+
+
+def is_handled(ability: Ability, eff: Effect, names: set[str] | None = None) -> bool:
+    if unmodeled(ability, eff) is not None:
+        return False
+    return _handled_mode(ability, eff, names) is not None
+
+
+def handling(ability: Ability, eff: Effect, names: set[str] | None = None) -> str:
+    """'instant' / 'passive' / 'loadout' / 'needs-map' / 'out-of-scope' / 'no-op' (coverage report)."""
+    um = unmodeled(ability, eff)
+    if um is not None:
+        return um[0]
+    return _handled_mode(ability, eff, names) or "no-op"
+
+
+def runtime_noop_detail(ability: Ability, eff: Effect) -> str:
+    """Detail for the run-time `noop` counter: the kind, prefixed by the mode when the effect is
+    explicitly not modeled, so needs-map / out-of-scope stay separable from true no-ops."""
+    um = unmodeled(ability, eff)
+    return f"{um[0]}:{eff.kind}" if um else eff.kind

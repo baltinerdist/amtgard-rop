@@ -120,7 +120,38 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
         _add(p, rules, slug, c.freq, n, True, c.range)
 
 
+_SHIELD_ORDER = ("none", "small", "medium", "large")
+
+
+def _apply_equipment_restrictions(p: Player) -> None:
+    """Archetype/Trait drawbacks that forbid equipment (action.restrict): the player goes without it,
+    or carries the largest shield still allowed."""
+    for ab in p.traits:
+        for eff in ab.effects:
+            if eff.kind != "action.restrict" or eff.timing != "while-active":
+                continue
+            what = eff.params.get("what")
+            if what == "wear-armor":
+                p.armor_max = 0
+            elif what == "wield-great-weapons":
+                p.great_weapon = False
+            elif what == "wield-shields":
+                p.shield = "none"
+            elif what == "wield-large-shields" and p.shield == "large":
+                p.shield = "medium"
+            elif what == "wield-bows":
+                p.has_bow = False
+
+
 def _apply_loadout_effects(p: Player, rules: Rules):
+    # restrictions first, so a permit that depends on the equipment (Hunter: a Great weapon when no
+    # shield is carried) sees the final kit, and again last so no permit re-grants forbidden gear
+    _apply_equipment_restrictions(p)
+    _apply_other_loadout_effects(p, rules)
+    _apply_equipment_restrictions(p)
+
+
+def _apply_other_loadout_effects(p: Player, rules: Rules):
     for ab in list(p.traits):
         for eff in ab.effects:
             if eff.timing != "while-active":
@@ -158,7 +189,7 @@ def _apply_loadout_effects(p: Player, rules: Rules):
                     u.per = "unlimited"
             elif kind == "equipment.permit":
                 what = prm.get("what")
-                order = ("none", "small", "medium", "large")
+                order = _SHIELD_ORDER
                 if what in ("small-shield", "medium-shield", "large-shield"):
                     size = what.split("-")[0]
                     if p.shield != "none" and order.index(size) > order.index(p.shield):

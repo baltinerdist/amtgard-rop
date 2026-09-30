@@ -186,9 +186,11 @@ def test_true_grit_after_dying(rules):
 
 
 def test_unhandled_effect_is_logged_not_dropped(rules):
-    g, war, wiz = pair(rules, a="Warrior", b="Wizard")
-    resolve(g, war, "insult", wiz, rng="20'")
-    assert g.noops[("insult", "action.restrict")] == 2
+    # Sanctuary is explicitly not modeled (needs-map): its effects are still counted, under their mode
+    g, war, wiz = pair(rules, a="Monk", b="Wizard")
+    resolve(g, war, "sanctuary", war, magical=False, rng="Self")
+    assert g.noops[("sanctuary", "needs-map:action.restrict")] == 4
+    assert g.noops[("sanctuary", "needs-map:defense.unaffected")] == 2
 
 
 def test_frozen_player_unaffected(rules):

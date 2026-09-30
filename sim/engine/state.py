@@ -57,6 +57,18 @@ class Ench:
 
 
 @dataclass(slots=True)
+class Restriction:
+    """An Ongoing Effect limiting whom a player may attack or cast at (Awe, Terror, Insult)."""
+    what: str                    # attack-caster / cast-at-caster / attack-anyone-but-caster / cast-at-anyone-but-caster
+    src: int                     # pid of the player who imposed it
+    until: float
+    slug: str
+    negate_on_provoke: bool = False   # Awe/Terror: ends if the caster attacks or casts at the target
+    ends_on_src_death: bool = False
+    allowed: set = field(default_factory=set)  # Insult: others who attacked or cast on the target
+
+
+@dataclass(slots=True)
 class Cast:
     uses: Uses | None           # None for a Charge
     target: int | None
@@ -94,6 +106,8 @@ class Player:
     states: dict[str, float] = field(default_factory=dict)     # state -> expiry time (INF = indefinite)
     enchantments: list[Ench] = field(default_factory=list)
     resist: list[dict] = field(default_factory=list)
+    restrictions: list[Restriction] = field(default_factory=list)
+    exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
     weapon_ok: bool = True

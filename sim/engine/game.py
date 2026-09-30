@@ -57,6 +57,7 @@ class Game:
         self.fails: Counter = Counter()
         self.kill_sources: Counter = Counter()
         self._value_cache: dict = {}
+        self._bars_cache: dict = {}
         # players
         self.players: list[Player] = []
         lives = scenario.get("lives")
@@ -120,6 +121,99 @@ class Game:
             slug = p.casting.uses.slug if p.casting.uses else "charge"
             self.fails[(slug, f"interrupted:{why}")] += 1
             p.casting = None
+
+    # ------------------------------------------------------------------ restrictions (engine queries)
+    #
+    # Policies choose targets; the engine enforces what a player may not do at the points where
+    # attacks and casts are chosen (Game._engage, Game.start_cast, Game.shoot) and resolved
+    # (Game._melee, Game._complete). Policies may consult these queries to avoid wasted choices.
+
+    def can_attack(self, a: Player, b: Player) -> bool:
+        """Whether a may attack b with a weapon blow or an arrow (Awe, Terror, Insult)."""
+        if not a.restrictions:
+            return True
+        t = self.t
+        for r in a.restrictions:
+            if r.until <= t:
+                continue
+            if r.what == "attack-caster" and b.pid == r.src:
+                return False
+            if r.what == "attack-anyone-but-caster" and b.pid != r.src and b.pid not in r.allowed:
+                return False
+        return True
+
+    def can_cast_at(self, a: Player, b: Player, uses: Uses) -> bool:
+        """Whether a may cast this ability at b. Specialty Arrows are attacks (ruling awe#1); only
+        Magical abilities are otherwise restricted, so Extraordinary ones stay allowed (awe#1, insult#3,
+        terror#1). Insult's exception for others who attacked the target covers attacks only (insult#1)."""
+        if uses.ability.delivery == "specialty-arrow":
+            return self.can_attack(a, b)
+        if not uses.magical or not a.restrictions:
+            return True
+        t = self.t
+        for r in a.restrictions:
+            if r.until <= t:
+                continue
+            if r.what == "cast-at-caster" and b.pid == r.src:
+                return False
+            if r.what == "cast-at-anyone-but-caster" and b.pid != r.src:
+                return False
+        return True
+
+    def restricted_targets(self, a: Player) -> list[int]:
+        """Enemies a may not attack right now (sorted pids)."""
+        return [q.pid for q in self.enemies(a) if not self.can_attack(a, q)]
+
+    def barred(self, p: Player, what: str) -> bool:
+        """A while-active action.restrict on a worn Enchantment, Trait or Archetype (e.g. Gift of Air:
+        may not wield weapons or shields; Sniper: may not fire normal arrows)."""
+        for ab, _ in self._passive_sources(p):
+            if what in self._bars(ab):
+                return True
+        return False
+
+    def _bars(self, ab: Ability) -> frozenset:
+        bars = self._bars_cache.get(ab.slug)
+        if bars is None:
+            bars = frozenset(e.params.get("what") for e in ab.effects
+                             if e.kind == "action.restrict" and e.timing == "while-active" and fx.is_handled(ab, e))
+            self._bars_cache[ab.slug] = bars
+        return bars
+
+    def shield_up(self, p: Player) -> bool:
+        return p.shield_usable() and not self.barred(p, "wield-shields")
+
+    def can_fire_normal_arrows(self, p: Player) -> bool:
+        return p.has_bow and not self.barred(p, "fire-normal-arrows") and not self.barred(p, "wield-weapons")
+
+    def _provoke(self, a: Player, b: Player, stage: str) -> None:
+        """a attacks b ('attack'), begins casting a Magical ability at b ('cast-start'), or completes one
+        on b ('cast-done'). Awe and Terror end if their caster attacks or begins casting at the target;
+        an Insulted target may also attack anyone else who attacks or casts Magic on them (Insult E2)."""
+        if not b.restrictions or a is b:
+            return
+        t = self.t
+        if stage in ("attack", "cast-start"):
+            gone = [r for r in b.restrictions if r.negate_on_provoke and r.src == a.pid and r.until > t]
+            if gone:
+                for r in gone:
+                    if abs(b.kept_away_until - r.until) < 1e-9:   # the same casting's keep-away
+                        b.kept_away_until = t
+                slugs = [r.slug for r in gone]
+                b.restrictions = [r for r in b.restrictions if not (r.src == a.pid and r.slug in slugs)]
+                self.applied[(gone[0].slug, "action.restrict:negated")] += 1
+                self.log("restrict-negated", b.pid, a.pid, gone[0].slug)
+        if stage in ("attack", "cast-done"):
+            for r in b.restrictions:
+                if r.what == "attack-anyone-but-caster" and r.src != a.pid and r.until > t:
+                    r.allowed.add(a.pid)
+
+    def _end_restrictions_on_death(self, p: Player) -> None:
+        """Ongoing Effects end when their bearer dies or avoids death; some end when their caster dies."""
+        p.restrictions.clear()
+        for q in self.players:
+            if q.restrictions:
+                q.restrictions = [r for r in q.restrictions if not (r.ends_on_src_death and r.src == p.pid)]
 
     # ------------------------------------------------------------------ passives
 
@@ -201,7 +295,19 @@ class Game:
         if any(e.ability.slug == ab.slug for e in target.enchantments):
             self.fails[(ab.slug, "already-worn")] += 1
             return False
+        # Essence Graft: the bearer may only wear (m) Enchantments from the Graft's caster
+        if uses.magical:
+            graft = next((e for e in target.enchantments
+                          if "wear-others-magical-enchantments" in self._bars(e.ability)), None)
+            if graft is not None and graft.caster != caster.pid:
+                self.fails[(ab.slug, "restricted:essence-graft")] += 1
+                return False
         ench = Ench(ab, caster.pid, uses.magical, ab.strips, "persistent" in ab.properties)
+        if "wear-others-magical-enchantments" in self._bars(ab):
+            # the new Graft's bearer drops (m) Enchantments from anyone else (reading of Essence Graft L1)
+            for e in [e for e in target.enchantments if e.magical and e.caster != caster.pid]:
+                self.remove_enchantment(target, e)
+                self.applied[(ab.slug, "action.restrict")] += 1
         for eff in ab.effects:
             if eff.kind == "defense.immunity" and eff.params.get("school") == "choice":
                 ench.choice = self.rng.choice(eff.params.get("options") or [""])
@@ -338,6 +444,7 @@ class Game:
             for s in list(p.states):
                 if s != "cursed":
                     p.states.pop(s)
+            p.restrictions.clear()   # Ongoing Effects end when an ability lets the player avoid death
             self.interrupt(p, "death-prevented")
             self.disengage(p)
             self.applied[(ench.ability.slug, "death.prevent")] += 1
@@ -363,6 +470,7 @@ class Game:
         for s in list(p.states):
             if s != "cursed":
                 p.states.pop(s)
+        self._end_restrictions_on_death(p)
         self.interrupt(p, "died")
         self.disengage(p)
         self.log("death", p.pid, src.pid if src else None, slug)
@@ -424,6 +532,8 @@ class Game:
         p.alive = True
         p.wounds.clear()
         p.states.clear()
+        p.restrictions.clear()
+        p.exit_lock_until = 0.0
         p.armor = {l: p.armor_max for l in LOCATIONS}
         p.magic_armor = {l: 0 for l in LOCATIONS}
         for e in [e for e in p.enchantments if not e.persistent]:
@@ -514,8 +624,15 @@ class Game:
         if why:
             self.fails[(uses.slug, f"requirement:{why}")] += 1
             return False
+        aimed = target if target is not None else p
+        if not self.can_cast_at(p, aimed, uses) or (
+                uses.ability.delivery == "specialty-arrow" and self.barred(p, "wield-weapons")):
+            self.fails[(uses.slug, "restricted")] += 1
+            return False
         secs = 1.0 if uses.swift else uses.ability.cast_seconds(self.words_per_second)
         p.casting = Cast(uses, target.pid if target is not None else None, secs)
+        if uses.magical and aimed is not p:
+            self._provoke(p, aimed, "cast-start")
         self.log("cast-start", p.pid, uses.slug, target.pid if target is not None else None)
         return True
 
@@ -538,13 +655,17 @@ class Game:
         ab = uses.ability
         if not uses.available():
             return
+        target = self.players[c.target] if c.target is not None else p
+        if not self.can_cast_at(p, target, uses):
+            # restricted since the incantation began (e.g. Insulted mid-cast): the player stops short
+            self.fails[(ab.slug, "restricted")] += 1
+            return
         uses.spend()
         if uses.ench is not None:
             uses.ench.strips = (uses.ench.strips or 1) - 1
             if uses.ench.strips <= 0:
                 self.remove_enchantment(p, uses.ench)
         self.casts[ab.slug] += 1
-        target = self.players[c.target] if c.target is not None else p
         if ab.delivery in ("magic-ball", "specialty-arrow"):
             self._projectile(p, uses, target)
             return
@@ -552,6 +673,8 @@ class Game:
         if why:
             self.fails[(ab.slug, why)] += 1
             return
+        if uses.magical and target is not p:
+            self._provoke(p, target, "cast-done")
         if ab.delivery == "enchantment":
             if not target.alive and "active-while-dead" not in ab.properties:
                 self.fails[(ab.slug, "target-dead")] += 1
@@ -567,6 +690,8 @@ class Game:
             self.at(self.t + self.rules.a("projectiles.magic_ball_retrieve_seconds"),
                     lambda u=u: setattr(u, "left", u.max))
         key = "projectiles.magic_ball_p_hit" if ab.delivery == "magic-ball" else "projectiles.arrow_p_hit"
+        if ab.delivery == "specialty-arrow":
+            self._provoke(p, target, "attack")
         if not self.targetable(target) or self.rng.random() >= self.rules.a(key):
             self.fails[(ab.slug, "missed")] += 1
             return
@@ -577,6 +702,8 @@ class Game:
         specials = frozenset(e.params.get("effect") for e in ab.effects
                              if e.kind == "special-effect.grant" and e.params.get("on") in ("this-magic-ball", "this-arrow"))
         kind = "ball" if ab.delivery == "magic-ball" else "arrow"
+        if kind == "ball" and uses.magical:
+            self._provoke(p, target, "cast-done")
         ctx = Ctx(ab, p, target, location=self._location(), specials=specials)
         if kind == "arrow" and self.unaffected(target, "projectiles-except-magic-balls"):
             self.fails[(ab.slug, "unaffected")] += 1
@@ -586,23 +713,30 @@ class Game:
     def shoot(self, p: Player, target: Player) -> None:
         """A normal arrow: Armor Breaking and Weapon Destroying (rules/weapon-types-shields-equipment.md)."""
         p.next_shot_at = self.t + self.rules.a("projectiles.arrow_shot_seconds")
+        if not self.can_fire_normal_arrows(p) or not self.can_attack(p, target):
+            # the shooter looks for a shot and holds it (Sniper, Gift of Air, Awe/Terror/Insult)
+            self.fails[("arrow", "restricted")] += 1
+            return
+        self._provoke(p, target, "attack")
         if self.targetable(target) and self.rng.random() < self.rules.a("projectiles.arrow_p_hit"):
             self.hit(target, p, "arrow", specials=frozenset({"armor-breaking"}), kind="arrow")
 
     def apply_effects(self, ab: Ability, timings: tuple[str, ...], ctx: Ctx) -> None:
         # A Verbal with a choice (Mend, Release, Steal Life Essence) applies only the first effect
         # that works within each polarity group: e.g. Mend repairs a weapon, else a point of armor.
+        # action.restrict effects are never alternatives: Insult's has-choice is the target's choice
+        # (E2), and its two restrictions are parts of one effect.
         choice = "has-choice" in ab.properties and ab.delivery == "verbal"
         chosen: set[str] = set()
         for eff in ab.effects:
-            if choice and eff.polarity in chosen:
+            if choice and eff.polarity in chosen and eff.kind != "action.restrict":
                 continue
             if eff.timing not in timings:
                 if eff.timing == "while-active" and ab.delivery not in fx.PASSIVE_DELIVERIES and "on-cast" in timings:
-                    self.noops[(ab.slug, eff.kind)] += 1
+                    self.noops[(ab.slug, fx.runtime_noop_detail(ab, eff))] += 1
                 continue
             if not fx.is_handled(ab, eff):
-                self.noops[(ab.slug, eff.kind)] += 1
+                self.noops[(ab.slug, fx.runtime_noop_detail(ab, eff))] += 1
                 continue
             if fx.INSTANT[eff.kind](self, eff, ctx):
                 self.applied[(ab.slug, eff.kind)] += 1
@@ -619,17 +753,17 @@ class Game:
         caster_w = a("engagement.caster_weight_when_choosing_melee_target")
         p_dis = a("engagement.p_disengage_per_second")
         for p in self.players:
-            if not p.can_act(t) or not p.on_field(t):
+            if not p.can_act(t) or not p.on_field(t) or self.barred(p, "wield-weapons"):
                 p.target = None
                 continue
             if p.target is not None:
                 q = self.players[p.target]
-                if not self.targetable(q) or self.rng.random() < p_dis:
+                if not self.targetable(q) or not self.can_attack(p, q) or self.rng.random() < p_dis:
                     p.target = None
                 continue
             if p.casting is not None or p.kept_away_until > t:
                 continue
-            attackers = [q for q in self.attackers_of(p) if self.targetable(q)]
+            attackers = [q for q in self.attackers_of(p) if self.targetable(q) and self.can_attack(p, q)]
             if attackers:
                 p.target = self.rng.choice(attackers).pid
                 continue
@@ -637,7 +771,8 @@ class Game:
                 continue
             if self.rng.random() >= p_engage:
                 continue
-            foes = [q for q in self.enemies(p) if self.targetable(q) and q.kept_away_until <= t]
+            foes = [q for q in self.enemies(p) if self.targetable(q) and q.kept_away_until <= t
+                    and self.can_attack(p, q)]
             if not foes:
                 continue
             weights = [(backline * caster_w) if q.backline else 1.0 for q in foes]
@@ -658,11 +793,13 @@ class Game:
             if not p.weapon_ok or ("right_arm" in p.wounds and "left_arm" in p.wounds):
                 continue
             d = self.players[p.target]
-            if not self.targetable(d) and not d.has_state("stunned", t):
+            if (not self.targetable(d) and not d.has_state("stunned", t)) or not self.can_attack(p, d):
                 p.target = None
                 continue
+            self._provoke(p, d, "attack")
+            d_shield = self.shield_up(d)
             x = self._base_logit + k_skill * (p.skill - d.skill)
-            x += shield_logit.get(d.shield, 0.0) if d.shield_usable() else 0.0
+            x += shield_logit.get(d.shield, 0.0) if d_shield else 0.0
             x += gang * max(0, on_target[d.pid] - 1)
             if d.wounds & {"left_leg", "right_leg"}:
                 x += a("melee.wounded_leg_logit")
@@ -675,7 +812,7 @@ class Game:
             specials = self.melee_specials(p)
             if self.rng.random() < _logistic(x):
                 self.hit(d, p, "melee", specials=specials, kind="melee")
-            elif "shield-crushing" in specials and d.shield_usable() \
+            elif "shield-crushing" in specials and d_shield \
                     and self.rng.random() < a("melee.p_shield_struck_on_miss"):
                 d.shield_hits += 1
 
@@ -689,6 +826,8 @@ class Game:
                 expired = [s for s, until in p.states.items() if until <= t]
                 for s in expired:
                     del p.states[s]
+            if p.restrictions:
+                p.restrictions = [r for r in p.restrictions if r.until > t]
             if not p.alive and not p.out:
                 p.time_dead += self.dt
                 if p.dead_until <= t:
