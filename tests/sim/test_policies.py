@@ -156,3 +156,46 @@ def test_casters_leave_long_charges_for_a_lull(eager_rules):
     assert not _try_charge(g, druid), "Charge x10 is 80 s: wait for a lull"
     foe.at_base_until = g.t + 60
     assert _try_charge(g, druid)
+
+
+def _wear_gift_of_water(g, p):
+    """p wears Gift of Water (Heal (Self) Unlimited), attached as a Druid would."""
+    druid_use = Uses(g.rules.abilities["gift-of-water"], "life", 1, 1, None, None, True, range="Other")
+    assert g.attach_enchantment(p, druid_use, p)
+    return next(u for u in p.uses.values() if u.granted_by is not None and u.slug == "heal")
+
+
+def test_wounded_fighter_steps_back_to_heal_when_not_attacked(rules):
+    g = make_game(rules, [spec("Warrior", 3)], [spec("Warrior"), spec("Warrior")])
+    p, foe, other = g.players
+    p.uses = {}
+    heal = _wear_gift_of_water(g, p)
+    p.wounds.add("left_arm")
+    p.target = foe.pid            # attacking a foe who is busy with someone else
+    foe.target = other.pid
+    decide(g, p)
+    assert p.casting is not None and p.casting.uses is heal and p.casting.target == p.pid
+    assert p.target is None       # stepped out of melee
+
+
+def test_wounded_fighter_under_attack_keeps_fighting(rules):
+    g = make_game(rules, [spec("Warrior", 3)], [spec("Warrior")])
+    p, foe = g.players
+    p.uses = {}
+    _wear_gift_of_water(g, p)
+    p.wounds.add("left_arm")
+    p.target, foe.target = foe.pid, p.pid
+    for _ in range(20):
+        decide(g, p)
+        assert p.casting is None and p.target == foe.pid
+
+
+def test_unwounded_fighter_does_not_step_back(rules):
+    g = make_game(rules, [spec("Warrior", 3)], [spec("Warrior"), spec("Warrior")])
+    p, foe, other = g.players
+    p.uses = {}
+    _wear_gift_of_water(g, p)
+    p.target, foe.target = foe.pid, other.pid
+    for _ in range(20):
+        decide(g, p)
+        assert p.casting is None and p.target == foe.pid

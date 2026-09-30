@@ -2,8 +2,9 @@
 and not already incanting. Melee targeting itself happens in Game._engage.
 
 Martial roles (from sim/engine/loadout.py ROLE_BY_CLASS):
-  fighter - closes to melee; buffs self (Rage); sometimes uses an offensive ability first; heals,
-            cleanses and mends when free
+  fighter - closes to melee; buffs self (Rage); when wounded and not under attack, steps back out
+            of melee and heals themselves if they can (`_try_step_back_heal`); sometimes uses an
+            offensive ability first; heals, cleanses and mends when free
   archer  - stays back; shoots (Specialty Arrows first), fights with a short weapon if engaged
 Magic Users play their doctrine's play style (sim/data/doctrines.json `play_styles`, PLAY_ROUTINES):
   striker    - stays back; self-buffs, finishers, its own set-ups (combos), then offense; support last
@@ -189,6 +190,28 @@ def _try_heal(g: "Game", p: Player) -> bool:
         q = p if p in able else g.rng.choice(able)
         if (q is p or g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch")) and g.start_cast(p, u, q):
             return True
+    return False
+
+
+def _try_step_back_heal(g: "Game", p: Player) -> bool:
+    """A wounded melee player who holds a heal they can cast on themselves (Gift of Water's and
+    Regeneration's Heal (Self), a Scout's Heal) and whom nobody is attacking steps back out of
+    melee and heals: they drop their own target and start the heal on themselves. Real play: a
+    wounded fighter backs off a step and heals, because a second wound kills. One who is under
+    attack keeps fighting (they can't step away in Phase 1), and one a teammate is already
+    healing waits for it."""
+    if not p.wounds or g.attackers_of(p) or _being_helped(g, p, p, _is_heal):
+        return False
+    heals = [u for u in _usable(g, p) if _is_heal(u) and u.range in ("Self", "Touch")
+             and _can_receive(g, u, p, p) and g.can_cast_at(p, p, u)]
+    if not heals:
+        return False
+    had = p.target
+    p.target = None                     # step back: Regeneration's Heal needs no enemy within 10'
+    for u in sorted(heals, key=lambda u: (u.left is not None, -g.value(u.ability, p), u.slug)):
+        if g.start_cast(p, u, p):
+            return True
+    p.target = had
     return False
 
 
@@ -778,8 +801,9 @@ def _play_medic(g: "Game", p: Player) -> None:
 
 
 def _play_battle(g: "Game", p: Player) -> None:
-    """Like a fighter: self-buffs and its song first, then casts only when not in melee."""
-    if _try_self_buff(g, p) or _try_song(g, p):
+    """Like a fighter: self-buffs and its song first, a step back to heal when wounded, then casts
+    only when not in melee."""
+    if _try_self_buff(g, p) or _try_song(g, p) or _try_step_back_heal(g, p):
         return
     if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
         if _try_finish(g, p) or _try_setup(g, p) or _try_offense(g, p):
@@ -839,7 +863,7 @@ def decide(g: "Game", p: Player) -> None:
             return
         _try_charge(g, p)
     else:
-        if _try_self_buff(g, p):
+        if _try_self_buff(g, p) or _try_step_back_heal(g, p):
             return
         if p.target is None and g.rng.random() < g.rules.a("policy.p_use_offensive_ability_when_free"):
             if _try_offense(g, p):
