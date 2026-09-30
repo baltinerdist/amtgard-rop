@@ -190,7 +190,8 @@ the baseline once, then takes about 20 s for each ability removed.
 - **Chosen options** are random, not strategic: School choices and the Pick-one options. Archetypes are chosen by value (below).
 - **Loadout choices** (`policies/buy.py`). A Magic User builds to a **doctrine** (see Caster
   doctrines below): the doctrine's Archetype first, then its core spells in order, then a greedy
-  fill by usefulness score (benefits minus drawbacks, `policies/value.py`) times personal taste
+  fill by usefulness score (benefits minus drawbacks, `policies/value.py`; an enabler such as
+  Attuned or Extension scored against the spells already bought) times personal taste
   (log-normal, sd `loadout.spell_taste_sd`) times the doctrine's weights, after a few favorite
   spells (one at 1st level up to `loadout.favorite_spells` = 3 at 6th). Unlimited non-ammunition
   abilities (Heal, Bardic songs) score double. **Martial Archetypes are chosen by value**: a
@@ -245,8 +246,10 @@ and `combos`; the `players` table stores `doctrine`, `play` and `bought`.
 
 Every Magic User places Enchantments by benefit, at base and on the field: weapon Enchantments
 (Flame Blade, Poison, Contagion) to the best melee fighter, armor and protection to the front line,
-and Attuned or Essence Graft first on a fighter when there are Enchantments to fill the slot (the
-usefulness score puts those two below zero, so without the rule they were never cast). A caster
+and Attuned or Essence Graft first on a fighter when there are Enchantments to fill the slot. An
+Enchantment that gives a teammate nothing (Amplification on a player with no 20' Verbal), or whose
+drawbacks cost that teammate more than it gives, goes to someone else (`_crippled`, priced with
+both kits). A caster
 holding a **finisher** (Dragged Below on a Stopped target, Shatter on a Frozen one, Dimensional Rift
 on an Insubstantial one, any wound on a Fragile one) uses it first, preferring a target whose State
 it applied itself (`Player.state_src`).
@@ -322,6 +325,94 @@ turns into a section of the report.
   and Bards 0.468, against 0.54–0.56 for Warriors, Paladins, Anti-Paladins and Barbarians: the
   melee-over-casters limit below is unchanged by doctrines.
 
+## Usefulness score: enablers and drawbacks in context
+
+`policies/value.py` gives every ability one usefulness score, benefits minus drawbacks. Direct
+effects (a kill, a wound, a heal, a State on an enemy, Magic Armor) still score from flat tables.
+Two things changed; the module docstring has the full pricing table, with the rule text behind
+each choice.
+
+- **Enablers are valued by what they enable**, with the same function, so the value follows the
+  target:
+  - a grant is worth the granted ability at the granted frequency (uses count like copies,
+    Unlimited ×2, a Charge +30%: the buyer's own rules in `value.frequency_factor`, which `buy.py`
+    now imports)
+  - a frequency change is worth the gain on the abilities it changes
+  - a Charge or restore is worth the ability it refills
+  - an extra Enchantment slot is worth the best Enchantments that could fill it
+  - Song of Power is worth the Charge seconds it saves, at `policy.value_per_threat_second`
+  - Extension, Swift and Persistent are worth their share of what they modify
+  - strips are worth the ability times the strips
+
+  An enabled ability counts at no less than 0. A choice between a refill and something else
+  (Steal Life Essence: heal a wound *or* Charge) counts the better option only.
+- **Drawbacks are priced by what the bearer actually loses**:
+  - a self-imposed Stopped (a singing Bard) costs little to a backline caster and in full to a line
+    fighter
+  - "drop Enchantments when this ends" costs nothing at cast
+  - "can't use other sources" costs the bearer's own copies
+  - Undead Minion's no-respawn costs the respawn it replaces: the chance the caster doesn't raise
+    the bearer before a respawn would have come, by game type
+  - equipment restrictions and removed abilities cost what the player holds
+- **Context** (`value.Ctx`, optional): the holder's and bearer's kits, the spent ability, the game
+  type and the ablated abilities. Without it, each kit is a typical player of the role. It is
+  used:
+  - by the buyer (the spells bought so far; a kit-dependent spell is re-scored when its turn
+    comes)
+  - by `Game.value` (the player's own kit)
+  - by the Enchantment-placement check (both kits)
+  - by the martial Archetype choice (`archetype_gain` is the Archetype's value in the player's
+    context)
+
+  Values are memoized per rules object and context. A loop (an Enchantment filling its own slot)
+  counts as nothing, and results don't depend on call order (`tests/sim/test_value.py`).
+
+`python -m sim.analyze.value_changes` compares the score with the version before (f736d6a) and
+writes `sim/out/value-changes.csv`: slug, holder role, old and new value, and the effect that moved
+it most. 58 of 183 abilities changed. 23 changed sign, all from ≤ 0 to > 0. Among the spells:
+
+- Attuned −1 → 14.5 and Essence Graft −2 → 23.1 (Druid list's best Enchantments)
+- Undead Minion −3.5 → 8.0 (Raise Dead, less 2.0 for Cursed and 2.5 for the respawn)
+- Regeneration −0.5 → 7.0 (Heal (Self) Unlimited)
+- Song of Power −3.5 → 4.6
+- Silver Tongue −0.5 → 2.9 and Amplification −0.5 → 2.4
+
+The rest are Archetypes. The biggest moves, apart from Archetypes, are Void Touched 4 → 17.3
+(Steal Life Essence Unlimited), Mass Healing 8.5 → 18.3 (Heal ×5 strips), Gift of Water
+2.5 → 10, Troll Blood 8 → 14.5 and Rogue 2 → 10 (a use of Coup de Grace). Steal Life Essence falls
+from 8 to 6 (its heal and Charge are one choice). Fireball, Heal, Raise Dead, Lightning Bolt and
+the other direct scores are unchanged.
+
+**Effect in 2,000 mixed games (`--seed 1`)**, against the same run before:
+
+- **Newly cast:** Amplification (773 casts), Regeneration (1,445), Undead Minion (327) and
+  Silver Tongue (262), all bought before but never cast. Momentum went from 5 casts to 1,296,
+  through the Archetype picks below. No ability is newly bought; none stopped being cast.
+- **Bought more:**
+  - Gift of Water 240 → 1,116 players and Regeneration 158 → 876
+  - Essence Graft 99 → 472 (casts 223 → 1,733) and Void Touched 135 → 414
+  - Song of Power 456 → 997, Swift 494 → 778 and Restoration 508 → 877
+- **Bought less:** Innate 1,944 → 1,609 (still never cast) and Teleport 2,858 → 2,539.
+- **Win rates:**
+  - Doctrine shares are identical (the doctrine draw is unchanged). No doctrine's win rate moved
+    outside its interval.
+  - The largest moves are on 30–70 players: Legend 0.597 → 0.493, Necromancer 0.489 → 0.404,
+    Dervish 0.495 → 0.538. Among the base doctrines: Healer protector 0.450 → 0.422, Bard skald
+    0.466 → 0.481.
+  - Enchant assists rose where the new Enchantments are cast: Wizard warlock 0.37 → 1.21, evoker
+    0.30 → 1.21 and controller 0.03 → 0.20 per life, mostly Void Touched; Necromancer
+    0.40 → 1.08.
+  - Class win rates moved by at most 0.011.
+- **Martial Archetypes changed** (6th-level players who consider one, 400 per class):
+  - Barbarian Berserker 54 → 245 (Momentum Unlimited now refills Rage and Brutal Strike)
+  - Warrior Juggernaut 0 → 239 and Marauder 78 → 1 (Phoenix Tears 3/Refresh counts three uses)
+  - Anti-Paladin Corruptor 0 → 106 (Infernal 229 → 123)
+  - Monk Medium 48 → 120 (Mystic 189 → 117)
+  - Scout Hunter 45 → 0 (it removes Release and Evolution, now priced by what the Scout holds)
+- **One policy fix:** the revive routine now honors a granted revive's only target (Undead
+  Minion's Raise Dead may only be cast on its bearer) and checks requirements with the use. Before,
+  it drew a random dead ally for every revive.
+
 ## Deciding casts by situational utility
 
 The fixed usefulness score in `policies/value.py` answers "is this spell good?" once, with no
@@ -345,6 +436,22 @@ In 2,000 mixed games Bards start about 1.6 songs per life. By share of songs sta
 Determination 37%, Battle 34%, Survival 12%, Freedom 7%, Power 6%, Deflection 5%, Interference
 under 1%. No Bard doctrine's win rate moved beyond its interval.
 
+**Where the enablers' context values plug in (next step).** The other enablers are still cast by
+the fixed score, which now carries their value in the caster's context. A utility function for each
+would take the same pieces from the game state instead of a typical kit:
+
+| Enabler | Context value now (`value.py`) | What its utility function would read |
+| --- | --- | --- |
+| Attuned, Essence Graft | `extra_slot`: best Enchantments the caster holds | the fillers the caster has uses left for, the bearer's current Enchantments and free slots |
+| Amplification, Silver Tongue | `grant` on the bearer's kit, less the "other sources" drawback | the bearer's 20' Verbals (Touch/Self/Magic Ball incantations for Swift) with uses left; the bearer's own Extension or Swift uses |
+| Song of Power | `charge_faster`: a typical Charge | already `songs._power`: teammates Charging or with a spent chargeable ability within 20' |
+| Undead Minion | Raise Dead grant, less `late_share(game type)` | the bearer's expected deaths, lives left, whether the caster is near enough to raise them |
+| Confidence, Innate, Empower, Restoration, Momentum | `refill` with `Ctx.spent` | the target's actual spent uses (`_refill_need` already finds them); pass each as `Ctx.spent` |
+| Extension, Swift, Persistent | `meta` over the holder's kit | the ability being started now (the engine applies them automatically at cast start) |
+| Regeneration, Gift of Water, Troll Blood | Heal (Self) Unlimited on the bearer | the bearer's wounds and how often they are out of melee |
+| Battlefield Triage, Mass Healing, Corrosive Mist, Discordia, Snaring Vines | the stripped ability × strips | the stripped ability's own utility per use |
+| Heart of the Swarm | 0 (its benefits need a map) | respawn distance, once there is a map |
+
 ## Known limitations (from the face-validity suite)
 
 `sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
@@ -353,6 +460,29 @@ doesn't hurt, …). **class-stack** fails as a structural limit of Phase 1. Sinc
 **level** fails (0.569; see below), and at full scale **no-abilities** fails (0.453) because of a
 side bias that predates doctrines (below). At half scale (`pytest`) no-abilities passes.
 
+- **Level after the context valuation.** Over 3,000 games of the check's kind, 6th-level players
+  beat the same classes at 1st level 0.511 of the time with the new usefulness score, against
+  0.576 before it (standard error about 0.009 each). Putting back one piece of the old scoring at
+  a time:
+
+  | Old piece restored | Level |
+  | --- | --: |
+  | none (the new score) | 0.511 |
+  | martial Archetype choice | 0.549 |
+  | Barbarians' Berserker choice only | 0.564 |
+  | Magic User buying | 0.529 |
+  | values in play (`Game.value`) | 0.532 |
+  | all three | 0.580 |
+
+  - Most of the fall is Barbarians taking Berserker: 245 of 400 who consider an Archetype,
+    against 54 before. They give up 3 armor points for Momentum Unlimited, which the score now
+    values at what it refills (see "Enabler values sit on the flat tables' scale").
+  - The rest is 6th-level casters spending on and casting enablers that help little in the engine:
+    Heal grants to fighters, extra slots, Amplification.
+  - 1st-level players have few enablers, so the gap closes from the top.
+
+  No weight was changed to recover it; the fix belongs to the flat weights (armor) and to
+  per-cast utility for the enablers.
 - **Level after doctrines.** 6th-level players now beat the same classes at 1st level 0.569 of the
   time over the check's 600 games (expects ≥ 0.6; it was 0.618). Over 3,000 games of the same kind
   it is 0.560 with doctrines and 0.589 without them (plain greedy buying and the old role play), so
@@ -406,14 +536,35 @@ side bias that predates doctrines (below). At half scale (`pytest`) no-abilities
   shoot. Still never cast in play: Teleport, Summon Dead, Force Barrier, Stoneform, Reload, Innate,
   and the Self-range Enchantments aimed at enemies (Discordia, Snaring Vines).
 - **Doctrine entries that do nothing here.** Some core entries are bought but never used, because
-  the engine doesn't model them or the usefulness score puts them at zero or below: Ambulant
-  (Battlemage, Priest; needs a map), the weapon purchases (battle doctrines; weapon types are out of
-  scope), Summon Dead (medic; needs a map), Stoneform (battle druid), Snaring Vines (elementalist),
-  Amplification and Silver Tongue (force multiplier; their restriction outweighs the granted
-  Meta-Magic), and Undead Minion (Necromancer; its drawbacks outweigh the Raise Dead it grants).
-  The cause is the fixed usefulness score, which scores enablers at a flat 0.5 and charges
-  drawbacks in full whatever the context; see "Deciding casts by situational utility" below.
-  Battle casters also keep `melee.weak_weapon_logit`, whatever weapon they bought.
+  the engine or the policies don't use them:
+  - Ambulant (Battlemage, Priest; needs a map)
+  - the weapon purchases (battle doctrines; weapon types are out of scope)
+  - Summon Dead (medic; needs a map)
+  - Stoneform (battle druid)
+  - Snaring Vines (elementalist)
+
+  Amplification, Silver Tongue and Undead Minion used to be on this list. The usefulness score
+  now values them by what they grant, in context, and they are cast (see "Usefulness score"
+  above). Battle casters also keep `melee.weak_weapon_logit`, whatever weapon they bought.
+- **Enabler values sit on the flat tables' scale.** An enabler is worth what it enables, so it
+  inherits every miscalibration of the direct weights:
+  - Berserker trades 2 points of value per armor point for Momentum Unlimited (Momentum is worth
+    the mean of the Barbarian's Rage and Brutal Strike, doubled for Unlimited). The engine makes
+    armor worth far more than that (melee decides most games), and Momentum only refills after a
+    kill. This is the main cost to the level check (below).
+  - A Heal granted to a fighter (Regeneration, Gift of Water, Troll Blood) is valued like any
+    Heal, doubled for Unlimited. In play fighters stay in melee and rarely heal themselves, and
+    wounds cost little (below).
+  - An extra Enchantment slot is credited with the whole value of the Enchantment that fills it,
+    though that Enchantment could often have gone to another teammate: the gain is stacking, not
+    the Enchantment.
+  - Discordia and Snaring Vines (strips of Break Concentration and Hold Person) score higher and
+    are bought more (577 → 734, 147 → 190), but no routine casts a Self Enchantment aimed at
+    enemies. Innate is bought by 1,609 Magic Users and never cast: no routine states a Meta-Magic
+    that refills.
+- **A counting quirk.** Amplification's "no other source of Extension" is counted as applied each
+  time the engine checks the bearer's Extension (`Game._meta_use`, every tick from
+  `_offer_extension`): 147,000 times in 2,000 games. It is accounting only; play is unaffected.
 - **Healers slipped slightly.** After this round's fixes Healers win 0.430 in the smoke run (0.447
   before; the intervals overlap). It is not the Archetypes (0.427 with none). Likely causes: Raise
   Dead and Phoenix Tears score lower now that their drawbacks count, and Healers spend time
