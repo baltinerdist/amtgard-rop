@@ -28,6 +28,9 @@ abilities they act on, computed with this same function, so it follows its targe
 | `ability.cast-via-strips` | the ability's value times `held_worth(strips)` |
 | a refill offered as a choice (Steal Life Essence: "Caster may heal a wound or instantly Charge an ability") | the better of the two options, not both |
 
+An enabled ability counts at its value floored at 0: one not worth using is simply not used
+(Guardian grants Martyr, whose drawbacks outweigh it).
+
 **Drawbacks are priced in context**: by what the one who bears them actually loses. Each rule
 comes from the ability's text (`rules/magic-and-abilities/<slug>.md`):
 
@@ -395,6 +398,11 @@ class _Eval:
             self.memo[key] = v
         return v
 
+    def enabled(self, ab: Ability, role: str, ctx: Ctx | None) -> float:
+        """The value of an ability another one enables (or takes away): never below 0, since an
+        ability not worth using is simply not used (Guardian's Martyr)."""
+        return max(0.0, self.value(ab, role, ctx))
+
     def named(self, name, ctx: Ctx | None) -> Ability | None:
         slug = self.rules.by_name.get(str(name or "").lower())
         if slug is None or (ctx is not None and slug in ctx.ablate):
@@ -489,7 +497,7 @@ class _Eval:
             if target is None:
                 return "strips of an unknown ability", 0.0
             kit, r = self.recipient(ab, eff, role, ctx)
-            v = self.value(target, r, _sub(ctx, kit)) * held_worth(ab.strips or 1)
+            v = self.enabled(target, r, _sub(ctx, kit)) * held_worth(ab.strips or 1)
             return f"{target.slug} x{ab.strips or 1} strips", v
         return k, direct_benefit(ab, eff, role)
 
@@ -499,7 +507,7 @@ class _Eval:
         if target is None:
             return "grant of an unknown ability", 0.0
         kit, r = self.recipient(ab, eff, role, ctx)
-        v = self.value(target, r, _sub(ctx, kit))
+        v = self.enabled(target, r, _sub(ctx, kit))
         if prm.get("how") == "as-per":
             return f"as per {target.slug}", v
         f = freqmod.parse(str(prm.get("frequency", "")))
@@ -530,29 +538,29 @@ class _Eval:
             members = self.held_abilities(kit, ctx, lambda h, a: group(_UsesView(a, h.purchased or holder is None, h.per)))
             if holder is None or scope in EXPERIENCED_SCOPES:   # a typical member; Experienced: a single one
                 if holder is not None:
-                    best = max((self.value(a, role, sub) for _, a in members), default=0.0)
+                    best = max((self.enabled(a, role, sub) for _, a in members), default=0.0)
                     return [(f"group:{scope}", f"{change} on the best of {scope}", best * frequency_gain(change, 1))]
                 mean = self.mean_value((a for _, a in members), role, sub)
                 return [(f"group:{scope}", f"{change} on {scope}", mean * frequency_gain(change, 1))]
-            return [(h.slug, f"{change} on {h.slug}", self.value(a, role, sub) * frequency_gain(change, h.copies))
+            return [(h.slug, f"{change} on {h.slug}", self.enabled(a, role, sub) * frequency_gain(change, h.copies))
                     for h, a in members]
         target = self.named(scope, ctx)
         if target is None:
             return []
         copies = holder.copies(target.slug) if holder is not None else 1
         return [(target.slug, f"{change} on {target.slug}",
-                 self.value(target, role, sub) * frequency_gain(change, copies))]
+                 self.enabled(target, role, sub) * frequency_gain(change, copies))]
 
     def refill(self, ab: Ability, eff: Effect, role: str, ctx: Ctx | None) -> tuple[str, float]:
         kit, r = self.recipient(ab, eff, role, ctx)
         sub = _sub(ctx, kit)
         named = self.named(eff.params.get("ability"), ctx)
         if named is not None:
-            return f"refill {named.slug}", self.value(named, r, sub)
+            return f"refill {named.slug}", self.enabled(named, r, sub)
         if ctx is not None and ctx.spent:
             spent = self.rules.abilities.get(ctx.spent)
             if spent is not None:
-                return f"refill {spent.slug}", self.value(spent, r, sub)
+                return f"refill {spent.slug}", self.enabled(spent, r, sub)
         listing = ab.slug if kit is None and eff.subject == "caster" else None
         pool = self.kit_or_typical(kit, r, listing)
 
@@ -652,7 +660,7 @@ class _Eval:
                 for g in ab.effects_of("ability.grant"):
                     other = self.named(g.params.get("ability"), ctx)
                     if other is not None and kit.copies(other.slug):
-                        cost += self.value(other, r, _sub(ctx, kit)) * held_worth(kit.copies(other.slug))
+                        cost += self.enabled(other, r, _sub(ctx, kit)) * held_worth(kit.copies(other.slug))
                 return "the bearer's own copies unusable", cost
             return f"may not {what}", restrict_cost(what, r, kit)
         if k == "state.apply":
@@ -669,7 +677,7 @@ class _Eval:
         if k == "ability.remove" and kit is not None:
             gone = self.named(prm.get("ability"), ctx)
             n = kit.copies(gone.slug) if gone is not None else 0
-            return f"loses {prm.get('ability')}", self.value(gone, r, _sub(ctx, kit)) * held_worth(n) if n else 0.0
+            return f"loses {prm.get('ability')}", self.enabled(gone, r, _sub(ctx, kit)) * held_worth(n) if n else 0.0
         return k, DRAWBACK_WEIGHT.get(k, 1)
 
     def late_share(self, ctx: Ctx | None) -> float:
