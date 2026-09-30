@@ -399,6 +399,19 @@ def test_restricted_purchase_is_skipped(rules):
     assert "force-bolt" not in bought and bought.get("lightning-bolt")
 
 
+# ---------------------------------------------------------------- equipment.permit
+
+def test_equipment_permits(rules):
+    assert kit(rules, "Druid", ["ranger"]).has_bow
+    s = kit(rules, "Archer", ["sniper"], picked=[("pinning-arrow", "2 Arrows / Unlimited", "")])
+    assert s.uses["pinning-arrow"].unit is None
+    names = set(rules.by_name)
+    for slug in ("equipment-weapon-long", "equipment-shield-small"):
+        ab = rules.abilities[slug]
+        modes = {fx.handling(ab, e, names) for e in ab.effects if e.params.get("what") != "small-shield"}
+        assert modes == {fx.OUT_OF_SCOPE}
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

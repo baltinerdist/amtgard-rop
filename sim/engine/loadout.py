@@ -360,6 +360,12 @@ def _apply_other_loadout_effects(p: Player, rules: Rules, rng: random.Random, sh
                         p.shield = size   # a player already carrying a shield carries the larger one
                 elif what == "great-weapon" and p.shield == "none":
                     p.great_weapon = True
+                elif what == "bows":
+                    p.has_bow = True      # Ranger (Game.shoot allows it; see README on policies)
+                elif what == "any-number-of-specialty-arrows":
+                    for u in p.uses.values():
+                        if u.ability.delivery == "specialty-arrow":
+                            u.unit = None     # Sniper: carries enough arrows never to retrieve them
             elif kind == "armor.limit":
                 pts = int(prm.get("points", 0))
                 if prm.get("change") == "set":

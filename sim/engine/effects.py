@@ -499,7 +499,7 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
         ok_change = change in ("double-uses", "unlimited") or bool(re.fullmatch(r"charge-x\d+", change))
         return ok_change and (scope in FREQUENCY_GROUPS or named("scope"))
     if eff.kind == "equipment.permit":
-        return prm.get("what") in _SHIELDS + ("great-weapon",)
+        return prm.get("what") in _SHIELDS + ("great-weapon", "bows", "any-number-of-specialty-arrows")
     if eff.kind == "armor.limit":
         return prm.get("change") in ("set", "increase")
     if eff.kind == "economy.purchase-restrict":
@@ -536,6 +536,12 @@ UNMODELED_RULES: tuple = (
     ("action.restrict", lambda a, e: e.params.get("what") in ("wield-javelins", "wield-heavy-thrown", "wield-long-weapons"),
      OUT_OF_SCOPE, "Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great "
      "weapons), so there is nothing to forbid."),
+    ("equipment.permit", lambda a, e: e.params.get("what") == "carry-extras", OUT_OF_SCOPE,
+     "Spare equipment only matters for replacing broken gear, and Phase 1 has no backup weapons or "
+     "shields (a destroyed item stays destroyed until repaired or respawn)."),
+    ("equipment.permit", lambda a, e: e.params.get("what") in ("hinged-weapon", "long-weapon", "short-weapon", "javelins"),
+     OUT_OF_SCOPE, "Phase 1 tells only Great weapons apart from other melee weapons and has no thrown "
+     "weapons, so permitting another weapon type changes nothing it models."),
     (None, lambda a, e: a.slug == "song-of-visit", OUT_OF_SCOPE,
      "Song of Visit is a non-combat visit (Stopped and Invulnerable while chanting, then an Invulnerable "
      "walk to base); ending the Chant is the Bard's choice and Phase 1 has no rule for when to stop, so "
