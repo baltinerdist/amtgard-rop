@@ -9,9 +9,11 @@ Roles (from sim/engine/loadout.py ROLE_BY_CLASS):
 """
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
 from sim.engine.state import Player, Uses
+from sim.policies.value import benefit, drawback_cost
 
 if TYPE_CHECKING:
     from sim.engine.game import Game
@@ -153,6 +155,13 @@ def _try_heal(g: "Game", p: Player) -> bool:
     return False
 
 
+def _crippled(ab, q: Player) -> bool:
+    """The Enchantment's drawbacks would cost this player more than it gives them: Gift of Air
+    ("may not wield weapons or shields") on a fighter, say. A veteran puts it on someone else."""
+    cost = drawback_cost(ab, q.role, q)
+    return cost > 0 and cost >= benefit(ab, q.role)
+
+
 def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Player]:
     if u.range == "Self":
         pool = [p]
@@ -161,7 +170,8 @@ def _enchant_targets(g: "Game", p: Player, u: Uses, at_base: bool) -> list[Playe
     if u.range == "Other":
         pool = [q for q in pool if q is not p]
     return [q for q in pool if all(e.ability.slug != u.slug for e in q.enchantments)
-            and (not u.magical or q.magical_enchantment_count() < q.ench_slots)]
+            and (not u.magical or q.magical_enchantment_count() < q.ench_slots)
+            and not _crippled(u.ability, q)]
 
 
 def _try_enchant(g: "Game", p: Player, at_base: bool) -> bool:
@@ -179,14 +189,37 @@ def _try_enchant(g: "Game", p: Player, at_base: bool) -> bool:
     return False
 
 
+def _charge_seconds(g: "Game", u: Uses) -> float:
+    return math.ceil(u.charge * g.rules.a("time.charge_incantation_words") / g.words_per_second)
+
+
+def _would_use(g: "Game", p: Player, u: Uses) -> bool:
+    """A recharged use would plausibly be spent: an Enchantment needs someone to wear it."""
+    if u.ability.delivery == "enchantment" and not _is_offensive(u):
+        return bool(_enchant_targets(g, p, u, False) or _enchant_targets(g, p, u, True))
+    return True
+
+
+def _lull(g: "Game", p: Player) -> bool:
+    """No enemy is on the field to fight (all dead, at base or out of reach)."""
+    return not any(g.targetable(q) for q in g.enemies(p))
+
+
 def _try_charge(g: "Game", p: Player) -> bool:
+    """Recharge the spent ability with the most value per second of Charging, among those that
+    would be used. Standing still for a long Charge is only worth it in a lull; fighters and archers
+    would rather fight, so they Charge only in a lull at all."""
     if _engaged(g, p) or g.rng.random() >= g.rules.a("policy.p_charge_when_safe"):
         return False
+    lull = _lull(g, p)
+    if p.role in ("fighter", "archer") and not lull:
+        return False
+    longest = math.inf if lull else g.rules.a("policy.max_field_charge_seconds")
     spent = [u for u in p.uses.values() if u.charge and u.max and u.left is not None and u.left < u.max
-             and g.value(u.ability, p) > 0]
+             and g.value(u.ability, p) > 0 and _charge_seconds(g, u) <= longest and _would_use(g, p, u)]
     if not spent:
         return False
-    return g.start_charge(p, max(spent, key=lambda u: g.value(u.ability, p)))
+    return g.start_charge(p, max(spent, key=lambda u: g.value(u.ability, p) / _charge_seconds(g, u)))
 
 
 def _try_shoot(g: "Game", p: Player) -> bool:

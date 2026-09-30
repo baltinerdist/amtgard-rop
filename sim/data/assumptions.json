@@ -306,6 +306,12 @@
       "unit": "bool",
       "assumption": true,
       "why": "A player attacked in melee mid-incantation or mid-Charge stops and defends unless the incantation completes this second. Standing still and talking while being hit is how a veteran caster gets killed; they break off and fight or back away."
+    },
+    "max_field_charge_seconds": {
+      "value": 30,
+      "unit": "s",
+      "assumption": true,
+      "why": "Longest Charge a caster starts while enemies are on the field (about Charge x3 at 3.5 words/s). Longer ones (Charge x5 is 40 s, x10 is 80 s) wait for a lull with no enemy on the field; fighters and archers Charge only in a lull. Standing still for over a minute mid-battle costs more than the recharged use is worth."
     }
   },
   "game": {
