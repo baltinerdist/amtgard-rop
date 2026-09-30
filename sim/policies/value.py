@@ -117,8 +117,8 @@ MOBILITY = {"line": 1.0, "archer": 0.5, "backline": 0.25}
 ENABLER_KINDS = frozenset({
     "ability.grant", "ability.modify", "economy.frequency", "ability.charge", "ability.restore-uses",
     "enchantment.extra-slot", "ability.charge-faster", "meta.modify-next", "ability.cast-via-strips"})
-# drawbacks whose price depends on the context
-CONTEXT_DRAWBACKS = frozenset({"action.restrict", "state.apply", "life.prevent-respawn", "ability.remove"})
+# drawbacks whose price depends on the context (`_context_drawback`)
+CONTEXT_DRAWBACKS = frozenset({"action.restrict", "life.prevent-respawn", "ability.remove"})
 # refills can't refill these (Empower, Restoration: "Does not function on Empower, Confidence, or Restoration")
 _REFILLS = ("ability.charge", "ability.restore-uses")
 
@@ -341,12 +341,22 @@ def _self_range(ab: Ability) -> bool:
 _DEPENDS: dict[int, tuple[Ability, bool]] = {}
 
 
+def _context_drawback(ab: Ability, eff: Effect) -> bool:
+    return eff.kind in CONTEXT_DRAWBACKS or _self_stopped(ab, eff)
+
+
+def _self_stopped(ab: Ability, eff: Effect) -> bool:
+    """Stopped on the bearer of a Self ability while it is worn or chanted: the mechanic's own cost."""
+    return eff.kind == "state.apply" and eff.params.get("state") == "stopped" and _self_range(ab) \
+        and eff.duration_type in ("while-chanting", "while-worn")
+
+
 def depends_on_context(ab: Ability) -> bool:
     """Whether the ability's value can depend on the context (enablers, context-priced drawbacks)."""
     hit = _DEPENDS.get(id(ab))
     if hit is None or hit[0] is not ab:
-        dep = any(is_handled(ab, e) and (e.kind in ENABLER_KINDS or e.kind in CONTEXT_DRAWBACKS
-                                         or e.kind == "enchantment.remove") for e in ab.effects)
+        dep = any(is_handled(ab, e) and (e.kind in ENABLER_KINDS or (is_drawback(ab, e) and _context_drawback(ab, e)))
+                  for e in ab.effects)
         hit = _DEPENDS[id(ab)] = (ab, dep)
     return hit[1]
 
@@ -647,7 +657,7 @@ class _Eval:
             return f"may not {what}", restrict_cost(what, r, kit)
         if k == "state.apply":
             state = prm.get("state", "")
-            if state == "stopped" and _self_range(ab) and eff.duration_type in ("while-chanting", "while-worn"):
+            if _self_stopped(ab, eff):
                 m = mobility(r, kit)
                 return f"self-imposed Stopped (mobility {m})", STATE_WEIGHT["stopped"] * m
             return f"state {state}", STATE_WEIGHT.get(state, 1)
