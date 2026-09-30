@@ -87,33 +87,67 @@ def _try_offense(g: "Game", p: Player) -> bool:
     return False
 
 
+def _can_receive(g: "Game", u: Uses, p: Player, q: Player) -> bool:
+    """Whether a helpful ability from p would take effect on q. Cursed (Immune to Spirit),
+    Frozen, Insubstantial and Protection from Magic are all declared or visible, so a veteran
+    doesn't spend an incantation on an ally who can't receive it. Mirrors the target checks in
+    Game.blocked without its side effect (spending a Resistance)."""
+    ab, t = u.ability, g.t
+    works_on_states = ({"target-frozen", "target-insubstantial"} & ab.requirements
+                       or ab.effects_of("state.remove") or "bypass-states" in ab.properties)
+    if not works_on_states and (q.has_state("frozen", t) or (q is not p and q.has_state("insubstantial", t))):
+        return False
+    if ab.delivery != "enchantment" and "bypass-immunities" not in ab.properties and g.immune(q, ab.school):
+        return False
+    return q is p or not (u.magical and g.unaffected(q, "magical-abilities"))
+
+
 def _try_revive(g: "Game", p: Player) -> bool:
     if _engaged(g, p):
         return False
-    dead = [q for q in g.allies(p) if not q.alive and not q.out and q is not p]
+    dead = [q for q in g.allies(p) if not q.alive and not q.out and q is not p
+            and not _being_helped(g, q, p, _is_revive)]
     if not dead:
         return False
     for u in (u for u in _usable(g, p) if _is_revive(u)):
         q = g.rng.choice(dead)
-        if g.check_requirements(u.ability, p, q, start=True):
+        if g.check_requirements(u.ability, p, q, start=True) or not _can_receive(g, u, p, q):
             continue
         if g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch") and g.start_cast(p, u, q):
             return True
     return False
 
 
+def _being_helped(g: "Game", q: Player, by: Player, kind) -> bool:
+    """Someone other than `by` is already incanting an ability of this kind (_is_heal,
+    _is_revive) on q: a second caster would only waste the incantation."""
+    return any(o is not by and o.casting is not None and o.casting.kind == "cast" and o.casting.uses is not None
+               and o.casting.target == q.pid and kind(o.casting.uses) for o in g.players)
+
+
+def _heal_candidates(g: "Game", p: Player) -> list[Player]:
+    """Wounded allies an experienced healer would start on: themselves, or an ally who is out of
+    melee (Touch range means standing next to them for the whole incantation, so a healer heals
+    behind the line, not in it) and whom no one else is already healing."""
+    return [q for q in g.allies(p) if q.alive and q.wounds and q.on_field(g.t)
+            and (q is p or not _engaged(g, q)) and not _being_helped(g, q, p, _is_heal)]
+
+
 def _try_heal(g: "Game", p: Player) -> bool:
     if _engaged(g, p):
         return False
-    hurt = [q for q in g.allies(p) if q.alive and q.wounds and q.on_field(g.t)]
+    hurt = _heal_candidates(g, p)
     if not hurt:
         return False
     for u in (u for u in _usable(g, p) if _is_heal(u)):
+        able = [q for q in hurt if _can_receive(g, u, p, q)]
         if u.range == "Self":
-            if p.wounds and g.start_cast(p, u, p):
+            if p in able and g.start_cast(p, u, p):
                 return True
             continue
-        q = p if p.wounds else g.rng.choice(hurt)
+        if not able:
+            continue
+        q = p if p in able else g.rng.choice(able)
         if (q is p or g.rng.random() < g.rules.a("range.p_ally_nearby_for_touch")) and g.start_cast(p, u, q):
             return True
     return False
@@ -168,6 +202,17 @@ def _try_shoot(g: "Game", p: Player) -> bool:
         g.shoot(p, g.rng.choice(foes))
         return True
     return False
+
+
+def keep_casting(g: "Game", p: Player) -> bool:
+    """Asked each tick of a player mid-incantation or mid-Charge. An attacked player stops
+    talking and defends unless the incantation finishes this tick: standing still while being
+    hit only ends in a wound. (Before this hook the engine never asked, so casters kept
+    incanting under attack and never struck back.)"""
+    c = p.casting
+    if c is None or not g.attackers_of(p):
+        return True
+    return c.remaining <= g.dt or not g.rules.a("policy.abandon_cast_when_attacked")
 
 
 def decide(g: "Game", p: Player) -> None:

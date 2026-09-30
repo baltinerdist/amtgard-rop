@@ -16,7 +16,7 @@ python3.14 -m venv .venv                      # .venv/ is gitignored
 ```
 
 The packages are numpy, pandas, scipy, pytest, duckdb and numba. numba 0.67 installs on
-Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 66 games/s on
+Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 45–55 games/s on
 10 cores, so no speed-up has been needed so far.
 
 ## Running
@@ -41,9 +41,12 @@ Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 66 g
 .venv/bin/python -m sim.analyze.sensitivity --grid melee.base_hit_per_second=0.18,0.26 --factorial
 .venv/bin/python -m sim.analyze.sensitivity --analysis winrate --games 1000
 .venv/bin/python -m sim.reports.build_report                    # -> sim/out/report.html
+.venv/bin/python -m sim.analyze.validity                        # face-validity checks, pass/fail table (~3 min)
+.venv/bin/python -m sim.analyze.validity --only level --set time.speech_words_per_second=2.5
 .venv/bin/python -m sim.rules.build_classes                     # rebuild sim/data/classes.json
 .venv/bin/python -m sim.rules.coverage                          # rebuild sim/COVERAGE.md
-.venv/bin/python -m pytest tests/sim
+.venv/bin/python -m pytest tests/sim                            # includes the validity checks at half scale
+SIM_VALIDITY_SCALE=1 .venv/bin/python -m pytest tests/sim/test_validity.py
 ```
 
 Results are appended to `sim/out/runs.duckdb` (gitignored). It has four tables:
@@ -57,9 +60,12 @@ Results are appended to `sim/out/runs.duckdb` (gitignored). It has four tables:
 the play itself each draw from their own random stream derived from that seed. So a seed replays
 exactly, including across processes and hash seeds (`tests/sim/test_determinism.py`).
 
-**Performance.** The smoke run was 1,000 mixed games (10–40 players, average 24) in 15.1 s on
-10 cores, about 66 games/s. An ablation over 1,000 games runs the baseline once, then takes about
-15 s for each ability removed.
+**Performance.** The smoke run is 1,000 mixed games (10–40 players, average 24). Before the
+validity fixes it took 15 s on 10 cores (66 games/s); it now takes 18–25 s (40–55 games/s). About
+20% of that is the new code: shorter incantations mean more policy decisions, and casting players
+are asked every tick whether to keep casting. The rest is load from other processes on the test
+machine. An ablation over 1,000 games runs the baseline once, then takes about 20 s for each
+ability removed.
 
 ## Layout
 
@@ -70,10 +76,10 @@ exactly, including across processes and hash seeds (`tests/sim/test_determinism.
 | `rules/rulings.py` | Loads `data/rulings.json` (answers to the metadata's 87 open questions) |
 | `rules/coverage.py` | Which effect kinds the engine executes; writes `COVERAGE.md` |
 | `engine/state.py` | Player, ability uses, enchantments, casts |
-| `engine/loadout.py` | Equipment and abilities from class and level. Martial classes use the level table and option picks. Magic Users spend 5 points per level on the best-value spells. |
+| `engine/loadout.py` | Equipment and abilities from class and level. Martial classes use the level table and option picks. Magic Users spend 5 points per level as `policies/buy.py` chooses. |
 | `engine/effects.py` | One handler per effect kind, plus the passive and loadout registries |
 | `engine/game.py` | The one-second tick loop: engagement, melee, casting, hits, wounds, death, respawn, refresh |
-| `policies/` | Scripted behavior per role (fighter / caster / support / archer) and the ability value score |
+| `policies/` | Scripted behavior per role (fighter / caster / support / archer), whether to keep casting under attack, the ability value score, and Magic User spell buying (`buy.py`) |
 | `scenarios/` | Player count, class and level mix, skill spread, team balancing, game type |
 | `run.py` | Parallel runner and DuckDB storage |
 | `analyze/stats.py` | Wilson, game-clustered (sandwich) and cluster-bootstrap intervals, paired intervals |
@@ -84,6 +90,7 @@ exactly, including across processes and hash seeds (`tests/sim/test_determinism.
 | `analyze/cut.py` | Cut ranking, merge proposals, greedy cut set, combined re-simulation |
 | `analyze/sensitivity.py` | Re-runs the cut (or win-rate) analysis over a grid of assumption settings |
 | `reports/` | `build_report.py` + `report-template.html` → `sim/out/report.html` |
+| `analyze/validity.py` | Face-validity suite: pass/fail table of checks a veteran player would expect to hold |
 
 ## What is modeled
 
@@ -100,6 +107,8 @@ exactly, including across processes and hash seeds (`tests/sim/test_determinism.
   - incantation time is words × repetitions ÷ speech rate
   - a use is spent on completion even if the ability fails
   - interrupted by wounds, death and states that stop action; sometimes by hits on armor
+  - a caster attacked in melee breaks off the incantation (or Charge) to defend unless it finishes this second (`policies.keep_casting`)
+  - healers heal themselves or allies out of melee that no one else is healing and who can receive it (not Cursed, Frozen or Insubstantial)
   - Charge takes the 28-word Charge incantation × N
 - **Frequencies:**
   - per-life (restored at respawn) and per-refresh (restored on the scenario's refresh timer)
@@ -137,15 +146,46 @@ exactly, including across processes and hash seeds (`tests/sim/test_determinism.
   - The biggest gaps are `action.restrict` (25 abilities, e.g. Insult, Awe), `economy.purchase-restrict` and `meta.modify-next` (Extension, Swift, Ambulant).
   - Anything unhandled is counted in the `noop` metric of every run. Policies never pick an ability with no handled effects on purpose.
 - **Chosen options** are random, not strategic: School choices, the Pick-one options, and whether and which Archetype to take.
+- **Magic User spell lists** (`policies/buy.py`) come from the usefulness score with personal taste (log-normal, sd `loadout.spell_taste_sd`), two favorite spells bought first (`loadout.favorite_spells`), and at most one Archetype at 6th level. Unlimited non-ammunition abilities (Heal, Bardic songs) score double. Abilities that do nothing in the engine are never bought, including the Archetypes that only modify unmodeled abilities (Battlemage, Evoker, Warlock, Legend). Every purchasable, modeled ability is held in at least 2.8% of 1,000 mixed games (`tests/sim/test_buying.py` requires 2%). Before this, 33 were never held.
 - **Rulings are recorded but not interpreted.** Each of the 87 open questions keeps the reading the metadata already encodes. An answer changes the simulation only if its entry carries a `sim` block (see `rules/rulings.py`). A missing, partial or unreadable `data/rulings.json` is tolerated: each open question without an entry falls back to the metadata's reading, and the fallback is logged.
 - **Weapons.** There are no thrown weapons, and no backup weapons after one is destroyed.
 - **Player decisions** are scripted heuristics. A different policy can change the conclusions, so run any important question at more than one policy setting.
+
+## Known limitations (from the face-validity suite)
+
+`sim/analyze/validity.py` runs 15 statistical checks that a veteran player would call obviously
+true (mirror matches are 50/50, skill wins, armor helps, more lives means longer games, Heal
+doesn't hurt, …). All pass except one, which is a structural limit of Phase 1:
+
+- **Melee classes are too strong against casters.** At equal skill, a small team stacked with
+  Warriors, Barbarians, Paladins and Anti-Paladins beats a mixed team about 89% of the time (the
+  check expects 50–80%). In the 1,000-game smoke run Warriors win 56% and Healers and Wizards 44–45%.
+  Melee causes about 95% of kills when fighters meet casters. Things that were ruled out:
+  a stronger `backline_factor`, skill-based ranged accuracy and making Stopped block engagement
+  each moved the fighters-vs-casters result by at most 2 points. The likely cause is the missing
+  map: casters can't keep distance or kite, and whoever reaches them wins. Two engine gaps add to
+  it and belong to the engine, not the policies:
+  - `engagement.backline_factor` is applied as a relative weight among foes in `Game._engage`,
+    not as a slower approach rate. When every enemy is a caster, the weights are equal and fighters
+    reach them at the full rate.
+  - The **Stopped** State (Hold Person, Entangle, Lightning Bolt) has no effect on play: nothing
+    stops a Stopped player from closing to melee.
+  - Skill affects melee only. Magic Balls and arrows hit at a flat rate, whoever throws or shoots.
+- **Wounds cost little.** A healed player dies again within 60 s about a third of the time, and a
+  limb wound only shifts hit chances slightly. Heal is now neutral in the paired ablation
+  (+0.001 [−0.018, +0.020]) rather than positive. Wounded fighters also never step back to be
+  healed; they stay in melee, where no one heals them.
+- **Charging runs long.** Druids still spend a large share of field time charging Barkskin
+  (Charge ×10, about 80 s), because the Charge policy picks the most valuable spent ability
+  whether or not it will be used.
+- The **control-scales** check passes, but only because control is worth about nothing in small
+  games. There are no lines to break and no clumps for area effects to hit.
 
 ## Assumption categories
 
 All values are in `data/assumptions.json`, and each has a unit and a reason. To change one for a single run without editing the file, pass `--assume group.name=value` to `sim.run`, `analyze.ablation` or `analyze.cut`. Add sub-keys to reach inside a dict value (`--assume melee.shield_logit.large=-0.8`). The flag can be repeated; unknown keys and type changes are rejected. Groups:
 
-- `time`: tick length, speech rate
+- `time`: tick length, speech rate (3.5 words/s; was 2.5, see below)
 - `skill`: skill spread and effect size
 - `melee`: base hit rate, shield, gang, wound, stunned and weak-weapon modifiers; hit-location weights; Great-weapon and shield use
 - `engagement`: how fast melee pairs form and break; backline protection; target preference
@@ -153,8 +193,8 @@ All values are in `data/assumptions.json`, and each has a unit and a reason. To 
 - `casting`: interrupts; casting while engaged
 - `projectiles`: hit chances, shot time, ball retrieval
 - `respawn`: rejoin time, pregame prep
-- `loadout`: Look The Part, Archetype and armor-wearing shares; spell copy cap
-- `policy`: revive priority, offense and charge rates, self-Insubstantial and forced-move durations
+- `loadout`: Look The Part, Archetype and armor-wearing shares; spell copy cap; Magic User taste spread (`spell_taste_sd`) and favorite spells (`favorite_spells`)
+- `policy`: revive priority, offense and charge rates, self-Insubstantial and forced-move durations, abandoning a cast when attacked
 - `game`: time cap
 - `population`: class and level mix. These are placeholders until ORK attendance data is available.
 
@@ -205,6 +245,30 @@ All values are in `data/assumptions.json`, and each has a unit and a reason. To 
 
 At 200 games most abilities sit at the noise floor (`distance_adj` = 0). Use 1,000 or more games before reading much into the ranking.
 
-**Early result:** removing Heal raised the holder team's win chance slightly (+0.03). In this model
-a Heal takes 16 s (8 words × 5), and during that time the caster isn't fighting. That says as much
-about the time and interrupt assumptions as about Heal.
+**Heal, and what the first smoke run got wrong.** In the first smoke run, removing Heal raised the
+holder team's win chance (+0.027 [+0.007, +0.046] over 2,000 paired games). Instrumenting 400 games
+showed the cause was mainly the policy, with the speech rate as a secondary factor:
+
+- 36% of Heal starts targeted an ally someone else was already healing, and 40% targeted an ally
+  in melee. Heal is Touch, so the healer has to stand next to the target for the whole
+  incantation. 26% of completed Heals landed on a Cursed ally, who is Immune to Spirit.
+  Only 26% of the Healers' Heals removed a wound, 0.21 per Healer life.
+- The engine never asked a casting player anything, so a caster attacked mid-incantation (or mid-Charge)
+  kept talking and never struck back until a wound interrupted them.
+- At 2.5 words/s a Heal took 16 s and a Magic Ball 10 s.
+
+The fixes:
+
+- The policy heals itself or allies out of melee that no one else is healing and who can receive it.
+- The engine now asks `policies.keep_casting` each tick, and an attacked caster breaks off to defend.
+- The speech rate is 3.5 words/s.
+
+With them, removing Heal changes the holder team's result by +0.001 [−0.018, +0.020]: neutral.
+In the face-validity check where one side of a mirror match loses Heal, the side with Heal now
+scores 0.52 (attrition) and 0.51 (annihilation); it was 0.46 and 0.42. Heal is neutral rather than
+clearly helpful because wounds cost little in this model (see Known limitations).
+
+**Speech rate sensitivity.** In the validity check "level", 6th-level players beat the same
+classes at 1st level 52% of the time with the original code (2.5 words/s). With the policy fixes it
+is 56% at 2.5 words/s, 66–68% at 3.5 and 73% at 4.5 (the 4.5 figure is from a half-scale run). Rerun an important question with
+`--set time.speech_words_per_second=…` on the validity suite, or edit the assumption.
