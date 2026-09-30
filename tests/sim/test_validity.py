@@ -2,7 +2,7 @@
 
 Statistical and seeded: each check plays a fixed set of games and compares the result with a
 tolerance that scales with the number of games. Runs at half the script's game counts by
-default (about 1.5 minutes on 10 cores); set SIM_VALIDITY_SCALE=1 for the full counts.
+default (about 2.5 minutes on 10 cores); set SIM_VALIDITY_SCALE=1 for the full counts.
 
 A check with a `known_limit` is a documented structural gap of the Phase 1 model (for example,
 no map), so its failure is reported as an expected failure rather than hidden or tuned away.
