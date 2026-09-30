@@ -55,19 +55,29 @@ def test_traits_flagged(rules):
     assert not pal["greater-heal"].trait
 
 
+def _price(rules, sheet, p):
+    """Point cost per slug for this player: list price, changed by their Archetype's economy.cost
+    (Dervish, Priest, Ranger)."""
+    from sim.engine.loadout import _archetype_purchase_rules
+    arch = next((t for t in p.traits if t.delivery == "archetype"), None)
+    cost = _archetype_purchase_rules(arch, rules)[0] if arch is not None else (lambda c: c.cost)
+    return {ca.slug: cost(ca) for ca in sheet.abilities if ca.cost}
+
+
 @pytest.mark.parametrize("cls", ["Bard", "Druid", "Healer", "Wizard"])
 def test_magic_user_budget(rules, cls):
     """Purchases never exceed 5 points per level (+1 for Look The Part)."""
     sheet = rules.classes[cls]
-    costs = {ca.slug: ca.cost for ca in sheet.abilities if ca.cost}
     for level in range(1, 7):
         for seed in range(20):
             p = build_player(rules, 0, 0, cls, level, 0.0, random.Random(seed))
+            costs = _price(rules, sheet, p)
             spent = 0
             for slug, u in p.uses.items():
-                ca = next(c for c in sheet.abilities if c.slug == slug and c.cost)
-                per = ca.freq.uses or 1
-                copies = (u.max // per) if u.max else 1
-                spent += costs[slug] * copies
+                if not u.purchased:
+                    continue      # granted by an Archetype, not bought
+                # copies bought, as recorded: Archetypes such as Dervish or Warlock double the uses,
+                # so the uses can't be divided back into purchases
+                spent += costs[slug] * u.copies
             spent += sum(costs.get(t.slug, 0) for t in p.traits)
             assert 0 < spent <= 5 * level + 1, (cls, level, seed, spent)

@@ -20,7 +20,7 @@ from sim.engine.effects import Ctx
 from sim.engine.loadout import _uses as make_uses
 from sim.engine.loadout import build_player
 from sim.engine.state import ARMS, INF, LOCATIONS, Cast, Ench, Player, Uses
-from sim.policies import decide
+from sim.policies import decide, keep_casting
 from sim.policies.value import value as ability_value
 from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, Rules
@@ -1422,11 +1422,14 @@ class Game:
         order = list(self.players)
         self.rng.shuffle(order)
         for p in order:
-            if p.alive and p.casting is None and p.can_act(self.t):
-                if any(u.ability.slug == "extension" or (u.base_range and u.range != u.base_range)
-                       for u in p.uses.values()):
-                    self._offer_extension(p)
-                decide(self, p)
+            if p.alive and p.can_act(self.t):
+                if p.casting is None:
+                    if any(u.ability.slug == "extension" or (u.base_range and u.range != u.base_range)
+                           for u in p.uses.values()):
+                        self._offer_extension(p)
+                    decide(self, p)
+                elif not keep_casting(self, p):
+                    self.interrupt(p, "abandoned")
         self._engage()
         self._melee()
         self._progress_casts()

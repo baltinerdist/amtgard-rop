@@ -1,10 +1,12 @@
 """Handlers added to raise effect coverage. One test (or a few) per handler, each on the real
 ability record, with fixed seeds, in the style of test_handlers.py."""
+import copy
 import math
 import random
 
 from sim.engine import effects as fx
-from sim.engine.loadout import _add, _apply_loadout_effects, _archetype_purchase_rules, _buy
+from sim.engine.loadout import _add, _apply_loadout_effects, _archetype_purchase_rules, build_player
+from sim.rules.compile import build_rules
 from sim.engine.state import INF, LOCATIONS, Cast, Ench, Player, Uses
 from sim.rules import frequency
 from tests.sim.conftest import make_game, resolve, spec
@@ -392,12 +394,24 @@ def test_archetype_costs(rules):
     assert cost(entry(rules, "Bard", "equipment-shield-small")) == 4
 
 
-def test_restricted_purchase_is_skipped(rules):
-    cands = [entry(rules, "Wizard", s) for s in ("force-bolt", "lightning-bolt")]
-    cost, ok = _archetype_purchase_rules(rules.abilities["warlock"], rules)
-    bought = _buy(cands, {"force-bolt": 9.0, "lightning-bolt": 1.0}, {"force-bolt": 0.0, "lightning-bolt": 0.0},
-                  {lv: 5 for lv in range(1, 7)}, 3, cost, ok)
-    assert "force-bolt" not in bought and bought.get("lightning-bolt")
+def test_magic_users_buy_under_their_archetype(rules):
+    a = copy.deepcopy(rules.assumptions)
+    a["loadout"]["archetype_share"]["value"] = 1.0
+    r = build_rules(assumptions=a)
+    seen = set()
+    for seed in range(60):
+        for cls in ("Wizard", "Healer", "Druid"):
+            p = build_player(r, 0, 0, cls, 6, 0.0, random.Random(f"{cls}:{seed}"))
+            arch = next((t.slug for t in p.traits if t.delivery == "archetype"), None)
+            if arch is None:
+                continue
+            cost, ok = _archetype_purchase_rules(r.abilities[arch], r)
+            bought = [c for c in r.classes[cls].abilities if c.slug in p.uses and p.uses[c.slug].purchased]
+            assert all(ok(c) for c in bought), (arch, [c.slug for c in bought if not ok(c)])
+            if arch == "priest" and "heal" in p.uses:
+                seen.add("priest-heal")
+            seen.add(arch)
+    assert {"warlock", "priest"} & seen
 
 
 # ---------------------------------------------------------------- equipment.permit
