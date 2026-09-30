@@ -139,10 +139,21 @@ class Game:
         return name_refill(self, caster, ab, recipient)
 
     def enemies(self, p: Player) -> list[Player]:
-        return [q for q in self.players if q.team != p.team]
+        """p's opponents in pid order (the rosters are fixed after setup; don't modify the list)."""
+        return self._rosters()[1][p.team]
 
     def allies(self, p: Player) -> list[Player]:
-        return [q for q in self.players if q.team == p.team]
+        """p's team, p included, in pid order (don't modify the list)."""
+        return self._rosters()[0][p.team]
+
+    def _rosters(self) -> tuple:
+        r = self.__dict__.get("_roster_cache")
+        if r is None or r[2] != len(self.players):
+            teams = sorted({q.team for q in self.players})
+            r = self._roster_cache = ({t: [q for q in self.players if q.team == t] for t in teams},
+                                      {t: [q for q in self.players if q.team != t] for t in teams},
+                                      len(self.players))
+        return r
 
     def targetable(self, q: Player) -> bool:
         """On the field and open to combat and ordinary abilities."""

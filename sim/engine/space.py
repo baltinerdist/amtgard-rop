@@ -22,6 +22,7 @@ them (`FieldSpace._want`). The rules of that step:
 | everyone | nowhere new while incanting or Charging (feet may not move; a Chant may move), while Stopped, Frozen, Stunned or Insubstantial (states.md), dead, or at base |
 | a leg wound | crawls on the knees (`crawl_speed_mps`) with a living enemy within 20'; otherwise hobbles, one step a second (`hobble_speed_mps`) (combat-rules.md, Hit Locations notes 4 and 6) |
 | engaged in melee | stays; steps in if the melee target is beyond the player's reach |
+| a teammate is incanting a Touch or Other ability on them | stays (a willing target stands still), unless retreating |
 | line fighters (fighter role, battle play, an archer without a bow) | take a slot in the team's line and walk forward with it; charge at a run when an enemy is within `charge_distance_m`: the enemy they can reach soonest (`_goal`). Nobody starts a melee with a player inside their own base zone (`base_zone_m`) |
 | strikers, controllers | `preferred_distance_m` from the nearest enemy, but at least `behind_line_m` behind their own line |
 | medics | run to the nearest teammate out of melee who is wounded (or dead, holding a revive); otherwise as a striker, farther back |
@@ -282,6 +283,7 @@ class FieldSpace(Space):
         self._retreat: dict[int, float] = {}           # pid -> tick the retreat check was made for
         self._retreat_v: dict[int, bool] = {}
         self._respawned: dict[int, float] = {}         # pid -> respawn time, until they rejoin
+        self._fresh: set[int] = set()                  # pids at base who haven't left it since arriving
         self.rejoins: list[float] = []                 # seconds from respawn to within 50' of an enemy
         self.moved_m = [0.0] * n
 
@@ -305,8 +307,15 @@ class FieldSpace(Space):
         return u if team == 0 else self.L - u
 
     def in_base(self, q: Player) -> bool:
-        """Within `base_zone_m` of their own base end, where enemies don't start a melee."""
-        return self.u_of(q.pid, q.team) <= self.base_zone_m
+        """Still in their own base zone (within `base_zone_m` of their base end) since arriving there
+        (the game's start, a respawn, a forced return), where enemies don't start a melee. Leaving
+        the zone ends it: running back into base later is no refuge."""
+        if q.pid not in self._fresh:
+            return False
+        if self.u_of(q.pid, q.team) <= self.base_zone_m:
+            return True
+        self._fresh.discard(q.pid)
+        return False
 
     def _matrix(self) -> list:
         d = self._d
@@ -368,16 +377,22 @@ class FieldSpace(Space):
         return self.in_range(p, q, self._range_m(u))
 
     def roll_touch(self, p, q, u=None):
+        if self._together_at_base(p, q):
+            return True
         return self.in_range(p, q, self._range_m(u) if u is not None and u.range not in ("", "Self")
                              else self.touch_m)
 
     def in_range_filter(self, p, qs, u=None, label=""):
         m = self._range_m(u, label)
-        return [q for q in qs if self.in_range(p, q, m)]
+        row = self._matrix()[p.pid]
+        return [q for q in qs if row[q.pid] <= m]          # p itself is at distance 0
 
     def touch_filter(self, p, qs, u=None):
         m = self._range_m(u) if u is not None and u.range not in ("", "Self") else self.touch_m
-        return [q for q in qs if self.in_range(p, q, m)]
+        row = self._matrix()[p.pid]
+        if p.at_base_until > self.g.t:
+            return [q for q in qs if row[q.pid] <= m or self._together_at_base(p, q)]
+        return [q for q in qs if row[q.pid] <= m]
 
     def _p_within(self, p: Player, q: Player, m: float) -> float:
         """Expectation (no draw): 1 in range now, falling linearly to 0 at what a run covers in
@@ -420,7 +435,15 @@ class FieldSpace(Space):
         A Magic Ball or Specialty Arrow is thrown or shot only within throw or bow range."""
         if q is p or label == "Self":
             return True
+        if self._together_at_base(p, q):
+            return True
         return self.distance(p, q) <= self.metres(label, delivery)
+
+    def _together_at_base(self, p: Player, q: Player) -> bool:
+        """Both off the field at base (the pregame, a forced return): base is one small place where
+        teammates gather, so Touch is met there, as in Phase 1's at-base enchanting."""
+        t = self.g.t
+        return p.team == q.team and p.at_base_until > t and q.at_base_until > t
 
     def can_reach(self, p, q):
         return self.distance(p, q) <= self.reach[p.pid] + 1e-9
@@ -444,6 +467,7 @@ class FieldSpace(Space):
             for p in rest:
                 self.x[p.pid] = self.x_of(self.rng.uniform(1.0, max(1.5, self.deploy_m - 2.0)), team)
                 self.y[p.pid] = self.rng.uniform(0.3 * self.W, 0.7 * self.W)
+        self._fresh = {p.pid for p in g.players}
         self._d = None
 
     def _slot_y(self, i: int, n: int) -> float:
@@ -467,6 +491,7 @@ class FieldSpace(Space):
         p.at_base_until = when
         self.x[p.pid], self.y[p.pid] = self._base_spot(p)
         self.goal[p.pid] = None
+        self._fresh.add(p.pid)
         self._d = None
 
     def respawn(self, p):
@@ -475,6 +500,7 @@ class FieldSpace(Space):
         self.x[p.pid], self.y[p.pid] = self._base_spot(p)
         self.goal[p.pid] = None
         self._respawned[p.pid] = self.g.t
+        self._fresh.add(p.pid)
         self._d = None
 
     def team_wiped(self, team):
@@ -577,6 +603,11 @@ class FieldSpace(Space):
                 on[q.team][k] = on[q.team].get(k, 0) + 1
         self._slot = [{pid: i for i, pid in enumerate(line)} for line in self._line]
         self._on = on
+        # teammates being touched: a willing player stands still for a teammate's Touch or Other incantation
+        self._held = {q.casting.target for q in players
+                      if q.casting is not None and q.casting.kind == "cast" and q.casting.target is not None
+                      and q.casting.target != q.pid and (q.casting.range or q.casting.uses.range) in ("Touch", "Other")
+                      and players[q.casting.target].team == q.team}
         self._chargeable = [[q for q in self._field[team] if not self.in_base(q)] for team in (0, 1)]
 
     def _goal(self, p: Player) -> Player | None:
@@ -654,6 +685,8 @@ class FieldSpace(Space):
             return None
         if pid in self._attacked:
             return None
+        if pid in self._held and not self.retreating(p):
+            return None               # standing still for a teammate's Touch incantation
         if s == "line":
             goal = None
             if p.kept_away_until <= g.t and not g.barred(p, "wield-weapons") and g.weapon_usable(p):

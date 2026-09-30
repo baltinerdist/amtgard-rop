@@ -117,10 +117,19 @@ def _enemy_for(g: "Game", p: Player, u: Uses) -> Player | None:
     elif "target-insubstantial" in reqs:
         foes = [q for q in g.enemies(p) if q.on_field(t) and q.has_state("insubstantial", t)]
     else:
-        foes = [q for q in g.enemies(p) if g.targetable(q)]
+        foes = _targetable_foes(g, p)
     foes = g.space.in_range_filter(p, foes, u)       # the field: only enemies in range (Phase 1: all)
     foes = [q for q in foes if g.check_requirements(u.ability, p, q, start=True) is None]
     return g.rng.choice(foes) if foes else None
+
+
+def _targetable_foes(g: "Game", p: Player) -> list[Player]:
+    """Enemies open to p's abilities now, once per decision (don't modify the list)."""
+    key = ("targetable-foes", p.pid)
+    got = g.policy_cache.get(key)
+    if got is None:
+        got = g.policy_cache[key] = [q for q in g.enemies(p) if g.targetable(q)]
+    return got
 
 
 def _try_offense(g: "Game", p: Player) -> bool:
@@ -657,7 +666,7 @@ def _try_control(g: "Game", p: Player) -> bool:
     options = sorted((u for u in _usable(g, p) if _is_control(u) and u.range != "Self"),
                      key=lambda u: -g.value(u.ability, p))
     for u in options:
-        foes = g.space.in_range_filter(p, [q for q in g.enemies(p) if g.targetable(q)], u)
+        foes = g.space.in_range_filter(p, _targetable_foes(g, p), u)
         foes = [q for q in foes if not _locked(g, q, u) and _can_hit(g, p, u, q)]
         q = _first_in_range(g, p, u, _control_order(g, p, foes)) if foes else None
         if q is not None and g.start_cast(p, u, q):

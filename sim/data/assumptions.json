@@ -462,7 +462,7 @@
       "value": 5.0,
       "unit": "m",
       "assumption": true,
-      "why": "Line fighters don't charge or start a melee with a player standing within this distance of their own base end, and a formation line stops short of it (a player attacked there may still strike back). A common battlegame convention against camping a base, and the field's stand-in for Phase 1, where a respawned player was off the field for respawn.rejoin_seconds. Without it, a winning team stood on the losing team's base and killed each player as they respawned."
+      "why": "Line fighters don't charge or start a melee with a player who is still within this distance of their own base end since arriving there (the game's start, a respawn, a forced return to base), and a formation line stops short of such players (a player attacked there may still strike back). Leaving the zone ends the protection: a player who runs back into base later is fair game. A common battlegame convention against camping a base, and the field's stand-in for Phase 1, where a respawned player was off the field for respawn.rejoin_seconds. Without it, a winning team stood on the losing team's base and killed each player as they respawned; protecting everyone in the zone instead made the base a refuge that retreating casters and archers never left."
     },
     "line_spacing_m": {
       "value": 2.0,
