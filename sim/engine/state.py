@@ -32,6 +32,7 @@ class Uses:
     extra_reqs: frozenset = frozenset()  # requirements added by the granting ability (Regeneration)
     drop_reqs: frozenset = frozenset()   # requirements the granting ability waives (Undead Minion)
     only_target: int | None = None       # may only be cast on this player (Undead Minion's Raise Dead)
+    base_range: str = ""                 # range before Extension is offered (Game._offer_extension)
     purchased: bool = False              # bought with Magic User points (Archetype group scopes)
     copies: int = 1                      # purchases or picks merged into this use
 
@@ -92,6 +93,7 @@ class Cast:
     remaining: float
     kind: str = "cast"          # cast / charge
     charge_for: Uses | None = None
+    persistent: bool = False    # the Persistent Meta-Magic was stated for this Enchantment
 
 
 @dataclass(slots=True)
@@ -127,6 +129,7 @@ class Player:
     restrictions: list[Restriction] = field(default_factory=list)
     buffs: list[Buff] = field(default_factory=list)
     exit_lock_until: float = 0.0                                # may not voluntarily end a State before this
+    meta_armed: set = field(default_factory=set)                # Meta-Magics stated for the next ability
     casting: Cast | None = None
     target: int | None = None                                   # melee target pid
     weapon_ok: bool = True

@@ -480,7 +480,12 @@ ENGINE_MODIFIES = (
     "only one instance of Imbue may be active",        # Guardian    (Game.attach_enchantment)
     "combined total of five Undead Minion",            # Necromancer (Game.attach_enchantment)
     "works through their Cursed State",                # Vampirism   (Game._kill_trigger)
+    "may only be used on Spirit abilities",            # Priest      (Game._meta_use)
 )
+
+# meta.modify-next modes the engine applies when a cast starts (Game._apply_meta_magic)
+META_MODES = {"single-incantation": "swift", "extend-range-to-50ft": "extension",
+              "persistent-enchantment": "persistent"}
 
 
 def engine_modify(change: str) -> str | None:
@@ -610,6 +615,9 @@ UNMODELED_RULES: tuple = (
     ("defense.negate-engulfing", lambda a, e: e.subject == "bearer-equipment", OUT_OF_SCOPE,
      "Imbue ignores Engulfing effects that hit the bearer's wielded equipment; Phase 1 resolves every "
      "projectile on a body location and never models a strike on carried equipment."),
+    ("meta.modify-next", lambda a, e: e.params.get("mode") == "cast-while-moving", NEEDS_MAP,
+     "Ambulant lets the next ability be cast while moving; Phase 1 has no movement, so casting "
+     "already ignores it."),
     (None, lambda a, e: a.slug == "trickery", NEEDS_MAP,
      "Trickery chains positional escapes (Blink, Shadow Step, Teleport while already Insubstantial); "
      "without movement the chain has nothing to model."),
@@ -643,6 +651,22 @@ LOADOUT_RESTRICTS = ("wear-armor", "wield-great-weapons", "wield-shields", "wiel
 PASSIVE_RESTRICTS = ("wield-weapons", "wield-shields", "fire-normal-arrows", "wear-others-magical-enchantments")
 
 
+def h_meta(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """A Meta-Magic stated on its own modifies the caster's next ability (Game._apply_meta_magic)."""
+    mode = eff.params.get("mode")
+    if mode not in META_MODES:
+        return False
+    ctx.caster.meta_armed.add(META_MODES[mode])
+    return True
+
+
+INSTANT["meta.modify-next"] = h_meta
+
+
+def _meta_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    return "instant" if eff.params.get("mode") in META_MODES and eff.timing == "on-cast" else None
+
+
 def _restrict_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
     what = eff.params.get("what")
     if eff.timing == "on-cast" and (what in TARGET_RESTRICTS or what == "exit-early"):
@@ -654,6 +678,8 @@ def _restrict_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> s
             return "loadout"  # sim/engine/loadout.py strips the forbidden equipment
         if ab.delivery in PASSIVE_DELIVERIES and what in PASSIVE_RESTRICTS:
             return "passive"  # Game.barred
+        if ab.delivery == "enchantment" and what == "use-other-sources-of-ability":
+            return "passive"  # Game._meta_use (Amplification, Silver Tongue)
     return None
 
 
@@ -768,6 +794,7 @@ MODE_RULES: dict[str, Callable[..., str | None]] = {
     "armor.protect": _equipment_mode,
     "defense.negate-engulfing": _equipment_mode,
     "weapon.ignore-protections": _equipment_mode,
+    "meta.modify-next": _meta_mode,
 }
 
 

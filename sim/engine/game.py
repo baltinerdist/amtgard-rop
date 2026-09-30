@@ -388,7 +388,7 @@ class Game:
         elif state == "suppressed" and p.casting is not None and p.casting.kind == "charge":
             self.interrupt(p, state)
 
-    def attach_enchantment(self, target: Player, uses: Uses, caster: Player) -> bool:
+    def attach_enchantment(self, target: Player, uses: Uses, caster: Player, persistent: bool = False) -> bool:
         ab = uses.ability
         exempt = "exempt-from-enchantment-limit" in ab.properties
         if uses.magical and not exempt and target.magical_enchantment_count() >= target.ench_slots:
@@ -416,7 +416,7 @@ class Game:
             if graft is not None and graft.caster != caster.pid:
                 self.fails[(ab.slug, "restricted:essence-graft")] += 1
                 return False
-        ench = Ench(ab, caster.pid, uses.magical, ab.strips, "persistent" in ab.properties)
+        ench = Ench(ab, caster.pid, uses.magical, ab.strips, persistent or "persistent" in ab.properties)
         if "wear-others-magical-enchantments" in self._bars(ab):
             # the new Graft's bearer drops (m) Enchantments from anyone else (reading of Essence Graft L1)
             for e in [e for e in target.enchantments if e.magical and e.caster != caster.pid]:
@@ -780,6 +780,7 @@ class Game:
         p.restrictions.clear()
         p.buffs.clear()
         p.exit_lock_until = 0.0
+        p.meta_armed.clear()
         p.armor = {l: p.armor_max for l in LOCATIONS}
         p.magic_armor = {l: 0 for l in LOCATIONS}
         for e in [e for e in p.enchantments if not e.persistent]:
@@ -895,8 +896,9 @@ class Game:
             self.fails[(uses.slug, "restricted")] += 1
             return False
         secs = 1.0 if uses.swift else uses.ability.cast_seconds(self.words_per_second)
+        secs, persistent = self._apply_meta_magic(p, uses, secs)
         self._begin_incantation(p)
-        p.casting = Cast(uses, target.pid if target is not None else None, secs)
+        p.casting = Cast(uses, target.pid if target is not None else None, secs, persistent=persistent)
         if uses.magical and aimed is not p:
             self._provoke(p, aimed, "cast-start")
         self.log("cast-start", p.pid, uses.slug, target.pid if target is not None else None)
@@ -909,6 +911,81 @@ class Game:
         secs = math.ceil(uses.charge * words / self.words_per_second)
         self._begin_incantation(p)
         p.casting = Cast(None, None, secs, kind="charge", charge_for=uses)
+        return True
+
+    # ------------------------------------------------------------------ Meta-Magic
+    #
+    # Scripted players never state a Meta-Magic, so the engine does when a cast starts: it uses one
+    # whenever the Meta-Magic is allowed and helps (Swift when one iteration is quicker, Extension when
+    # the target is beyond 20', Persistent on any Enchantment not already Persistent). Meta-Magics may
+    # not modify abilities granted by Enchantments (Meta-Magic rule 6), and are spent even if the
+    # ability then fails (rule 5). Their one-word incantations are not timed.
+
+    def _meta_use(self, p: Player, name: str, target_ab: Ability) -> Uses | None:
+        """A usable Meta-Magic of this name for target_ab, respecting Priest (Spirit abilities only),
+        Legend (Swift may not be used) and Amplification / Silver Tongue (only their own grant)."""
+        if self.modifier(p, "may only be used on Spirit abilities") and target_ab.school != "Spirit":
+            return None
+        if any(e.kind == "ability.remove" and str(e.params.get("ability", "")).lower() == name
+               for t in p.traits for e in t.effects):
+            return None
+        cands = [u for u in p.uses.values() if u.ability.slug == name and u.available()]
+        for e in p.enchantments:
+            if "use-other-sources-of-ability" in self._bars_all(e.ability) and any(
+                    x.kind == "ability.grant" and str(x.params.get("ability", "")).lower() == name
+                    for x in e.ability.effects):
+                cands = [u for u in cands if u.granted_by is e]
+                if cands:
+                    self.applied[(e.ability.slug, "action.restrict")] += 1
+        return cands[0] if cands else None
+
+    def _bars_all(self, ab: Ability) -> frozenset:
+        return frozenset(e.params.get("what") for e in ab.effects if e.kind == "action.restrict")
+
+    def _offer_extension(self, p: Player) -> None:
+        """Advertise 50' for p's own 20' Verbals while p can state Extension for them (policies roll
+        range from Uses.range); Game._apply_meta_magic settles whether Extension was needed."""
+        ext = self._meta_ext_ready(p)
+        for u in p.uses.values():
+            if u.ability.delivery != "verbal" or u.granted_by is not None or u.ench is not None:
+                continue
+            if not u.base_range:
+                u.base_range = u.range
+            if u.base_range == "20'":
+                u.range = "50'" if ext and self._meta_use(p, "extension", u.ability) else "20'"
+
+    def _meta_ext_ready(self, p: Player) -> bool:
+        return any(u.ability.slug == "extension" and u.available() for u in p.uses.values())
+
+    def _apply_meta_magic(self, p: Player, uses: Uses, secs: float) -> tuple[float, bool]:
+        ab = uses.ability
+        armed = p.meta_armed
+        persistent = False
+        if uses.granted_by is not None or uses.ench is not None:
+            return secs, False                               # rule 6
+        if ab.delivery == "verbal" and uses.base_range == "20'" and uses.range == "50'":
+            table = self.rules.a("range.p_in_range")
+            if self.rng.random() >= table["20'"] / table["50'"]:     # the target was beyond 20'
+                self._spend_meta(p, "extension", ab, armed)
+        if not uses.swift and (uses.range in ("Touch", "Other", "Self") or ab.delivery == "magic-ball"):
+            single = max(1.0, float(round(ab.words / self.words_per_second)))
+            if single < secs and self._spend_meta(p, "swift", ab, armed):
+                secs = single
+        if ab.delivery == "enchantment" and "persistent" not in ab.properties:
+            persistent = self._spend_meta(p, "persistent", ab, armed)
+        armed.clear()
+        return secs, persistent
+
+    def _spend_meta(self, p: Player, name: str, ab: Ability, armed: set) -> bool:
+        if name in armed:
+            armed.discard(name)
+            return True
+        u = self._meta_use(p, name, ab)
+        if u is None:
+            return False
+        u.spend()
+        self.casts[u.slug] += 1
+        self.applied[(u.slug, "meta.modify-next")] += 1
         return True
 
     def _begin_incantation(self, p: Player) -> None:
@@ -956,7 +1033,7 @@ class Game:
             if not target.alive and "active-while-dead" not in ab.properties:
                 self.fails[(ab.slug, "target-dead")] += 1
                 return
-            self.attach_enchantment(target, uses, p)
+            self.attach_enchantment(target, uses, p, persistent=c.persistent)
             return
         if ab.slug == "mend" and target.wounds:
             golem = self.modifier(target, "Mend can remove a wound from the bearer")
@@ -1207,6 +1284,9 @@ class Game:
         self.rng.shuffle(order)
         for p in order:
             if p.alive and p.casting is None and p.can_act(self.t):
+                if any(u.ability.slug == "extension" or (u.base_range and u.range != u.base_range)
+                       for u in p.uses.values()):
+                    self._offer_extension(p)
                 decide(self, p)
         self._engage()
         self._melee()

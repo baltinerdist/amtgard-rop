@@ -634,6 +634,89 @@ def test_sacred_blades_ignore_magic_armor_and_wound_resistance(rules):
     assert g.applied[("sacred-blades", "weapon.ignore-protections")] == 1
 
 
+# ---------------------------------------------------------------- meta.modify-next
+
+def meta(g, p, slug, n=1):
+    u = uses_of(g, slug, magical=True, rng="")
+    u.per, u.max, u.left = "life", n, n
+    p.uses[slug] = u
+    return u
+
+
+def test_swift_single_incantation(rules):
+    g, heal, _, ally = trio(rules, a="Healer")
+    sw = meta(g, heal, "swift")
+    h = uses_of(g, "heal", rng="Touch")
+    h.max = h.left = 1
+    ally.wounds.add("left_arm")
+    assert g.start_cast(heal, h, ally)
+    assert heal.casting.remaining == max(1, round(8 / g.words_per_second)) and sw.left == 0
+    assert g.applied[("swift", "meta.modify-next")] == 1
+
+
+def test_swift_not_on_20ft_verbals_or_granted_abilities(rules):
+    g, wiz, war, _ = trio(rules, a="Wizard")
+    sw = meta(g, wiz, "swift")
+    bolt = uses_of(g, "lightning-bolt", rng="")         # a Magic Ball is allowed
+    hold = uses_of(g, "hold-person", rng="20'")
+    hold.max = hold.left = 1
+    assert g.start_cast(wiz, hold, war) and sw.left == 1
+    wiz.casting = None
+    granted = uses_of(g, "heal", rng="Touch")
+    granted.max = granted.left = 1
+    granted.granted_by = object()
+    wiz.wounds.add("left_arm")
+    assert g.start_cast(wiz, granted, wiz) and sw.left == 1, "Meta-Magic rule 6"
+    assert bolt.ability.delivery == "magic-ball"
+
+
+def test_extension_offers_50ft_and_is_spent_beyond_20ft(rules):
+    spent = 0
+    for seed in range(20):
+        g, bard, war, _ = trio(rules, seed=seed)
+        ext = meta(g, bard, "extension")
+        ins = uses_of(g, "insult", rng="20'")
+        ins.max = ins.left = 1
+        bard.uses["insult"] = ins
+        g._offer_extension(bard)
+        assert ins.range == "50'" and ins.base_range == "20'"
+        assert g.start_cast(bard, ins, war)
+        spent += 1 - ext.left
+        g._offer_extension(bard)
+        assert ins.range == ("50'" if ext.left else "20'")
+    assert 0 < spent < 20, "used only when the target was beyond 20'"
+
+
+def test_persistent_enchantment_survives_respawn(rules):
+    g, dru, _, ally = trio(rules, a="Druid")
+    meta(g, dru, "persistent")
+    sk = uses_of(g, "stoneskin", rng="Other")
+    sk.max = sk.left = 1
+    assert g.start_cast(dru, sk, ally)
+    g._complete(dru)
+    assert worn(ally, "stoneskin").persistent
+    ally.alive = False
+    g.respawn(ally)
+    assert any(e.ability.slug == "stoneskin" for e in ally.enchantments)
+
+
+def test_priest_meta_magic_only_on_spirit(rules):
+    g, heal, _, ally = trio(rules, a="Healer")
+    heal.traits.append(rules.abilities["priest"])
+    meta(g, heal, "persistent")
+    assert g._meta_use(heal, "persistent", rules.abilities["stoneskin"]) is None      # Protection
+    assert g._meta_use(heal, "persistent", rules.abilities["regeneration"]) is not None  # Spirit
+
+
+def test_silver_tongue_excludes_other_swifts(rules):
+    g, wiz, _, ally = trio(rules, a="Wizard")
+    own = meta(g, ally, "swift")
+    assert g._meta_use(ally, "swift", rules.abilities["heal"]) is own
+    resolve(g, wiz, "silver-tongue", ally, rng="Touch")
+    u = g._meta_use(ally, "swift", rules.abilities["heal"])
+    assert u is not own and u.granted_by is worn(ally, "silver-tongue")
+
+
 def test_blood_and_thunder_enchants_the_killer(rules):
     g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
     barb, wiz = g.players

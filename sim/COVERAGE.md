@@ -7,9 +7,9 @@ the engine queries), **loadout** (an Archetype/Trait change applied when the pla
 **no-op** (not handled yet). Unmodeled and no-op effects are counted in the `noop` metric of every
 run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropped.
 
-- Effect instances handled: **374 of 445** (84%)
-- Not handled: **33** no-op, **18** needs-map, **20** out-of-scope
-- Abilities fully handled: **139**, partly: **28**, not at all: **16**, no effects recorded: 0 (of 183)
+- Effect instances handled: **380 of 445** (85%)
+- Not handled: **26** no-op, **19** needs-map, **20** out-of-scope
+- Abilities fully handled: **145**, partly: **25**, not at all: **13**, no effects recorded: 0 (of 183)
 
 ## By effect kind
 
@@ -17,10 +17,10 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | --- | ---: | ---: | ---: | --- |
 | `state.apply` | 43 | 52 | 49 | instant 42, out-of-scope 3, passive 7 |
 | `ability.grant` | 30 | 41 | 41 | instant 1, loadout 23, passive 17 |
-| `action.restrict` | 25 | 36 | 22 | instant 9, loadout 9, needs-map 8, no-op 2, out-of-scope 4, passive 4 |
+| `action.restrict` | 25 | 36 | 24 | instant 9, loadout 9, needs-map 8, out-of-scope 4, passive 6 |
 | `economy.frequency` | 19 | 25 | 24 | loadout 24, no-op 1 |
 | `special-effect.grant` | 18 | 28 | 28 | instant 18, passive 10 |
-| `ability.modify` | 17 | 22 | 20 | loadout 12, no-op 2, passive 8 |
+| `ability.modify` | 17 | 22 | 21 | loadout 12, no-op 1, passive 9 |
 | `defense.immunity` | 13 | 14 | 14 | passive 14 |
 | `ability.remove` | 11 | 16 | 16 | loadout 16 |
 | `equipment.permit` | 10 | 18 | 8 | loadout 8, out-of-scope 10 |
@@ -42,7 +42,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | `defense.resistance` | 4 | 4 | 4 | passive 4 |
 | `enchantment.extra-slot` | 4 | 4 | 4 | passive 4 |
 | `life.revive` | 4 | 4 | 4 | instant 4 |
-| `meta.modify-next` | 4 | 4 | 0 | no-op 4 |
+| `meta.modify-next` | 4 | 4 | 3 | instant 3, needs-map 1 |
 | `move.keep-away` | 4 | 4 | 3 | instant 3, no-op 1 |
 | `ability.restore-uses` | 3 | 3 | 3 | instant 3 |
 | `class.look-the-part` | 3 | 3 | 0 | no-op 3 |
@@ -86,6 +86,7 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 | needs-map | `action.restrict` | circle-of-protection e3 | Forbids moving from a starting spot; Phase 1 has no positions. |
 | needs-map | `action.restrict` | golem e8, undead-minion e7 | Forbids using Alternate Bases, which need positions to mean anything (see team.alternate-base). |
 | needs-map | `action.restrict`, `defense.unaffected`, `move.free` | sanctuary e1, sanctuary e2, sanctuary e3, sanctuary e4, sanctuary e5, sanctuary e6, sanctuary e7 | Sanctuary protects only against hostile acts from within 20', and its limits (no approaching an enemy base, no game items, no impeding play, free movement, exit only at base after touching a weapon) are about positions and objectives; Sanctuary is not modeled at all. |
+| needs-map | `meta.modify-next` | ambulant e1 | Ambulant lets the next ability be cast while moving; Phase 1 has no movement, so casting already ignores it. |
 | needs-map | `team.alternate-base` | golem e6, heart-of-the-swarm e3, undead-minion e6 | An Alternate Base only changes where Forced Movement to base may end; Phase 1 has no positions. |
 | needs-map | `team.respawn-point` | golem e5, heart-of-the-swarm e2 | A respawn point is a place on the field; Phase 1 respawns everyone at an abstract base. |
 | out-of-scope | `action.restrict` | corruptor e5, mystic e4, rogue e3 | Phase 1 has no thrown weapons and does not tell weapon lengths apart (only Great weapons), so there is nothing to forbid. |
@@ -96,10 +97,10 @@ run (unmodeled ones under the detail `<mode>:<kind>`); nothing is silently dropp
 
 ## Abilities with no handled effects
 
-`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `extension`, `persistent`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `swift`, `trickery`
+`ambulant`, `avatar-of-nature`, `combat-caster`, `elemental-barrage`, `equipment-weapon-hinged`, `equipment-weapon-long`, `equipment-weapon-short`, `sanctuary`, `shake-it-off`, `sleight-of-mind`, `song-of-freedom`, `song-of-visit`, `trickery`
 
 ## Abilities partly handled
 
 Counts are handled/total; `u` marks how many of the rest are explicitly not modeled.
 
-`amplification` (1/2), `artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `phoenix-tears` (9/10), `planar-grounding` (1/3), `priest` (2/3), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `silver-tongue` (1/2), `sniper` (4/5), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)
+`artificer` (10/11), `blink` (1/3, 1u), `circle-of-protection` (4/6, 1u), `corruptor` (5/6, 1u), `equipment-shield-medium` (2/3, 1u), `equipment-shield-small` (1/2, 1u), `equipment-weapon-great` (1/2, 1u), `golem` (4/8, 3u), `heart-of-the-swarm` (1/3, 2u), `hunter` (8/9, 1u), `imbue` (2/4, 2u), `juggernaut` (4/5), `martyr` (3/4), `mass-healing` (2/3), `missile-block` (1/2), `mystic` (4/5, 1u), `phoenix-tears` (9/10), `planar-grounding` (1/3), `raider` (2/5), `reload` (1/3), `rogue` (2/3, 1u), `sniper` (4/5), `song-of-power` (1/2), `summon-dead` (1/2), `undead-minion` (4/7, 2u)
