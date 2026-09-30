@@ -278,6 +278,24 @@ def h_death_prevent(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     return True
 
 
+def h_ability_grant(g: "Game", eff: Effect, ctx: Ctx) -> bool:
+    """Blood and Thunder: on a kill the caster becomes enchanted with Blessing Against Wounds (ex).
+    It lasts as that Enchantment does: until it stops a wound, or is removed (ruling
+    blood-and-thunder#1). A player may not wear two (ex) Enchantments of the same name."""
+    p = subject(eff, ctx)
+    slug = g.rules.by_name.get(str(eff.params.get("ability", "")).lower())
+    if p is None or not p.alive or slug is None or slug in g.ablate:
+        return False
+    granted = g.rules.abilities[slug]
+    if granted.delivery != "enchantment" or any(e.ability.slug == slug for e in p.enchantments):
+        return False
+    magical = "(m)" in str(eff.params.get("frequency", ""))
+    ench = Ench(granted, ctx.caster.pid, magical, granted.strips, "persistent" in granted.properties)
+    p.enchantments.append(ench)
+    g._activate(p, ench)
+    return True
+
+
 def h_action_restrict(g: "Game", eff: Effect, ctx: Ctx) -> bool:
     """Awe, Terror, Insult: the target may not attack or cast at (or only at) the caster, enforced by
     Game.can_attack / Game.can_cast_at. Martyr's exit-early locks the caster's transferred State."""
@@ -325,6 +343,7 @@ INSTANT: dict[str, Callable] = {
     "special-effect.grant": h_special_effect,
     "defense.negate-hit": h_negate_lethal,
     "action.restrict": h_action_restrict,
+    "ability.grant": h_ability_grant,
 }
 
 # while-active effects the engine reads directly from worn Enchantments, Traits and Archetypes.
@@ -441,7 +460,7 @@ LOADOUT_RESTRICTS = ("wear-armor", "wield-great-weapons", "wield-shields", "wiel
 PASSIVE_RESTRICTS = ("wield-weapons", "wield-shields", "fire-normal-arrows", "wear-others-magical-enchantments")
 
 
-def _restrict_mode(ab: Ability, eff: Effect) -> str | None:
+def _restrict_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
     what = eff.params.get("what")
     if eff.timing == "on-cast" and (what in TARGET_RESTRICTS or what == "exit-early"):
         return "instant"      # Game.can_attack / can_cast_at; exit-early locks the caster's State
@@ -453,9 +472,58 @@ def _restrict_mode(ab: Ability, eff: Effect) -> str | None:
     return None
 
 
+# "As per X" grants: the bearer is treated as wearing X's while-active effects (Game._passive_effects),
+# except Ancestral Armor, which applies to the granting Enchantment's own Magic Armor (Game.hit).
+AS_PER_EXPAND = ("Enlightened Soul", "Regeneration")
+AS_PER_MAGIC_ARMOR = "Ancestral Armor"
+
+
+def _named_ok(prm: dict, key: str = "ability") -> bool:
+    return bool(re.fullmatch(r"[A-Z][A-Za-z' ]+", str(prm.get(key, ""))))
+
+
+def _grant_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    prm = eff.params
+    if eff.timing == "while-active":
+        if ab.delivery in ("archetype", "trait"):
+            return "loadout" if loadout_handled(eff, names) else None
+        if ab.delivery != "enchantment" or not (_named_ok(prm) if names is None
+                                                 else str(prm.get("ability", "")).lower() in names):
+            return None
+        if prm.get("how") == "as-per":
+            what = prm.get("ability")
+            if what in AS_PER_EXPAND:
+                return "passive"
+            if what == AS_PER_MAGIC_ARMOR and ab.effects_of("armor.magic"):
+                return "passive"
+            return None
+        return "passive"   # Game._activate adds the granted uses; Game.remove_enchantment takes them away
+    if eff.timing == "on-kill" and _named_ok(prm):
+        return "instant"   # h_ability_grant (Blood and Thunder)
+    return None
+
+
+def _modify_mode(ab: Ability, eff: Effect, names: set[str] | None = None) -> str | None:
+    prm = eff.params
+    if eff.timing != "while-active":
+        return None
+    if ab.delivery in ("archetype", "trait"):
+        return "loadout" if loadout_handled(eff, names) else None
+    if ab.delivery != "enchantment":
+        return None
+    # modifiers of an ability the same Enchantment grants: applied to the granted uses in Game._grant
+    change = str(prm.get("change", ""))
+    if prm.get("requirement") or "only be cast with the bearer as the target" in change \
+            or "ignores the requirement that the target has not moved" in change:
+        return "passive"
+    return None
+
+
 # Kinds whose handled mode is decided by a rule function (None = no-op for that instance).
-MODE_RULES: dict[str, Callable[[Ability, Effect], str | None]] = {
+MODE_RULES: dict[str, Callable[..., str | None]] = {
     "action.restrict": _restrict_mode,
+    "ability.grant": _grant_mode,
+    "ability.modify": _modify_mode,
 }
 
 
@@ -478,7 +546,7 @@ def _legacy_handled(ability: Ability, eff: Effect, names: set[str] | None) -> bo
 def _handled_mode(ability: Ability, eff: Effect, names: set[str] | None) -> str | None:
     rule = MODE_RULES.get(eff.kind)
     if rule is not None:
-        return rule(ability, eff)
+        return rule(ability, eff, names)
     if not _legacy_handled(ability, eff, names):
         return None
     if eff.timing == "while-active":

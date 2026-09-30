@@ -19,7 +19,13 @@ PASSIVE_DELIVERY = ("trait", "archetype")
 _RANGE_KEYS = ("Unlimited", "50'", "20'", "Touch", "Other", "Self")
 
 
+_PAREN_RANGE = re.compile(r"\s*\((Self|Touch|Other)\)")
+
+
 def normalize_range(raw: str, ability: Ability) -> str:
+    # a grant's frequency may start with its range, e.g. "(Self) 2/Refresh (m)"
+    if raw and (m := _PAREN_RANGE.match(raw)):
+        return m.group(1)
     for text in (raw, ability.range):
         for key in _RANGE_KEYS:
             if text and text.startswith(key):

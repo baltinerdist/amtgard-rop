@@ -28,6 +28,10 @@ class Uses:
     swift: bool = False
     range: str = ""
     ench: "Ench | None" = None   # set when the use comes from an Enchantment's strips
+    granted_by: "Ench | None" = None   # granted while an Enchantment is worn (tracked separately)
+    extra_reqs: frozenset = frozenset()  # requirements added by the granting ability (Regeneration)
+    drop_reqs: frozenset = frozenset()   # requirements the granting ability waives (Undead Minion)
+    only_target: int | None = None       # may only be cast on this player (Undead Minion's Raise Dead)
 
     @property
     def slug(self) -> str:

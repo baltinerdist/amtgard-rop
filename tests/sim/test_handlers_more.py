@@ -153,3 +153,74 @@ def test_unmodeled_effects_have_explicit_modes(rules):
     ab = rules.abilities["mystic"]
     assert fx.handling(ab, next(e for e in ab.effects if e.kind == "action.restrict"), names) == fx.OUT_OF_SCOPE
     assert not fx.is_handled(ab, next(e for e in ab.effects if e.kind == "action.restrict"))
+
+
+# ---------------------------------------------------------------- ability.grant
+
+def test_enchantment_grants_uses_tracked_separately(rules):
+    g = make_game(rules, [spec("Druid"), spec("Scout", level=2)], [spec("Warrior")])
+    dru, sco, _ = g.players
+    assert "heal" in sco.uses
+    resolve(g, dru, "gift-of-water", sco)
+    granted = sco.uses["heal@gift-of-water"]
+    assert granted.per == "unlimited" and granted.magical and granted.range == "Self"
+    assert sco.uses["heal"].granted_by is None, "the Scout's own Heal is untouched"
+    resolve(g, dru, "dispel-magic", sco)
+    assert "heal@gift-of-water" not in sco.uses and "heal" in sco.uses
+
+
+def test_regeneration_heal_is_swift_and_not_near_enemies(rules):
+    g, dru, war, ally = trio(rules, a="Druid")
+    resolve(g, dru, "regeneration", ally)
+    u = ally.uses["heal"]
+    assert u.swift and u.extra_reqs == {"no-enemy-within-10ft"}
+    ally.wounds.add("left_arm")
+    war.target = ally.pid                       # an enemy is on them
+    assert not g.start_cast(ally, u, ally)
+    assert g.fails[("heal", "requirement:no-enemy-within-10ft")] == 1
+    war.target = None
+    assert g.start_cast(ally, u, ally) and ally.casting.remaining == 1.0
+
+
+def test_troll_blood_as_per_regeneration(rules):
+    g, dru, _, ally = trio(rules, a="Druid")
+    resolve(g, dru, "troll-blood", ally)
+    assert ally.uses["heal"].granted_by.ability.slug == "troll-blood"
+
+
+def test_undead_minion_raise_dead_only_on_the_minion(rules):
+    g = make_game(rules, [spec("Healer"), spec("Warrior"), spec("Warrior")], [spec("Wizard")])
+    heal, minion, other, wiz = g.players
+    resolve(g, heal, "undead-minion", minion)
+    u = next(u for u in heal.uses.values() if u.slug == "raise-dead" and u.granted_by is not None)
+    assert u.only_target == minion.pid and "target-not-moved-5ft" in u.drop_reqs and u.per == "unlimited"
+    g.kill(minion, wiz, "test")
+    g.kill(other, wiz, "test")
+    assert not g.start_cast(heal, u, other)
+    assert g.start_cast(heal, u, minion)
+
+
+def test_stoneskin_magic_armor_as_per_ancestral_armor(rules):
+    g, dru, war, ally = trio(rules, a="Druid")
+    ally.armor = {l: 0 for l in LOCATIONS}
+    resolve(g, dru, "stoneskin", ally)
+    g.hit(ally, war, "melee", location="torso", specials=frozenset({"armor-destroying"}))
+    assert ally.magic_armor["torso"] == 1, "one point lost, not destroyed"
+    assert g.applied[("stoneskin", "ability.grant")] == 1
+
+
+def test_song_of_interference_as_per_enlightened_soul(rules):
+    g, bard, wiz, _ = trio(rules, b="Wizard")
+    resolve(g, bard, "song-of-interference", bard, rng="Self")
+    assert g.unaffected(bard, "verbal-magical-beyond-touch")
+    resolve(g, wiz, "hold-person", bard)
+    assert g.fails[("hold-person", "unaffected")] == 1 and not bard.has_state("stopped", g.t)
+
+
+def test_blood_and_thunder_enchants_the_killer(rules):
+    g = make_game(rules, [spec("Barbarian", level=6)], [spec("Wizard")], seed=3)
+    barb, wiz = g.players
+    assert "blood-and-thunder" in barb.uses
+    g.kill(wiz, barb, "melee")
+    assert any(e.ability.slug == "blessing-against-wounds" and not e.magical for e in barb.enchantments)
+    assert g.applied[("blood-and-thunder", "ability.grant")] == 1

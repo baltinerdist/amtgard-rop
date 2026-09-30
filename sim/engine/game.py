@@ -16,10 +16,12 @@ from typing import Callable
 
 from sim.engine import effects as fx
 from sim.engine.effects import Ctx
+from sim.engine.loadout import _uses as make_uses
 from sim.engine.loadout import build_player
 from sim.engine.state import ARMS, INF, LOCATIONS, Cast, Ench, Player, Uses
 from sim.policies import decide
 from sim.policies.value import value as ability_value
+from sim.rules import frequency as freqmod
 from sim.rules.compile import Ability, Rules
 
 ARMOR_SPECIALS = ("armor-destroying", "armor-breaking")
@@ -58,6 +60,7 @@ class Game:
         self.kill_sources: Counter = Counter()
         self._value_cache: dict = {}
         self._bars_cache: dict = {}
+        self._as_per_cache: dict = {}
         # players
         self.players: list[Player] = []
         lives = scenario.get("lives")
@@ -225,13 +228,29 @@ class Game:
             for e in p.enchantments:
                 yield e.ability, e
 
+    def _passive_effects(self, ab: Ability) -> tuple:
+        """ab's effects plus the while-active effects of abilities it grants "as per" (Song of
+        Interference as per Enlightened Soul, Troll Blood as per Regeneration)."""
+        effs = self._as_per_cache.get(ab.slug)
+        if effs is None:
+            effs = list(ab.effects)
+            for eff in ab.effects:
+                if eff.kind == "ability.grant" and eff.params.get("how") == "as-per" \
+                        and eff.params.get("ability") in fx.AS_PER_EXPAND and fx.is_handled(ab, eff):
+                    other = self.rules.abilities.get(self.rules.by_name.get(str(eff.params["ability"]).lower(), ""))
+                    if other is not None:
+                        effs.extend(e for e in other.effects if e.timing == "while-active")
+            effs = tuple(effs)
+            self._as_per_cache[ab.slug] = effs
+        return effs
+
     def immune(self, p: Player, school: str) -> bool:
         if not school:
             return False
         if school == "Spirit" and p.states.get("cursed", -1) > self.t:
             return True
         for ab, ench in self._passive_sources(p):
-            for eff in ab.effects:
+            for eff in self._passive_effects(ab):
                 if eff.kind == "defense.immunity" and eff.timing == "while-active":
                     s = eff.params.get("school")
                     if s == school or (s == "choice" and ench is not None and ench.choice == school):
@@ -240,7 +259,7 @@ class Game:
 
     def unaffected(self, p: Player, by: str) -> bool:
         for ab, _ in self._passive_sources(p):
-            for eff in ab.effects:
+            for eff in self._passive_effects(ab):
                 if eff.kind == "defense.unaffected" and eff.params.get("by") == by:
                     return True
         return False
@@ -263,10 +282,18 @@ class Game:
         if p.great_weapon:
             specials.update(("armor-breaking", "shield-crushing"))
         for ab, _ in self._passive_sources(p):
-            for eff in ab.effects:
+            for eff in self._passive_effects(ab):
                 if eff.kind == "special-effect.grant" and eff.params.get("on") == "bearer-melee-weapons":
                     specials.add(eff.params.get("effect"))
         return frozenset(specials)
+
+    def _ancestral_magic_armor(self, p: Player) -> Ench | None:
+        for e in p.enchantments:
+            if e.ability.effects_of("armor.magic") and any(
+                    eff.kind == "ability.grant" and eff.params.get("how") == "as-per"
+                    and eff.params.get("ability") == fx.AS_PER_MAGIC_ARMOR for eff in e.ability.effects):
+                return e
+        return None
 
     def _enchant_with(self, p: Player, kind: str, **params) -> Ench | None:
         for e in p.enchantments:
@@ -318,12 +345,46 @@ class Game:
         self.log("enchant", caster.pid, target.pid, ab.slug)
         return True
 
+    def _grant(self, bearer: Player, ench: Ench, eff, effects: tuple) -> None:
+        """An Enchantment's `ability.grant ... gains`: uses tracked separately from the player's own
+        (Enchantments rule 6) and taken away when the Enchantment is removed. Modifiers of the granted
+        ability recorded on the same Enchantment (Regeneration, Undead Minion) apply to these uses."""
+        prm = eff.params
+        name = str(prm.get("ability", ""))
+        slug = self.rules.by_name.get(name.lower())
+        if not slug or slug in self.ablate or not fx.is_handled(ench.ability, eff):
+            return
+        holder = self.players[ench.caster] if eff.subject == "caster-of-enchantment" else bearer
+        if any(u.granted_by is ench and u.slug == slug for u in holder.uses.values()):
+            return   # already granted (re-activation after a respawn with a Persistent Enchantment)
+        raw = str(prm.get("frequency", ""))
+        f = freqmod.parse(raw)
+        u = make_uses(self.rules.abilities[slug], f, 1, f.magical is True, raw)
+        u.swift = u.swift or prm.get("meta") == "Swift"
+        u.granted_by = ench
+        for m in effects:
+            if m.kind != "ability.modify" or m.params.get("ability") != name:
+                continue
+            change = str(m.params.get("change", ""))
+            if m.params.get("requirement"):
+                u.extra_reqs = u.extra_reqs | {m.params["requirement"]}
+            if "only be cast with the bearer as the target" in change:
+                u.only_target = bearer.pid
+            if "ignores the requirement that the target has not moved" in change:
+                u.drop_reqs = u.drop_reqs | {"target-not-moved-5ft"}
+        key = slug if slug not in holder.uses else f"{slug}@{ench.ability.slug}"
+        holder.uses[key] = u
+
     def _activate(self, p: Player, ench: Ench) -> None:
         ab = ench.ability
-        for eff in ab.effects:
+        effects = self._passive_effects(ab)
+        for eff in effects:
             if eff.timing != "while-active":
                 continue
             k = eff.kind
+            if k == "ability.grant" and eff.params.get("how") != "as-per":
+                self._grant(p, ench, eff, effects)
+                continue
             if k == "armor.magic":
                 pts = int(eff.params.get("points", 1))
                 for l in LOCATIONS:
@@ -351,9 +412,10 @@ class Game:
             return
         p.enchantments.remove(ench)
         p.resist = [r for r in p.resist if r.get("ench") is not ench]
-        for slug, u in list(p.uses.items()):
-            if u.ench is ench:
-                del p.uses[slug]
+        for holder in (p, self.players[ench.caster]):
+            for slug, u in list(holder.uses.items()):
+                if u.ench is ench or u.granted_by is ench:
+                    del holder.uses[slug]
         for eff in ench.ability.effects:
             if eff.timing != "while-active":
                 continue
@@ -407,6 +469,14 @@ class Game:
         if worn > 0 and (e := self._enchant_with(p, "defense.negate-hit", **{"from": "hits-on-worn-armor"})):
             p.armor[loc] = worn - 1
             self.applied[(e.ability.slug, "defense.negate-hit")] += 1
+            return
+        if magic > 0 and (e := self._ancestral_magic_armor(p)) is not None:
+            # Stoneskin / Ironskin: their Magic Armor is affected as per Ancestral Armor, so any hit
+            # on it only removes one point, whatever its special effects
+            p.magic_armor[loc] = magic - 1
+            self.applied[(e.ability.slug, "ability.grant")] += 1
+            if p.casting is not None and self.rng.random() < self.rules.a("casting.p_interrupt_on_armor_hit"):
+                self.interrupt(p, "struck")
             return
         if worn + magic > 0:
             if "armor-destroying" in specials or ("armor-breaking" in specials and worn + magic <= 3):
@@ -550,9 +620,15 @@ class Game:
 
     # ------------------------------------------------------------------ casting
 
-    def check_requirements(self, ab: Ability, caster: Player, target: Player | None, start: bool) -> str | None:
+    def check_requirements(self, ab: Ability, caster: Player, target: Player | None, start: bool,
+                           uses: Uses | None = None) -> str | None:
         t = self.t
-        for req in sorted(ab.requirements):  # sorted: frozenset order varies with the hash seed
+        reqs = ab.requirements
+        if uses is not None and (uses.extra_reqs or uses.drop_reqs):
+            reqs = (reqs | uses.extra_reqs) - uses.drop_reqs
+        if uses is not None and uses.only_target is not None and (target is None or target.pid != uses.only_target):
+            return "only-target"
+        for req in sorted(reqs):  # sorted: frozenset order varies with the hash seed
             if req in ("target-dead", "target-dead-at-start"):
                 if target is None or target.alive or target.out:
                     return req
@@ -620,7 +696,7 @@ class Game:
             return False
         if p.has_state("suppressed", self.t) and "works-while-suppressed" not in uses.ability.properties:
             return False
-        why = self.check_requirements(uses.ability, p, target, start=True)
+        why = self.check_requirements(uses.ability, p, target, start=True, uses=uses)
         if why:
             self.fails[(uses.slug, f"requirement:{why}")] += 1
             return False
@@ -669,7 +745,7 @@ class Game:
         if ab.delivery in ("magic-ball", "specialty-arrow"):
             self._projectile(p, uses, target)
             return
-        why = self.check_requirements(ab, p, target, start=False) or self.blocked(uses, p, target)
+        why = self.check_requirements(ab, p, target, start=False, uses=uses) or self.blocked(uses, p, target)
         if why:
             self.fails[(ab.slug, why)] += 1
             return
