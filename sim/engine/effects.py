@@ -363,7 +363,7 @@ PASSIVE = frozenset({
 # Archetype/Trait effects applied when the loadout is built (sim/engine/loadout.py).
 LOADOUT = frozenset({
     "ability.grant", "ability.remove", "ability.modify", "economy.frequency",
-    "armor.limit", "equipment.permit",
+    "armor.limit", "equipment.permit", "economy.purchase-restrict", "economy.cost",
 })
 
 
@@ -447,6 +447,33 @@ EXPERIENCED_SCOPES = {
 FREQUENCY_OTHER = ("Archer Specialty Arrows", "Ancestral Armor")
 
 
+def is_equipment(ab: Ability) -> bool:
+    return ab.slug.startswith("equipment-")
+
+
+# economy.purchase-restrict scopes: what a Magic User with the Archetype may not buy.
+# Predicates take (class-table entry, ability, normalized range).
+PURCHASE_RESTRICT: dict[str, Callable] = {
+    "Enchantments and Magic Balls": lambda c, ab, rng: ab.delivery in ("enchantment", "magic-ball"),
+    "Verbals with a range of 20' or 50'": lambda c, ab, rng: ab.delivery == "verbal" and rng in ("20'", "50'"),
+    "Swift": lambda c, ab, rng: ab.slug == "swift",
+    "any abilities from the Protection School": lambda c, ab, rng: ab.school == "Protection",
+    "equipment beyond 2nd level": lambda c, ab, rng: is_equipment(ab) and min(c.levels) > 2,
+    "any abilities from the Death, Command, or Subdual Schools":
+        lambda c, ab, rng: ab.school in ("Death", "Command", "Subdual"),
+    "Verbals or Magic Balls from any School other than the Death and Flame Schools":
+        lambda c, ab, rng: ab.delivery in ("verbal", "magic-ball") and ab.school not in ("Death", "Flame"),
+}
+# economy.cost scopes and changes: point costs for a Magic User with the Archetype
+COST_SCOPES: dict[str, Callable] = {
+    "Equipment": is_equipment,
+    "all available Equipment": is_equipment,
+    "Heal": lambda ab: ab.slug == "heal",
+    "Enchantments": lambda ab: ab.delivery == "enchantment",
+}
+COST_CHANGES = {"double": 2, "zero": 0}
+
+
 def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
     """Whether sim/engine/loadout.py applies this Archetype/Trait effect. `names` (lower-case
     ability names) lets the coverage report check that the named ability resolves."""
@@ -475,6 +502,10 @@ def loadout_handled(eff: Effect, names: set[str] | None = None) -> bool:
         return prm.get("what") in _SHIELDS + ("great-weapon",)
     if eff.kind == "armor.limit":
         return prm.get("change") in ("set", "increase")
+    if eff.kind == "economy.purchase-restrict":
+        return prm.get("scope") in PURCHASE_RESTRICT        # loadout._magic_user
+    if eff.kind == "economy.cost":
+        return prm.get("scope") in COST_SCOPES and prm.get("change") in COST_CHANGES
     return False
 
 

@@ -3,7 +3,7 @@ ability record, with fixed seeds, in the style of test_handlers.py."""
 import random
 
 from sim.engine import effects as fx
-from sim.engine.loadout import _add, _apply_loadout_effects
+from sim.engine.loadout import _add, _apply_loadout_effects, _archetype_purchase_rules, _buy
 from sim.engine.state import INF, LOCATIONS, Cast, Player, Uses
 from sim.rules import frequency
 from tests.sim.conftest import make_game, resolve, spec
@@ -357,6 +357,46 @@ def test_cursed_adrenaline_only_with_vampirism(rules):
     war.alive = True
     g.kill(war, barb, "melee")
     assert not barb.wounds and g.applied[("vampirism", "ability.modify")] == 1
+
+
+# ---------------------------------------------------------------- economy.purchase-restrict / economy.cost
+
+def entry(rules, cls, slug):
+    return next(c for c in rules.classes[cls].abilities if c.slug == slug)
+
+
+def test_purchase_restrictions(rules):
+    _, ok = _archetype_purchase_rules(rules.abilities["warlock"], rules)
+    assert ok(entry(rules, "Wizard", "lightning-bolt")) and ok(entry(rules, "Wizard", "finger-of-death"))
+    assert not ok(entry(rules, "Wizard", "force-bolt")) and ok(entry(rules, "Wizard", "void-touched")), "enchantments allowed"
+    _, ok = _archetype_purchase_rules(rules.abilities["summoner"], rules)
+    assert not ok(entry(rules, "Druid", "heat-weapon")), "a 20' Verbal"
+    assert ok(entry(rules, "Druid", "mend")) and ok(entry(rules, "Druid", "equipment-shield-small"))
+    assert not ok(entry(rules, "Druid", "equipment-weapon-long")), "equipment beyond 2nd level"
+    _, ok = _archetype_purchase_rules(rules.abilities["battlemage"], rules)
+    assert not ok(entry(rules, "Wizard", "void-touched")) and not ok(entry(rules, "Wizard", "fireball"))
+    _, ok = _archetype_purchase_rules(rules.abilities["warder"], rules)
+    assert not ok(entry(rules, "Healer", "undead-minion")) and ok(entry(rules, "Healer", "harden"))
+    _, ok = _archetype_purchase_rules(rules.abilities["legend"], rules)
+    assert not ok(entry(rules, "Bard", "swift")) and ok(entry(rules, "Bard", "extension"))
+
+
+def test_archetype_costs(rules):
+    cost, _ = _archetype_purchase_rules(rules.abilities["priest"], rules)
+    assert cost(entry(rules, "Healer", "heal")) == 0 and cost(entry(rules, "Healer", "mend")) == 1
+    cost, _ = _archetype_purchase_rules(rules.abilities["ranger"], rules)
+    assert cost(entry(rules, "Druid", "equipment-weapon-great")) == 0
+    assert cost(entry(rules, "Druid", "poison")) == 2, "Enchantment costs are doubled"
+    cost, _ = _archetype_purchase_rules(rules.abilities["dervish"], rules)
+    assert cost(entry(rules, "Bard", "equipment-shield-small")) == 4
+
+
+def test_restricted_purchase_is_skipped(rules):
+    cands = [entry(rules, "Wizard", s) for s in ("force-bolt", "lightning-bolt")]
+    cost, ok = _archetype_purchase_rules(rules.abilities["warlock"], rules)
+    bought = _buy(cands, {"force-bolt": 9.0, "lightning-bolt": 1.0}, {"force-bolt": 0.0, "lightning-bolt": 0.0},
+                  {lv: 5 for lv in range(1, 7)}, 3, cost, ok)
+    assert "force-bolt" not in bought and bought.get("lightning-bolt")
 
 
 def test_blood_and_thunder_enchants_the_killer(rules):

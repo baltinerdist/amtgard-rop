@@ -103,34 +103,86 @@ def _magic_user(p: Player, sheet: ClassSheet, rules: Rules, rng: random.Random, 
     cap = rules.a("loadout.magic_user_copy_cap")
     cands = [c for c in sheet.abilities if c.kind in ("spell", "archetype") and c.cost
              and min(c.levels) <= p.level and c.slug not in ablate]
-    heap = []
+    vals: dict[str, float] = {}
+    jitter: dict[str, float] = {}
     for c in cands:
         v = value(rules.abilities[c.slug], p.role) if c.slug in rules.abilities else 0.0
         if v > 0:
-            # tiny seeded jitter breaks ties so equal-value spells vary between players
-            heapq.heappush(heap, (-(v / c.cost) - rng.random() * 1e-3, c.slug, 0, c))
+            vals[c.slug] = v
+            jitter[c.slug] = rng.random() * 1e-3   # tiny seeded jitter breaks ties between players
+    bought = _buy(cands, vals, jitter, dict(pools), cap, lambda c: c.cost, lambda c: True)
+    arch = next((s for s in bought if rules.abilities[s].delivery == "archetype"), None)
+    if arch is not None:
+        # A player has at most one Archetype, and its purchase rules (economy.purchase-restrict,
+        # economy.cost) bind every other purchase: buy again with the Archetype bought first.
+        ac = next(c for c in cands if c.slug == arch)
+        cost, allowed = _archetype_purchase_rules(rules.abilities[arch], rules)
+        pools2 = dict(pools)
+        _pay(pools2, ac, ac.cost)
+        rest = [c for c in cands if rules.abilities[c.slug].delivery != "archetype"]
+        bought = {arch: 1, **_buy(rest, vals, jitter, pools2, cap, cost, allowed)}
+    for slug, n in bought.items():
+        c = next(c for c in cands if c.slug == slug)
+        _add(p, rules, slug, c.freq, n, True, c.range, purchased=True)
+
+
+def _pay(pools: dict[int, int], c: ClassAbility, cost: int) -> bool:
+    eligible = sorted(l for l in pools if l >= min(c.levels))
+    if sum(pools[l] for l in eligible) < cost:
+        return False
+    due = cost
+    for l in eligible:
+        if due == 0:
+            break
+        take = min(due, pools[l])
+        pools[l] -= take
+        due -= take
+    return True
+
+
+def _buy(cands: list[ClassAbility], vals: dict, jitter: dict, pools: dict, cap: int, cost, allowed) -> dict[str, int]:
+    """Greedy purchase by value per point: best first, each further copy worth 0.6 of the last."""
+    heap = []
+    for c in cands:
+        if c.slug in vals and allowed(c):
+            heapq.heappush(heap, (-(vals[c.slug] / max(cost(c), 0.01)) - jitter[c.slug], c.slug, 0, c))
     bought: dict[str, int] = {}
     while heap:
         negv, slug, n, c = heapq.heappop(heap)
         limit = c.max if c.max is not None else cap
-        if n >= limit:
+        if n >= limit or not _pay(pools, c, cost(c)):
             continue
-        lv = min(c.levels)
-        eligible = sorted(l for l in pools if l >= lv)
-        if sum(pools[l] for l in eligible) < c.cost:
-            continue
-        due = c.cost
-        for l in eligible:
-            take = min(due, pools[l])
-            pools[l] -= take
-            due -= take
-            if due == 0:
-                break
         bought[slug] = n + 1
         heapq.heappush(heap, (negv * 0.6, slug, n + 1, c))
-    for slug, n in bought.items():
-        c = next(c for c in cands if c.slug == slug)
-        _add(p, rules, slug, c.freq, n, True, c.range, purchased=True)
+    return bought
+
+
+def _archetype_purchase_rules(arch: Ability, rules: Rules):
+    """(cost, allowed) functions over class-table entries for a Magic User's Archetype."""
+    mults = []
+    banned = []
+    for eff in arch.effects:
+        if not fx.loadout_handled(eff):
+            continue
+        if eff.kind == "economy.cost":
+            mults.append((fx.COST_SCOPES[eff.params["scope"]], fx.COST_CHANGES[eff.params["change"]]))
+        elif eff.kind == "economy.purchase-restrict":
+            banned.append(fx.PURCHASE_RESTRICT[eff.params["scope"]])
+
+    def cost(c: ClassAbility) -> int:
+        ab = rules.abilities[c.slug]
+        n = c.cost
+        for applies, mult in mults:
+            if applies(ab):
+                n *= mult
+        return n
+
+    def allowed(c: ClassAbility) -> bool:
+        ab = rules.abilities[c.slug]
+        rng = normalize_range(c.range, ab)
+        return not any(b(c, ab, rng) for b in banned)
+
+    return cost, allowed
 
 
 _SHIELD_ORDER = ("none", "small", "medium", "large")
