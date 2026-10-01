@@ -56,10 +56,41 @@ they fall (retrieval walks there).
 
 ## Stages
 
-1. **Geometry core.** `Space`, field, movement, geometric range, Touch and reach, engagement from
+1. [x] **Geometry core.** `Space`, field, movement, geometric range, Touch and reach, engagement from
    proximity, movement States and leg wounds, respawn travel, the positional play styles. Every
    proxy routes through `Space`; `NullSpace` keeps Phase 1 bit-identical (a test proves it).
    Validity suite runs in both modes. Speed target: at least 10 games/s on 10 cores.
+   **Done** (`sim/engine/space.py`, `--space on`, default off; README "Phase 2: the field" has the
+   results). 30 recorded digests match with space off, and the space-off validity table is unchanged.
+   With space on: 11.1 games/s, 15/15 validity checks pass, class-stack is 0.634 (largely archers,
+   see below), and casters die 0.42 times a minute against fighters' 0.52. Where the build differs
+   from the design above:
+   - **Decisions once a second.** Ticks are 0.5 s for movement, engagement and melee, but each
+     player's `decide` runs once a second, staggered across players. This keeps the policies'
+     per-second rates as they are and kept the speed target within reach (twice-a-second decisions
+     ran at about 8 games/s).
+   - **Interface names.** The design's `in_range`, `within`, `can_reach`, `nearest`, `move_toward`,
+     `move_away` and `distance` are `FieldSpace` methods. The interface proper is the set of Phase 1
+     questions (`roll_in_range`, `roll_touch`, `in_range_filter`, `p_in_range`, `p_touch`,
+     `enemy_within`, `completes_in_range`, `engage`, `respawn`, ...), so `NullSpace` can answer each
+     one with its old draw. `move()` is the step.
+   - **Range at completion.** The field also checks range when an incantation completes (the rule).
+     Phase 1 only rolled at the start.
+   - **Additions the design didn't name, all assumptions in the `space` group.** A base zone (5 m)
+     where nobody starts a melee with a player who hasn't yet left it since arriving: Phase 1's
+     respawned players were off the field for 20 s, and without the zone winners camped the base.
+     Teammates together at base meet Touch (Phase 1's at-base enchanting). A teammate being touched
+     by a friendly incantation stands still for it. Retreating casters start no incantation.
+   - **The line.** A formation line walks forward at walking pace, waits for its fighters, and stops
+     8 m short of the enemy; fighters charge from there. Casters keep behind the fighting front (the
+     median line fighter near the front), not the formation line.
+   - **Utilities**, which may not draw random numbers, get a deterministic "in range soon" figure:
+     1 in range, falling to 0 at what a run covers in 3 s beyond it.
+   - **Rejoin time** is measured as respawn until within 50' of an enemy (`sim.analyze.field`).
+   - **Archers dominate in stage 1.** With a 15 m standoff and the flat hit chance out to 30 m,
+     Archers win 0.624 in the mixed preset (0.500 off) and supply much of class-stack's fall (0.734
+     at half the arrow hit chance, 0.783 with a 15 m bow range). That is stage 2's distance curve to
+     settle.
 2. **Projectiles and forced movement, and the needs-map effects.** Distance-based ball and arrow
    hits, landing and retrieval; Shove, Throw, Lost, Banish, Agoraphobia, keep-away; Teleport,
    Summon Dead, Blink, Ambulant, alternate bases and respawn points, Heart of the Swarm, Sanctuary.

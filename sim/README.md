@@ -1,4 +1,4 @@
-# Battlegame simulator (Phase 1)
+# Battlegame simulator (Phase 1, and Phase 2 stage 1: the field)
 
 A Monte Carlo model of Amtgard class battlegames, built on the repo's own rule data
 (`metadata/abilities.json`, `rules/classes/*.md`). It is meant for **comparisons** — "does the game
@@ -6,7 +6,8 @@ change if this ability is removed?" — not for predicting real win rates. Every
 rule is an assumption in `sim/data/assumptions.json`.
 
 Phase 1 has **no map**: players are at base, on the field, or dead, and distance is represented by
-probabilities (for example, the chance that a target is within 20').
+probabilities (for example, the chance that a target is within 20'). That is still the default.
+`--space on` puts players on a field with positions and movement (see "Phase 2: the field").
 
 ## Setup
 
@@ -26,6 +27,7 @@ Python 3.14, but **nothing uses it yet**. The pure-Python engine runs about 30�
 .venv/bin/python -m sim.run --games 500 --config small --seed 100
 .venv/bin/python -m sim.run --games 1000 --ablate call-lightning,heal   # remove abilities everywhere
 .venv/bin/python -m sim.run --games 1000 --substitute icy-blast:iceball  # merge: Icy Blast's holders get Iceball
+.venv/bin/python -m sim.run --games 1000 --space on                     # on the field (Phase 2 stage 1)
 .venv/bin/python -m sim.run --games 1000 --assume melee.base_hit_per_second=0.3 \
     --assume "range.p_in_range.20'=0.4"                         # override assumptions for one run
 .venv/bin/python -m sim.analyze.winrate                         # latest run: class win rates, balance methods
@@ -93,11 +95,13 @@ the baseline once, then takes about 20 s for each ability removed.
 | `engine/state.py` | Player, ability uses, enchantments, casts |
 | `engine/loadout.py` | Equipment and abilities from class and level. Martial classes use the level table and option picks. Magic Users spend 5 points per level as `policies/buy.py` chooses. |
 | `engine/effects.py` | One handler per effect kind, plus the passive and loadout registries |
-| `engine/game.py` | The one-second tick loop: engagement, melee, casting, hits, wounds, death, respawn, refresh |
+| `engine/game.py` | The tick loop: engagement, melee, casting, hits, wounds, death, respawn, refresh |
+| `engine/space.py` | Where players are: the `Space` interface every distance question goes through; `NullSpace` (Phase 1) and `FieldSpace` (the field, `--space on`) |
 | `policies/` | Scripted behavior per role (fighter / archer) and per doctrine play style (striker, controller, enchanter, medic, battle, archer), whether to keep casting under attack, the ability value score, and Magic User spell buying by doctrine (`buy.py`) |
 | `scenarios/` | Player count, class and level mix, skill spread, team balancing, game type |
 | `run.py` | Parallel runner and DuckDB storage |
 | `analyze/stats.py` | Wilson, game-clustered (sandwich) and cluster-bootstrap intervals, paired intervals |
+| `analyze/field.py` | Deaths per minute by kind of player and rejoin time after respawn, for a stored run |
 | `analyze/winrate.py` | Class win rates with game-clustered intervals (naive Wilson kept for comparison) |
 | `analyze/doctrines.py` | Per class and doctrine: share, win rate, kills, assists and saves per life, most-bought spells |
 | `analyze/impact.py` | Paired gameplay-change measures and the distance D |
@@ -185,7 +189,7 @@ the baseline once, then takes about 20 s for each ability removed.
 
 ## What is not modeled (yet)
 
-- **Space.** There is no map, terrain, line of sight, movement speed, formations or objectives. Range and reach are probabilities.
+- **Space.** With `--space off` (the default) there is no map, terrain, line of sight, movement speed, formations or objectives, and range and reach are probabilities. `--space on` adds positions and movement (see "Phase 2: the field"), still without terrain, line of sight or objectives.
 - **Effect coverage** (from `COVERAGE.md`):
   - **398 of 445** effect instances are executed (89%); none is an unexplained no-op
   - **23** are **needs-map** (Alternate Bases and respawn points, free movement, Blink's 10' exit
@@ -211,6 +215,160 @@ the baseline once, then takes about 20 s for each ability removed.
 - **Rulings are recorded but not interpreted.** Each of the 87 open questions keeps the reading the metadata already encodes. An answer changes the simulation only if its entry carries a `sim` block (see `rules/rulings.py`). A missing, partial or unreadable `data/rulings.json` is tolerated: each open question without an entry falls back to the metadata's reading, and the fallback is logged.
 - **Weapons.** There are no thrown weapons, no weapon types other than Great weapons, and no backup weapons after one is destroyed.
 - **Player decisions** are scripted heuristics. A different policy can change the conclusions, so run any important question at more than one policy setting.
+
+## Phase 2: the field (stage 1)
+
+`sim/PHASE2.md` is the design. Stage 1, the geometry core, is built: every distance question goes
+through one interface, `Game.space` (`sim/engine/space.py`), with two implementations.
+
+- **`--space off` (the default): `NullSpace`, Phase 1 exactly.** Each method draws the same
+  probability from the same random stream in the same order as the code it replaced (`range.p_in_range`,
+  `range.p_ally_nearby_for_touch`, `engagement.*` and the backline weight, `respawn.rejoin_seconds`).
+  `tests/sim/test_space.py` compares the result and full event trace of 30 mixed games with digests
+  recorded before the change (`tests/sim/data/phase1_digests.json`), and the face-validity table is
+  unchanged line for line.
+- **`--space on`: `FieldSpace`, positions and movement.** The default stays off in stage 1, because
+  the value calibration (`data/value-calibration.json`) was measured without the map. A run with
+  space on prints a warning saying so; it does not raise a stale-calibration error, because the
+  calibration's fingerprint leaves out the `space` assumption group, which space-off play never
+  reads. `ENGINE_VERSION` is unchanged.
+
+```sh
+.venv/bin/python -m sim.run --games 2000 --seed 1 --space on
+.venv/bin/python -m sim.analyze.validity --space on
+.venv/bin/python -m sim.analyze.ablation --ability heal --games 1000 --space on
+.venv/bin/python -m sim.analyze.cut --games 300 --space on          # recorded in cut.json; sensitivity follows it
+.venv/bin/python -m sim.analyze.field                                # deaths per minute by kind, rejoin time
+.venv/bin/python -m pytest tests/sim/test_space.py
+```
+
+The mode is stored in `runs.space`; space-on runs add `games.rejoin_n` and `games.rejoin_sum`.
+
+### What the field does
+
+- **The field.** A 60 m × 40 m rectangle with a base at each short end, no obstacles. Each team
+  forms near its own base: line fighters on a line 6 m out, everyone else behind them.
+- **Time.** 0.5 s ticks for movement, engagement and melee (per-second hit chances become per-tick
+  chances). Incantations and Charges still count in seconds. Each player's brain (`decide`, the
+  utilities, the songs; unchanged) runs once a second, staggered across players, as in Phase 1.
+- **Ranges** are geometric: 20' = 6.1 m, 50' = 15.2 m, Touch and Other 1 m. They are checked when the
+  incantation starts and again when it completes ("If the incantation is completed and the target is
+  not in range, the ability fails but is still expended"; recorded as an `out-of-range` failure).
+  The policies pick only targets in range. Melee reach is by weapon: 1.2 m for a Magic User's or
+  archer's short weapon, 1.5 m standard, 2.1 m for a Great weapon. "No enemy within 20'/10'" is
+  measured, and so is Song of Power's 20'.
+- **Movement.** Walking speed is 1.4 m/s (taking position, walking back from base) and running 4 m/s
+  (charging, retreating, reaching a wounded teammate). States and wounds as the rules say:
+  - incanting or Charging players don't move their feet (a Chant may move)
+  - Stopped, Frozen, Stunned and Insubstantial players don't move
+  - a leg wound moves on the knees (0.3 m/s) with a living enemy within 20', and otherwise hobbles,
+    one step a second (0.5 m/s) (combat-rules.md, Hit Locations notes 4 and 6)
+  - a player a teammate is incanting a Touch ability on stands still for it
+- **Engagement from proximity.** A line fighter charges when an enemy is within 8 m. It runs at the
+  enemy it can reach soonest: running time, plus 1.5 s per teammate already on that enemy, less
+  1 s for a caster, healer or archer. It fights once within reach. An attacked player strikes back,
+  and a pair breaks when farther apart than the longer reach plus half a metre. Melee itself (hit
+  chance, locations, wounds) is unchanged.
+- **Respawn** is at base, followed by a walk back; there is no rejoin timer. A player sent to base is
+  off the field for the walk there. Nobody starts a melee with a player who hasn't yet left their
+  base zone (5 m) since arriving. After a team wipe in Mutual Annihilation everyone is set back to
+  base (battlegames.md).
+- **Play styles as positions** (`FieldSpace._want`; each is an assumption in the `space` group):
+
+  | Who | Where they go |
+  | --- | --- |
+  | line fighters (fighters, battle casters, archers without a bow) | a slot in the team's line (2 m apart). The line walks forward as a body, waits for its fighters and stops 8 m short of the enemy, and the fighters then charge |
+  | strikers and controllers | 5.5 m from the nearest enemy (inside 20'), at least 2 m behind their own fighting front |
+  | medics | run to the nearest teammate out of melee who is wounded (or dead, if they hold a revive); otherwise 8 m back, 4 m behind the front |
+  | enchanters | run to the nearest free teammate with an open Enchantment slot while they hold one to give; otherwise just behind the front |
+  | archers | 15 m from the nearest enemy, 4 m behind the front |
+  | anyone not in the line | retreats at a run, and starts no incantation, while a free enemy line fighter is within 6 m |
+
+### What isn't spatial yet
+
+These are stage 2 and are left as Phase 1 had them:
+
+- **Projectiles** keep their flat hit chances (`projectiles.*_p_hit`). They can only be thrown within
+  12 m (Magic Balls) or shot within 30 m (arrows), and thrown balls don't land anywhere.
+- **Forced movement** (Shove, Throw, Lost, Banish, keep-away, Agoraphobia) still uses Phase 1's
+  `kept_away_until` timer, and `send_to_base` is a walk off the field.
+- **The other needs-map effects** are not modeled: Teleport, Blink's 10', Summon Dead, Ambulant
+  (only the `Uses.ambulant` flag is honored), alternate bases and respawn points, Heart of the
+  Swarm, Sanctuary.
+- **The usefulness score** (`policies/value.py`) still prices range and mobility with the Phase 1
+  tables (Extension, Song of Power, MOBILITY), and the calibration is Phase 1's.
+- **The game itself** has no terrain, line of sight, objectives or player collision; players can
+  pass through each other.
+
+### Results, space off vs on
+
+Face validity (`sim.analyze.validity`, full scale):
+
+| Check | Space off | Space on |
+| --- | --- | --- |
+| mirror | 0.495 | 0.518 |
+| seat-swap | 0.484 vs 0.499 | 0.475 vs 0.487 |
+| no-abilities | 0.484 | 0.478 |
+| skill | 0.927 | 0.888 |
+| skill-vs-class | 0.608 | 0.729 |
+| **class-stack** | **0.865 (FAIL, known limit)** | **0.634 (PASS)** |
+| numbers | 0.887 | 0.884 |
+| armor | 1.000 | 1.000 |
+| level | 0.686 | 0.639 |
+| healer-added | 0.573 | 0.539 |
+| heal-not-harmful | attrition 0.521, annihilation 0.496 | attrition 0.543, annihilation 0.517 |
+| archers-vs-armor | 9.65 vs 4.32 kills per archer | 19.63 vs 12.17 |
+| control-scales | small +0.007, large +0.090 | small −0.012, large −0.030 |
+| more-lives | 239 / 417 / 746 s | 389 / 551 / 969 s |
+| healer-behavior | 0.0% / 3.5% / 1.4% | 0.1% / 2.1% / 1.9% |
+| passed | 14/15 | 15/15 |
+
+2,000 mixed games (`sim.run --games 2000 --seed 1`), class win rates [game-clustered 95% interval]:
+
+| Class | Space off | Space on |
+| --- | --- | --- |
+| Warrior | 0.564 | 0.547 |
+| Anti-Paladin | 0.546 | 0.517 |
+| Paladin | 0.541 | 0.522 |
+| Barbarian | 0.533 | 0.513 |
+| Archer | 0.500 | **0.624** [0.612, 0.636] |
+| Assassin | 0.495 | 0.477 |
+| Scout | 0.490 | 0.488 |
+| Monk | 0.487 | 0.473 |
+| Bard | 0.475 | 0.476 |
+| Druid | 0.472 | 0.458 |
+| Wizard | 0.454 | 0.464 |
+| Healer | 0.445 | 0.444 |
+
+| | Space off | Space on |
+| --- | --- | --- |
+| games/s, 10 cores (mixed preset) | 29.3 | 11.1 |
+| deaths per minute alive: fighters / casters / battle casters / archers | 0.513 / 0.540 / 0.642 / 0.458 | 0.523 / 0.418 / 0.640 / 0.176 |
+| rejoin after respawn | 20 s (by construction) | 9.7 s mean (until within 50' of an enemy) |
+| annihilation game length | 662 s | 943 s |
+
+**Reading it.**
+
+- **Casters now die less often per minute than fighters**, as the design predicted (0.418 against
+  0.523; with space off they died slightly more often).
+- **class-stack falls from 0.865 to 0.634, but much of that is the archers.** In the class-stack
+  games a mixed team's Archers make 12.3 kills each and die 1.4 times (Phase 1: 2.3 and 3.9). Arrows
+  are 14.7% of all kills, against 1.3% in Phase 1. Their 15 m standoff keeps fighters off them, and
+  stage 1's flat hit chance holds out to 30 m. As a sensitivity check (not a change), the same
+  games give 0.734 with half the arrow hit chance and 0.783 with a 15 m bow range. Stage 2's
+  distance curve is what will settle this.
+- **Caster classes' win rates hardly move** in the mixed preset (Healer 0.445 → 0.444, Wizard
+  0.454 → 0.464, Druid 0.472 → 0.458, Bard 0.475 → 0.476). The fighters' loss goes to the Archers.
+  Casters survive more but kill no more: they hold back to keep their distance, and range now fails
+  at completion when targets move (Entangle 15%, Hold Person 19%, Insult 22%, Fireball 15%,
+  Force Bolt 3%). Most of their value still sits
+  in a score calibrated without the map.
+- **Rejoin is shorter than Phase 1's 20 s**, because it is measured until a player is within 50'
+  of an enemy, and fights drift toward a losing team's base. On an empty field it grows with length:
+  5.0, 12.5 and 19.5 s on 40, 60 and 80 m fields (the test's setup).
+- **control-scales passes only within tolerance.** Removing one side's control abilities now
+  slightly helps that side (−0.012 small, −0.030 large). The control spells are priced and chosen as
+  in Phase 1, and they now fail out of range when targets move.
 
 ## Caster doctrines
 
@@ -955,6 +1113,7 @@ All values are in `data/assumptions.json`, and each has a unit and a reason. To 
 - `policy`: revive priority, offense and charge rates, the longest Charge started mid-battle, self-Insubstantial and forced-move durations, abandoning a cast when attacked
 - `game`: time cap
 - `population`: class and level mix. These are placeholders until ORK attendance data is available.
+- `space`: the field (`--space on` only; see "Phase 2: the field"): size, tick, speeds, Touch and reach, throw and bow range, deployment and base zone, line spacing and charge distance, retreat trigger, preferred distances by play style, target choice. Left out of the calibration's staleness fingerprint.
 
 ## Reading results
 
